@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مسیر بورد داخلی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#f6f7f5;
+    --surface:#ffffff;
+    --surface-2:#eef1ee;
+    --ink:#141f1b;
+    --ink-dim:#54615c;
+    --ink-faint:#8a958f;
+    --border:#e1e5e2;
+    --shadow:0 1px 2px rgba(20,31,27,.05),0 8px 24px -12px rgba(20,31,27,.16);
+    --accent:#0d6b5c;
+    --accent-soft:#dcefe9;
+    --done-bg:#e4f2ec;
+    --danger:#c23b3b;
+    --danger-soft:#fbe3e3;
+    --warn:#b3701c;
+    --warn-soft:#f8e9d3;
+
+    --c-phase0:#5b6472;
+    --c-phase1:#1d6fbd;
+    --c-phase2:#7a3fc4;
+    --c-phase3:#c4711f;
+    --c-phase4:#1c8a5a;
+
+    --c-cardio:#c1273d;
+    --c-pulm:#1690c9;
+    --c-nephro:#0f9285;
+    --c-gi:#a5751a;
+    --c-endo:#7b3fc9;
+    --c-heme:#c72f8a;
+    --c-rheum:#d0631a;
+    --c-id:#1f9147;
+    --c-neuro:#3949c4;
+    --c-crit:#586170;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1512;
+      --surface:#171f1b;
+      --surface-2:#1c2521;
+      --ink:#eef3f0;
+      --ink-dim:#aab7b1;
+      --ink-faint:#7c8a84;
+      --border:#28322c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -14px rgba(0,0,0,.6);
+      --accent:#3fcbb0;
+      --accent-soft:#193630;
+      --done-bg:#16332a;
+      --danger:#e28a8a;
+      --danger-soft:#3a1f1f;
+      --warn:#e3ab5f;
+      --warn-soft:#3a2c16;
+    }
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:"Vazirmatn","Tahoma",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .num{font-family:"IBM Plex Mono","Vazirmatn",monospace;font-variant-numeric:tabular-nums}
+  .wrap{max-width:820px;margin:0 auto;padding:18px 16px 80px}
+
+  header.top{
+    position:sticky;top:0;z-index:20;background:var(--bg);
+    padding-block:12px 10px;border-bottom:1px solid var(--border);margin-bottom:16px;
+  }
+  .title-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  h1{font-size:1.05rem;font-weight:800;margin:0}
+  .save-state{font-size:.72rem;color:var(--ink-faint)}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .bar{flex:1;height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+  .bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#37b199);border-radius:99px;transition:width .25s ease}
+  .bar-pct{font-size:.85rem;font-weight:700;color:var(--accent);min-width:42px}
+
+  .here-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow);
+    border-inline-start:5px solid var(--accent);
+  }
+  .here-eyebrow{font-size:.7rem;font-weight:700;color:var(--accent);letter-spacing:.3px;margin-bottom:4px}
+  .here-title{font-size:1rem;font-weight:800;margin:0 0 4px}
+  .here-sub{font-size:.82rem;color:var(--ink-dim);line-height:1.7;margin:0}
+  .here-next{font-size:.8rem;color:var(--ink-dim);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .here-next b{color:var(--ink)}
+  .here-override{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .here-override label{font-size:.74rem;color:var(--ink-faint)}
+  .here-override select{
+    font-family:inherit;font-size:.78rem;border:1px solid var(--border);border-radius:8px;
+    background:var(--surface-2);color:var(--ink);padding:4px 8px;
+  }
+
+  h2.section-title{font-size:1rem;font-weight:800;margin:26px 4px 10px}
+  p.section-desc{font-size:.82rem;color:var(--ink-dim);line-height:1.8;margin:0 4px 14px}
+
+  .phase{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow);
+    border-inline-start:5px solid var(--phase-color,var(--accent));
+  }
+  .phase-head{
+    padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    cursor:pointer;user-select:none;
+  }
+  .phase-head-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .phase-badge{
+    font-family:"IBM Plex Mono",monospace;font-size:.7rem;font-weight:700;color:#fff;
+    background:var(--phase-color,var(--accent));padding:3px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0;
+  }
+  .phase-titles h3{margin:0;font-size:.92rem;font-weight:800}
+  .phase-titles .when{font-size:.72rem;color:var(--ink-faint);margin-top:1px}
+  .phase-right{display:flex;align-items:center;gap:9px;flex-shrink:0}
+  .phase-count{font-size:.75rem;color:var(--ink-faint)}
+  .chev{transition:transform .2s ease;color:var(--ink-faint);font-size:.75rem}
+  .phase.open .chev{transform:rotate(180deg)}
+  .phase-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .phase.open .phase-body{max-height:6000px}
+  .phase-inner{padding:2px 15px 14px}
+  .goal{font-size:.8rem;color:var(--ink-dim);line-height:1.8;margin:0 0 10px}
+
+  .item{padding:9px 4px;border-top:1px dashed var(--border)}
+  .item:first-child{border-top:none}
+  .item-row{display:flex;align-items:flex-start;gap:9px}
+  .item input[type=checkbox]{
+    appearance:none;-webkit-appearance:none;width:19px;height:19px;flex-shrink:0;margin-top:2px;
+    border:1.5px solid var(--border);border-radius:6px;background:var(--surface);cursor:pointer;
+    display:grid;place-content:center;
+  }
+  .item input[type=checkbox]:checked{background:var(--phase-color,var(--accent));border-color:var(--phase-color,var(--accent))}
+  .item input[type=checkbox]:checked::after{content:"✓";color:#fff;font-size:12px;font-weight:700}
+  .item label{font-size:.85rem;line-height:1.7;cursor:pointer;flex:1}
+  .item.done label{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--border)}
+  .item textarea.note{
+    width:100%;margin-top:6px;min-height:34px;resize:vertical;
+    border:1px solid var(--border);border-radius:8px;background:var(--surface-2);
+    color:var(--ink);font-family:inherit;font-size:.78rem;padding:6px 9px;
+  }
+  .item textarea.note::placeholder{color:var(--ink-faint)}
+
+  .topic-cat{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);
+    border-inline-start:5px solid var(--cat-color,var(--accent));
+  }
+  .cat-head{
+    padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    cursor:pointer;user-select:none;
+  }
+  .cat-head-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .cat-dot{width:11px;height:11px;border-radius:99px;background:var(--cat-color,var(--accent));flex-shrink:0}
+  .cat-title{font-size:.9rem;font-weight:800}
+  .cat-stat{font-size:.73rem;color:var(--ink-faint)}
+  .cat-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .topic-cat.open .cat-body{max-height:4000px}
+  .cat-inner{padding:2px 15px 14px}
+
+  .topic-row{
+    display:flex;align-items:center;gap:8px;padding:8px 2px;border-top:1px dashed var(--border);
+    flex-wrap:wrap;
+  }
+  .topic-row:first-child{border-top:none}
+  .topic-label{flex:1;min-width:130px;font-size:.83rem}
+  .topic-pill{
+    font-family:"Vazirmatn",sans-serif;font-size:.7rem;font-weight:700;border:none;cursor:pointer;
+    padding:4px 11px;border-radius:99px;flex-shrink:0;
+  }
+  .topic-pill.st-نامشخص{background:var(--surface-2);color:var(--ink-faint)}
+  .topic-pill.st-ضعیف{background:var(--danger-soft);color:var(--danger)}
+  .topic-pill.st-متوسط{background:var(--warn-soft);color:var(--warn)}
+  .topic-pill.st-خوب{background:var(--done-bg);color:var(--accent)}
+  .topic-note{
+    width:100%;min-height:30px;resize:vertical;border:1px solid var(--border);border-radius:8px;
+    background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:.76rem;padding:6px 9px;
+  }
+  .topic-note::placeholder{color:var(--ink-faint)}
+
+  footer.bottom{
+    margin-top:24px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+    font-size:.74rem;color:var(--ink-faint);flex-wrap:wrap;
+  }
+  .reset-btn{
+    background:none;border:1px solid var(--border);color:var(--ink-faint);font-size:.73rem;
+    padding:6px 12px;border-radius:99px;cursor:pointer;font-family:inherit;
+  }
+  .reset-btn:hover{border-color:var(--danger);color:var(--danger)}
+
+  @media (max-width:420px){
+    h1{font-size:.96rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="title-row">
+      <h1>مسیر بورد داخلی</h1>
+      <span class="save-state" id="saveState"></span>
+    </div>
+    <div class="bar-row">
+      <div class="bar"><span id="barFill" style="width:0%"></span></div>
+      <div class="bar-pct num" id="barPct">۰٪</div>
+    </div>
+  </header>
+
+  <div class="here-card">
+    <div class="here-eyebrow">الان اینجام</div>
+    <h2 class="here-title" id="hereTitle">—</h2>
+    <p class="here-sub" id="hereSub"></p>
+    <div class="here-next" id="hereNext"></div>
+    <div class="here-override">
+      <label for="hereSelect">تغییر دستی مرحله فعلی:</label>
+      <select id="hereSelect"></select>
+    </div>
+  </div>
+
+  <h2 class="section-title">مسیر مطالعه (فازها)</h2>
+  <p class="section-desc">هر آیتم = یک چک‌باکس. زیر هرکدام هم جا برای یادداشت هست — همون‌جایی که گیر کردی یا اشتباه فهمیدی رو بنویس، بعداً موقع مرور خیلی به کارت میاد.</p>
+  <div id="phasesRoot"></div>
+
+  <h2 class="section-title">نقشه دانش (بر اساس فصل‌بندی هاریسون)</h2>
+  <p class="section-desc">این بخش برای ساخت فلش‌کارت و شبیه‌سازی آزمون بعداً استفاده می‌شه. روی وضعیت هر سرفصل کلیک کن تا عوض بشه (نامشخص ← ضعیف ← متوسط ← خوب). اگه فکر می‌کنی جای یه مبحث اشتباهه یا زیرشاخه‌ای کمه، در گفتگو بگو تا جابه‌جا/اضافه‌اش کنم.</p>
+  <div id="topicsRoot"></div>
+
+  <footer class="bottom">
+    <span>تیک‌ها و یادداشت‌ها فقط در همین مرورگر (localStorage) ذخیره می‌شن، نه در گیت‌هاب — خود فایل نسخه‌بندی می‌شه، پیشرفتت نه.</span>
+    <button class="reset-btn" id="resetBtn">ریست کامل</button>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var PREFIX = "smp_v1_";
+
+  function safeGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function safeSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
+  function safeRemove(k){ try{ localStorage.removeItem(k); }catch(e){} }
+  function faDigits(n){
+    var map=['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    return String(n).replace(/[0-9]/g,function(d){ return map[d]; });
+  }
+
+  // ---------------------------------------------------------------
+  // DATA — phases (the sequential roadmap)
+  // ---------------------------------------------------------------
+  var PHASES = [
+    {
+      id:"p0", color:"var(--c-phase0)", badge:"فاز ۰",
+      title:"تشخیص دقیق، قبل از شروع مطالعه",
+      when:"هفتهٔ اول",
+      goal:"هدف: به‌جای حدس زدن نقطه ضعف، از روی برگهٔ امتحان واقعی تصمیم بگیر. بدون این فاز، بقیهٔ برنامه حدسی می‌مونه.",
+      items:[
+        {id:"p0-1", text:"مرور کارنامهٔ آزمون ارتقای اخیر و لیست کردن سؤال‌های غلط بر اساس مبحث"},
+        {id:"p0-2", text:"برای هر غلط، نوع خطا رو مشخص کن: دانشی / بددقتی در خواندن سؤال / فشار زمان / حدس اشتباه"},
+        {id:"p0-3", text:"تاریخ دقیق دورهٔ بعدی آزمون دانشنامهٔ تخصصی داخلی رو از منبع رسمی تأیید کن و ماه‌های واقعی باقی‌مانده رو بشمار"},
+        {id:"p0-4", text:"۳ مبحث پراشتباه رو ثبت کن و در بخش «نقشه دانش» پایین صفحه وضعیتشون رو «ضعیف» بزن"}
+      ]
+    },
+    {
+      id:"p1", color:"var(--c-phase1)", badge:"فاز ۱",
+      title:"ساخت عادت تست‌زنیِ closed-book",
+      when:"ماه ۱ تا ۳",
+      goal:"هدف: از همین اول عادت کن بدون تقلب کوچیک بالینی (بدون آپتودیت، بدون چک کردن دوز) جواب بدی — سر جلسهٔ بورد این ابزارها رو نداری.",
+      items:[
+        {id:"p1-1", text:"برای هر مبحث ضعیف فاز ۰: فقط جدول‌ها و الگوریتم‌های کلیدی هاریسون رو مرور کن — تماشای ویدیوی کامل فقط اگه مبحث واقعاً ناآشناست"},
+        {id:"p1-2", text:"هفته‌ای حداقل یک ست ۵۰ سؤالی تایم‌دار از تست‌های ۵ سال اخیر ارتقا/بورد — کاملاً closed-book"},
+        {id:"p1-3", text:"بعد از هر ست، تک‌تک گزینه‌های غلط رو تحلیل کن، نه فقط جواب درست"},
+        {id:"p1-4", text:"برای هر نکتهٔ دام‌دار، فلش‌کارت active recall بساز به‌جای خلاصه‌نویسی دستی"},
+        {id:"p1-5", text:"جدول داروهای خوراکی دیابت رو از حفظ، بدون نگاه کردن، روی کاغذ بازسازی کن — تکرار تا بدون خطا"},
+        {id:"p1-6", text:"الگوریتم تاکی‌کاردی QRS باریک/پهن و پروتکل فئوکروموسیتوم رو closed-book روی کاغذ بازسازی کن"}
+      ]
+    },
+    {
+      id:"p2", color:"var(--c-phase2)", badge:"فاز ۲",
+      title:"افزایش حجم تست + پوشش بقیهٔ دروس",
+      when:"ماه ۴ تا ۷",
+      goal:"هدف: یک چک واقعی بگیر که نمره داره بالا میره یا نه. اگه بعد این حجم پیشرفت نبود، فرض «فقط مشکل تکنیکه» رو کنار بذار.",
+      items:[
+        {id:"p2-1", text:"حجم تست تایم‌دار رو به ۲ تا ۳ ست در هفته برسون"},
+        {id:"p2-2", text:"هفته‌ای دو بار شبیه‌سازی کیس KFP/PMP — مرحله‌به‌مرحله: اقدام فوری → تست تشخیصی → درمان قطعی"},
+        {id:"p2-3", text:"روماتولوژی، هماتولوژی/آنکولوژی و عفونی رو با همون روش دو-قدمی پوشش بده"},
+        {id:"p2-4", text:"نمرهٔ هر ست تایم‌دار رو ثبت کن"},
+        {id:"p2-5", text:"بعد از ۴ هفته: روند نمرات رو چک کن — اگه واضح بالا نرفته، این علامت خطره"},
+        {id:"p2-6", text:"سناریوی آدرنال اینسیدنتالوما و کوشینگ رو closed-book و الگوریتمی حل کن"}
+      ]
+    },
+    {
+      id:"p3", color:"var(--c-phase3)", badge:"فاز ۳",
+      title:"شبیه‌سازی کامل شرایط آزمون",
+      when:"ماه ۸ تا ۱۰",
+      goal:"هدف: از تمرین قطعه‌قطعه به تحمل کامل ۱۵۰ سؤال زیر فشار زمان واقعی برس.",
+      items:[
+        {id:"p3-1", text:"هر ۲ هفته یک آزمون جامع کامل (۱۵۰ سؤال، زمان واقعی، بدون وقفه، بدون گوشی)"},
+        {id:"p3-2", text:"بعد از هر آزمون جامع، فقط روی غلط‌ها تمرکز کن نه مرور کامل"},
+        {id:"p3-3", text:"مرور کامل فلش‌کارت‌ها با spaced repetition"},
+        {id:"p3-4", text:"۳ مبحث ضعیفی که هنوز پیشرفت نکردن رو جداگانه و فشرده مرور کن"},
+        {id:"p3-5", text:"حداقل یک بار شبیه‌سازی آزمون شفاهی/OSCE با هم‌گروه یا با کلود"}
+      ]
+    },
+    {
+      id:"p4", color:"var(--c-phase4)", badge:"فاز ۴",
+      title:"مرور نهایی، بدون مطلب جدید",
+      when:"۲ تا ۴ هفتهٔ آخر",
+      goal:"هدف: تثبیت، نه یادگیری. شروع مبحث جدید در این بازه معمولاً نمره رو پایین میاره نه بالا.",
+      items:[
+        {id:"p4-1", text:"فقط مرور فلش‌کارت‌ها و جداول کلیدی — هیچ مبحث جدیدی شروع نکن"},
+        {id:"p4-2", text:"یک آزمون جامع کامل در شرایط تا حد امکان شبیه روز واقعی"},
+        {id:"p4-3", text:"مرور نهایی ۳ مبحث ضعیف اصلی"},
+        {id:"p4-4", text:"خواب کافی در هفتهٔ آخر — بی‌خوابی شب امتحان جبران‌کنندهٔ هیچ مروری نیست"}
+      ]
+    }
+  ];
+
+  // ---------------------------------------------------------------
+  // DATA — knowledge map, grouped by Harrison's table of contents
+  // ---------------------------------------------------------------
+  var TOPICS = [
+    { id:"cardio", color:"var(--c-cardio)", label:"قلب و عروق", subs:[
+      {id:"cardio-hf", label:"نارسایی قلبی (Heart Failure)"},
+      {id:"cardio-acs", label:"سندروم کرونری حاد / ایسکمی"},
+      {id:"cardio-arrhythmia", label:"آریتمی‌های دهلیزی و بطنی"},
+      {id:"cardio-valve", label:"بیماری‌های دریچه‌ای"},
+      {id:"cardio-pericard", label:"پریکاردیت و تامپوناد"},
+      {id:"cardio-htn", label:"فشار خون بالا"},
+      {id:"cardio-aorta", label:"بیماری‌های آئورت و عروق محیطی"}
+    ]},
+    { id:"pulm", color:"var(--c-pulm)", label:"ریه", subs:[
+      {id:"pulm-asthma", label:"آسم"},
+      {id:"pulm-copd", label:"COPD"},
+      {id:"pulm-ild", label:"بیماری‌های بینابینی ریه (ILD)"},
+      {id:"pulm-pe", label:"آمبولی ریه / ترومبوآمبولی وریدی"},
+      {id:"pulm-ards", label:"نارسایی تنفسی و ARDS"},
+      {id:"pulm-sleep", label:"اختلالات خواب و آپنه"}
+    ]},
+    { id:"nephro", color:"var(--c-nephro)", label:"کلیه", subs:[
+      {id:"nephro-aki", label:"آسیب حاد کلیه (AKI)"},
+      {id:"nephro-ckd", label:"بیماری مزمن کلیه (CKD)"},
+      {id:"nephro-lytes", label:"اختلالات الکترولیت و اسید-باز"},
+      {id:"nephro-gn", label:"گلومرولونفریت‌ها"},
+      {id:"nephro-stone", label:"سنگ‌های کلیوی"}
+    ]},
+    { id:"gi", color:"var(--c-gi)", label:"گوارش و کبد", subs:[
+      {id:"gi-ibd", label:"بیماری‌های التهابی روده (IBD)"},
+      {id:"gi-cirrhosis", label:"سیروز و عوارض آن"},
+      {id:"gi-hepatitis", label:"هپاتیت‌های ویروسی"},
+      {id:"gi-pancreatitis", label:"پانکراتیت"},
+      {id:"gi-bleed", label:"خونریزی گوارشی"}
+    ]},
+    { id:"endo", color:"var(--c-endo)", label:"غدد و متابولیسم", subs:[
+      {id:"endo-diabetes", label:"دیابت و داروهای خوراکی"},
+      {id:"endo-thyroid", label:"تیروئید (پرکاری/کم‌کاری)"},
+      {id:"endo-adrenal", label:"آدرنال (کوشینگ/فئوکروموسیتوم/نارسایی آدرنال)"},
+      {id:"endo-pituitary", label:"اختلالات هیپوفیز"},
+      {id:"endo-bone", label:"متابولیسم استخوان و کلسیم"}
+    ]},
+    { id:"heme", color:"var(--c-heme)", label:"هماتولوژی و آنکولوژی", subs:[
+      {id:"heme-anemia", label:"آنمی‌ها"},
+      {id:"heme-aml", label:"لوسمی‌های حاد (AML/ALL)"},
+      {id:"heme-cll-lymphoma", label:"لوسمی‌های مزمن و لنفوم‌ها (CLL/Lymphoma)"},
+      {id:"heme-coag", label:"اختلالات انعقادی و ترومبوز"},
+      {id:"heme-mds", label:"سندرم میلودیسپلاستیک"}
+    ]},
+    { id:"rheum", color:"var(--c-rheum)", label:"روماتولوژی و ایمونولوژی", subs:[
+      {id:"rheum-ra", label:"آرتریت روماتوئید (RA)"},
+      {id:"rheum-sle", label:"لوپوس (SLE)"},
+      {id:"rheum-gout", label:"نقرس و بیماری‌های کریستالی"},
+      {id:"rheum-vasculitis", label:"واسکولیت‌ها"},
+      {id:"rheum-spa", label:"اسپوندیلوآرتروپاتی‌ها"}
+    ]},
+    { id:"id", color:"var(--c-id)", label:"عفونی", subs:[
+      {id:"id-sepsis", label:"سپسیس و شوک سپتیک"},
+      {id:"id-hiv", label:"HIV/AIDS"},
+      {id:"id-tb", label:"سل (TB)"},
+      {id:"id-hai", label:"عفونت‌های بیمارستانی"},
+      {id:"id-empiric", label:"آنتی‌بیوتیک‌درمانی تجربی"}
+    ]},
+    { id:"neuro", color:"var(--c-neuro)", label:"اعصاب", subs:[
+      {id:"neuro-stroke", label:"سکته مغزی (Stroke)"},
+      {id:"neuro-seizure", label:"تشنج و صرع"},
+      {id:"neuro-headache", label:"سردرد"},
+      {id:"neuro-dementia", label:"دمانس"},
+      {id:"neuro-neuropathy", label:"نوروپاتی‌های محیطی"}
+    ]},
+    { id:"crit", color:"var(--c-crit)", label:"مراقبت ویژه و اورژانس داخلی", subs:[
+      {id:"crit-shock", label:"انواع شوک"},
+      {id:"crit-abg", label:"تفسیر ABG و اسید-باز پیشرفته"},
+      {id:"crit-poison", label:"مسمومیت‌های شایع"},
+      {id:"crit-vent", label:"اصول اولیهٔ ونتیلاتور"}
+    ]}
+  ];
+
+  // ---------------------------------------------------------------
+  // RENDER — phases
+  // ---------------------------------------------------------------
+  var phasesRoot = document.getElementById("phasesRoot");
+  var allCheckboxes = [];
+
+  PHASES.forEach(function(phase, pIdx){
+    var el = document.createElement("div");
+    el.className = "phase" + (pIdx === 0 ? " open" : "");
+    el.setAttribute("data-phase", phase.id);
+    el.style.setProperty("--phase-color", phase.color);
+
+    var head = document.createElement("div");
+    head.className = "phase-head";
+    head.innerHTML =
+      '<div class="phase-head-left">'+
+        '<span class="phase-badge">'+phase.badge+'</span>'+
+        '<div class="phase-titles"><h3>'+phase.title+'</h3><div class="when">'+phase.when+'</div></div>'+
+      '</div>'+
+      '<div class="phase-right"><span class="phase-count num" data-count="'+phase.id+'"></span><span class="chev">▾</span></div>';
+    head.addEventListener("click", function(){ el.classList.toggle("open"); });
+    el.appendChild(head);
+
+    var body = document.createElement("div");
+    body.className = "phase-body";
+    var inner = document.createElement("div");
+    inner.className = "phase-inner";
+
+    var goal = document.createElement("p");
+    goal.className = "goal";
+    goal.textContent = phase.goal;
+    inner.appendChild(goal);
+
+    phase.items.forEach(function(item){
+      var row = document.createElement("div");
+      row.className = "item";
+
+      var top = document.createElement("div");
+      top.className = "item-row";
+
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = item.id;
+
+      var label = document.createElement("label");
+      label.setAttribute("for", item.id);
+      label.textContent = item.text;
+
+      top.appendChild(cb);
+      top.appendChild(label);
+      row.appendChild(top);
+
+      var note = document.createElement("textarea");
+      note.className = "note";
+      note.placeholder = "یادداشت: اینجا کجا گیر کردی یا چی رو اشتباه فهمیدی؟";
+      note.id = "note_" + item.id;
+      row.appendChild(note);
+
+      inner.appendChild(row);
+
+      allCheckboxes.push({cb:cb, row:row, phase:phase.id});
+
+      var storedCheck = safeGet(PREFIX + item.id);
+      if(storedCheck === "1"){ cb.checked = true; row.classList.add("done"); }
+      var storedNote = safeGet(PREFIX + "note_" + item.id);
+      if(storedNote) note.value = storedNote;
+
+      cb.addEventListener("change", function(){
+        safeSet(PREFIX + item.id, cb.checked ? "1" : "0");
+        row.classList.toggle("done", cb.checked);
+        refreshAll();
+      });
+      note.addEventListener("input", function(){
+        safeSet(PREFIX + "note_" + item.id, note.value);
+        markSaved();
+      });
+    });
+
+    body.appendChild(inner);
+    el.appendChild(body);
+    phasesRoot.appendChild(el);
+  });
+
+  function updatePhaseCount(phaseId){
+    var els = allCheckboxes.filter(function(x){ return x.phase === phaseId; });
+    var done = els.filter(function(x){ return x.cb.checked; }).length;
+    var badge = document.querySelector('.phase-count[data-count="'+phaseId+'"]');
+    if(badge) badge.textContent = faDigits(done) + "/" + faDigits(els.length);
+  }
+
+  function updateOverallBar(){
+    var total = allCheckboxes.length;
+    var done = allCheckboxes.filter(function(x){ return x.cb.checked; }).length;
+    var pct = total ? Math.round(done/total*100) : 0;
+    document.getElementById("barFill").style.width = pct + "%";
+    document.getElementById("barPct").textContent = faDigits(pct) + "٪";
+  }
+
+  // ---------------------------------------------------------------
+  // "الان اینجام" — auto-detect current phase, with manual override
+  // ---------------------------------------------------------------
+  var hereSelect = document.getElementById("hereSelect");
+  PHASES.forEach(function(phase){
+    var opt = document.createElement("option");
+    opt.value = phase.id;
+    opt.textContent = phase.badge + " — " + phase.title;
+    hereSelect.appendChild(opt);
+  });
+  var autoOpt = document.createElement("option");
+  autoOpt.value = "";
+  autoOpt.textContent = "خودکار (پیش‌فرض)";
+  hereSelect.insertBefore(autoOpt, hereSelect.firstChild);
+
+  var storedOverride = safeGet(PREFIX + "current_override") || "";
+  hereSelect.value = storedOverride;
+  hereSelect.addEventListener("change", function(){
+    safeSet(PREFIX + "current_override", hereSelect.value);
+    updateHereCard();
+  });
+
+  function detectAutoPhase(){
+    for(var i=0;i<PHASES.length;i++){
+      var els = allCheckboxes.filter(function(x){ return x.phase === PHASES[i].id; });
+      var allDone = els.length && els.every(function(x){ return x.cb.checked; });
+      if(!allDone) return PHASES[i];
+    }
+    return PHASES[PHASES.length-1];
+  }
+
+  function updateHereCard(){
+    var override = safeGet(PREFIX + "current_override") || "";
+    var phase = override ? PHASES.filter(function(p){ return p.id === override; })[0] : null;
+    if(!phase) phase = detectAutoPhase();
+
+    document.getElementById("hereTitle").textContent = phase.badge + " — " + phase.title;
+    document.getElementById("hereSub").textContent = phase.when + " · " + phase.goal;
+
+    var els = allCheckboxes.filter(function(x){ return x.phase === phase.id; });
+    var nextItem = els.filter(function(x){ return !x.cb.checked; })[0];
+    var nextEl = document.getElementById("hereNext");
+    if(nextItem){
+      var labelText = document.querySelector('label[for="'+nextItem.cb.id+'"]').textContent;
+      nextEl.innerHTML = '<b>قدم بعدی:</b> ' + labelText;
+    } else {
+      nextEl.innerHTML = '<b>همهٔ آیتم‌های این فاز تیک خورده.</b> اگه فاز بعدی رو شروع کردی، از منوی پایین دستی عوضش کن یا بذار خودکار تشخیص بده.';
+    }
+  }
+
+  function refreshAll(){
+    PHASES.forEach(function(p){ updatePhaseCount(p.id); });
+    updateOverallBar();
+    updateHereCard();
+    markSaved();
+  }
+
+  var saveTimer = null;
+  function markSaved(){
+    var el = document.getElementById("saveState");
+    el.textContent = "ذخیره شد ✓";
+    if(saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){ el.textContent = ""; }, 1500);
+  }
+
+  // ---------------------------------------------------------------
+  // RENDER — topics (Harrison-based knowledge map)
+  // ---------------------------------------------------------------
+  var topicsRoot = document.getElementById("topicsRoot");
+  var STATUS_ORDER = ["نامشخص","ضعیف","متوسط","خوب"];
+
+  TOPICS.forEach(function(cat){
+    var catEl = document.createElement("div");
+    catEl.className = "topic-cat";
+    catEl.style.setProperty("--cat-color", cat.color);
+
+    var head = document.createElement("div");
+    head.className = "cat-head";
+    head.innerHTML =
+      '<div class="cat-head-left"><span class="cat-dot"></span><span class="cat-title">'+cat.label+'</span></div>'+
+      '<div class="phase-right"><span class="cat-stat num" data-cat-stat="'+cat.id+'"></span><span class="chev">▾</span></div>';
+    head.addEventListener("click", function(){ catEl.classList.toggle("open"); });
+    catEl.appendChild(head);
+
+    var body = document.createElement("div");
+    body.className = "cat-body";
+    var inner = document.createElement("div");
+    inner.className = "cat-inner";
+
+    cat.subs.forEach(function(sub){
+      var row = document.createElement("div");
+      row.className = "topic-row";
+
+      var label = document.createElement("span");
+      label.className = "topic-label";
+      label.textContent = sub.label;
+
+      var statusKey = PREFIX + "topic_status_" + sub.id;
+      var noteKey = PREFIX + "topic_note_" + sub.id;
+      var status = safeGet(statusKey) || "نامشخص";
+
+      var pill = document.createElement("button");
+      pill.type = "button";
+      pill.className = "topic-pill st-" + status;
+      pill.textContent = status;
+
+      var note = document.createElement("textarea");
+      note.className = "topic-note";
+      note.placeholder = "یادداشت کوتاه دربارهٔ این مبحث...";
+      note.value = safeGet(noteKey) || "";
+
+      pill.addEventListener("click", function(){
+        var idx = STATUS_ORDER.indexOf(status);
+        status = STATUS_ORDER[(idx+1) % STATUS_ORDER.length];
+        pill.className = "topic-pill st-" + status;
+        pill.textContent = status;
+        safeSet(statusKey, status);
+        updateCatStat(cat);
+        markSaved();
+      });
+      note.addEventListener("input", function(){
+        safeSet(noteKey, note.value);
+        markSaved();
+      });
+
+      row.appendChild(label);
+      row.appendChild(pill);
+      row.appendChild(note);
+      inner.appendChild(row);
+    });
+
+    body.appendChild(inner);
+    catEl.appendChild(body);
+    topicsRoot.appendChild(catEl);
+
+    updateCatStat(cat);
+  });
+
+  function updateCatStat(cat){
+    var good = cat.subs.filter(function(s){
+      return (safeGet(PREFIX + "topic_status_" + s.id) || "نامشخص") === "خوب";
+    }).length;
+    var el = document.querySelector('.cat-stat[data-cat-stat="'+cat.id+'"]');
+    if(el) el.textContent = faDigits(good) + "/" + faDigits(cat.subs.length) + " خوب";
+  }
+
+  // ---------------------------------------------------------------
+  // Reset
+  // ---------------------------------------------------------------
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    if(!confirm("همهٔ تیک‌ها، وضعیت‌های دانش و یادداشت‌ها پاک بشه؟")) return;
+    allCheckboxes.forEach(function(x){
+      x.cb.checked = false;
+      x.row.classList.remove("done");
+      safeRemove(PREFIX + x.cb.id);
+    });
+    document.querySelectorAll(".note").forEach(function(n){
+      n.value = "";
+      safeRemove(PREFIX + n.id);
+    });
+    TOPICS.forEach(function(cat){
+      cat.subs.forEach(function(sub){
+        safeRemove(PREFIX + "topic_status_" + sub.id);
+        safeRemove(PREFIX + "topic_note_" + sub.id);
+      });
+    });
+    safeRemove(PREFIX + "current_override");
+    hereSelect.value = "";
+    location.reload();
+  });
+
+  refreshAll();
+})();
+</script>
+</body>
+</html>
