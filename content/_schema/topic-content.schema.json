@@ -80,6 +80,18 @@
           "markdown": { "type": "string" }
         }
       }
+    },
+    "lesson": {
+      "type": "array",
+      "description": "Narrative teaching content ('درسنامه') for the topic — explanatory prose beyond flashcard-level facts, meant to teach the topic from scratch. Rendered as ordered sections, each with a heading and a body; the artifact splits body on blank lines into paragraphs.",
+      "items": {
+        "type": "object",
+        "required": ["heading", "body"],
+        "properties": {
+          "heading": { "type": "string" },
+          "body": { "type": "string", "description": "One or more paragraphs, separated by a blank line (\\n\\n)." }
+        }
+      }
     }
   }
 }
