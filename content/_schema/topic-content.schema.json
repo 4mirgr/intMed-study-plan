@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Topic content package",
+  "description": "One file per topic (content/<category>/<topicId>/data.json). Matches the topic ids used in the study-plan artifact's knowledge map, so a topic folder and a topic's db doc share the same id. Consumed by: (1) the Claude session syncing it into the artifact's db (item_state / topic_content collections) for interactive use, (2) later, a WordPress import script.",
+  "type": "object",
+  "required": ["topicId", "category"],
+  "properties": {
+    "topicId": { "type": "string", "description": "Matches the subtopic id in the artifact's TOPICS taxonomy, e.g. 'rheum-sle'." },
+    "category": { "type": "string", "description": "Matches the category id, e.g. 'rheum'." },
+    "flashcards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["front", "back"],
+        "properties": {
+          "id": { "type": "string" },
+          "front": { "type": "string" },
+          "back": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "mcq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stem", "options", "correctIndex"],
+        "properties": {
+          "id": { "type": "string" },
+          "stem": { "type": "string" },
+          "options": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 5 },
+          "correctIndex": { "type": "integer" },
+          "explanation": { "type": "string" }
+        }
+      }
+    },
+    "kfPmp": {
+      "type": "array",
+      "description": "Stepwise key-feature / patient-management-problem cases.",
+      "items": {
+        "type": "object",
+        "required": ["title", "steps"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "vignette": { "type": "string" },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["prompt", "expectedAnswer"],
+              "properties": {
+                "prompt": { "type": "string" },
+                "expectedAnswer": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["caption"],
+        "properties": {
+          "caption": { "type": "string" },
+          "sourceUrl": { "type": "string", "description": "Link to the user's own private Drive file. Never a redistributable copy of copyrighted material." },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "markdown"],
+        "properties": {
+          "title": { "type": "string" },
+          "markdown": { "type": "string" }
+        }
+      }
+    }
+  }
+}
