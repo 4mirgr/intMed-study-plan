@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پیپراسیلین/تازوباکتام — خلاصه بالینی</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+.pt-zosyn-wrap * { box-sizing: border-box; }
+.pt-zosyn-wrap {
+  font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  direction: rtl;
+  background: transparent;
+  color: #dceeff;
+  padding: 28px 14px 60px;
+  line-height: 1.85;
+  max-width: 100%;
+}
+.pt-zosyn-wrap .pt-container { max-width: 980px; margin: 0 auto; }
+
+/* ===== Header ===== */
+.pt-hero {
+  text-align: center;
+  padding: 34px 20px 30px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(6,34,64,0.95), rgba(3,18,38,0.97));
+  border: 1px solid rgba(0,200,255,0.35);
+  box-shadow: 0 0 40px rgba(0,190,255,0.18), inset 0 0 30px rgba(0,150,255,0.06);
+  margin-bottom: 26px;
+  position: relative;
+  overflow: hidden;
+}
+.pt-hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(115deg, transparent 0 18px, rgba(0,220,255,0.035) 18px 19px);
+  pointer-events: none;
+}
+.pt-hero h1 {
+  font-size: 30px; font-weight: 800; margin: 0 0 6px;
+  color: #7fe8ff;
+  text-shadow: 0 0 18px rgba(0,225,255,0.65), 0 0 4px rgba(0,225,255,0.9);
+  letter-spacing: 0.3px;
+}
+.pt-hero .pt-brand { font-size: 15px; color: #9fd8f2; font-weight: 500; direction: ltr; display: inline-block; }
+.pt-hero .pt-tagline { margin-top: 10px; font-size: 14px; color: #a9c6dd; max-width: 560px; margin-inline: auto; }
+
+.pt-quickfacts {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px;
+}
+@media (max-width: 640px){ .pt-quickfacts{ grid-template-columns: repeat(2,1fr);} }
+.pt-qf {
+  background: rgba(0,40,75,0.55);
+  border: 1px solid rgba(0,210,255,0.3);
+  border-radius: 14px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.pt-qf .pt-qf-label { font-size: 11.5px; color: #8fc6e4; margin-bottom: 4px; }
+.pt-qf .pt-qf-value { font-size: 14.5px; font-weight: 700; color: #eafcff; direction: ltr; display: inline-block; }
+
+/* ===== Section headers ===== */
+.pt-section-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 19px; font-weight: 800; color: #0088cc;
+  margin: 38px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(0,210,255,0.28);
+}
+.pt-section-title .pt-num {
+  width: 30px; height: 30px; border-radius: 9px; flex: none;
+  background: linear-gradient(145deg,#00c3ff,#0068c9);
+  color: #04101d; font-weight: 800; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 14px rgba(0,200,255,0.55);
+}
+
+/* ===== Generic neon box ===== */
+.pt-box {
+  border-radius: 16px;
+  border: 1px solid rgba(0,210,255,0.35);
+  background: linear-gradient(160deg, rgba(4,30,58,0.85), rgba(3,18,38,0.9));
+  box-shadow: 0 0 22px rgba(0,190,255,0.10), inset 0 0 18px rgba(0,150,255,0.04);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.pt-box-head {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 700; font-size: 14.5px; color: #7fe8ff; margin-bottom: 8px;
+}
+.pt-box-head .pt-ico {
+  width: 24px; height: 24px; border-radius: 7px; flex: none;
+  background: rgba(0,210,255,0.15); border: 1px solid rgba(0,210,255,0.5);
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.pt-box p, .pt-box ul { margin: 6px 0; font-size: 14px; color: #cde7f5; }
+.pt-box ul { padding-inline-start: 20px; }
+.pt-box li { margin-bottom: 5px; }
+.pt-box b, .pt-box strong { color: #eafcff; }
+.pt-mono { direction: ltr; display: inline-block; font-weight: 600; color: #baf3ff; }
+
+/* variant: pearl (clinical pearl) — brighter glow */
+.pt-pearl { border-color: rgba(60,230,255,0.55); box-shadow: 0 0 30px rgba(0,220,255,0.22), inset 0 0 20px rgba(0,190,255,0.08); }
+.pt-pearl .pt-box-head { color: #8ff2ff; }
+
+/* variant: warning — same blue family but amber accent edge to separate from pearls without breaking the neon-blue theme */
+.pt-warn { border-color: rgba(0,210,255,0.35); position: relative; }
+.pt-warn::before {
+  content: ""; position: absolute; inset-inline-start: 0; top: 10px; bottom: 10px; width: 3px;
+  background: linear-gradient(#5ce1ff, #0088c8); border-radius: 3px; box-shadow: 0 0 10px #5ce1ff;
+}
+.pt-warn { padding-inline-start: 22px; }
+
+/* ===== Details / accordion (native, no JS) ===== */
+.pt-acc { margin-bottom: 10px; }
+.pt-acc summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 13px 16px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(0,55,95,0.95), rgba(0,28,55,0.97));
+  border: 1px solid rgba(0,210,255,0.4);
+  font-weight: 700; font-size: 14.5px; color: #d9f6ff;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: box-shadow .2s ease;
+}
+.pt-acc summary::-webkit-details-marker { display: none; }
+.pt-acc summary::after {
+  content: "＋"; color: #0088cc; font-size: 16px; font-weight: 800; margin-inline-start: 10px; flex: none;
+}
+.pt-acc[open] summary::after { content: "－"; }
+.pt-acc[open] summary { box-shadow: 0 0 18px rgba(0,200,255,0.35); border-radius: 12px 12px 0 0; }
+.pt-acc-body {
+  border: 1px solid rgba(0,210,255,0.25); border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 14px 16px 6px;
+  background: rgba(3,20,40,0.95);
+  font-size: 13.8px; color: #cbe6f5;
+}
+.pt-acc-body p { margin: 4px 0 10px; }
+.pt-dose-line { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; margin-bottom: 4px; }
+.pt-dose-tag {
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  background: rgba(0,210,255,0.16); color: #7fe8ff; border: 1px solid rgba(0,210,255,0.4);
+  direction: ltr;
+}
+
+/* ===== Table ===== */
+.pt-tablewrap { overflow-x: auto; border-radius: 14px; border: 1px solid rgba(0,210,255,0.3); }
+table.pt-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
+table.pt-table th, table.pt-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid rgba(0,180,255,0.18); }
+table.pt-table th { background: rgba(0,55,95,0.93); color: #8ff2ff; font-weight: 700; font-size: 12.5px; }
+table.pt-table td { color: #d3ecf7; direction: ltr; background: rgba(6,26,48,0.9); }
+table.pt-table td:first-child { direction: rtl; font-weight: 700; color: #9fdcf0; }
+table.pt-table tr:nth-child(even) td { background: rgba(10,48,84,0.92); }
+
+/* ===== chip grid for interactions ===== */
+.pt-int-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 640px){ .pt-int-grid{ grid-template-columns: 1fr; } }
+.pt-int-card {
+  border: 1px solid rgba(0,210,255,0.3); border-radius: 12px; padding: 10px 12px;
+  background: rgba(4,28,52,0.93);
+}
+.pt-int-card .pt-int-name { font-weight: 700; color: #7fe8ff; font-size: 13.5px; direction: ltr; display:inline-block; }
+.pt-int-card p { font-size: 12.8px; margin: 4px 0 0; color: #c3e2f0; }
+
+/* footer */
+.pt-footer {
+  margin-top: 40px; text-align: center; font-size: 11.5px; color: #4a6b85;
+  border-top: 1px solid rgba(0,180,255,0.2); padding-top: 16px;
+}
+.pt-footer .pt-mono { color: #4a6b85; }
+</style>
+</head>
+<body>
+<div class="pt-zosyn-wrap">
+<div class="pt-container">
+
+  <div class="pt-hero">
+    <h1>پیپراسیلین / تازوباکتام</h1>
+    <span class="pt-brand">Piperacillin / Tazobactam — Zosyn</span>
+    <div class="pt-tagline">پنی‌سیلین وسیع‌الطیف ضد سودوموناس + مهارکننده‌ی بتالاکتاماز — خلاصه‌ی بالینی دوزینگ، هشدارها و تداخلات</div>
+    <div class="pt-quickfacts">
+      <div class="pt-qf"><div class="pt-qf-label">دسته دارویی</div><div class="pt-qf-value">Penicillin</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">نیمه‌عمر بزرگسال</div><div class="pt-qf-value">~0.7–1.2 h</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">اتصال به پروتئین</div><div class="pt-qf-value">~30%</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">هدف PK/PD</div><div class="pt-qf-value">fT &gt; MIC</div></div>
+    </div>
+  </div>
+
+  <!-- 1. Mechanism -->
+  <div class="pt-section-title"><span class="pt-num">1</span> مکانیسم و فارماکوکینتیک</div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">⚙</span> مکانیسم اثر</div>
+    <p>پیپراسیلین با اتصال به Penicillin-Binding Proteins مانع سنتز دیواره‌ی سلولی باکتری می‌شود (کشندگی وابسته به زمان). تازوباکتام بتالاکتامازهای وسیع‌الطیف را مهار می‌کند اما پوشش محدودی روی کلاس ۱ بتالاکتامازها دارد.</p>
+  </div>
+  <div class="pt-box pt-pearl">
+    <div class="pt-box-head"><span class="pt-ico">🎯</span> هدف PK/PD (نکته‌ی کاربردی برای دوز پرولانگ/کانتینیوس)</div>
+    <ul>
+      <li>هدف حداقلی: <b>fT &gt; MIC ≥ ۵۰٪</b> از فاصله‌ی دوز (بیمار سرپایی/غیر ICU)</li>
+      <li>بیمار ICU/کریتیکال: حداقل <b>50%</b> fT&gt;MIC، هدف ترجیحی <b>100%</b> fT&gt;MIC؛ برخی متخصصین ۱۰۰٪ fT &gt; ۴×MIC را ترجیح می‌دهند</li>
+      <li>تازوباکتام: هدف ≥۷۷٪ fT&gt;MIC</li>
+      <li>سطح سمیت (intermittent infusion): پیک پیپراسیلین &gt;361 mg/L ⇽ ریسک ۵۰٪ نوروتوکسیسیتی؛ &gt;452 mg/L ⇽ ریسک ۵۰٪ نفروتوکسیسیتی</li>
+      <li>در انفوزیون کانتینیوس، غلظت ۱۵۷ mg/L با نوروتوکسیسیتی مرتبط بوده است</li>
+    </ul>
+  </div>
+
+  <!-- 2. Adult Dosing -->
+  <div class="pt-section-title"><span class="pt-num">2</span> دوزینگ بزرگسال بر اساس اندیکاسیون <span style="font-size:12px;color:#7fb8d4;font-weight:500;">(روش استاندارد ۳۰ دقیقه‌ای، مگر خلاف آن ذکر شود)</span></div>
+
+  <details class="pt-acc">
+    <summary>سپسیس و شوک سپتیک</summary>
+    <div class="pt-acc-body">
+      <div class="pt-dose-line"><span class="pt-dose-tag">Off-label</span><span class="pt-mono">4.5 g IV q6h</span> همراه با عامل ضد گرم‌منفی دیگر — پوشش سودوموناس لحاظ شده</div>
+      <p>شروع درمان باید ظرف <b>۱ ساعت</b> از تشخیص سپسیس/شوک سپتیک باشد. برخی متخصصین روش extended یا continuous infusion را ترجیح می‌دهند. مدت درمان بر اساس منبع عفونت و پاسخ بیمار — دوره‌های کوتاه‌تر در صورت امکان ترجیح دارد.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پنومونی (CAP با ریسک گرم‌منفی مقاوم / HAP / VAP)</summary>
+    <div class="pt-acc-body">
+      <p><b>CAP با ریسک پاتوژن گرم‌منفی مقاوم (شامل سودوموناس):</b> <span class="pt-mono">4.5 g q6h</span> در قالب رژیم ترکیبی؛ حداقل ۵ روز (طولانی‌تر در نقص ایمنی یا عفونت شدید/سودوموناس).</p>
+      <p><b>HAP/VAP:</b> <span class="pt-mono">4.5 g q6h</span>؛ معمولاً ۷ روز. در بیمار کریتیکال یا MIC بالا، extended/continuous infusion ترجیح داده می‌شود.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>تب نوتروپنیک (بیمار پرخطر آنکولوژی)</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">4.5 g q6–8h</span>؛ در صورت نگرانی جدی برای سودوموناس: <span class="pt-mono">q6h</span>. ادامه تا افبریل ≥۴۸ ساعت و بهبود نوتروپنی (ANC ≥۵۰۰ و رو به افزایش)، یا مدت استاندارد عفونت شناسایی‌شده اگر طولانی‌تر باشد.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>عفونت داخل‌شکمی</summary>
+    <div class="pt-acc-body">
+      <p>کوله‌سیستیت حاد: <span class="pt-mono">3.375–4.5 g q6h</span> — تا ۱ روز پس از کوله‌سیستکتومی یا رفع بالینی.</p>
+      <p>سایر عفونت‌های داخل‌شکمی (کلانژیت، آپاندیسیت پرفوره، دیورتیکولیت، آبسه): <span class="pt-mono">3.375–4.5 g q6h</span>؛ ۴ تا ۵ روز پس از کنترل منبع کافی.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>عفونت پوست و بافت نرم متوسط تا شدید</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">3.375 g q6h یا 4.5 g q8h</span>؛ برای سودوموناس: <span class="pt-mono">4.5 g q6h</span>. مدت ۵ تا ۱۴ روز؛ در عفونت نکروزان تا افبریل ≥۴۸ ساعت و عدم نیاز به دبریدمان بیشتر.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>UTI کمپلیکیتد (پیلونفریت / علائم سیستمیک)</summary>
+    <div class="pt-acc-body">
+      <div class="pt-dose-line"><span class="pt-dose-tag">Off-label</span><span class="pt-mono">3.375 g q6h یا 4.5 g q8h</span></div>
+      <p>در صورت پاسخ بالینی طی ~۴۸ ساعت اول: مدت کل درمان (شامل step-down خوراکی) ۵ تا ۷ روز.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>عفونت جریان خون (باکتریمی گرم‌منفی)</summary>
+    <div class="pt-acc-body">
+      <p>اکتسابی از جامعه، میزبان سالم: <span class="pt-mono">3.375 g q6h</span>. مرتبط با مراقبت سلامت / نقص ایمنی / پوشش سودوموناس: <span class="pt-mono">4.5 g q6h</span>. مدت ۷ تا ۱۴ روز (۷ روز در Enterobacteriaceae بدون کمپلیکیشن با پاسخ مناسب).</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پای دیابتی متوسط تا شدید</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">3.375 g q6h یا 4.5 g q8h</span>؛ سودوموناس: <span class="pt-mono">4.5 g q6h</span>. مدت ۲ تا ۴ هفته در غیاب استئومیلیت.</p>
+    </div>
+  </details>
+
+  <!-- 3. Infusion Methods -->
+  <div class="pt-section-title"><span class="pt-num">3</span> روش‌های انفوزیون</div>
+  <div class="pt-tablewrap">
+    <table class="pt-table">
+      <thead><tr><th>روش</th><th>دوز رایج</th><th>مدت انفوزیون</th><th>Loading dose</th></tr></thead>
+      <tbody>
+        <tr><td>استاندارد (Traditional)</td><td>3.375–4.5 g q6–8h</td><td>30 min</td><td>—</td></tr>
+        <tr><td>پرولانگ (Extended) — off-label</td><td>4.5 g q6h یا 3.375–4.5 g q8h</td><td>3–4 h</td><td>3.375–4.5 g / 30min در سپسیس</td></tr>
+        <tr><td>کانتینیوس (Continuous) — off-label</td><td>18 g / 24h</td><td>24 h مستمر</td><td>4.5 g / 30min</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pt-box pt-pearl">
+    <div class="pt-box-head"><span class="pt-ico">💡</span> کِی extended/continuous را ترجیح بدهیم؟</div>
+    <ul>
+      <li>بیمار کریتیکال یا شوک سپتیک</li>
+      <li>پاتوژن با MIC بالا (≥16 mg/L)</li>
+      <li>GFR بالا / <b>Augmented Renal Clearance</b> (CrCl &gt;100، به‌خصوص ۱۳۰–۱۷۰ mL/min به بالا)</li>
+      <li>سیستیک فیبروزیس با اگزاسربیشن شدید</li>
+    </ul>
+    <p>در FDA rationale برای MIC susceptible-dose-dependent ۱۶ mg/L سودوموناس، extended infusion (۴.۵ g q6h روی ۳ ساعت) توصیه شده است.</p>
+  </div>
+
+  <!-- 4. Renal -->
+  <div class="pt-section-title"><span class="pt-num">4</span> تنظیم دوز در نارسایی کلیه</div>
+  <details class="pt-acc">
+    <summary>روش استاندارد (۳۰ دقیقه‌ای) — بر اساس CrCl</summary>
+    <div class="pt-acc-body">
+      <div class="pt-tablewrap">
+        <table class="pt-table">
+          <thead><tr><th>CrCl</th><th>اگر دوز معمول 3.375 g q6h</th><th>اگر دوز معمول 4.5 g q6h</th></tr></thead>
+          <tbody>
+            <tr><td>۱۰۰ تا &lt;۱۳۰ mL/min</td><td colspan="2">به روش Extended Infusion منتقل شود</td></tr>
+            <tr><td>۴۰ تا &lt;۱۰۰ mL/min</td><td>3.375 g q6h</td><td>4.5 g q6h</td></tr>
+            <tr><td>۲۰ تا &lt;۴۰ mL/min</td><td>2.25 g q6h</td><td>4.5 g q8h یا 3.375 g q6h</td></tr>
+            <tr><td>&lt;۲۰ mL/min</td><td>2.25 g q8h</td><td>4.5 g q12h یا 2.25 g q6h</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+  <details class="pt-acc">
+    <summary>دیالیز و CRRT</summary>
+    <div class="pt-acc-body">
+      <p><b>همودیالیز متناوب</b> (قابل دیالیز ۳۰–۴۰٪): <span class="pt-mono">4.5 g q12h یا 2.25 g q8h</span>؛ ترجیحاً پس از دیالیز در روزهای دیالیز.</p>
+      <p><b>دیالیز صفاقی:</b> همان دوز همودیالیز.</p>
+      <p><b>CRRT</b> (روش استاندارد): <span class="pt-mono">4.5 g q8h</span> یا لود ۴.۵ g سپس <span class="pt-mono">2.25 g q6h</span>. کانتینیوس: لود ۴.۵ g سپس <span class="pt-mono">9 g / 24h</span>.</p>
+    </div>
+  </details>
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> Augmented Renal Clearance (ARC)</div>
+    <p>در بیماران کریتیکال جوان (&lt;۵۵ سال)، پس از تروما/جراحی بزرگ، سپسیس، سوختگی یا مالینینسی هماتولوژیک با کراتینین سرم طبیعی مطرح می‌شود. تشخیص نیازمند اندازه‌گیری CrCl ادراری ۸ تا ۲۴ ساعته است.</p>
+    <ul>
+      <li>CrCl ۱۳۰–&lt;۱۷۰: Extended infusion <span class="pt-mono">4.5 g q6h / 3h</span> یا Continuous (لود ۴.۵ g + <span class="pt-mono">18 g/24h</span>)</li>
+      <li>CrCl ≥۱۷۰: ترجیحاً Continuous — لود ۴.۵ g + <span class="pt-mono">22.5 g/24h</span></li>
+    </ul>
+  </div>
+
+  <!-- 5. Special populations -->
+  <div class="pt-section-title"><span class="pt-num">5</span> جمعیت‌های خاص</div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">⚖</span> چاقی (BMI ≥30)</div>
+    <p>روش استاندارد: <span class="pt-mono">4.5 g q6h</span>. در عفونت تهدیدکننده حیات با پاتوژن کم‌حساس (MIC ۱۶) یا BMI ≥۵۰: extended infusion <span class="pt-mono">4.5 g q6h / 3h</span>. حجم توزیع و کلیرانس در چاقی بالاتر است ⇽ ریسک زیرحد درمانی بیشتر.</p>
+  </div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">🫁</span> نارسایی کبدی</div>
+    <p>پیپراسیلین متابولیسم کبدی قابل‌توجه ندارد و تازوباکتام &lt;۳۰٪. در Child-Pugh A تا C نیازی به تنظیم دوز نیست.</p>
+  </div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">👶</span> اطفال — خلاصه بسیار فشرده</div>
+    <p>دوز رایج داخل‌وریدی: <span class="pt-mono">240–300 mg piperacillin/kg/day</span> منقسم هر ۶ تا ۸ ساعت (حداکثر ۱۶ g/day)؛ برای عفونت‌های شدیدتر تا <span class="pt-mono">400 mg/kg/day</span>. دوزینگ کامل اطفال به‌دلیل حجم بالا در این خلاصه گنجانده نشده — رجوع به بخش Pediatric منبع اصلی الزامی است.</p>
+  </div>
+
+  <!-- 6. Warnings -->
+  <div class="pt-section-title"><span class="pt-num">6</span> هشدارهای بالینی مهم</div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> نفروتوکسیسیتی — به‌ویژه با وانکومایسین</div>
+    <p>ترکیب با وانکومایسین در مطالعات observational با افزایش AKI همراه بوده (شواهد کیفیت پایین، بحث‌برانگیز). میانه‌ی زمان شروع AKI: <b>۳ روز</b> پس از شروع ترکیب؛ پیک بروز روز ۵. فاکتورهای خطر: لود دوز وانکومایسین، نفروتوکسین همزمان، مدت درمان &gt;۷۲ ساعت، وزن بدن بالا.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> نوروتوکسیسیتی / تشنج</div>
+    <p>انسفالوپاتی ناشی از پیپراسیلین (PIPE): دیزآرتری، ترمور، توهم، کانفیوژن پیشرونده، تشنج تونیک-کلونیک. فاکتورهای خطر: اختلال کلیوی، سابقه بیماری CNS/تشنج، سالمندی، بیمار کریتیکال، دوزهای بالا.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> هایپرسنسیتیویتی فوری (Type I)</div>
+    <p>آنافیلاکسی معمولاً ظرف ۱ ساعت پس از تجویز؛ برخی واکنش‌ها (اورتیکر، آنژیوادم، ویزینگ) تا ۴ روز پس از شروع درمان اما در بازه ۱ تا ۶ ساعت از آخرین دوز رخ می‌دهند. گزارش‌هایی از آنافیلاکسی با پوست‌تست منفی پنی‌سیلین وجود دارد — احتمال حساسیت به زنجیره جانبی پیپراسیلین/تازوباکتام.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> هایپرسنسیتیویتی تأخیری (SCAR)</div>
+    <p>SJS/TEN/DRESS/AGEP گزارش شده — می‌توانند تهدیدکننده حیات باشند. Type IV معمولاً ۲ تا ۷ روز پس از مواجهه، اما DRESS تا ۲–۸ هفته و TEN تا ۲–۳ هفته می‌تواند به تعویق بیفتد. فاکتور خطر: سیستیک فیبروزیس.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> کلستریدیوئیدس دیفیسیل</div>
+    <p>از اسهال خفیف تا کولیت تهدیدکننده حیات و مگاکولون توکسیک. می‌تواند از روز اول درمان تا ۳ ماه پس از قطع آنتی‌بیوتیک شروع شود.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> ترومبوسیتوپنی ایمیون / میلوساپرشن</div>
+    <p>DITP معمولاً ۱ تا ۲ هفته پس از شروع؛ در تماس مجدد می‌تواند طی ۱۲–۲۴ ساعت رخ دهد (rapid re-exposure). نوتروپنی معمولاً پس از &gt;۱۰–۱۵ روز درمان دیده می‌شود؛ معمولاً با قطع دارو reversible است.</p>
+  </div>
+
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">🚫</span> کنترااندیکاسیون</div>
+    <p>هایپرسنسیتیویتی به پنی‌سیلین‌ها، سفالوسپورین‌ها، مهارکننده‌های بتالاکتاماز یا هر جزء فرمولاسیون.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">🔤</span> خطر Sound-alike</div>
+    <p>Zosyn ممکن است با <b>Zofran</b> یا <b>Zyvox</b> اشتباه گرفته شود — منشأ خطاهای دارویی گزارش‌شده.</p>
+  </div>
+
+  <!-- 7. Interactions -->
+  <div class="pt-section-title"><span class="pt-num">7</span> تداخلات دارویی کلیدی</div>
+  <div class="pt-int-grid">
+    <div class="pt-int-card"><span class="pt-int-name">Vancomycin</span><p>افزایش ریسک نفروتوکسیسیتی — مانیتور کرایتینین</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Aminoglycosides</span><p>پیپراسیلین ممکن است سطح آمینوگلیکوزید را کاهش دهد (خصوصاً در نارسایی کلیه) — دوزها جدا تجویز شوند، از Y-site مشترک با توبرامایسین پرهیز شود</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Methotrexate</span><p>افزایش سطح سرمی متوترکسات — مانیتور</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Vitamin K Antagonists</span><p>افزایش اثر ضدانعقادی — مانیتور INR</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Vecuronium</span><p>افزایش اثر بلوک نورومسکولار</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">BCG (intravesical)</span><p>کاهش اثر درمانی — Avoid</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Tetracyclines</span><p>ممکن است اثر درمانی پنی‌سیلین‌ها را کاهش دهد</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Live vaccines (Typhoid/Cholera)</span><p>کاهش اثر واکسن — فاصله‌گذاری زمانی لازم</p></div>
+  </div>
+
+  <!-- 8. Monitoring -->
+  <div class="pt-section-title"><span class="pt-num">8</span> مانیتورینگ</div>
+  <div class="pt-box pt-pearl">
+    <ul>
+      <li>کرآتینین، BUN، الکترولیت‌ها، LFTs، آنالیز ادرار</li>
+      <li>CBC with differential، PT/PTT — <b>به‌ویژه در مصرف طولانی‌مدت (≥۲۱ روز)</b></li>
+      <li>نشانه‌های خونریزی (اختلال عملکرد پلاکتی حتی بدون ترومبوسیتوپنی)</li>
+      <li>مانیتورینگ نزدیک دوز اول برای علائم آنافیلاکسی</li>
+      <li>اثرات CNS، بروز راش پوستی</li>
+    </ul>
+  </div>
+
+  <div class="pt-footer">
+    منبع: UpToDate® — Piperacillin and tazobactam: Drug information, Topic 9777, Version 661.0 (2026), Wolters Kluwer / UpToDate, Inc.<br>
+    این خلاصه صرفاً جهت مرور سریع تهیه شده و جایگزین مطالعه‌ی کامل منبع اصلی یا TDM بالینی نیست، به‌خصوص در دوزینگ رنال/CRRT/ARC.
+  </div>
+
+</div>
+</div>
+</body>
+</html>

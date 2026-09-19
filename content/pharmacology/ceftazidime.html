@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سفتازیدیم — خلاصه بالینی</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+.pt-ctz-wrap * { box-sizing: border-box; }
+.pt-ctz-wrap {
+  font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  direction: rtl;
+  background: transparent;
+  color: #dceeff; padding: 28px 14px 60px; line-height: 1.85; max-width: 100%;
+}
+.pt-ctz-wrap .pt-container { max-width: 980px; margin: 0 auto; }
+
+.pt-hero { text-align: center; padding: 34px 20px 30px; border-radius: 22px;
+  background: linear-gradient(160deg, rgba(6,34,64,0.95), rgba(3,18,38,0.97));
+  border: 1px solid rgba(0,200,255,0.35);
+  box-shadow: 0 0 40px rgba(0,190,255,0.18), inset 0 0 30px rgba(0,150,255,0.06);
+  margin-bottom: 26px; position: relative; overflow: hidden; }
+.pt-hero::before { content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(115deg, transparent 0 18px, rgba(0,220,255,0.035) 18px 19px); pointer-events: none; }
+.pt-hero h1 { font-size: 30px; font-weight: 800; margin: 0 0 6px; color: #7fe8ff;
+  text-shadow: 0 0 18px rgba(0,225,255,0.65), 0 0 4px rgba(0,225,255,0.9); letter-spacing: 0.3px; }
+.pt-hero .pt-brand { font-size: 15px; color: #9fd8f2; font-weight: 500; direction: ltr; display: inline-block; }
+.pt-hero .pt-tagline { margin-top: 10px; font-size: 14px; color: #a9c6dd; max-width: 580px; margin-inline: auto; }
+
+.pt-quickfacts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
+@media (max-width: 640px){ .pt-quickfacts{ grid-template-columns: repeat(2,1fr);} }
+.pt-qf { background: rgba(0,40,75,0.55); border: 1px solid rgba(0,210,255,0.3); border-radius: 14px; padding: 12px 8px; text-align: center; }
+.pt-qf .pt-qf-label { font-size: 11.5px; color: #8fc6e4; margin-bottom: 4px; }
+.pt-qf .pt-qf-value { font-size: 14.5px; font-weight: 700; color: #eafcff; direction: ltr; display: inline-block; }
+
+.pt-section-title { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; color: #0088cc;
+  margin: 38px 0 14px; padding-bottom: 8px; border-bottom: 2px solid rgba(0,210,255,0.28); }
+.pt-section-title .pt-num { width: 30px; height: 30px; border-radius: 9px; flex: none;
+  background: linear-gradient(145deg,#00c3ff,#0068c9); color: #04101d; font-weight: 800; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(0,200,255,0.55); }
+
+.pt-box { border-radius: 16px; border: 1px solid rgba(0,210,255,0.35);
+  background: linear-gradient(160deg, rgba(4,30,58,0.85), rgba(3,18,38,0.9));
+  box-shadow: 0 0 22px rgba(0,190,255,0.10), inset 0 0 18px rgba(0,150,255,0.04);
+  padding: 16px 18px; margin-bottom: 14px; }
+.pt-box-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14.5px; color: #7fe8ff; margin-bottom: 8px; }
+.pt-box-head .pt-ico { width: 24px; height: 24px; border-radius: 7px; flex: none;
+  background: rgba(0,210,255,0.15); border: 1px solid rgba(0,210,255,0.5);
+  display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.pt-box p, .pt-box ul { margin: 6px 0; font-size: 14px; color: #cde7f5; }
+.pt-box ul { padding-inline-start: 20px; }
+.pt-box li { margin-bottom: 5px; }
+.pt-box b, .pt-box strong { color: #eafcff; }
+.pt-mono { direction: ltr; display: inline-block; font-weight: 600; color: #baf3ff; }
+
+.pt-pearl { border-color: rgba(60,230,255,0.55); box-shadow: 0 0 30px rgba(0,220,255,0.22), inset 0 0 20px rgba(0,190,255,0.08); }
+.pt-pearl .pt-box-head { color: #8ff2ff; }
+
+.pt-warn { border-color: rgba(0,210,255,0.35); position: relative; padding-inline-start: 22px; }
+.pt-warn::before { content: ""; position: absolute; inset-inline-start: 0; top: 10px; bottom: 10px; width: 3px;
+  background: linear-gradient(#5ce1ff, #0088c8); border-radius: 3px; box-shadow: 0 0 10px #5ce1ff; }
+
+.pt-crit { border-color: rgba(120,240,255,0.75); box-shadow: 0 0 36px rgba(0,225,255,0.32), inset 0 0 22px rgba(0,200,255,0.1); position: relative; padding-inline-start: 22px; }
+.pt-crit::before { content: ""; position: absolute; inset-inline-start: 0; top: 8px; bottom: 8px; width: 4px;
+  background: linear-gradient(#baf7ff, #00c3ff); border-radius: 4px; box-shadow: 0 0 14px #7ff0ff; }
+.pt-crit .pt-box-head { color: #baf7ff; font-size: 15.5px; }
+
+.pt-acc { margin-bottom: 10px; }
+.pt-acc summary { cursor: pointer; list-style: none; padding: 13px 16px; border-radius: 12px;
+  background: linear-gradient(120deg, rgba(0,55,95,0.95), rgba(0,28,55,0.97));
+  border: 1px solid rgba(0,210,255,0.4); font-weight: 700; font-size: 14.5px; color: #d9f6ff;
+  display: flex; align-items: center; justify-content: space-between; transition: box-shadow .2s ease; }
+.pt-acc summary::-webkit-details-marker { display: none; }
+.pt-acc summary::after { content: "＋"; color: #0088cc; font-size: 16px; font-weight: 800; margin-inline-start: 10px; flex: none; }
+.pt-acc[open] summary::after { content: "－"; }
+.pt-acc[open] summary { box-shadow: 0 0 18px rgba(0,200,255,0.35); border-radius: 12px 12px 0 0; }
+.pt-acc-body { border: 1px solid rgba(0,210,255,0.25); border-top: none; border-radius: 0 0 12px 12px;
+  padding: 14px 16px 6px; background: rgba(3,20,40,0.95); font-size: 13.8px; color: #cbe6f5; }
+.pt-acc-body p { margin: 4px 0 10px; }
+
+.pt-tablewrap { overflow-x: auto; border-radius: 14px; border: 1px solid rgba(0,210,255,0.3); }
+table.pt-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
+table.pt-table th, table.pt-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid rgba(0,180,255,0.18); }
+table.pt-table th { background: rgba(0,55,95,0.93); color: #8ff2ff; font-weight: 700; font-size: 12.5px; }
+table.pt-table td { color: #d3ecf7; direction: ltr; background: rgba(6,26,48,0.9); }
+table.pt-table td:first-child { direction: rtl; font-weight: 700; color: #9fdcf0; }
+table.pt-table tr:nth-child(even) td { background: rgba(10,48,84,0.92); }
+
+.pt-int-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 640px){ .pt-int-grid{ grid-template-columns: 1fr; } }
+.pt-int-card { border: 1px solid rgba(0,210,255,0.3); border-radius: 12px; padding: 10px 12px; background: rgba(4,28,52,0.93); }
+.pt-int-card .pt-int-name { font-weight: 700; color: #7fe8ff; font-size: 13.5px; direction: ltr; display:inline-block; }
+.pt-int-card p { font-size: 12.8px; margin: 4px 0 0; color: #c3e2f0; }
+
+.pt-namegrid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.pt-namepill { direction: ltr; font-size: 12.5px; font-weight: 700; padding: 5px 12px; border-radius: 20px;
+  background: rgba(0,210,255,0.14); color: #baf7ff; border: 1px solid rgba(0,210,255,0.45); }
+
+.pt-footer { margin-top: 40px; text-align: center; font-size: 11.5px; color: #4a6b85;
+  border-top: 1px solid rgba(0,180,255,0.2); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="pt-ctz-wrap">
+<div class="pt-container">
+
+  <div class="pt-hero">
+    <h1>سفتازیدیم</h1>
+    <span class="pt-brand">Ceftazidime — Tazicef / Fortum</span>
+    <div class="pt-tagline">سفالوسپورین نسل سوم با پوشش قوی ضد سودوموناس — بدون پوشش گرم‌مثبت قابل‌اتکا، با ریسک نوروتوکسیسیتی وابسته به عملکرد کلیه</div>
+    <div class="pt-quickfacts">
+      <div class="pt-qf"><div class="pt-qf-label">دسته دارویی</div><div class="pt-qf-value">3rd-gen Cephalosporin</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">نیمه‌عمر بزرگسال</div><div class="pt-qf-value">1–2 h</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">اتصال به پروتئین</div><div class="pt-qf-value">&lt;10%</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">دفع</div><div class="pt-qf-value">80–90% کلیوی</div></div>
+    </div>
+  </div>
+
+  <!-- 1. Mechanism -->
+  <div class="pt-section-title"><span class="pt-num">1</span> مکانیسم و PK/PD</div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">⚙</span> مکانیسم اثر</div>
+    <p>اتصال به PBPها و مهار مرحله‌ی نهایی سنتز پپتیدوگلیکان دیواره‌ی سلولی. طیف گرم‌منفی قوی شامل P. aeruginosa؛ پوشش گرم‌مثبت محدود و غیرقابل‌اتکا — برای عفونت مختلط گرم‌مثبت/منفی به‌تنهایی کافی نیست.</p>
+  </div>
+  <div class="pt-box pt-pearl">
+    <div class="pt-box-head"><span class="pt-ico">🎯</span> هدف PK/PD</div>
+    <ul>
+      <li>انفوزیون استاندارد یا پرولانگ (تا ۴ ساعت): هدف ۴۰ تا ۷۰٪ fT&gt;MIC</li>
+      <li>انفوزیون کانتینیوس: هدف ۱۰۰٪ fT&gt;MIC، با غلظت ۴ تا ۸ برابر fCss</li>
+      <li>گرم‌منفی (شامل سودوموناس): ۳۵ تا ۴۰٪ fT&gt;MIC باکتریواستاتیک؛ ۶۰ تا ۷۰٪ باکتریوسیدال</li>
+      <li>بیمار ICU: حداقل ≥۵۰٪ fT&gt;MIC، هدف ترجیحی ≥۱۰۰٪؛ برخی ≥۱۰۰٪ &gt;۴×MIC</li>
+      <li>عملاً بدون اثر پس‌آنتی‌بیوتیکی (postantibiotic effect ناچیز) — یعنی افت غلظت زیر MIC سریع باعث رشد مجدد باکتری می‌شود</li>
+    </ul>
+  </div>
+
+  <!-- 2. Standard Dosing -->
+  <div class="pt-section-title"><span class="pt-num">2</span> دوزینگ بزرگسال بر اساس اندیکاسیون</div>
+  <div class="pt-box">
+    <p>محدوده‌ی رایج: <span class="pt-mono">1–2 g IV q8h</span>. عفونت‌های بسیار شدید و تهدیدکننده حیات، به‌خصوص بیمار نقص ایمنی: <span class="pt-mono">2 g q8h</span>.</p>
+  </div>
+
+  <details class="pt-acc">
+    <summary>پنومونی (CAP در معرض ریسک سودوموناس / HAP-VAP)</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">2 g q8h</span> در رژیم ترکیبی. CAP: حداقل ۵ روز. HAP/VAP: معمولاً ۷ روز؛ در بیمار کریتیکال یا MIC بالا، extended/continuous ترجیح داده می‌شود.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>باکتریمی گرم‌منفی</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">2 g q8h</span>؛ در نوتروپنی/سوختگی شدید/سپسیس، جزئی از رژیم ترکیبی. مدت ۷ تا ۱۴ روز؛ در نوتروپنی تا افبریل ۲ روز و بازگشت ANC. در باکتریمی سودوموناس با نوتروپنی، برخی متخصصین حداقل ۱۴ روز پیشنهاد می‌کنند.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>مننژیت / آبسه مغزی و اپیدورال</summary>
+    <div class="pt-acc-body">
+      <p>مننژیت گرم‌منفی مقاوم (شامل سودوموناس): <span class="pt-mono">2 g q8h</span> + وانکومایسین در درمان تجربی؛ حداقل ۱۰ تا ۱۴ روز (برخی ۲۱ روز). آبسه اپیدورال نخاعی: ۴ تا ۸ هفته. آبسه مغزی/اپیدورال داخل‌جمجمه: ۶ تا ۸ هفته.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>عفونت داخل‌شکمی</summary>
+    <div class="pt-acc-body">
+      <p>کوله‌سیستیت: <span class="pt-mono">2 g q8h</span> تا ۱ روز پس از کوله‌سیستکتومی. سایر موارد: <span class="pt-mono">2 g q8h</span> + مترونیدازول؛ ۴ تا ۵ روز پس از کنترل منبع کافی.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>استئومیلیت، پروتز مفصلی، آرتریت سپتیک</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">2 g q8h</span> برای گرم‌منفی مقاوم (شامل سودوموناس). استئومیلیت: معمولاً ۶ هفته. پروتز مفصلی: ۴ تا ۶ هفته پس از resection arthroplasty. آرتریت سپتیک: ۳ تا ۴ هفته.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پای دیابتی، پوست و بافت نرم، UTI کمپلیکیتد</summary>
+    <div class="pt-acc-body">
+      <p>پای دیابتی: <span class="pt-mono">1–2 g q8h</span>؛ ریسک سودوموناس (مواجهه‌ی آب، زخم ماسره): <span class="pt-mono">2 g q8h</span>؛ ۲ تا ۴ هفته. پوست/بافت نرم: <span class="pt-mono">2 g q8h</span>، ۵ تا ۱۴ روز. UTI کمپلیکیتد/پیلونفریت: <span class="pt-mono">1–2 g q8h</span>؛ با پاسخ زودرس، ۵ تا ۷ روز.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>ملیوئیدوز / گلاندرز (Burkholderia)</summary>
+    <div class="pt-acc-body">
+      <p>درمان فشرده اولیه: <span class="pt-mono">2 g q6–8h</span> یا 2 g تک‌دوز سپس <span class="pt-mono">6 g/day</span> کانتینیوس؛ ۱۴ روز (ممکن است طولانی‌تر). در بیماری فوکال CNS/پروستات/استخوان/مفصل/پوست، برخی متخصصین سولفامتوکسازول-تری‌متوپریم اضافه می‌کنند. پس از فاز پارنترال، درمان ریشه‌کنی خوراکی ≥۱۲ هفته توصیه می‌شود.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>Vibrio vulnificus</summary>
+    <div class="pt-acc-body">
+      <p>باکتریمی یا زخم شدید: <span class="pt-mono">IM/IV 1–2 g q8h</span> در رژیم ترکیبی، ~۷ تا ۱۴ روز. شروع زودهنگام با بقای بهتر همراه است — تأخیر در این عفونت پرخطر است.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>اندوفتالمیت باکتریایی (intravitreal — off-label)</summary>
+    <div class="pt-acc-body">
+      <p>Intravitreal: <span class="pt-mono">2–2.25 mg/0.1 mL</span> در NS یا آب استریل، همراه با وانکومایسین (سرنگ جدا). تکرار دوز در ۲۴ تا ۴۸ ساعت بر اساس کشت و پاسخ قابل بررسی است.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>Antibiotic lock technique (حفظ کاتتر)</summary>
+    <div class="pt-acc-body">
+      <p>برای عفونت کاتتر با ارگانیسم حساس، وقتی کاتتر قابل خارج‌کردن نیست: غلظت lock solution <span class="pt-mono">5–10 mg/mL</span>، معمولاً همراه هپارین. حجم ۲ تا ۵ mL در هر لومن، dwell time تا ۷۲ ساعت. علاوه بر آنتی‌بیوتیک سیستمیک، نه جایگزین آن.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پریتونیت دیالیز صفاقی (مسیر داخل‌صفاقی)</summary>
+    <div class="pt-acc-body">
+      <p>ترجیح با مسیر داخل‌صفاقی است مگر بیمار سپتیک باشد. Intermittent (long dwell): <span class="pt-mono">1–1.5 g</span> یک‌بار در روز، dwell ≥۶ ساعت. Continuous: لود <span class="pt-mono">500 mg/L</span> در اولین تعویض، نگهدارنده <span class="pt-mono">125 mg/L</span>. در عملکرد باقی‌مانده‌ی کلیوی قابل‌توجه (ادرار &gt;۱۰۰ mL/day)، افزایش دوز ۲۵٪ را در نظر بگیرید. مدت ≥۳ هفته؛ عدم بهبود پس از ۵ روز ⇽ خروج کاتتر.</p>
+    </div>
+  </details>
+
+  <!-- 3. Renal -->
+  <div class="pt-section-title"><span class="pt-num">3</span> تنظیم دوز در نارسایی کلیه</div>
+  <div class="pt-tablewrap">
+    <table class="pt-table">
+      <thead><tr><th>CrCl (mL/min)</th><th>اگر دوز معمول 1g q8h</th><th>اگر دوز معمول 2g q8h</th></tr></thead>
+      <tbody>
+        <tr><td>&gt;۵۰</td><td>بدون تنظیم</td><td>بدون تنظیم</td></tr>
+        <tr><td>۳۱ تا ۵۰</td><td>1 g q12h</td><td>2 g q12h</td></tr>
+        <tr><td>۱۶ تا ۳۰</td><td>1 g q24h</td><td>2 g q24h</td></tr>
+        <tr><td>≤۱۵</td><td>500 mg q24h</td><td>1 g q24h</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <details class="pt-acc">
+    <summary>ARC / دیالیز / CRRT / PIRRT</summary>
+    <div class="pt-acc-body">
+      <p><b>ARC</b> (CrCl ادراری ≥۱۳۰): <span class="pt-mono">2 g q6h</span> — دوز استاندارد در این جمعیت هدف PD را برآورده نمی‌کند. جایگزین: لود ۲ g سپس کانتینیوس <span class="pt-mono">10 g/24h</span>.</p>
+      <p><b>همودیالیز متناوب</b> (قابل دیالیز ۵۵ تا ۸۸٪ با فیلتر low-flux): <span class="pt-mono">500 mg–1 g q24h</span>، پس از دیالیز؛ یا ۱ g سه بار در هفته پس از هر جلسه؛ در فاصله‌ی ۷۲ ساعته‌ی بدون دیالیز و نگرانی مقاومت، دوز ۲ g را در نظر بگیرید. دوز یک‌بار در روز بالاترین احتمال دستیابی به هدف PD را دارد.</p>
+      <p><b>دیالیز صفاقی:</b> <span class="pt-mono">1 g q24h</span>.</p>
+      <p><b>CRRT</b> (CVVH/CVVHD/CVVHDF): <span class="pt-mono">2 g q8–12h</span>؛ در MIC بالا یا عفونت شدید (سپسیس)، سمت بالای بازه‌ی فرکانس ترجیح دارد. جایگزین: لود ۲ g + کانتینیوس <span class="pt-mono">3 g/24h</span>.</p>
+      <p><b>PIRRT:</b> <span class="pt-mono">2 g q12h</span>.</p>
+    </div>
+  </details>
+
+  <!-- 4. Special populations -->
+  <div class="pt-section-title"><span class="pt-num">4</span> نارسایی کبدی</div>
+  <div class="pt-box">
+    <p>Child-Turcotte-Pugh A تا C: نیازی به تنظیم دوز نیست.</p>
+  </div>
+
+  <!-- 5. Contraindications -->
+  <div class="pt-section-title"><span class="pt-num">5</span> کنترااندیکاسیون</div>
+  <div class="pt-box pt-crit">
+    <div class="pt-box-head"><span class="pt-ico">🚫</span> هایپرسنسیتیویتی</div>
+    <p>هایپرسنسیتیویتی به سفتازیدیم، سایر سفالوسپورین‌ها، پنی‌سیلین‌ها، سایر بتالاکتام‌ها یا هر جزء فرمولاسیون. طبق برچسب سازنده، آلرژی به سفالوسپورین به‌طور مطلق کنترااندیکاسیون است — نه صرفاً هشدار احتیاط.</p>
+  </div>
+
+  <!-- 6. Warnings -->
+  <div class="pt-section-title"><span class="pt-num">6</span> هشدارهای بالینی مهم</div>
+
+  <div class="pt-box pt-crit">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> نوروتوکسیسیتی وابسته به تجمع کلیوی</div>
+    <p>غلظت بالای سفتازیدیم در نارسایی کلیه می‌تواند منجر به تشنج، status epilepticus غیرتشنجی، انسفالوپاتی، کما، آستریکسیس و تحریک‌پذیری نورومسکولار شود. این عارضه مستقیماً با عدم تنظیم دوز رنال مرتبط است — نه یک عارضه‌ی ایدیوسنکراتیک تصادفی. دوز را دقیقاً بر اساس عملکرد کلیه تنظیم کنید؛ در سابقه‌ی تشنج با احتیاط بیشتر مصرف شود.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> آنمی همولیتیک ایمیون</div>
+    <p>گزارش شده با سفالوسپورین‌ها از جمله سفتازیدیم، گاه کشنده. در صورت بروز آنمی طی درمان، دارو را تا مشخص شدن علت قطع کنید.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> افزایش INR</div>
+    <p>خصوصاً در بیمار با سوءتغذیه، درمان طولانی‌مدت، یا بیماری کبدی/کلیوی. در بیمار پرخطر، INR را طی درمان مانیتور کنید؛ در صورت نیاز بالینی ویتامین K تجویز شود.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> هایپرسنسیتیویتی / آنافیلاکسی</div>
+    <p>گزارش شده با بتالاکتام‌ها، از جمله آنافیلاکسی شدید همراه با ایست قلبی-ریوی در موارد نادر. در سابقه‌ی حساسیت به پنی‌سیلین یا سایر بتالاکتام‌ها با احتیاط مصرف شود.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> کلستریدیوئیدس دیفیسیل</div>
+    <p>مصرف طولانی‌مدت می‌تواند سوپرانفکشن قارچی/باکتریایی ایجاد کند؛ CDAD می‌تواند &gt;۲ ماه پس از پایان درمان هم بروز کند. در سابقه‌ی بیماری GI به‌خصوص کولیت با احتیاط مصرف شود.</p>
+  </div>
+
+  <div class="pt-box pt-crit">
+    <div class="pt-box-head"><span class="pt-ico">🔤</span> خطر Sound-alike — فهرست غیرمعمول بلند</div>
+    <p>cefTAZidime ممکن است با هرکدام از این نام‌ها اشتباه گرفته شود:</p>
+    <div class="pt-namegrid">
+      <span class="pt-namepill">ceFAZolin</span>
+      <span class="pt-namepill">cefepime</span>
+      <span class="pt-namepill">cefoTEtan</span>
+      <span class="pt-namepill">cefOXitin</span>
+      <span class="pt-namepill">cefTRIAXone</span>
+    </div>
+    <p style="margin-top:8px;">همچنین Ceptaz با Septra، و Tazicef با Tazidime قابل اشتباه است. با توجه به این حجم شباهت اسمی، هنگام تجویز شفاهی یا نسخه‌ی دست‌نویس نام کامل و دوز را دوبار تکرار کنید.</p>
+  </div>
+
+  <!-- 7. Interactions -->
+  <div class="pt-section-title"><span class="pt-num">7</span> تداخلات دارویی کلیدی</div>
+  <div class="pt-int-grid">
+    <div class="pt-int-card"><span class="pt-int-name">Chloramphenicol</span><p>ممکن است اثر درمانی سفتازیدیم را کاهش دهد — در صورت نیاز به اثر باکتریوسیدال، ترکیب دیگری را در نظر بگیرید</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Aminoglycosides</span><p>افزایش نفروتوکسیسیتی + کاهش سطح آمینوگلیکوزید</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Vitamin K Antagonists</span><p>افزایش اثر ضدانعقادی — مانیتور INR</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Probenecid</span><p>افزایش سطح سفالوسپورین</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">BCG (intravesical)</span><p>کاهش اثر درمانی — Avoid</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Live vaccines (Typhoid/Cholera)</span><p>کاهش اثر واکسن — فاصله‌گذاری زمانی لازم</p></div>
+  </div>
+
+  <!-- 8. Monitoring -->
+  <div class="pt-section-title"><span class="pt-num">8</span> مانیتورینگ</div>
+  <div class="pt-box pt-pearl">
+    <ul>
+      <li>عملکرد کلیوی — پایه‌ی اصلی برای پیشگیری از نوروتوکسیسیتی</li>
+      <li>علائم آنافیلاکسی در دوز اول</li>
+      <li>در مصرف طولانی/بیمار پرخطر: CBC، INR</li>
+    </ul>
+  </div>
+
+  <div class="pt-footer">
+    منبع: UpToDate® — Ceftazidime: Drug information, Topic 9226, Version 443.0 (2026), Wolters Kluwer / UpToDate, Inc.<br>
+    این خلاصه صرفاً جهت مرور سریع تهیه شده و جایگزین مطالعه‌ی کامل منبع اصلی نیست — به‌خصوص تنظیم دوز کلیوی که مستقیماً با ریسک تشنج و انسفالوپاتی مرتبط است.
+  </div>
+
+</div>
+</div>
+</body>
+</html>

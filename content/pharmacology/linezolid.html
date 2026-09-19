@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لینزولید — خلاصه بالینی</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+.pt-lzd-wrap * { box-sizing: border-box; }
+.pt-lzd-wrap {
+  font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  direction: rtl;
+  background: transparent;
+  color: #dceeff;
+  padding: 28px 14px 60px;
+  line-height: 1.85;
+  max-width: 100%;
+}
+.pt-lzd-wrap .pt-container { max-width: 980px; margin: 0 auto; }
+
+.pt-hero {
+  text-align: center; padding: 34px 20px 30px; border-radius: 22px;
+  background: linear-gradient(160deg, rgba(6,34,64,0.95), rgba(3,18,38,0.97));
+  border: 1px solid rgba(0,200,255,0.35);
+  box-shadow: 0 0 40px rgba(0,190,255,0.18), inset 0 0 30px rgba(0,150,255,0.06);
+  margin-bottom: 26px; position: relative; overflow: hidden;
+}
+.pt-hero::before {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(115deg, transparent 0 18px, rgba(0,220,255,0.035) 18px 19px);
+  pointer-events: none;
+}
+.pt-hero h1 { font-size: 30px; font-weight: 800; margin: 0 0 6px; color: #7fe8ff;
+  text-shadow: 0 0 18px rgba(0,225,255,0.65), 0 0 4px rgba(0,225,255,0.9); letter-spacing: 0.3px; }
+.pt-hero .pt-brand { font-size: 15px; color: #9fd8f2; font-weight: 500; direction: ltr; display: inline-block; }
+.pt-hero .pt-tagline { margin-top: 10px; font-size: 14px; color: #a9c6dd; max-width: 580px; margin-inline: auto; }
+
+.pt-quickfacts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
+@media (max-width: 640px){ .pt-quickfacts{ grid-template-columns: repeat(2,1fr);} }
+.pt-qf { background: rgba(0,40,75,0.55); border: 1px solid rgba(0,210,255,0.3); border-radius: 14px; padding: 12px 8px; text-align: center; }
+.pt-qf .pt-qf-label { font-size: 11.5px; color: #8fc6e4; margin-bottom: 4px; }
+.pt-qf .pt-qf-value { font-size: 14.5px; font-weight: 700; color: #eafcff; direction: ltr; display: inline-block; }
+
+.pt-section-title { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; color: #0088cc;
+  margin: 38px 0 14px; padding-bottom: 8px; border-bottom: 2px solid rgba(0,210,255,0.28); }
+.pt-section-title .pt-num { width: 30px; height: 30px; border-radius: 9px; flex: none;
+  background: linear-gradient(145deg,#00c3ff,#0068c9); color: #04101d; font-weight: 800; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(0,200,255,0.55); }
+
+.pt-box { border-radius: 16px; border: 1px solid rgba(0,210,255,0.35);
+  background: linear-gradient(160deg, rgba(4,30,58,0.85), rgba(3,18,38,0.9));
+  box-shadow: 0 0 22px rgba(0,190,255,0.10), inset 0 0 18px rgba(0,150,255,0.04);
+  padding: 16px 18px; margin-bottom: 14px; }
+.pt-box-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14.5px; color: #7fe8ff; margin-bottom: 8px; }
+.pt-box-head .pt-ico { width: 24px; height: 24px; border-radius: 7px; flex: none;
+  background: rgba(0,210,255,0.15); border: 1px solid rgba(0,210,255,0.5);
+  display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.pt-box p, .pt-box ul { margin: 6px 0; font-size: 14px; color: #cde7f5; }
+.pt-box ul { padding-inline-start: 20px; }
+.pt-box li { margin-bottom: 5px; }
+.pt-box b, .pt-box strong { color: #eafcff; }
+.pt-mono { direction: ltr; display: inline-block; font-weight: 600; color: #baf3ff; }
+
+.pt-pearl { border-color: rgba(60,230,255,0.55); box-shadow: 0 0 30px rgba(0,220,255,0.22), inset 0 0 20px rgba(0,190,255,0.08); }
+.pt-pearl .pt-box-head { color: #8ff2ff; }
+
+.pt-warn { border-color: rgba(0,210,255,0.35); position: relative; padding-inline-start: 22px; }
+.pt-warn::before { content: ""; position: absolute; inset-inline-start: 0; top: 10px; bottom: 10px; width: 3px;
+  background: linear-gradient(#5ce1ff, #0088c8); border-radius: 3px; box-shadow: 0 0 10px #5ce1ff; }
+
+.pt-crit { border-color: rgba(120,240,255,0.75); box-shadow: 0 0 36px rgba(0,225,255,0.32), inset 0 0 22px rgba(0,200,255,0.1); position: relative; padding-inline-start: 22px; }
+.pt-crit::before { content: ""; position: absolute; inset-inline-start: 0; top: 8px; bottom: 8px; width: 4px;
+  background: linear-gradient(#baf7ff, #00c3ff); border-radius: 4px; box-shadow: 0 0 14px #7ff0ff; }
+.pt-crit .pt-box-head { color: #baf7ff; font-size: 15.5px; }
+
+.pt-acc { margin-bottom: 10px; }
+.pt-acc summary { cursor: pointer; list-style: none; padding: 13px 16px; border-radius: 12px;
+  background: linear-gradient(120deg, rgba(0,55,95,0.95), rgba(0,28,55,0.97));
+  border: 1px solid rgba(0,210,255,0.4); font-weight: 700; font-size: 14.5px; color: #d9f6ff;
+  display: flex; align-items: center; justify-content: space-between; transition: box-shadow .2s ease; }
+.pt-acc summary::-webkit-details-marker { display: none; }
+.pt-acc summary::after { content: "＋"; color: #0088cc; font-size: 16px; font-weight: 800; margin-inline-start: 10px; flex: none; }
+.pt-acc[open] summary::after { content: "－"; }
+.pt-acc[open] summary { box-shadow: 0 0 18px rgba(0,200,255,0.35); border-radius: 12px 12px 0 0; }
+.pt-acc-body { border: 1px solid rgba(0,210,255,0.25); border-top: none; border-radius: 0 0 12px 12px;
+  padding: 14px 16px 6px; background: rgba(3,20,40,0.95); font-size: 13.8px; color: #cbe6f5; }
+.pt-acc-body p { margin: 4px 0 10px; }
+
+.pt-tablewrap { overflow-x: auto; border-radius: 14px; border: 1px solid rgba(0,210,255,0.3); }
+table.pt-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
+table.pt-table th, table.pt-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid rgba(0,180,255,0.18); }
+table.pt-table th { background: rgba(0,55,95,0.93); color: #8ff2ff; font-weight: 700; font-size: 12.5px; }
+table.pt-table td { color: #d3ecf7; direction: ltr; background: rgba(6,26,48,0.9); }
+table.pt-table td:first-child { direction: rtl; font-weight: 700; color: #9fdcf0; }
+table.pt-table tr:nth-child(even) td { background: rgba(10,48,84,0.92); }
+
+.pt-int-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 640px){ .pt-int-grid{ grid-template-columns: 1fr; } }
+.pt-int-card { border: 1px solid rgba(0,210,255,0.3); border-radius: 12px; padding: 10px 12px; background: rgba(4,28,52,0.93); }
+.pt-int-card .pt-int-name { font-weight: 700; color: #7fe8ff; font-size: 13.5px; direction: ltr; display:inline-block; }
+.pt-int-card p { font-size: 12.8px; margin: 4px 0 0; color: #c3e2f0; }
+.pt-int-card.pt-avoid { border-color: rgba(120,240,255,0.6); }
+.pt-int-card.pt-avoid .pt-int-name::after { content: " — Avoid"; color: #baf7ff; font-size: 11px; font-weight: 800; }
+
+.pt-footer { margin-top: 40px; text-align: center; font-size: 11.5px; color: #4a6b85;
+  border-top: 1px solid rgba(0,180,255,0.2); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="pt-lzd-wrap">
+<div class="pt-container">
+
+  <div class="pt-hero">
+    <h1>لینزولید</h1>
+    <span class="pt-brand">Linezolid — Zyvox</span>
+    <div class="pt-tagline">اگزازولیدینون خوراکی/وریدی با فراهمی‌زیستی تقریباً ۱۰۰٪ — پوشش گرم‌مثبت مقاوم (MRSA، VRE) با محدودیت اصلی: سمیت وابسته به طول درمان</div>
+    <div class="pt-quickfacts">
+      <div class="pt-qf"><div class="pt-qf-label">دسته دارویی</div><div class="pt-qf-value">Oxazolidinone</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">فراهمی‌زیستی خوراکی</div><div class="pt-qf-value">~100%</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">نیمه‌عمر بزرگسال</div><div class="pt-qf-value">~4.9 h</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">مکانیسم دیگر</div><div class="pt-qf-value">Weak MAOI</div></div>
+    </div>
+  </div>
+
+  <div class="pt-box pt-crit">
+    <div class="pt-box-head"><span class="pt-ico">⏱</span> اصل ایمنی حاکم بر کل دارو</div>
+    <p>لینزولید عامل ترجیحی برای درمان طولانی‌مدت نیست: ریسک سمیت هماتولوژیک جدی پس از <b>&gt;۲ هفته</b> و سمیت نورولوژیک (نوروپاتی محیطی/بینایی) پس از <b>&gt;۴ هفته</b> درمان افزایش می‌یابد. هر تصمیم دوزینگ در ادامه‌ی این فایل باید در کنار این محدودیت زمانی خوانده شود.</p>
+  </div>
+
+  <!-- 1. Mechanism -->
+  <div class="pt-section-title"><span class="pt-num">1</span> مکانیسم و فارماکوکینتیک</div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">⚙</span> مکانیسم اثر</div>
+    <p>اتصال به rRNA 23S زیرواحد 50S ریبوزوم باکتری و جلوگیری از تشکیل کمپلکس آغازگر 70S. باکتریواستاتیک روی انتروکوک و استافیلوکوک؛ باکتریوسید روی اغلب سویه‌های استرپتوکوک. تنها پوشش گرم‌مثبت — بدون اثر روی گرم‌منفی.</p>
+  </div>
+  <div class="pt-box pt-pearl">
+    <div class="pt-box-head"><span class="pt-ico">🎯</span> هدف PK/PD</div>
+    <ul>
+      <li>عفونت گرم‌مثبت: <b>AUC/MIC ≥ ۸۰–۱۲۰</b>؛ %T&gt;MIC هدف ≥۸۵٪</li>
+      <li>سل: %T&gt;MIC هدف ۱۰۰٪ (فاز حاد)، ۷۷٪ (فاز مزمن)</li>
+      <li>Trough درمانی پیشنهادی: <span class="pt-mono">2–7 mg/L</span> (تا ۸ در برخی منابع)</li>
+      <li>Trough سمیت: <span class="pt-mono">&gt;2 mg/L</span> در مصرف طولانی‌مدت با سمیت میتوکندریایی (نوروپاتی، لاکتیک اسیدوز، میلوساپرشن) مرتبط است؛ <span class="pt-mono">&gt;7–10 mg/L</span> با سمیت هماتولوژیک</li>
+    </ul>
+  </div>
+
+  <!-- 2. Adult Dosing -->
+  <div class="pt-section-title"><span class="pt-num">2</span> دوزینگ بزرگسال بر اساس اندیکاسیون <span style="font-size:12px;color:#7fb8d4;font-weight:500;">(اکثراً 600 mg q12h — تغییرات مهم داخل هر مورد ذکر شده)</span></div>
+
+  <details class="pt-acc">
+    <summary>عفونت جریان خون (باکتریمی)</summary>
+    <div class="pt-acc-body">
+      <p><b>MRSA (عامل جایگزین):</b> <span class="pt-mono">600 mg q12h</span>؛ باکتریمی بدون کمپلیکیشن ≥۱۴ روز از اولین کشت خون منفی؛ اندوکاردیت یا فوکوس متاستاتیک ⇽ مدت طولانی‌تر.</p>
+      <p><b>VRE:</b> <span class="pt-mono">600 mg q12h</span>؛ ۷ تا ۱۴ روز (برخی متخصصین ۵ تا ۷ روز در پاکسازی سریع کشت خون و بدون فوکوس متاستاتیک را کافی می‌دانند).</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پنومونی</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">600 mg q12h</span> به‌عنوان جزئی از درمان تجربی/هدفمند MRSA. مدت متفاوت بر اساس شدت؛ معمولاً <b>۷ روز</b>.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>عفونت پوست و بافت نرم</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">600 mg q12h</span>؛ مدت کل ۵ تا ۱۴ روز؛ در عفونت نکروزان تا افبریل ≥۴۸ ساعت و رفع نیاز به دبریدمان بیشتر.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پای دیابتی</summary>
+    <div class="pt-acc-body">
+      <p>عفونت محدود به پوست/بافت نرم: ۱ تا ۲ هفته کافی است. نیاز به دبریدمان جراحی: ۲ تا ۴ هفته در غیاب استئومیلیت — <b>مصرف طولانی‌مدت با محدودیت سمیت مواجه می‌شود.</b></p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>استئومیلیت / دیسکیت / آرتریت سپتیک / عفونت پروتز مفصلی</summary>
+    <div class="pt-acc-body">
+      <p>استافیلوکوک (شامل MRSA) یا انتروکوک: <span class="pt-mono">600 mg q12h</span>. استئومیلیت معمولاً ۶ هفته؛ آرتریت سپتیک ۳ تا ۴ هفته؛ پروتز مفصلی ۲ تا ۶ هفته بسته به مدیریت پروتز. با هاردور باقی‌مانده گاهی ترکیب با ریفامپین (داده‌ها متناقض درباره‌ی اثر ریفامپین روی سطح لینزولید).</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>عفونت CNS (مننژیت، آبسه مغزی/اپیدورال، شانت VP)</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">600 mg q12h</span>. مننژیت: ۱۰ تا ۱۴ روز. آبسه اپیدورال نخاعی: ۴ تا ۸ هفته. آبسه مغزی/اپیدورال داخل‌جمجمه‌ای: ۶ تا ۸ هفته — بازه‌ای که مستقیماً با آستانه‌ی سمیت نورولوژیک (&gt;۴ هفته) همپوشانی دارد؛ مانیتورینگ نزدیک الزامی.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>اندوکاردیت</summary>
+    <div class="pt-acc-body">
+      <p>انتروکوک مقاوم به پنی‌سیلین/آمینوگلیکوزید/وانکومایسین: <span class="pt-mono">600 mg q12h</span> برای &gt;۶ هفته — برخی متخصصین به‌دلیل داده‌های محدود عامل دیگری را ترجیح می‌دهند. S. aureus (step-down خوراکی، عامل جایگزین): با ریفامپین، مجموعاً ۶ هفته.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>نوکاردیوز</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">600 mg q12h</span> در رژیم ترکیبی. مدت درمان بسیار طولانی (۶ ماه تا ≥۱ سال) — این‌جا محدودیت سمیت لینزولید معمولاً تعیین‌کننده است؛ مشاوره‌ی عفونی الزامی.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>سل مقاوم به دارو (MDR-TB)</summary>
+    <div class="pt-acc-body">
+      <p>Directly observed therapy: <span class="pt-mono">600 mg once daily</span> در رژیم ترکیبی؛ کاهش دوز به <span class="pt-mono">300 mg once daily</span> یا ۳ تا ۴ بار در هفته در صورت بروز سمیت. وزن &lt;۵۰ kg: دوز اولیه ۴۵۰ mg پیشنهاد شده. مدت درمان: <b>۲۶ هفته</b> — بسیار فراتر از آستانه‌های سمیت هماتولوژیک/نورولوژیک؛ TDM و مانیتورینگ دوره‌ای CBC/بینایی الزامی.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>شوک توکسیک (سرکوب تولید توکسین)</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">600 mg q12h</span> در رژیم ترکیبی. برای سرکوب تولید توکسین: تا پایداری بالینی/همودینامیک ≥۴۸–۷۲ ساعت، سپس قطع لینزولید و ادامه با مونوتراپی ضدباکتریایی اختصاصی.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>UTI کمپلیکیتد (پاتوژن گرم‌مثبت مقاوم مثل VRE)</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">600 mg q12h</span>. با پاسخ بالینی طی ~۴۸ ساعت اول: مدت کل ۵ تا ۷ روز.</p>
+    </div>
+  </details>
+
+  <!-- 3. Special populations -->
+  <div class="pt-section-title"><span class="pt-num">3</span> جمعیت‌های خاص</div>
+
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">🫘</span> نارسایی کلیه</div>
+    <p>CrCl ۴۰ تا &lt;۱۳۰: بدون تنظیم. CrCl &lt;۴۰: بدون تنظیم روتین، اما در بیمار پایدار با دوره‌ی درمان &gt;۱۰ روز، برخی متخصصین کاهش به <span class="pt-mono">300 mg BID</span> پس از ۷۲ ساعت را با TDM پیشنهاد می‌کنند تا ریسک ترومبوسیتوپنی کم شود. نارسایی کلیه خودش یک فاکتور خطر مستقل برای ترومبوسیتوپنی است.</p>
+  </div>
+  <div class="pt-box pt-pearl">
+    <div class="pt-box-head"><span class="pt-ico">💉</span> Augmented Renal Clearance (بیمار ICU با CrCl ادراری ≥۱۳۰)</div>
+    <p><span class="pt-mono">450 mg IV q8h</span> — دوز افزایش‌یافته نسبت به رژیم استاندارد؛ استفاده از TDM در صورت دسترس توصیه شده.</p>
+  </div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">🫁</span> دیالیز / CRRT / PIRRT</div>
+    <p>همودیالیز، دیالیز صفاقی، CRRT، PIRRT: بدون تنظیم دوز روتین؛ در همودیالیز یکی از دو دوز روزانه پس از جلسه‌ی دیالیز تجویز شود. تغییرپذیری بین‌فردی فارماکوکینتیک لینزولید در بیمار کریتیکال/RRT بالاست — دوز استاندارد ممکن است برای MIC ≥۲ mg/L کافی نباشد؛ TDM یا عامل جایگزین را در نظر بگیرید.</p>
+  </div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">🫀</span> نارسایی کبدی</div>
+    <p>Child-Pugh A/B: بدون تنظیم. Child-Pugh C: داده‌های محدود دوز کاهش‌یافته به <span class="pt-mono">600 mg/day</span> (منقسم ۱ تا ۲ بار) برای کاهش ریسک ترومبوسیتوپنی و لاکتیک اسیدوز را پیشنهاد می‌کنند؛ ترجیحاً همراه با TDM، به‌خصوص در دوره‌ی درمان &gt;۱۰ روز.</p>
+  </div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">⚖</span> چاقی</div>
+    <p>بدون تنظیم بر اساس وزن به‌تنهایی. در GFR محاسبه‌شده ۶۰ تا ۱۲۹ و MIC ≤۱ mg/L: لود <span class="pt-mono">600 mg</span> یک‌بار سپس <span class="pt-mono">450 mg q8h</span> قابل ملاحظه است. بدون TDM (اطمینان از trough &lt;۸ mg/L)، دوزهای <span class="pt-mono">≥600 mg q8h</span> باید به‌دلیل ریسک غیرقابل‌قبول میلوساپرشن اجتناب شود.</p>
+  </div>
+
+  <!-- 4. Contraindications -->
+  <div class="pt-section-title"><span class="pt-num">4</span> کنترااندیکاسیون</div>
+  <div class="pt-box pt-crit">
+    <div class="pt-box-head"><span class="pt-ico">🚫</span> هایپرسنسیتیویتی / MAOI</div>
+    <p>هایپرسنسیتیویتی به لینزولید یا هر جزء فرمولاسیون؛ مصرف همزمان یا ظرف ۲ هفته از مهارکننده‌های مونوآمین‌اکسیداز (MAOI).</p>
+    <p>طبق برچسب سازنده، مصرف همزمان با SSRI/TCA/بوسپیرون کنترااندیکه اعلام شده، اما شواهد جدیدتر ریسک سروتونین سندروم را در این ترکیب پایین (۰.۰۶ تا ۳٪) گزارش می‌کند — یعنی در صورت نیاز واقعی بالینی با مانیتورینگ می‌توان همزمان تجویز کرد؛ بیمار باید در مورد علائم سروتونین سندروم آموزش ببیند.</p>
+  </div>
+
+  <!-- 5. Warnings -->
+  <div class="pt-section-title"><span class="pt-num">5</span> هشدارهای بالینی مهم</div>
+
+  <div class="pt-box pt-crit">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> سروتونین سندروم</div>
+    <p>لینزولید مهارکننده‌ی ضعیف و غیرانتخابی مونوآمین‌اکسیداز است — تداخل با هر عامل سروتونرژیک واقعی است، نه فرضی. علائم: آژیتاسیون، کانفیوژن، هالوسیناسیون، هیپررفلکسی، میوکلونوس، لرز، تاکی‌کاردی. شروع معمولاً ۱ تا ۲۰ روز (میانه ۴ روز)؛ معمولاً ظرف ۴۸ ساعت پس از قطع لینزولید/عامل سروتونرژیک برگشت‌پذیر است، اما موارد مرگ گزارش شده.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> میلوساپرشن (عمدتاً ترومبوسیتوپنی)</div>
+    <p>شایع‌ترین دیسکرازی خونی؛ ریسک بیشتر در نارسایی کلیه شدید و نارسایی کبدی متوسط تا شدید. شروع معمولاً ≥۱۴ روز درمان (برخی مطالعات ظرف ۷ روز). معمولاً با قطع دارو طی ۱ تا ۲ هفته برگشت‌پذیر است. فاکتورهای خطر: مصرف ≥۱۴ روز، پلاکت پایه ≤۲۰۰×۱۰⁹/L، trough &gt;۲ mg/L، نارسایی کلیه/کبد، داروهای میلوساپرسیو همزمان.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> لاکتیک اسیدوز</div>
+    <p>بروز نسبتاً کم اما می‌تواند تهدیدکننده حیات باشد (یک مطالعه بروز کلی ۶.۸٪ گزارش کرده). لاکتات پیک ۳ تا ۳۸ mmol/L. علائم: تهوع/استفراغ راجعه، اسیدوز غیرقابل‌توجیه، بیکربنات پایین — نیازمند ارزیابی فوری. فاکتورهای خطر: سن ≥۶۰، مصرف طولانی‌مدت (≥۲۸ روز)، trough &gt;۲ mg/L. معمولاً ظرف ۱۵ روز پس از قطع برگشت‌پذیر است؛ برخی موارد طولانی‌تر یا کشنده.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> نوروپاتی محیطی و اپتیک</div>
+    <p>شروع معمولاً ≥۲۸ روز درمان. نوروپاتی اپتیک (کاهش حدت بینایی، اختلال رنگ) معمولاً با قطع دارو بهبود کامل می‌یابد؛ نوروپاتی محیطی ممکن است حتی پس از قطع دارو برطرف نشود. هر علامت بینایی جدید نیازمند ارزیابی فوری چشم‌پزشکی است.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> کلستریدیوئیدس دیفیسیل</div>
+    <p>از روز اول تا ۳ ماه پس از قطع آنتی‌بیوتیک قابل بروز است؛ برخی داده‌ها نشان می‌دهند لینزولید نسبت به سایر آنتی‌بیوتیک‌ها ریسک نسبتاً کمتری دارد.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">🩸</span> بحران هیپرتانسیو / اثر تیرامین</div>
+    <p>به‌دلیل فعالیت MAOI ضعیف، مصرف غذاهای غنی از تیرامین (پنیر کهنه، گوشت خشک‌شده، آبجوی فشاری، سس سویا) می‌تواند بحران فشار خون یا سروتونین سندروم ایجاد کند. در بیمار با هیپرتانسیون کنترل‌نشده، فئوکروموسیتوما یا تیروتوکسیکوز با احتیاط و مانیتورینگ فشار خون مصرف شود.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">🔤</span> خطر Sound-alike</div>
+    <p>Zyvox ممکن است با <b>Zosyn</b> یا <b>Zovirax</b> اشتباه گرفته شود.</p>
+  </div>
+
+  <!-- 6. Interactions -->
+  <div class="pt-section-title"><span class="pt-num">6</span> تداخلات دارویی کلیدی <span style="font-size:12px;color:#7fb8d4;font-weight:500;">(فهرست کامل بسیار طولانی‌تر است؛ این‌ها پرکاربردترین‌ها در ICU/اورژانس‌اند)</span></div>
+  <div class="pt-int-grid">
+    <div class="pt-int-card pt-avoid"><span class="pt-int-name">SSRIs / SNRIs / TCAs</span><p>افزایش اثر سروتونرژیک — ریسک سروتونین سندروم</p></div>
+    <div class="pt-int-card pt-avoid"><span class="pt-int-name">Fentanyl / Tramadol / Methadone / Meperidine</span><p>اپیوئیدهای سروتونرژیک — ریسک سروتونین سندروم؛ برخی فقط «Consider Therapy Modification»</p></div>
+    <div class="pt-int-card pt-avoid"><span class="pt-int-name">Buspirone / Tryptophan / St John's Wort / Methylene Blue</span><p>ریسک بالای سروتونین سندروم</p></div>
+    <div class="pt-int-card pt-avoid"><span class="pt-int-name">Triptans (5-HT1D agonists)</span><p>سروتونین سندروم + افزایش سطح تریپتان</p></div>
+    <div class="pt-int-card pt-avoid"><span class="pt-int-name">Sympathomimetics (pseudoephedrine, vasopressors, dopamine)</span><p>افزایش اثر هیپرتانسیو؛ در صورت نیاز حیاتی، دوز اولیه دوپامین ~۱۰٪ دوز معمول</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Lithium</span><p>افزایش اثر سروتونرژیک — احتیاط، در صورت ترکیب مانیتور شود</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">RifAMPin</span><p>ممکن است سطح لینزولید را کاهش دهد — داده‌ها متناقض، مانیتور</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">CycloSPORINE</span><p>ممکن است سطح لینزولید را افزایش دهد — مانیتور</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Vitamin K Antagonists</span><p>افزایش اثر ضدانعقادی — مانیتور INR</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Myelosuppressive Agents</span><p>افزایش اثر میلوساپرسیو ترکیبی — مانیتور CBC</p></div>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">📋</span> قانون عملی سروتونرژیک</div>
+    <p>فهرست تداخل‌های سروتونرژیک لینزولید بسیار بلند است (اوپیوئیدها، آنتی‌امتیک‌های 5-HT3 مثل اوندانسترون، آنتی‌سایکوتیک‌ها، آگونیست‌های اسپیروتونین و…). رویکرد عملی: قبل از تجویز لینزولید در بیماری که چند داروی CNS/آنالژزیک می‌گیرد، فهرست داروهای فعلی را با دیتابیس تداخل چک کنید — این باکس جایگزین آن بررسی نیست.</p>
+  </div>
+
+  <!-- 7. Monitoring -->
+  <div class="pt-section-title"><span class="pt-num">7</span> مانیتورینگ</div>
+  <div class="pt-box pt-pearl">
+    <ul>
+      <li><b>CBC هفتگی</b> — به‌خصوص در ریسک خونریزی، میلوساپرشن پایه، داروهای میلوساپرسیو همزمان، دوره &gt;۲ هفته، نارسایی کلیه شدید یا کبدی متوسط تا شدید</li>
+      <li>درمان سل: CBC در پایه و هر ۱ تا ۲ هفته طی ۶ تا ۸ هفته اول، سپس ماهانه؛ مانیتورینگ ماهانه‌ی نوروپاتی محیطی و بینایی (حدت بینایی، تشخیص رنگ)</li>
+      <li>عملکرد بینایی و حسی محیطی با درمان طولانی (≥۳ ماه) یا هر علامت جدید نوروپاتیک/بینایی</li>
+      <li>بیکربنات سرم دوره‌ای با درمان طولانی؛ در نارسایی کلیه مانیتورینگ لاکتات را در نظر بگیرید</li>
+      <li>سدیم سرم و علائم SIADH</li>
+      <li>علائم رابدومیولیز (درد عضلانی، ادرار تیره، CPK بالا)</li>
+      <li>TDM — trough؛ به‌خصوص نارسایی کلیه/ریسک ترومبوسیتوپنی</li>
+    </ul>
+  </div>
+
+  <div class="pt-footer">
+    منبع: UpToDate® — Linezolid: Drug information, Topic 10283, Version 637.0 (2026), Wolters Kluwer / UpToDate, Inc.<br>
+    این خلاصه صرفاً جهت مرور سریع تهیه شده و جایگزین مطالعه‌ی کامل منبع اصلی، چک تداخل دارویی کامل، یا TDM بالینی نیست — به‌خصوص در دوره‌های درمانی طولانی‌تر از ۲ هفته.
+  </div>
+
+</div>
+</div>
+</body>
+</html>

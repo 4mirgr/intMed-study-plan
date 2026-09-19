@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>آمپی‌سیلین/سولباکتام — خلاصه بالینی</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+.pt-uns-wrap * { box-sizing: border-box; }
+.pt-uns-wrap {
+  font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  direction: rtl;
+  background: transparent;
+  color: #dceeff; padding: 28px 14px 60px; line-height: 1.85; max-width: 100%;
+}
+.pt-uns-wrap .pt-container { max-width: 980px; margin: 0 auto; }
+
+.pt-hero { text-align: center; padding: 34px 20px 30px; border-radius: 22px;
+  background: linear-gradient(160deg, rgba(6,34,64,0.95), rgba(3,18,38,0.97));
+  border: 1px solid rgba(0,200,255,0.35);
+  box-shadow: 0 0 40px rgba(0,190,255,0.18), inset 0 0 30px rgba(0,150,255,0.06);
+  margin-bottom: 26px; position: relative; overflow: hidden; }
+.pt-hero::before { content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(115deg, transparent 0 18px, rgba(0,220,255,0.035) 18px 19px); pointer-events: none; }
+.pt-hero h1 { font-size: 28px; font-weight: 800; margin: 0 0 6px; color: #7fe8ff;
+  text-shadow: 0 0 18px rgba(0,225,255,0.65), 0 0 4px rgba(0,225,255,0.9); letter-spacing: 0.3px; }
+.pt-hero .pt-brand { font-size: 15px; color: #9fd8f2; font-weight: 500; direction: ltr; display: inline-block; }
+.pt-hero .pt-tagline { margin-top: 10px; font-size: 14px; color: #a9c6dd; max-width: 580px; margin-inline: auto; }
+
+.pt-quickfacts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
+@media (max-width: 640px){ .pt-quickfacts{ grid-template-columns: repeat(2,1fr);} }
+.pt-qf { background: rgba(0,40,75,0.55); border: 1px solid rgba(0,210,255,0.3); border-radius: 14px; padding: 12px 8px; text-align: center; }
+.pt-qf .pt-qf-label { font-size: 11.5px; color: #8fc6e4; margin-bottom: 4px; }
+.pt-qf .pt-qf-value { font-size: 14.5px; font-weight: 700; color: #eafcff; direction: ltr; display: inline-block; }
+
+.pt-section-title { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; color: #0088cc;
+  margin: 38px 0 14px; padding-bottom: 8px; border-bottom: 2px solid rgba(0,210,255,0.28); }
+.pt-section-title .pt-num { width: 30px; height: 30px; border-radius: 9px; flex: none;
+  background: linear-gradient(145deg,#00c3ff,#0068c9); color: #04101d; font-weight: 800; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(0,200,255,0.55); }
+
+.pt-box { border-radius: 16px; border: 1px solid rgba(0,210,255,0.35);
+  background: linear-gradient(160deg, rgba(4,30,58,0.85), rgba(3,18,38,0.9));
+  box-shadow: 0 0 22px rgba(0,190,255,0.10), inset 0 0 18px rgba(0,150,255,0.04);
+  padding: 16px 18px; margin-bottom: 14px; }
+.pt-box-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14.5px; color: #7fe8ff; margin-bottom: 8px; }
+.pt-box-head .pt-ico { width: 24px; height: 24px; border-radius: 7px; flex: none;
+  background: rgba(0,210,255,0.15); border: 1px solid rgba(0,210,255,0.5);
+  display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.pt-box p, .pt-box ul { margin: 6px 0; font-size: 14px; color: #cde7f5; }
+.pt-box ul { padding-inline-start: 20px; }
+.pt-box li { margin-bottom: 5px; }
+.pt-box b, .pt-box strong { color: #eafcff; }
+.pt-mono { direction: ltr; display: inline-block; font-weight: 600; color: #baf3ff; }
+
+.pt-pearl { border-color: rgba(60,230,255,0.55); box-shadow: 0 0 30px rgba(0,220,255,0.22), inset 0 0 20px rgba(0,190,255,0.08); }
+.pt-pearl .pt-box-head { color: #8ff2ff; }
+
+.pt-warn { border-color: rgba(0,210,255,0.35); position: relative; padding-inline-start: 22px; }
+.pt-warn::before { content: ""; position: absolute; inset-inline-start: 0; top: 10px; bottom: 10px; width: 3px;
+  background: linear-gradient(#5ce1ff, #0088c8); border-radius: 3px; box-shadow: 0 0 10px #5ce1ff; }
+
+.pt-crit { border-color: rgba(120,240,255,0.75); box-shadow: 0 0 36px rgba(0,225,255,0.32), inset 0 0 22px rgba(0,200,255,0.1); position: relative; padding-inline-start: 22px; }
+.pt-crit::before { content: ""; position: absolute; inset-inline-start: 0; top: 8px; bottom: 8px; width: 4px;
+  background: linear-gradient(#baf7ff, #00c3ff); border-radius: 4px; box-shadow: 0 0 14px #7ff0ff; }
+.pt-crit .pt-box-head { color: #baf7ff; font-size: 15.5px; }
+
+.pt-acc { margin-bottom: 10px; }
+.pt-acc summary { cursor: pointer; list-style: none; padding: 13px 16px; border-radius: 12px;
+  background: linear-gradient(120deg, rgba(0,55,95,0.95), rgba(0,28,55,0.97));
+  border: 1px solid rgba(0,210,255,0.4); font-weight: 700; font-size: 14.5px; color: #d9f6ff;
+  display: flex; align-items: center; justify-content: space-between; transition: box-shadow .2s ease; }
+.pt-acc summary::-webkit-details-marker { display: none; }
+.pt-acc summary::after { content: "＋"; color: #0088cc; font-size: 16px; font-weight: 800; margin-inline-start: 10px; flex: none; }
+.pt-acc[open] summary::after { content: "－"; }
+.pt-acc[open] summary { box-shadow: 0 0 18px rgba(0,200,255,0.35); border-radius: 12px 12px 0 0; }
+.pt-acc-body { border: 1px solid rgba(0,210,255,0.25); border-top: none; border-radius: 0 0 12px 12px;
+  padding: 14px 16px 6px; background: rgba(3,20,40,0.95); font-size: 13.8px; color: #cbe6f5; }
+.pt-acc-body p { margin: 4px 0 10px; }
+
+.pt-tablewrap { overflow-x: auto; border-radius: 14px; border: 1px solid rgba(0,210,255,0.3); }
+table.pt-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 620px; }
+table.pt-table th, table.pt-table td { padding: 9px 10px; text-align: center; border-bottom: 1px solid rgba(0,180,255,0.18); }
+table.pt-table th { background: rgba(0,55,95,0.93); color: #8ff2ff; font-weight: 700; font-size: 11.8px; }
+table.pt-table td { color: #d3ecf7; direction: ltr; background: rgba(6,26,48,0.9); }
+table.pt-table td:first-child { direction: rtl; font-weight: 700; color: #9fdcf0; }
+table.pt-table tr:nth-child(even) td { background: rgba(10,48,84,0.92); }
+
+.pt-int-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 640px){ .pt-int-grid{ grid-template-columns: 1fr; } }
+.pt-int-card { border: 1px solid rgba(0,210,255,0.3); border-radius: 12px; padding: 10px 12px; background: rgba(4,28,52,0.93); }
+.pt-int-card .pt-int-name { font-weight: 700; color: #7fe8ff; font-size: 13.5px; direction: ltr; display:inline-block; }
+.pt-int-card p { font-size: 12.8px; margin: 4px 0 0; color: #c3e2f0; }
+
+.pt-footer { margin-top: 40px; text-align: center; font-size: 11.5px; color: #4a6b85;
+  border-top: 1px solid rgba(0,180,255,0.2); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="pt-uns-wrap">
+<div class="pt-container">
+
+  <div class="pt-hero">
+    <h1>آمپی‌سیلین / سولباکتام</h1>
+    <span class="pt-brand">Ampicillin / Sulbactam — Unasyn</span>
+    <div class="pt-tagline">آمینوپنی‌سیلین + مهارکننده‌ی بتالاکتاماز، نسبت ثابت ۲:۱ — پوشش گرم‌مثبت/منفی/بی‌هوازی، با نقش ویژه در Acinetobacter baumannii مقاوم</div>
+    <div class="pt-quickfacts">
+      <div class="pt-qf"><div class="pt-qf-label">دسته دارویی</div><div class="pt-qf-value">Penicillin</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">نسبت فرمولاسیون</div><div class="pt-qf-value">Amp:Sulb 2:1</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">نیمه‌عمر سولباکتام</div><div class="pt-qf-value">~1–1.3 h</div></div>
+      <div class="pt-qf"><div class="pt-qf-label">اتصال به پروتئین</div><div class="pt-qf-value">~38%</div></div>
+    </div>
+  </div>
+
+  <div class="pt-box pt-crit">
+    <div class="pt-box-head"><span class="pt-ico">🔢</span> نکته‌ی ایمنی دوزینگ — واحدها را دوبار چک کنید</div>
+    <p>دوز بزرگسال به‌صورت <b>مجموع گرم آمپی‌سیلین/سولباکتام</b> بیان می‌شود (مثلاً ویال ۳ گرمی = ۲ گرم آمپی‌سیلین + ۱ گرم سولباکتام)، اما دوز اطفال بر اساس <b>mg جزء آمپی‌سیلین به‌تنهایی</b> نوشته می‌شود. جابه‌جا خواندن این دو واحد، منشأ اشتباه دوز است — قبل از تجویز واحد را با نسخه تطبیق دهید.</p>
+  </div>
+
+  <!-- 1. Mechanism -->
+  <div class="pt-section-title"><span class="pt-num">1</span> مکانیسم و PK/PD</div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">⚙</span> مکانیسم اثر</div>
+    <p>آمپی‌سیلین با اتصال به PBPها سنتز دیواره‌ی سلولی را مهار می‌کند. سولباکتام یک مهارکننده‌ی بتالاکتاماز است که طیف آمپی‌سیلین را به ارگانیسم‌های تولیدکننده‌ی بتالاکتاماز (از جمله S. aureus، H. influenzae، E. coli، Klebsiella، Acinetobacter، Enterobacter و بی‌هوازی‌ها) گسترش می‌دهد.</p>
+  </div>
+  <div class="pt-box pt-pearl">
+    <div class="pt-box-head"><span class="pt-ico">🎯</span> هدف PK/PD — به‌ویژه در Acinetobacter</div>
+    <p>سولباکتام (در ترکیب با آمپی‌سیلین) علیه <b>Acinetobacter baumannii</b>: هدف ≥۴۰ تا ۶۰٪ fT&gt;MIC (باکتریوسیدال). این هدف پایه‌ی رژیم‌های دوز بالا و انفوزیون طولانی/کانتینیوس در بخش ۳ است — بر خلاف دوز استاندارد که برای سایر پاتوژن‌ها طراحی شده.</p>
+  </div>
+
+  <!-- 2. Standard Dosing -->
+  <div class="pt-section-title"><span class="pt-num">2</span> دوزینگ استاندارد بزرگسال بر اساس اندیکاسیون</div>
+  <div class="pt-box">
+    <p>محدوده‌ی رایج: <span class="pt-mono">1.5–3 g IM/IV q6h</span> (حداکثر ۱۲ g/day آمپی‌سیلین/سولباکتام).</p>
+  </div>
+
+  <details class="pt-acc">
+    <summary>پنومونی (CAP بدون ریسک سودوموناس / HAP-VAP / آسپیراسیون)</summary>
+    <div class="pt-acc-body">
+      <p>آسپیراسیون CAP غیرشدید: <span class="pt-mono">1.5–3 g q6h</span>، معمولاً ۵ روز. CAP بدون ریسک سودوموناس: <span class="pt-mono">3 g q6h</span> در رژیم ترکیبی، حداقل ۵ روز. HAP/VAP: <span class="pt-mono">3 g q6h</span>، معمولاً ۷ روز.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>عفونت داخل‌شکمی و محل جراحی</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">3 g q6h</span>؛ مدت بسته به شدت و پاسخ بالینی، امکان switch به خوراکی پس از بهبود.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پروفیلاکسی جراحی</summary>
+    <div class="pt-acc-body">
+      <p><span class="pt-mono">3 g</span> ظرف ۶۰ دقیقه قبل از برش جراحی؛ تکرار در ۲ ساعت در صورت طولانی بودن عمل یا خونریزی زیاد. پروفیلاکسی پس از عمل در جراحی‌های clean/clean-contaminated توصیه نمی‌شود.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>عفونت‌های لگنی (PID/تخمدانی-لوله‌ای، اندومتریت پس از زایمان)</summary>
+    <div class="pt-acc-body">
+      <p>PID (شامل آبسه تخمدانی-لوله‌ای): <span class="pt-mono">3 g q6h</span> + داکسی‌سایکلین؛ پس از ۲۴–۴۸ ساعت بهبود پایدار، switch به خوراکی تا تکمیل ۱۴ روز. اندومتریت پس از زایمان: <span class="pt-mono">3 g q6h</span> تا رفع تندرنس فوندال و افبریل ۲۴–۴۸ ساعت.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>گازگرفتگی (حیوان/انسان) و عفونت ادونتوژنیک</summary>
+    <div class="pt-acc-body">
+      <p>گازگرفتگی: <span class="pt-mono">1.5–3 g q6h</span> (برخی ۳ g q6h را ترجیح می‌دهند)؛ ۵ تا ۱۴ روز. عفونت دندانی-نسج نرم: <span class="pt-mono">3 g q6h</span>، پس از بهبود switch خوراکی، مجموعاً ۷ تا ۱۴ روز؛ همراه با مدیریت جراحی (تخلیه/کشیدن دندان).</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پای دیابتی، باکتریمی، اندوکاردیت</summary>
+    <div class="pt-acc-body">
+      <p>پای دیابتی متوسط تا شدید: <span class="pt-mono">3 g q6h</span>؛ ۲ تا ۴ هفته در غیاب استئومیلیت. باکتریمی هدفمند: <span class="pt-mono">3 g q6h</span>، ۷ تا ۱۴ روز. اندوکاردیت انتروکوکی (سویه‌ی حساس به آمینوگلیکوزید): <span class="pt-mono">3 g q6h</span> + جنتامایسین برای ۶ هفته (برخی جنتامایسین را فقط ۲ هفته اول می‌دهند).</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>سیاه‌زخم سیستمیک (Anthrax)</summary>
+    <div class="pt-acc-body">
+      <p>Off-label: <span class="pt-mono">3 g q6h</span> در رژیم ترکیبی برای ≥۲ هفته (مننژیت: ≥۳ هفته IV ترکیبی). در مواجهه‌ی آئروسل در بیمار نقص ایمنی، پس از درمان به پروفیلاکسی پس از مواجهه تبدیل شود تا مجموع ۶۰ روز. آنتی‌توکسین علاوه بر آنتی‌بیوتیک الزامی است — این‌جا در واقع یک راهنمای بهداشت عمومی است، با مسئولین سلامت هماهنگ شود.</p>
+    </div>
+  </details>
+
+  <details class="pt-acc">
+    <summary>پریتونیت دیالیز صفاقی (مسیر داخل‌صفاقی — off-label)</summary>
+    <div class="pt-acc-body">
+      <p>تجویز داخل‌صفاقی بر IV ترجیح دارد مگر بیمار سپتیک باشد. کانتینیوس (با هر تعویض CAPD): لود <span class="pt-mono">1.5 g/L</span> دیالیزیت در اولین تعویض، سپس <span class="pt-mono">200 mg/L</span> در هر تعویض بعدی. مدت ≥۲ تا ۳ هفته بسته به ارگانیسم؛ در عدم بهبود پس از ۵ روز، کاتتر خارج و ۱۴ روز آنتی‌بیوتیک سیستمیک ادامه یابد.</p>
+    </div>
+  </details>
+
+  <!-- 3. Acinetobacter -->
+  <div class="pt-section-title"><span class="pt-num">3</span> Acinetobacter baumannii مقاوم — دوز بالا</div>
+  <div class="pt-box pt-pearl">
+    <div class="pt-box-head"><span class="pt-ico">💡</span> دوز عادی برای این پاتوژن کافی نیست</div>
+    <ul>
+      <li>انفوزیون پرولانگ (۴ ساعت): <span class="pt-mono">9 g q8h</span></li>
+      <li>انفوزیون کانتینیوس (۲۴ ساعت): <span class="pt-mono">27 g/day</span></li>
+      <li>روش سنتی: <span class="pt-mono">3 g q4h</span> — گزینه‌ی جایگزین، به‌خصوص اگر عدم تحمل یا سمیت مانع دوزهای بالاتر باشد</li>
+    </ul>
+    <p>همیشه بخشی از رژیم ترکیبی مصرف شود.</p>
+  </div>
+
+  <details class="pt-acc">
+    <summary>جدول کامل تنظیم رنال برای Acinetobacter مقاوم</summary>
+    <div class="pt-acc-body">
+      <div class="pt-tablewrap">
+        <table class="pt-table">
+          <thead><tr><th>CrCl</th><th>سنتی (3g q4h)</th><th>پرولانگ (9g q8h/4h)</th><th>کانتینیوس (27g/24h)</th></tr></thead>
+          <tbody>
+            <tr><td>۹۰ تا ۱۳۰ mL/min</td><td>بدون تغییر</td><td>بدون تغییر</td><td>بدون تغییر</td></tr>
+            <tr><td>۶۰ تا &lt;۹۰</td><td>بدون تغییر</td><td>6g q8h / 4h</td><td>18g/24h</td></tr>
+            <tr><td>۳۰ تا &lt;۶۰</td><td>3g q6h</td><td>3g q6h / 4h</td><td>12g/24h</td></tr>
+            <tr><td>۱۵ تا ۲۹</td><td>3g q8h</td><td>3g q8h / 4h</td><td>9g/24h</td></tr>
+            <tr><td>&lt;۱۵</td><td>3g q12h</td><td>3g q12h / 4h</td><td>6g/24h</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:8px;">این جدول بر اساس مدل‌سازی فارماکوکینتیک/PD است؛ داده‌ی بالینی مستقیم محدود است — نتیجه‌ی برون‌یابی از منابع تخصصی (Yokoyama 2015، Jaruratanasirikul 2019)، نه کارآزمایی بالینی مستقیم.</p>
+    </div>
+  </details>
+
+  <!-- 4. Standard renal -->
+  <div class="pt-section-title"><span class="pt-num">4</span> تنظیم دوز استاندارد در نارسایی کلیه (غیر-Acinetobacter)</div>
+  <div class="pt-tablewrap">
+    <table class="pt-table">
+      <thead><tr><th>CrCl</th><th>اگر دوز معمول 1.5 g q6h</th><th>اگر دوز معمول 3 g q6h</th></tr></thead>
+      <tbody>
+        <tr><td>≥۳۰ mL/min</td><td>بدون تنظیم</td><td>بدون تنظیم</td></tr>
+        <tr><td>۱۵ تا ۲۹ mL/min</td><td>1.5 g q12h</td><td>3 g q12h</td></tr>
+        <tr><td>&lt;۱۵ mL/min</td><td>1.5 g q24h</td><td>3 g q24h</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <details class="pt-acc">
+    <summary>دیالیز / CRRT / PIRRT / ARC (استاندارد)</summary>
+    <div class="pt-acc-body">
+      <p><b>همودیالیز متناوب</b> (قابل دیالیز ۳۹ تا ۶۳٪): <span class="pt-mono">1.5–3 g q12–24h</span>؛ پس از دیالیز تجویز شود.</p>
+      <p><b>دیالیز صفاقی:</b> <span class="pt-mono">1.5 g q12h یا 3 g q24h</span>.</p>
+      <p><b>CRRT:</b> <span class="pt-mono">3 g q8–12h</span>.</p>
+      <p><b>PIRRT:</b> اولیه ۳ g سپس <span class="pt-mono">1.5–3 g q8–12h</span>؛ در صورت امکان یک دوز پس از جلسه.</p>
+      <p><b>ARC</b> (CrCl ادراری ≥۱۳۰): <span class="pt-mono">1.5–3 g q4–6h</span> — کوتاه‌کردن فاصله‌ی دوز، نه صرفاً افزایش دوز تکی.</p>
+    </div>
+  </details>
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> دیالیز/CRRT در Acinetobacter مقاوم — با استاندارد فرق دارد</div>
+    <p>در بیمار همودیالیز یا PD با عفونت Acinetobacter مقاوم، دوز مطابق «CrCl &lt;۱۵» از جدول بخش ۳ تجویز می‌شود، نه جدول استاندارد این بخش. در CRRT، دوز مطابق «CrCl ۳۰ تا &lt;۶۰» همان جدول است. در PIRRT: روزهای PIRRT مطابق ۳۰–۶۰، روزهای غیر-PIRRT مطابق &lt;۱۵.</p>
+  </div>
+
+  <!-- 5. Special populations -->
+  <div class="pt-section-title"><span class="pt-num">5</span> جمعیت‌های خاص</div>
+  <div class="pt-box">
+    <div class="pt-box-head"><span class="pt-ico">🫀</span> نارسایی کبدی</div>
+    <p>Child-Turcotte-Pugh A تا C: نیازی به تنظیم دوز نیست — <b>اما</b> رجوع کنید به کنترااندیکاسیون بخش ۶؛ سابقه‌ی یرقان کلستاتیک ناشی از خود این دارو تنظیم دوز نیست، ممنوعیت مصرف است.</p>
+  </div>
+
+  <!-- 6. Contraindications -->
+  <div class="pt-section-title"><span class="pt-num">6</span> کنترااندیکاسیون</div>
+  <div class="pt-box pt-crit">
+    <div class="pt-box-head"><span class="pt-ico">🚫</span> دو کنترااندیکاسیون مطلق</div>
+    <ul>
+      <li>هایپرسنسیتیویتی (مثل آنافیلاکسی یا SJS) به آمپی‌سیلین، سولباکتام یا سایر بتالاکتام‌ها (پنی‌سیلین‌ها، سفالوسپورین‌ها)</li>
+      <li><b>سابقه‌ی یرقان کلستاتیک یا اختلال عملکرد کبدی مرتبط با مصرف قبلی آمپی‌سیلین/سولباکتام</b> — این نکته مختص این دارو است و در بسیاری از پروتکل‌ها نادیده گرفته می‌شود؛ قبل از تجویز مجدد، تاریخچه‌ی دقیق مصرف قبلی این دارو را بپرسید</li>
+    </ul>
+  </div>
+
+  <!-- 7. Warnings -->
+  <div class="pt-section-title"><span class="pt-num">7</span> هشدارهای بالینی</div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> اختلال کبدی</div>
+    <p>هپاتیت و یرقان کلستاتیک گزارش شده، شامل موارد کشنده. معمولاً برگشت‌پذیر است. در بیمار با نارسایی کبدی از پیش موجود، عملکرد کبدی را در فواصل منظم مانیتور کنید.</p>
+  </div>
+
+  <div class="pt-box pt-pearl">
+    <div class="pt-box-head"><span class="pt-ico">🔍</span> راش آمپی‌سیلین غیرآلرژیک در برابر هایپرسنسیتیویتی — تفکیک مهم</div>
+    <p>راش در ۵ تا ۱۰٪ کودکان رخ می‌دهد: ماکولوپاپولار قرمز کدر و منتشر، معمولاً ۳ تا ۱۴ روز پس از شروع درمان، شروع از تنه و گسترش به بقیه بدن، شدیدتر در نواحی فشار/آرنج/زانو. این الگو باید از واکنش هایپرسنسیتیویتی واقعی افتراق داده شود — عدم افتراق درست منجر به برچسب نادرست «آلرژی پنی‌سیلین» در پرونده‌ی بیمار برای همیشه می‌شود.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> مونونوکلئوز عفونی</div>
+    <p>درصد بالایی از بیماران مبتلا به مونونوکلئوز عفونی هنگام مصرف آنتی‌بیوتیک‌های خانواده‌ی آمپی‌سیلین دچار راش می‌شوند — این کلاس دارویی در این بیماران توصیه نمی‌شود.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> هایپرسنسیتیویتی</div>
+    <p>واکنش‌های آنافیلاکتیک جدی و گاه کشنده گزارش شده، به‌خصوص در سابقه‌ی هایپرسنسیتیویتی به بتالاکتام یا حساسیت به چند آلرژن. بیماران با سابقه‌ی آلرژی پنی‌سیلین، واکنش شدید به سفالوسپورین‌ها هم تجربه کرده‌اند — پیش از شروع، تاریخچه‌ی دقیق بگیرید.</p>
+  </div>
+
+  <div class="pt-box pt-warn">
+    <div class="pt-box-head"><span class="pt-ico">⚠</span> کلستریدیوئیدس دیفیسیل</div>
+    <p>مصرف طولانی‌مدت می‌تواند منجر به سوپرانفکشن قارچی/باکتریایی شود، از جمله CDAD؛ می‌تواند &gt;۲ ماه پس از پایان درمان هم بروز کند.</p>
+  </div>
+
+  <!-- 8. Administration pearls -->
+  <div class="pt-section-title"><span class="pt-num">8</span> نکات تجویز</div>
+  <div class="pt-box pt-pearl">
+    <ul>
+      <li>آمپی‌سیلین و جنتامایسین را هرگز در یک لاین وریدی مخلوط نکنید — پنی‌سیلین‌ها آمینوگلیکوزیدها را in vitro غیرفعال می‌کنند (تزریق Y-site همزمان اجتناب شود)</li>
+      <li>هدف تجویز منظم و شبانه‌روزی برای کاهش نوسان سطح پیک/تراف</li>
+      <li>IV: تزریق آهسته طی ۱۰ تا ۱۵ دقیقه یا انفوزیون ۱۵ تا ۳۰ دقیقه؛ برخی اندیکاسیون‌ها (Acinetobacter) تا ۲۴ ساعت کانتینیوس</li>
+      <li>IM: تزریق عمقی در عضله‌ی بزرگ، غلظت 375 mg/mL توصیه‌شده؛ در صورت رقیق‌سازی با لیدوکائین، فقط طی ۱ ساعت پس از آماده‌سازی استفاده شود</li>
+    </ul>
+  </div>
+
+  <!-- 9. Interactions -->
+  <div class="pt-section-title"><span class="pt-num">9</span> تداخلات دارویی کلیدی</div>
+  <div class="pt-int-grid">
+    <div class="pt-int-card"><span class="pt-int-name">Aminoglycosides</span><p>کاهش سطح آمینوگلیکوزید — خصوصاً در نارسایی کلیه؛ هرگز Y-site مشترک</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Methotrexate</span><p>افزایش سطح سرمی متوترکسات — مانیتور</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Vitamin K Antagonists</span><p>افزایش اثر ضدانعقادی — مانیتور INR</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Probenecid</span><p>افزایش سطح سولباکتام</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Tetracyclines</span><p>ممکن است اثر درمانی پنی‌سیلین را کاهش دهد</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Allopurinol</span><p>افزایش ریسک واکنش هایپرسنسیتیویتی به آمپی‌سیلین</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">BCG (intravesical)</span><p>کاهش اثر درمانی — Avoid</p></div>
+    <div class="pt-int-card"><span class="pt-int-name">Live vaccines (Typhoid/Cholera)</span><p>کاهش اثر واکسن — فاصله‌گذاری زمانی لازم</p></div>
+  </div>
+
+  <!-- 10. Monitoring -->
+  <div class="pt-section-title"><span class="pt-num">10</span> مانیتورینگ</div>
+  <div class="pt-box pt-pearl">
+    <ul>
+      <li>در مصرف طولانی‌مدت: عملکرد هماتولوژیک، کلیوی و کبدی</li>
+      <li>مانیتورینگ نزدیک دوز اول برای علائم آنافیلاکسی</li>
+      <li>در بیمار با نارسایی کبدی از پیش موجود: عملکرد کبدی در فواصل منظم</li>
+    </ul>
+  </div>
+
+  <div class="pt-footer">
+    منبع: UpToDate® — Ampicillin and sulbactam: Drug information, Topic 8745, Version 492.0 (2026), Wolters Kluwer / UpToDate, Inc.<br>
+    این خلاصه صرفاً جهت مرور سریع تهیه شده و جایگزین مطالعه‌ی کامل منبع اصلی نیست — به‌خصوص رژیم‌های دوز بالا برای Acinetobacter مقاوم که عمدتاً بر پایه‌ی مدل‌سازی فارماکوکینتیک است، نه کارآزمایی بالینی.
+  </div>
+
+</div>
+</div>
+</body>
+</html>
