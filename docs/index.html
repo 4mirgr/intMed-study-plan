@@ -189,6 +189,12 @@
   .topic-pill.st-ضعیف{background:var(--danger-soft);color:var(--danger)}
   .topic-pill.st-متوسط{background:var(--warn-soft);color:var(--warn)}
   .topic-pill.st-خوب{background:var(--done-bg);color:var(--accent-ink)}
+  .content-badge{
+    font-family:"Vazirmatn",sans-serif;font-size:.66rem;font-weight:600;
+    padding:2px 8px;border-radius:99px;flex-shrink:0;white-space:nowrap;
+  }
+  .content-badge.has{background:var(--accent-soft);color:var(--accent-ink)}
+  .content-badge.empty{background:var(--surface-2);color:var(--ink-faint)}
   .topic-note{
     width:100%;min-height:30px;resize:vertical;border:1px solid var(--border);border-radius:8px;
     background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:.76rem;padding:6px 9px;
@@ -601,7 +607,7 @@
     head.className = "cat-head";
     head.innerHTML =
       '<div class="cat-head-left"><span class="cat-dot"></span><span class="cat-title">'+cat.label+'</span></div>'+
-      '<div class="phase-right"><span class="cat-stat num" data-cat-stat="'+cat.id+'"></span><span class="chev">▾</span></div>';
+      '<div class="phase-right"><span class="content-badge" data-cat-content="'+cat.id+'"></span><span class="cat-stat num" data-cat-stat="'+cat.id+'"></span><span class="chev">▾</span></div>';
     head.addEventListener("click", function(){ catEl.classList.toggle("open"); });
     catEl.appendChild(head);
 
@@ -621,6 +627,9 @@
       var title = document.createElement("span");
       title.className = "topic-list-title";
       title.textContent = sub.label;
+
+      var contentBadge = document.createElement("span");
+      contentBadge.className = "content-badge";
 
       var pill = document.createElement("button");
       pill.type = "button";
@@ -643,6 +652,7 @@
       chev.textContent = "▾";
 
       listBtn.appendChild(title);
+      listBtn.appendChild(contentBadge);
       listBtn.appendChild(pill);
       listBtn.appendChild(chev);
 
@@ -702,7 +712,7 @@
       item.appendChild(detail);
       inner.appendChild(item);
 
-      topicEls[sub.id] = {itemEl:item, pill:pill, note:note, catId:cat.id, status:"نامشخص", learnBtns:learnBtns, learnPanel:learnPanel, openType:null};
+      topicEls[sub.id] = {itemEl:item, pill:pill, contentBadge:contentBadge, note:note, catId:cat.id, status:"نامشخص", learnBtns:learnBtns, learnPanel:learnPanel, openType:null};
       allTopicIds.push(sub.id);
     });
 
@@ -717,6 +727,39 @@
     if(el) el.textContent = faDigits(good) + "/" + faDigits(cat.subs.length) + " خوب";
   }
   TOPICS.forEach(updateCatStat);
+
+  function topicHasContent(topicId){
+    var data = contentMap[topicId];
+    if(!data) return null;
+    return LEARN_TYPES.some(function(lt){ return (data[lt.key] || []).length > 0; });
+  }
+
+  function updateContentBadge(topicId){
+    var t = topicEls[topicId];
+    if(!t || !t.contentBadge) return;
+    var has = topicHasContent(topicId);
+    if(has === null){
+      t.contentBadge.textContent = "";
+      t.contentBadge.className = "content-badge";
+      return;
+    }
+    t.contentBadge.textContent = has ? "حاوی مطلب" : "ناقص";
+    t.contentBadge.className = "content-badge " + (has ? "has" : "empty");
+  }
+
+  function updateCatContentBadge(cat){
+    var el = document.querySelector('.content-badge[data-cat-content="'+cat.id+'"]');
+    if(!el) return;
+    var states = cat.subs.map(function(s){ return topicHasContent(s.id); });
+    if(states.every(function(s){ return s === null; })){
+      el.textContent = "";
+      el.className = "content-badge";
+      return;
+    }
+    var anyHas = states.some(function(s){ return s === true; });
+    el.textContent = anyHas ? "حاوی مطلب" : "ناقص";
+    el.className = "content-badge " + (anyHas ? "has" : "empty");
+  }
 
   var hereSelect = document.getElementById("hereSelect");
   var autoOpt = document.createElement("option");
@@ -847,9 +890,11 @@
         contentMap = bundle || {};
         allTopicIds.forEach(function(id){
           updateLearnCounts(id);
+          updateContentBadge(id);
           var t = topicEls[id];
           if(t && t.openType) renderLearnPanel(id, t.openType);
         });
+        TOPICS.forEach(updateCatContentBadge);
       }).catch(function(){});
       refreshAll();
       return;
@@ -877,9 +922,11 @@
       });
       allTopicIds.forEach(function(id){
         updateLearnCounts(id);
+        updateContentBadge(id);
         var t = topicEls[id];
         if(t && t.openType) renderLearnPanel(id, t.openType);
       });
+      TOPICS.forEach(updateCatContentBadge);
     }, function(){});
 
     refreshAll();
