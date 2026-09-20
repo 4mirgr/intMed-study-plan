@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماژول ۳ — تاکی‌کاردی با کمپلکس باریک | آموزش ECG بالینی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ :root{
+ --ink:#0f1e1c; --paper:#f6f4ee; --card:#ffffff; --line:#d8d3c4;
+ --teal:#0f6e56; --teal-deep:#083f32; --coral:#c1502e; --amber:#a8711a; --muted:#6b6a5f;
+ }
+ *{box-sizing:border-box;}
+ body{ margin:0; font-family:'Vazirmatn', sans-serif; background:var(--paper); color:var(--ink); line-height:1.9; }
+ .mono{ font-family:'JetBrains Mono', monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; }
+ header{ padding:4rem 1.5rem 3rem; border-bottom:1px solid var(--line); text-align:center; }
+ .eyebrow{ font-size:13px; letter-spacing:0.05em; color:var(--teal); font-weight:700; }
+ h1{ font-size:clamp(28px,5vw,44px); font-weight:700; margin:0.5rem 0 1rem; color:var(--teal-deep); }
+ .sub{ color:var(--muted); font-size:16px; max-width:640px; margin:0 auto; }
+ main{ max-width:820px; margin:0 auto; padding:2rem 1.5rem 5rem; }
+ .group-title{ font-size:14px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:0.04em; margin:2.5rem 0 0.75rem; }
+ .group-title:first-child{ margin-top:0; }
+
+ .callout{ background:#eef1e5; border-right:4px solid var(--teal); padding:1rem 1.25rem; border-radius:4px; margin:1.2rem 0; font-size:15px; }
+ .callout.danger{ background:#fbebe6; border-right-color:var(--coral); }
+ .tag{ display:inline-block; font-size:12px; font-weight:700; padding:2px 10px; border-radius:100px; margin-left:6px; }
+ .tag.certain{ background:#dbe9df; color:var(--teal-deep); }
+ .tag.likely{ background:#f3e6cf; color:var(--amber); }
+ .rate-badge{ display:inline-flex; align-items:center; gap:6px; background:#f0ede2; border:1px solid var(--line); border-radius:8px; padding:4px 10px; font-size:13px; margin-top:6px; }
+ .rate-badge .r{ font-family:'JetBrains Mono',monospace; color:var(--teal-deep); font-weight:600; direction:ltr; unicode-bidi:isolate; }
+
+ .acc-item{ background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden; }
+ .acc-head{ width:100%; text-align:right; background:none; border:none; display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; font-weight:500; font-size:15px; font-family:'Vazirmatn',sans-serif; color:var(--ink); }
+ .acc-head .num{ font-family:'JetBrains Mono', monospace; color:var(--teal); margin-left:10px; font-size:13px; }
+ .acc-head:hover{ background:#f4f2ea; }
+ .acc-icon{ font-size:18px; color:var(--teal); transition:transform 0.2s ease; line-height:1; }
+ .acc-item.open .acc-icon{ transform:rotate(45deg); }
+ .acc-panel{ display:none; padding:0 1.25rem 1.25rem; font-size:15px; color:#333; }
+ .acc-item.open .acc-panel{ display:block; }
+
+ figure.ecg{ margin:1rem 0; text-align:center; }
+ figure.ecg img{ max-width:100%; border-radius:8px; border:1px solid var(--line); display:block; margin:0 auto; }
+ figure.ecg figcaption{ font-size:12.5px; color:var(--muted); margin-top:6px; }
+ figure.ecg figcaption a{ color:var(--teal); text-decoration:none; }
+ figure.ecg figcaption a:hover{ text-decoration:underline; }
+
+ .drug-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+ @media(max-width:600px){ .drug-grid{ grid-template-columns:1fr; } }
+ .drug-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.25rem; }
+ .drug-card h3{ margin:0 0 8px; font-size:17px; color:var(--teal-deep); }
+ .drug-card .dose{ font-size:14px; color:var(--muted); }
+
+ .ref-list{ list-style:none; padding:0; margin:0; }
+ .ref-list li{ border-bottom:1px solid var(--line); padding:12px 0; }
+ .ref-list a{ color:var(--teal-deep); text-decoration:none; font-weight:500; }
+
+ footer{ text-align:center; padding:2rem 1.5rem; font-size:13px; color:var(--muted); border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+ <div class="eyebrow">دوره آموزش ECG و آریتمی بالینی — ماژول ۳ از ۸</div>
+ <h1>تاکی‌کاردی با کمپلکس باریک</h1>
+ <p class="sub">افتراق ریتم‌های منظم و نامنظم، نقش تشخیصی-درمانی آدنوزین، و هشدار AFib در WPW — برای اینترن‌ها، پزشکان عمومی و رزیدنت‌ها</p>
+</header>
+
+<main>
+
+ <div class="group-title">اصل رویکرد</div>
+ <div class="acc-item" id="acc-0">
+ <button class="acc-head" onclick="toggleAcc('acc-0')">
+ <span>تعریف و قدم اول: منظم یا نامنظم؟</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p><span class="mono">Narrow-Complex Tachycardia (NCT)</span>: QRS زیر ۱۲۰ میلی‌ثانیه، rate بالای ۱۰۰. <span class="tag certain">قطعی</span></p>
+ <p>اولین و مهم‌ترین سوال، قبل از هر افتراق دیگری: آیا ریتم منظم است یا نامنظم؟ این تقسیم‌بندی کل مسیر تشخیصی را از هم جدا می‌کند.</p>
+ </div>
+ </div>
+
+ <div class="group-title">NCT منظم</div>
+
+ <div class="acc-item" id="acc-1">
+ <button class="acc-head" onclick="toggleAcc('acc-1')">
+ <span><span class="num">۰۱</span>Sinus Tachycardia</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="rate-badge">ریت: <span class="r">100–150</span> bpm (به‌ندرت تا ۲۲۰ در جوانان)</div>
+ <p style="margin-top:0.75rem;">P wave طبیعی و یکسان قبل از هر QRS. معمولاً rate به‌تدریج بالا رفته (نه شروع ناگهانی) و علتی زمینه‌ای دارد (تب، درد، هیپوولمی، هیپوکسی، تیروتوکسیکوز).</p>
+ <p><strong>درمان:</strong> علت زمینه‌ای را درمان کن، خود تاکی‌کاردی هدف درمان نیست.</p>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-2">
+ <button class="acc-head" onclick="toggleAcc('acc-2')">
+ <span><span class="num">۰۲</span>AVNRT (شایع‌ترین SVT بزرگسالان)</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="rate-badge">ریت: <span class="r">170–250</span> bpm</div>
+ <p style="margin-top:0.75rem;">شروع و پایان ناگهانی (paroxysmal). P wave معمولاً دیده نمی‌شود یا بلافاصله بعد از QRS پنهان است (چون مدار ری‌اینتری داخل خود گره AV است). در زنان جوان بدون بیماری ساختاری قلب شایع‌تر است (~۷۵٪ موارد).</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/AVNRT-reverts-to-sinus-rhythm-Adenosine.jpg" alt="AVNRT پس از آدنوزین به سینوس برمی‌گردد" loading="lazy">
+ <figcaption>AVNRT بلافاصله پس از بولوس آدنوزین به ریتم سینوسی برمی‌گردد · منبع: <a href="https://litfl.com/atrial-flutter-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <p><strong>درمان بیمار پایدار:</strong> ابتدا مانور واگ، سپس آدنوزین ۶mg IV بولوس سریع (تکرار ۱۲mg در صورت نیاز، حداکثر یک بار دیگر ۱۲mg)، در صورت شکست کلسیم‌بلاکر یا بتابلاکر IV.</p>
+ <div class="callout danger"><strong>بیمار ناپایدار:</strong> کاردیوورژن سنکرونایزه — <span class="mono">50–100 ژول</span> (بای‌فازیک) دوز شروع، چون NCT منظم است.</div>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-3">
+ <button class="acc-head" onclick="toggleAcc('acc-3')">
+ <span><span class="num">۰۳</span>Atrial Flutter با بلوک ثابت (معمولاً 2:1)</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="rate-badge">ریت بطنی: <span class="r">130–170</span> (معمولاً دقیقاً ۱۵۰) · ریت دهلیزی: <span class="r">200–400</span> (معمولاً ۳۰۰)</div>
+ <p style="margin-top:0.75rem;"><strong>[قطعی]</strong> هر NCT منظم با ریت دقیقاً حدود ۱۵۰ — به‌خصوص با ثبات فوق‌العاده بین ضربان‌ها — باید مشکوک به فلوتر با بلوک 2:1 باشد، حتی اگر امواج دندانه‌اره‌ای دیده نشوند.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Atrial-Flutter-with-2-1-Block-1-.jpg" alt="فلوتر دهلیزی با بلوک 2:1" loading="lazy">
+ <figcaption>الگوی کلاسیک anticlockwise flutter — امواج دندانه‌اره‌ای معکوس در II, III, aVF · منبع: <a href="https://litfl.com/atrial-flutter-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <p>آدنوزین ریتم را قطع <strong>نمی‌کند</strong> (چون مدار داخل دهلیز است، نه گره AV) ولی با کندکردن گذرای هدایت، امواج فلوتر زیرین را آشکار می‌کند.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Strip-Flutter-waves-adenosine-2.jpg" alt="آشکارشدن امواج فلوتر با آدنوزین" loading="lazy">
+ <figcaption>آدنوزین گذرا بلوک AV را افزایش می‌دهد و امواج فلوتر پنهان را آشکار می‌کند · منبع: <a href="https://litfl.com/atrial-flutter-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <p><strong>درمان بیمار پایدار:</strong> کنترل ریت با بتابلاکر یا کلسیم‌بلاکر IV (مثل AFib) — قطع فوری ریتم اولویت نیست مگر ناپایدار باشد.</p>
+ <div class="callout danger"><strong>بیمار ناپایدار:</strong> کاردیوورژن سنکرونایزه — <span class="mono">50–100 ژول</span> دوز شروع؛ فلوتر دهلیزی معمولاً به انرژی پایین‌تر از AFib پاسخ می‌دهد.</div>
+ </div>
+ </div>
+
+ <div class="group-title">مانور واگ و آدنوزین</div>
+ <div class="acc-item" id="acc-4">
+ <button class="acc-head" onclick="toggleAcc('acc-4')">
+ <span>ابزار مشترک تشخیصی-درمانی</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p><span class="mono">[قطعی]</span> آدنوزین هم تشخیصی است هم درمانی — با بلاک گذرای گره AV:</p>
+ <ul>
+ <li>AVNRT / AVRT (مدار شامل گره AV بوده) ← <strong>قطع کامل</strong></li>
+ <li>Sinus tach یا Atrial tachycardia (منشا خارج گره AV) ← <strong>بدون تغییر</strong></li>
+ <li>Atrial flutter یا Atrial tachycardia ← <strong>آشکارشدن امواج زیرین با کندشدن گذرا</strong></li>
+ </ul>
+ <p><strong>دوز:</strong> ابتدا <span class="mono">6mg IV</span> بولوس سریع از رگ بزرگ + فلاش سریع نرمال سالین، سپس در صورت شکست <span class="mono">12mg</span>، قابل تکرار یک بار دیگر <span class="mono">12mg</span>.</p>
+ <div class="callout">هشدار: در آسم شدید کنترل‌نشده یا بلوک AV درجه بالای شناخته‌شده با احتیاط؛ بیمار را از عوارض گذرا (احساس مرگ قریب‌الوقوع، فلاشینگ، درد قفسه سینه) مطلع کن.</div>
+ </div>
+ </div>
+
+ <div class="group-title">NCT نامنظم</div>
+
+ <div class="acc-item" id="acc-5">
+ <button class="acc-head" onclick="toggleAcc('acc-5')">
+ <span><span class="num">۰۱</span>Atrial Fibrillation</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="rate-badge">ریت بطنی معمول: <span class="r">110–160</span> · «rapid VR» یعنی <span class="r">&gt;100</span> · «slow AF» یعنی <span class="r">&lt;60</span></div>
+ <p style="margin-top:0.75rem;">نامنظم به‌طور کامل بدون هیچ الگوی قابل‌پیش‌بینی در فاصله R-R — برخلاف فلوتر با بلوک متغیر که الگوی ریاضی (مضرب P-P) دارد.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/Rhythm-Strip-LITFL-Atrial-Fibrillation.jpg" alt="ریتم نامنظم AFib بدون P wave" loading="lazy">
+ <figcaption>ریتم بطنی کاملاً نامنظم، بدون P wave قابل مشاهده · منبع: <a href="https://litfl.com/atrial-fibrillation-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <p><strong>درمان استاندارد:</strong> کنترل ریت با بتابلاکر یا دیلتیازم/وراپامیل IV، به‌علاوه ارزیابی نیاز به ضدانعقاد (CHA2DS2-VASc).</p>
+ <div class="callout danger"><strong>بیمار ناپایدار:</strong> کاردیوورژن سنکرونایزه — <span class="mono">120–200 ژول</span> بای‌فازیک (طبق راهنمای ۲۰۲۵ AHA، انرژی شروع ۲۰۰ژول برای همه آریتمی‌های دهلیزی توصیه می‌شود تا شوک‌های تکراری کمتر لازم شود).</div>
+ <div class="callout danger">
+ <strong>هشدار حیاتی — AFib در زمینه WPW:</strong> (ریت اغلب بالای ۲۰۰، QRS پهن‌تر با شکل متغیر) — هرگز بتابلاکر، کلسیم‌بلاکر یا دیگوکسین نزن. این‌ها گره AV را بلاک کرده و هدایت را به مسیر فرعی بدون فیلتر هل می‌دهند، خطر دژنره‌شدن به VF. به‌جایش: پروکائین‌آمید (که مستقیم مسیر فرعی را کند می‌کند)، یا در بیمار ناپایدار کاردیوورژن سنکرونایزه با همان دوز بالا.
+ </div>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Wolff-Parkinson-White-WPW-Delta-wave.png" alt="Delta wave در WPW" loading="lazy">
+ <figcaption>Delta wave — شروع سرازیر QRS با PR کوتاه، نشانه پیش‌تحریک · منبع: <a href="https://litfl.com/delta-wave-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-6">
+ <button class="acc-head" onclick="toggleAcc('acc-6')">
+ <span><span class="num">۰۲</span>Atrial Flutter با بلوک متغیر</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>ریتم بطنی نامنظم است ولی الگوی ریاضی دارد — فاصله‌های R-R مضربی از فاصله P-P هستند (مثلاً با ریت دهلیزی ۳۰۰، فاصله R-R با بلوک 2:1 برابر ۴۰۰ms، با 3:1 برابر ۶۰۰ms). این می‌تواند در نگاه اول با AFib اشتباه گرفته شود.</p>
+ <p><strong>افتراق کلیدی:</strong> در فلوتر با بلوک متغیر، الگوی ریاضی بین فاصله‌های R-R قابل ردیابی است؛ در AFib چنین الگویی وجود ندارد.</p>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-7">
+ <button class="acc-head" onclick="toggleAcc('acc-7')">
+ <span><span class="num">۰۳</span>Multifocal Atrial Tachycardia (MAT)</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="rate-badge">ریت: معمولاً <span class="r">&gt;100</span></div>
+ <p style="margin-top:0.75rem;">حداقل ۳ مورفولوژی متفاوت P wave در یک لید، با فواصل PR متغیر. کلاسیک در بیماران COPD یا هیپوکسی حاد.</p>
+ <p><strong>درمان:</strong> اصلاح علت زمینه‌ای (اکسیژناسیون، اصلاح الکترولیت به‌خصوص منیزیم) در اولویت است. کلسیم‌بلاکر می‌تواند کمک‌کننده باشد؛ <strong>دیگوکسین و بتابلاکر معمولاً بی‌اثر یا نامناسب‌اند</strong> (به‌خصوص بتابلاکر در بیمار COPD با برونکواسپاسم).</p>
+ <div class="callout"><strong>کاردیوورژن در MAT بی‌اثر است</strong> — چون منشا آریتمی چند کانون خودکار (automatic foci) در دهلیز است، نه یک مدار ری‌اینتری واحد؛ شوک نمی‌تواند این کانون‌های متعدد را هم‌زمان خاموش کند. حتی اگر ناپایدار باشد، اولویت درمان علت زمینه‌ای (هیپوکسی/الکترولیت) است.</div>
+ </div>
+ </div>
+
+ <div class="group-title">منابع علمی</div>
+ <div class="acc-item" id="acc-ref">
+ <button class="acc-head" onclick="toggleAcc('acc-ref')">
+ <span>منابع و رفرنس‌های این ماژول</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <ul class="ref-list">
+ <li><div>LITFL ECG Library: Atrial Flutter, Atrial Fibrillation, SVT, Pre-excitation Syndromes, Delta Wave — litfl.com</div></li>
+ <li><div>AHA ACLS Adult Tachycardia Algorithm 2025 — cpr.heart.org</div></li>
+ <li><div>تصاویر: LITFL ECG Library، تحت مجوز CC BY-NC-SA 4.0 (فقط استفاده غیرتجاری مجاز است)</div></li>
+ </ul>
+ </div>
+ </div>
+
+</main>
+
+<footer>
+ محتوای آموزشی — دوره ECG و آریتمی بالینی، ماژول ۳ از ۸ · نسخه ۲ (فلش‌ها اصلاح و ژول شوک اضافه شد) · قبل از انتشار نهایی، دقت بالینی مجدداً بررسی شود
+</footer>
+
+<script>
+ function toggleAcc(id){ document.getElementById(id).classList.toggle('open'); }
+</script>
+
+</body>
+</html>

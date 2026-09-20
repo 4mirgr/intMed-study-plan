@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماژول ۴ — برادی‌آریتمی و بلوک‌های AV | آموزش ECG بالینی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ :root{
+ --ink:#0f1e1c; --paper:#f6f4ee; --card:#ffffff; --line:#d8d3c4;
+ --teal:#0f6e56; --teal-deep:#083f32; --coral:#c1502e; --amber:#a8711a; --muted:#6b6a5f;
+ }
+ *{box-sizing:border-box;}
+ body{ margin:0; font-family:'Vazirmatn', sans-serif; background:var(--paper); color:var(--ink); line-height:1.9; }
+ .mono{ font-family:'JetBrains Mono', monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; }
+ header{ padding:4rem 1.5rem 3rem; border-bottom:1px solid var(--line); text-align:center; }
+ .eyebrow{ font-size:13px; letter-spacing:0.05em; color:var(--teal); font-weight:700; }
+ h1{ font-size:clamp(28px,5vw,44px); font-weight:700; margin:0.5rem 0 1rem; color:var(--teal-deep); }
+ .sub{ color:var(--muted); font-size:16px; max-width:640px; margin:0 auto; }
+ main{ max-width:820px; margin:0 auto; padding:2rem 1.5rem 5rem; }
+ .group-title{ font-size:14px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:0.04em; margin:2.5rem 0 0.75rem; }
+ .group-title:first-child{ margin-top:0; }
+
+ .callout{ background:#eef1e5; border-right:4px solid var(--teal); padding:1rem 1.25rem; border-radius:4px; margin:1.2rem 0; font-size:15px; }
+ .callout.danger{ background:#fbebe6; border-right-color:var(--coral); }
+ .tag{ display:inline-block; font-size:12px; font-weight:700; padding:2px 10px; border-radius:100px; margin-left:6px; }
+ .tag.certain{ background:#dbe9df; color:var(--teal-deep); }
+ .tag.likely{ background:#f3e6cf; color:var(--amber); }
+ .rate-badge{ display:inline-flex; align-items:center; gap:6px; background:#f0ede2; border:1px solid var(--line); border-radius:8px; padding:4px 10px; font-size:13px; margin-top:6px; }
+ .rate-badge .r{ font-family:'JetBrains Mono',monospace; color:var(--teal-deep); font-weight:600; direction:ltr; unicode-bidi:isolate; }
+
+ .acc-item{ background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden; }
+ .acc-head{ width:100%; text-align:right; background:none; border:none; display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; font-weight:500; font-size:15px; font-family:'Vazirmatn',sans-serif; color:var(--ink); }
+ .acc-head .num{ font-family:'JetBrains Mono', monospace; color:var(--teal); margin-left:10px; font-size:13px; }
+ .acc-head.flag .num{ color:var(--coral); }
+ .acc-head:hover{ background:#f4f2ea; }
+ .acc-icon{ font-size:18px; color:var(--teal); transition:transform 0.2s ease; line-height:1; }
+ .acc-item.open .acc-icon{ transform:rotate(45deg); }
+ .acc-panel{ display:none; padding:0 1.25rem 1.25rem; font-size:15px; color:#333; }
+ .acc-item.open .acc-panel{ display:block; }
+
+ figure.ecg{ margin:1rem 0; text-align:center; }
+ figure.ecg img{ max-width:100%; border-radius:8px; border:1px solid var(--line); display:block; margin:0 auto; }
+ figure.ecg figcaption{ font-size:12.5px; color:var(--muted); margin-top:6px; }
+ figure.ecg figcaption a{ color:var(--teal); text-decoration:none; }
+ figure.ecg figcaption a:hover{ text-decoration:underline; }
+
+ .compare-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0; }
+ @media(max-width:600px){ .compare-grid{ grid-template-columns:1fr; } }
+ .compare-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.25rem; }
+ .compare-card h4{ margin:0 0 8px; font-size:15px; color:var(--teal-deep); }
+ .compare-card ul{ margin:0; padding-right:1.1rem; font-size:14px; }
+
+ .drug-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+ @media(max-width:600px){ .drug-grid{ grid-template-columns:1fr; } }
+ .drug-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.25rem; }
+ .drug-card h3{ margin:0 0 8px; font-size:17px; color:var(--teal-deep); }
+ .drug-card .dose{ font-size:14px; color:var(--muted); }
+
+ .ref-list{ list-style:none; padding:0; margin:0; }
+ .ref-list li{ border-bottom:1px solid var(--line); padding:12px 0; }
+ .ref-list a{ color:var(--teal-deep); text-decoration:none; font-weight:500; }
+
+ footer{ text-align:center; padding:2rem 1.5rem; font-size:13px; color:var(--muted); border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+ <div class="eyebrow">دوره آموزش ECG و آریتمی بالینی — ماژول ۴ از ۸</div>
+ <h1>برادی‌آریتمی و بلوک‌های AV</h1>
+ <p class="sub">از سینوس برادی‌کاردی خوش‌خیم تا بلوک کامل پرخطر — محل آناتومیک بلوک، چرا تعیین‌کننده است، و کِی پد پیسینگ را از همان لحظه اول بچسبانی</p>
+</header>
+
+<main>
+
+ <div class="group-title">اصل کلی</div>
+ <div class="acc-item" id="acc-0">
+ <button class="acc-head" onclick="toggleAcc('acc-0')">
+ <span>عدد HR به‌تنهایی تصمیم‌ساز نیست</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>برادی‌کاردی یعنی HR زیر ۶۰ — ولی <span class="tag likely">محتمل</span> آنچه واقعاً تصمیم درمانی را می‌سازد <strong>علامت‌دار بودن</strong> بیمار است: سنکوپ، منگی، افت فشار همراه با علامت، درد قفسه سینه ایسکمیک، ادم حاد ریه.</p>
+ <div class="callout">بیمار برادی‌کارد بدون علامت (مثلاً ورزشکار با HR=۴۵ در خواب) نیاز به درمان اورژانسی ندارد. بیمار برادی‌کارد با HR=۵۸ ولی گیج و افت‌فشار، اورژانس واقعی است.</div>
+ </div>
+ </div>
+
+ <div class="group-title">دسته‌بندی تشخیصی</div>
+
+ <div class="acc-item" id="acc-1">
+ <button class="acc-head" onclick="toggleAcc('acc-1')">
+ <span><span class="num">۰۱</span>Sinus Bradycardia</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="rate-badge">ریت: زیر <span class="r">60</span> bpm</div>
+ <p style="margin-top:0.75rem;">P wave طبیعی قبل از هر QRS، فقط کند. اغلب فیزیولوژیک (ورزشکار، خواب) یا دارویی (بتابلاکر، کلسیم‌بلاکر).</p>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-2">
+ <button class="acc-head" onclick="toggleAcc('acc-2')">
+ <span><span class="num">۰۲</span>بلوک AV درجه ۱</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p><span class="mono">PR &gt; 200ms</span> ولی هر P یک QRS دارد — معمولاً بی‌خطر، فقط پایش. نیازی به درمان اورژانسی ندارد مگر علامت‌دار باشد.</p>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-3">
+ <button class="acc-head" onclick="toggleAcc('acc-3')">
+ <span><span class="num">۰۳</span>بلوک AV درجه ۲ — Mobitz I (Wenckebach)</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>PR به‌تدریج طولانی‌تر می‌شود تا یک QRS می‌افتد، سپس چرخه از نو شروع می‌شود (الگوی گروهی ۳:۲، ۴:۳، ۵:۴).</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Wenckebach-Phenomenon-1024x188.jpg" alt="الگوی کلاسیک Wenckebach" loading="lazy">
+ <figcaption>طولانی‌شدن تدریجی PR تا افتادن یک QRS · منبع: <a href="https://litfl.com/av-block-2nd-degree-mobitz-i-wenckebach-phenomenon/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <p><strong>[قطعی]</strong> محل بلوک معمولاً <strong>داخل خود گره AV</strong> است — سلول‌های گره AV به‌تدریج خسته می‌شوند تا شکست بخورند؛ این با شکست ناگهانی سلول‌های His-Purkinje در Mobitz II فرق دارد.</p>
+ <p>علل شایع: بتابلاکر، کلسیم‌بلاکر، دیگوکسین، افزایش تون واگ (ورزشکار)، <strong>MI تحتانی</strong> (ایسکمی گره AV یا رفلکس Bezold-Jarisch).</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Inferior-STEMI-RV-infacrct-Wenckebach.jpg" alt="Mobitz I همراه با MI تحتانی" loading="lazy">
+ <figcaption>Mobitz I همراه با STEMI تحتانی و انفارکت RV · منبع: <a href="https://litfl.com/av-block-2nd-degree-mobitz-i-wenckebach-phenomenon/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout"><strong>پیش‌آگهی:</strong> معمولاً خوش‌خیم، ریسک پیشرفت به بلوک کامل پایین است. بیمار بدون علامت نیاز به درمان ندارد؛ بیمار علامت‌دار معمولاً به آتروپین <strong>خوب</strong> جواب می‌دهد چون محل بلوک در سطح گره AV است — دقیقاً جایی که آتروپین اثر می‌کند.</div>
+ <div class="callout danger">
+ <strong>هشدار انفارکت RV (شایع همراه MI تحتانی):</strong> بطن راست آسیب‌دیده شدیداً به پرلود وابسته است. نیترات، مورفین و دیورتیک با کاهش پرلود می‌توانند بیمار را به افت فشار شدید یا شوک کاردیوژنیک ببرند — نه ادم ریه. رویکرد صحیح در این زیرگروه: مایع IV سخاوتمندانه، پرهیز از نیترات/مورفین/دیورتیک. این دقیقاً معکوس پروتکل معمول ACS است.
+ </div>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-4">
+ <button class="acc-head" onclick="toggleAcc('acc-4')">
+ <span><span class="num">۰۴</span>بلوک AV درجه ۲ — Mobitz II</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>PR ثابت در ضربان‌های هدایت‌شده، ناگهان یک QRS می‌افتد بدون هیچ هشدار قبلی (طولانی‌شدن تدریجی وجود ندارد).</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Mobitz-II-Hay-AV-Block-2.jpg" alt="بلوک Mobitz II" loading="lazy">
+ <figcaption>PR ثابت با افتادن ناگهانی QRS · منبع: <a href="https://litfl.com/av-block-2nd-degree-mobitz-ii-hay-block/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <p><strong>[قطعی]</strong> محل بلوک معمولاً <strong>زیر گره AV</strong> است (سیستم His-Purkinje) — پدیده «همه یا هیچ»، برخلاف خستگی تدریجی Mobitz I. در حدود ۷۵٪ موارد QRS پهن است (بلوک زیر باندل هیس)؛ در ۲۵٪ باقی‌مانده QRS باریک می‌ماند (بلوک داخل خود باندل هیس) — این تفکیک ۱۰۰٪ قطعی نیست.</p>
+ <p>علل: MI قدامی (نکروز سپتوم و شاخه‌های هدایتی)، فیبروز ایدیوپاتیک سیستم هدایتی (Lenègre-Lev)، هیپرکالمی، جراحی قلب نزدیک سپتوم.</p>
+ <div class="callout danger"><strong>پیش‌آگهی:</strong> خطر آسیستول حدود ۳۵٪ در سال. بی‌ثباتی همودینامیک می‌تواند ناگهانی و بدون پیش‌آگهی رخ دهد (سنکوپ Stokes-Adams یا مرگ ناگهانی). آتروپین معمولاً <strong>بی‌اثر</strong> است چون اثرش روی گره AV است، نه روی بافت زیرین که مشکل واقعی آنجاست — نباید منتظر پاسخ آتروپین ماند تا پد پیسینگ آماده شود؛ این دو باید هم‌زمان انجام شوند.</div>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-5">
+ <button class="acc-head" onclick="toggleAcc('acc-5')">
+ <span><span class="num">۰۵</span>بلوک AV درجه ۳ (کامل / CHB)</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>هیچ ارتباطی بین P و QRS نیست — AV dissociation کامل. ریتم بطنی توسط یک escape rhythm (جانکشنال یا بطنی) حفظ می‌شود.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Inferior-STEMI-with-3rd-degree-AV-Block-CHB.jpg" alt="بلوک کامل با ریتم فرار جانکشنال" loading="lazy">
+ <figcaption>ریت دهلیزی ~۸۵، ریت بطنی ~۳۸ با escape جانکشنال (QRS باریک) در زمینه STEMI تحتانی · منبع: <a href="https://litfl.com/av-block-3rd-degree-complete-heart-block/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="compare-grid">
+ <div class="compare-card">
+ <h4>Escape باریک (جانکشنال)</h4>
+ <div class="rate-badge">ریت: <span class="r">40–60</span></div>
+ <ul>
+ <li>محل بلوک احتمالاً در سطح گره AV</li>
+ <li>ریتم فرار نسبتاً قابل‌اعتماد و پایدار</li>
+ <li>احتمال پاسخ به آتروپین بیشتر (ولی در عمل، حتی این نوع هم اغلب پاسخ ضعیف می‌دهد)</li>
+ </ul>
+ </div>
+ <div class="compare-card">
+ <h4>Escape پهن (بطنی)</h4>
+ <div class="rate-badge">ریت: <span class="r">20–40</span></div>
+ <ul>
+ <li>محل بلوک زیر گره AV، در سیستم His-Purkinje</li>
+ <li>ریتم فرار غیرقابل‌اعتماد — می‌تواند بدون هشدار قطع شود</li>
+ <li>پرخطرترین حالت — نیاز فوری به آمادگی پیسینگ</li>
+ </ul>
+ </div>
+ </div>
+ <div class="callout">
+ <strong>[محتمل]</strong> علت مکانیستیک زمینه‌ای پیش‌آگهی را تعیین می‌کند: CHB ناشی از خستگی گره AV (مثل MI تحتانی، افزایش تون واگ) پاسخ بهتری به آتروپین می‌دهد؛ CHB ناشی از شکست کامل سیستم His-Purkinje (مثل MI قدامی، فیبروز سیستم هدایتی) معمولاً به آتروپین پاسخ نمی‌دهد. با این حال، در عمل بالینی، حتی نوع اول هم اغلب پاسخ ضعیف نشان می‌دهد — نباید صرفاً بر اساس محل بلوک، از آماده‌سازی پیسینگ صرف‌نظر کرد.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">علل ثانویه قابل‌برگشت</div>
+ <div class="acc-item" id="acc-6">
+ <button class="acc-head" onclick="toggleAcc('acc-6')">
+ <span>همیشه قبل از پیسینگ دائم، این‌ها را رد کن</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <ul>
+ <li><strong>هیپرکالمی</strong> — T نوک‌تیز، پهن‌شدن QRS (به ماژول ۱ مراجعه کن) — درمان با کلسیم گلوکونات/کلرید، انسولین-گلوکز</li>
+ <li><strong>دیگوکسین توکسیسیتی</strong> — درمان با Digoxin Immune Fab در موارد شدید</li>
+ <li><strong>هیپوترمی</strong> — گرم‌کردن مجدد قبل از هر تصمیم قطعی درباره پیسینگ دائم</li>
+ <li><strong>افزایش فشار داخل جمجمه</strong> (Cushing triad: برادی‌کاردی + فشار خون بالا + تنفس نامنظم) — درمان علت زمینه‌ای عصبی، نه فقط ریتم</li>
+ </ul>
+ </div>
+ </div>
+
+ <div class="group-title">درمان برادی‌کاردی علامت‌دار</div>
+
+ <div class="acc-item" id="acc-7">
+ <button class="acc-head" onclick="toggleAcc('acc-7')">
+ <span>آتروپین — خط اول، فقط برای بلوک سطح گره AV</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="drug-card">
+ <h3>آتروپین</h3>
+ <p class="dose">دوز: <span class="mono">1mg IV</span> بولوس، هر ۳-۵ دقیقه تکرار، حداکثر مجموع <span class="mono">3mg</span></p>
+ <p class="dose" style="color:var(--teal)">اندیکاسیون: Sinus brady، بلوک درجه ۱، Mobitz I</p>
+ <p class="dose" style="color:var(--coral)">معمولاً بی‌اثر در: Mobitz II، بلوک کامل با منشا زیر گره AV</p>
+ </div>
+ <div class="callout danger"><strong>هرگز منتظر جواب آتروپین در بلوک high-risk (Mobitz II، بلوک کامل) نباش تا پد پیسینگ را آماده کنی</strong> — این دو کار باید هم‌زمان انجام شوند، نه پشت‌سرهم؛ چون سقوط ناگهانی به آسیستول در این بلوک‌ها بدون هشدار قبلی رخ می‌دهد.</div>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-8">
+ <button class="acc-head" onclick="toggleAcc('acc-8')">
+ <span>پیسینگ ترانس‌کوتانئوس (TCP)</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p><strong>اندیکاسیون:</strong> بیمار علامت‌دار بدون پاسخ به آتروپین، یا مستقیماً در Mobitz II / بلوک کامل با علامت.</p>
+ <p><strong>تنظیم:</strong> ریت <span class="mono">60–80</span>؛ جریان (mA) از پایین شروع و تا capture مکانیکی (نبض واقعی همراه هر اسپایک، نه فقط capture الکتریکی روی مانیتور) بالا ببر — معمولاً بین <span class="mono">50–100 mA</span>.</p>
+ <div class="callout">همیشه sedation/analgesia بده قبل از پیسینگ — دردناک است.</div>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-9">
+ <button class="acc-head" onclick="toggleAcc('acc-9')">
+ <span>داروهای پل (bridge) تا پیسینگ ترانس‌ونوس</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="drug-grid">
+ <div class="drug-card">
+ <h3>دوپامین</h3>
+ <p class="dose">دوز: <span class="mono">5–20 mcg/kg/min</span> IV infusion</p>
+ </div>
+ <div class="drug-card">
+ <h3>اپی‌نفرین</h3>
+ <p class="dose">دوز: <span class="mono">2–10 mcg/min</span> IV infusion</p>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-10">
+ <button class="acc-head" onclick="toggleAcc('acc-10')">
+ <span>پیسینگ ترانس‌ونوس قطعی</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>اندیکاسیون: بلوک‌های پرخطر پایدار (Mobitz II، بلوک کامل)، یا هر بلوکی که به‌رغم TCP همچنان علامت‌دار است. معمولاً پل تا پیسمیکر دائم.</p>
+ </div>
+ </div>
+
+ <div class="group-title">منابع علمی</div>
+ <div class="acc-item" id="acc-ref">
+ <button class="acc-head" onclick="toggleAcc('acc-ref')">
+ <span>منابع و رفرنس‌های این ماژول</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <ul class="ref-list">
+ <li><div>LITFL ECG Library: AV Block 1st/2nd (Mobitz I & II)/3rd degree, Second-degree AV block eponymythology — litfl.com</div></li>
+ <li><div>AHA ACLS Adult Bradycardia Algorithm 2025 — cpr.heart.org</div></li>
+ <li><div>تصاویر: LITFL ECG Library، تحت مجوز CC BY-NC-SA 4.0 (فقط استفاده غیرتجاری مجاز است)</div></li>
+ </ul>
+ </div>
+ </div>
+
+</main>
+
+<footer>
+ محتوای آموزشی — دوره ECG و آریتمی بالینی، ماژول ۴ از ۸ · نسخه ۲ (هشدار انفارکت RV اضافه شد) · قبل از انتشار نهایی، دقت بالینی مجدداً بررسی شود
+</footer>
+
+<script>
+ function toggleAcc(id){ document.getElementById(id).classList.toggle('open'); }
+</script>
+
+</body>
+</html>

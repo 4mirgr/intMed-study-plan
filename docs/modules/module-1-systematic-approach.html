@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماژول ۱ — رویکرد سیستماتیک و پرچم‌های قرمز | آموزش ECG بالینی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ :root{
+ --ink:#0f1e1c; --paper:#f6f4ee; --card:#ffffff; --line:#d8d3c4;
+ --teal:#0f6e56; --teal-deep:#083f32; --coral:#c1502e; --amber:#a8711a; --muted:#6b6a5f;
+ }
+ *{box-sizing:border-box;}
+ body{ margin:0; font-family:'Vazirmatn', sans-serif; background:var(--paper); color:var(--ink); line-height:1.9; }
+ .mono{ font-family:'JetBrains Mono', monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; }
+ header{ padding:4rem 1.5rem 3rem; border-bottom:1px solid var(--line); text-align:center; }
+ .eyebrow{ font-size:13px; letter-spacing:0.05em; color:var(--teal); font-weight:700; }
+ h1{ font-size:clamp(28px,5vw,44px); font-weight:700; margin:0.5rem 0 1rem; color:var(--teal-deep); }
+ .sub{ color:var(--muted); font-size:16px; max-width:640px; margin:0 auto; }
+ main{ max-width:820px; margin:0 auto; padding:2rem 1.5rem 5rem; }
+ .group-title{ font-size:14px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:0.04em; margin:2.5rem 0 0.75rem; }
+ .group-title:first-child{ margin-top:0; }
+
+ .callout{ background:#eef1e5; border-right:4px solid var(--teal); padding:1rem 1.25rem; border-radius:4px; margin:1.2rem 0; font-size:15px; }
+ .callout.danger{ background:#fbebe6; border-right-color:var(--coral); }
+ .tag{ display:inline-block; font-size:12px; font-weight:700; padding:2px 10px; border-radius:100px; margin-left:6px; }
+ .tag.certain{ background:#dbe9df; color:var(--teal-deep); }
+ .tag.likely{ background:#f3e6cf; color:var(--amber); }
+
+ .acc-item{ background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden; }
+ .acc-head{ width:100%; text-align:right; background:none; border:none; display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; font-weight:500; font-size:15px; font-family:'Vazirmatn',sans-serif; color:var(--ink); }
+ .acc-head .num{ font-family:'JetBrains Mono', monospace; color:var(--teal); margin-left:10px; font-size:13px; }
+ .acc-head.flag .num{ color:var(--coral); }
+ .acc-head:hover{ background:#f4f2ea; }
+ .acc-icon{ font-size:18px; color:var(--teal); transition:transform 0.2s ease; line-height:1; }
+ .acc-head.flag ~ .acc-icon{ color:var(--coral); }
+ .acc-item.open .acc-icon{ transform:rotate(45deg); }
+ .acc-panel{ display:none; padding:0 1.25rem 1.25rem; font-size:15px; color:#333; }
+ .acc-item.open .acc-panel{ display:block; }
+
+ figure.ecg{ margin:1rem 0; text-align:center; }
+ figure.ecg img{ max-width:100%; border-radius:8px; border:1px solid var(--line); display:block; margin:0 auto; }
+ figure.ecg figcaption{ font-size:12.5px; color:var(--muted); margin-top:6px; }
+ figure.ecg figcaption a{ color:var(--teal); text-decoration:none; }
+ figure.ecg figcaption a:hover{ text-decoration:underline; }
+
+ .ref-list{ list-style:none; padding:0; margin:0; }
+ .ref-list li{ border-bottom:1px solid var(--line); padding:12px 0; }
+
+ footer{ text-align:center; padding:2rem 1.5rem; font-size:13px; color:var(--muted); border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+ <div class="eyebrow">دوره آموزش ECG و آریتمی بالینی — ماژول ۱ از ۸</div>
+ <h1>رویکرد سیستماتیک و پرچم‌های قرمز اورژانسی</h1>
+ <p class="sub">چارچوب بالینی برای خواندن هر ECG زیر فشار زمانی — قبل از هر تفسیر دقیق، ابتدا خطر جانی را رد کن</p>
+</header>
+
+<main>
+
+ <div class="group-title">Step Zero</div>
+ <div class="acc-item" id="acc-0">
+ <button class="acc-head" onclick="toggleAcc('acc-0')">
+ <span>پایداری همودینامیک، قبل از هر چیز</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="callout danger">
+ <strong>قبل از نگاه‌کردن به جزئیات نوار، اول بپرس: بیمار پایدار است یا نه؟</strong>
+ <span class="tag certain">قطعی</span><br>
+ علائم ناپایداری: افت هوشیاری، افت فشار همراه با علامت، درد قفسه سینه ایسکمیک، ادم حاد ریه. اگر هرکدام حاضر بود، اقدام درمانی فوری (مثلاً کاردیوورژن) مقدم بر تفسیر دقیق ECG است.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">شش مرحله رویکرد سیستماتیک</div>
+
+ <div class="acc-item" id="acc-s1">
+ <button class="acc-head" onclick="toggleAcc('acc-s1')"><span><span class="num">۰۱</span>محاسبه Rate</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel"><p>روش سریع: تعداد مربع‌های بزرگ بین دو QRS را بشمار و بر ۳۰۰ تقسیم کن.</p></div>
+ </div>
+ <div class="acc-item" id="acc-s2">
+ <button class="acc-head" onclick="toggleAcc('acc-s2')"><span><span class="num">۰۲</span>بررسی نظم ریتم (Regularity)</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel"><p>منظم است یا نامنظم؟ نامنظمی خودش می‌تواند تشخیص را محدود کند (مثلاً AFib).</p></div>
+ </div>
+ <div class="acc-item" id="acc-s3">
+ <button class="acc-head" onclick="toggleAcc('acc-s3')"><span><span class="num">۰۳</span>رابطه P wave و QRS</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel"><p>آیا هر P یک QRS دارد؟ نسبت‌شان چیست؟ این کلید افتراق بلوک‌های AV و بسیاری از آریتمی‌هاست.</p></div>
+ </div>
+ <div class="acc-item" id="acc-s4">
+ <button class="acc-head" onclick="toggleAcc('acc-s4')"><span><span class="num">۰۴</span>محور الکتریکی (Axis)</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel"><p>انحراف شدید محور (به‌خصوص محور شمال-غرب) خودش یک یافته هشداردهنده است.</p></div>
+ </div>
+ <div class="acc-item" id="acc-s5">
+ <button class="acc-head" onclick="toggleAcc('acc-s5')"><span><span class="num">۰۵</span>بررسی فواصل</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel"><p><span class="mono">PR</span>، <span class="mono">QRS</span>، <span class="mono">QTc</span>. هرکدام طولانی یا کوتاه‌شده، مسیر تشخیصی را عوض می‌کند.</p></div>
+ </div>
+ <div class="acc-item" id="acc-s6">
+ <button class="acc-head" onclick="toggleAcc('acc-s6')"><span><span class="num">۰۶</span>مقایسه با ECG قبلی بیمار</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel"><p>تنها راه اطمینان از اینکه یک یافته «جدید» است یا مزمن و پایه بیمار.</p></div>
+ </div>
+
+ <div class="group-title">پنج پرچم قرمز اورژانسی</div>
+
+ <div class="acc-item" id="acc-f1">
+ <button class="acc-head flag" onclick="toggleAcc('acc-f1')"><span><span class="num">۱</span>تاکی‌کاردی با کمپلکس پهن (WCT)</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel">
+ <p>فرض کن VT است تا خلافش ثابت شود <span class="tag certain">قطعی</span> — جزئیات کامل در ماژول ۲.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/AV-dissociation.jpg" alt="نمونه AV dissociation در VT" loading="lazy">
+ <figcaption>یکی از یافته‌های اختصاصی VT · منبع: <a href="https://litfl.com/vt-versus-svt-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-f2">
+ <button class="acc-head flag" onclick="toggleAcc('acc-f2')"><span><span class="num">۲</span>الگوی هیپرکالمی</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel">
+ <p>T wave های بلند و نوک‌تیز، پهن‌شدن QRS، ناپدید شدن P wave — می‌تواند به آسیستول یا VF ختم شود اگر درمان نشود.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Hyperkalaemia-peaked-T-waves-serum-potassium-7.0.jpg" alt="T wave نوک‌تیز در هیپرکالمی" loading="lazy">
+ <figcaption>T wave های نوک‌تیز متقارن — پتاسیم سرم ۷.۰ · منبع: <a href="https://litfl.com/hyperkalaemia-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-f3">
+ <button class="acc-head flag" onclick="toggleAcc('acc-f3')"><span><span class="num">۳</span>QTc طولانی / خطر تورساد</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel">
+ <p>QTc بالای حد طبیعی، به‌خصوص همراه با PVC روی T wave (پدیده R on T)، زمینه‌ساز Torsades de Pointes است — جزئیات کامل در ماژول ۷.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-strip-Torsades-de-pointes-TDP.jpg" alt="Torsades de Pointes" loading="lazy">
+ <figcaption>الگوی کلاسیک Torsades de Pointes · منبع: <a href="https://litfl.com/polymorphic-vt-and-torsades-de-pointes-tdp/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-f4">
+ <button class="acc-head flag" onclick="toggleAcc('acc-f4')"><span><span class="num">۴</span>ST الویشن یا معادل‌های STEMI</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel"><p>شامل de Winter، Wellens، Sgarbossa (در LBBB/pacing) و MI خلفی — بررسی تصویری کامل در ماژول ۵ خواهد آمد.</p></div>
+ </div>
+
+ <div class="acc-item" id="acc-f5">
+ <button class="acc-head flag" onclick="toggleAcc('acc-f5')"><span><span class="num">۵</span>بلوک AV درجه بالا (Mobitz II یا کامل)</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel"><p>خطر پیشرفت ناگهانی به آسیستول — نیاز به آمادگی برای پیسینگ اورژانسی. جزئیات کامل در ماژول ۴.</p></div>
+ </div>
+
+ <div class="group-title">منابع علمی</div>
+ <div class="acc-item" id="acc-ref">
+ <button class="acc-head" onclick="toggleAcc('acc-ref')"><span>منابع و رفرنس‌های این ماژول</span><span class="acc-icon">+</span></button>
+ <div class="acc-panel">
+ <ul class="ref-list">
+ <li><div>تصاویر: LITFL ECG Library — litfl.com، تحت مجوز CC BY-NC-SA 4.0 (فقط استفاده غیرتجاری مجاز است)</div></li>
+ </ul>
+ </div>
+ </div>
+
+</main>
+
+<footer>
+ محتوای آموزشی — دوره ECG و آریتمی بالینی، ماژول ۱ از ۸ · نسخه ۲ (منوی بازشونده طبقه‌بندی‌شده) · قبل از انتشار نهایی، دقت بالینی مجدداً بررسی شود
+</footer>
+
+<script>
+ function toggleAcc(id){ document.getElementById(id).classList.toggle('open'); }
+</script>
+
+</body>
+</html>

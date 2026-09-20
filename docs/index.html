@@ -1,44 +1,1109 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>برنامه مطالعه بورد داخلی</title>
-<meta http-equiv="refresh" content="0; url=https://claude.ai/artifact/KBQtkHAoVaaHvgEbcEEXBc">
+<title>مسیر بورد</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
-  body{
-    font-family: Tahoma, "Segoe UI", sans-serif;
-    background:#0f172a;
-    color:#e2e8f0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    margin:0;
-    text-align:center;
-    padding:24px;
+  :root{
+    --bg:#f4f6f5;
+    --surface:#ffffff;
+    --surface-2:#eef1ef;
+    --ink:#0f211d;
+    --ink-dim:#4c5c57;
+    --ink-faint:#7c8b86;
+    --accent:#0d6b5c;
+    --accent-ink:#08453a;
+    --accent-soft:#dcefe9;
+    --warn:#9a5a17;
+    --warn-soft:#f6e8d6;
+    --danger:#9c2f2f;
+    --danger-soft:#f5dede;
+    --border:#dde3e0;
+    --done-bg:#e4f2ec;
+    --shadow:0 1px 2px rgba(15,33,29,.06),0 6px 20px -8px rgba(15,33,29,.12);
   }
-  .box{ max-width:420px; }
-  a{ color:#38bdf8; }
-  .spinner{
-    width:36px;height:36px;
-    border:4px solid #334155;
-    border-top-color:#38bdf8;
-    border-radius:50%;
-    margin:0 auto 18px;
-    animation:spin 0.8s linear infinite;
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --bg:#0e1614; --surface:#152420; --surface-2:#1a2b26; --ink:#eef4f1;
+      --ink-dim:#aebdb7; --ink-faint:#7e9089; --accent:#3fcbb0; --accent-ink:#bdf0e2;
+      --accent-soft:#1c3a33; --warn:#e3ab5f; --warn-soft:#3a2c16; --danger:#e28a8a;
+      --danger-soft:#3a1f1f; --border:#283a34; --done-bg:#17352c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -10px rgba(0,0,0,.5);
+    }
   }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
+  :root[data-theme="dark"]{
+    --bg:#0e1614; --surface:#152420; --surface-2:#1a2b26; --ink:#eef4f1;
+    --ink-dim:#aebdb7; --ink-faint:#7e9089; --accent:#3fcbb0; --accent-ink:#bdf0e2;
+    --accent-soft:#1c3a33; --warn:#e3ab5f; --warn-soft:#3a2c16; --danger:#e28a8a;
+    --danger-soft:#3a1f1f; --border:#283a34; --done-bg:#17352c;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -10px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:"Vazirmatn","Tahoma",sans-serif}
+  .app{direction:rtl;text-align:right;max-width:780px;margin:0 auto;padding-inline:16px;padding-block:20px 64px;}
+  .num{font-family:"IBM Plex Mono","Vazirmatn",monospace;font-variant-numeric:tabular-nums;}
+
+  header.top{
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);
+    padding-block:10px 12px;border-bottom:1px solid var(--border);margin-bottom:18px;
+  }
+  .title-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  h1{font-size:1.05rem;font-weight:800;margin:0;letter-spacing:.2px}
+  .conn{font-size:.7rem;color:var(--ink-faint)}
+  .conn.ok{color:var(--accent)}
+  .conn.bad{color:var(--danger)}
+  .progress-wrap{margin-top:10px;display:flex;align-items:center;gap:10px}
+  .bar{flex:1;height:9px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+  .bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#37b199);border-radius:99px;transition:width .25s ease}
+  .progress-pct{font-size:.85rem;font-weight:700;color:var(--accent-ink);min-width:40px}
+
+  .tabbar{display:flex;gap:8px;margin-top:12px}
+  .tab-btn{
+    flex:1;padding:9px;border-radius:12px;border:1px solid var(--border);background:var(--surface);
+    font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;color:var(--ink-dim);
+  }
+  .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tab-panel{display:none}
+  .tab-panel.active{display:block}
+
+  section.callout{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:16px 16px;margin-bottom:16px;box-shadow:var(--shadow);
+  }
+  .callout.danger{border-inline-start:4px solid var(--danger);}
+  .callout h2{font-size:.95rem;margin:0 0 8px;font-weight:800}
+  .callout p{margin:0 0 8px;font-size:.86rem;line-height:1.9;color:var(--ink-dim)}
+  .callout p:last-child{margin-bottom:0}
+  .tag{
+    display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.68rem;font-weight:600;
+    padding:1px 6px;border-radius:5px;margin-inline-end:6px;letter-spacing:.3px;
+  }
+  .tag.certain{background:var(--danger-soft);color:var(--danger)}
+  .tag.likely{background:var(--warn-soft);color:var(--warn)}
+  .tag.guess{background:var(--surface-2);color:var(--ink-faint)}
+
+  .removed{
+    background:var(--surface-2);border-radius:12px;padding:12px 14px;font-size:.8rem;
+    color:var(--ink-dim);line-height:1.8;margin-bottom:18px;
+  }
+  .removed b{color:var(--ink)}
+
+  .here-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow);
+    border-inline-start:5px solid var(--accent);
+  }
+  .here-eyebrow{font-size:.7rem;font-weight:700;color:var(--accent);letter-spacing:.3px;margin-bottom:4px}
+  .here-title{font-size:1rem;font-weight:800;margin:0 0 4px}
+  .here-sub{font-size:.82rem;color:var(--ink-dim);line-height:1.7;margin:0}
+  .here-next{font-size:.8rem;color:var(--ink-dim);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .here-next b{color:var(--ink)}
+  .here-override{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .here-override label{font-size:.74rem;color:var(--ink-faint)}
+  .here-override select{
+    font-family:inherit;font-size:.78rem;border:1px solid var(--border);border-radius:8px;
+    background:var(--surface-2);color:var(--ink);padding:4px 8px;
+  }
+
+  h2.section-title{font-size:1rem;font-weight:800;margin:24px 4px 8px}
+  p.section-desc{font-size:.82rem;color:var(--ink-dim);line-height:1.8;margin:0 4px 12px}
+
+  .phase{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow);
+    border-inline-start:5px solid var(--phase-color,var(--accent));
+  }
+  .phase-head{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none}
+  .phase-head-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .phase-badge{
+    font-family:"IBM Plex Mono",monospace;font-size:.7rem;font-weight:700;color:#fff;
+    background:var(--phase-color,var(--accent));padding:3px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0;
+  }
+  .phase-titles h3{margin:0;font-size:.92rem;font-weight:800}
+  .phase-titles .when{font-size:.72rem;color:var(--ink-faint);margin-top:1px}
+  .phase-right{display:flex;align-items:center;gap:9px;flex-shrink:0}
+  .phase-count{font-size:.75rem;color:var(--ink-faint)}
+  .chev{transition:transform .2s ease;color:var(--ink-faint);font-size:.75rem}
+  .phase.open .chev{transform:rotate(180deg)}
+  .phase-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .phase.open .phase-body{max-height:20000px}
+  .phase-inner{padding:2px 15px 14px}
+  .goal{font-size:.8rem;color:var(--ink-dim);line-height:1.8;margin:0 0 10px}
+
+  .item{padding:9px 4px;border-top:1px dashed var(--border)}
+  .item:first-child{border-top:none}
+  .item-row{display:flex;align-items:flex-start;gap:9px}
+  .item input[type=checkbox]{
+    appearance:none;-webkit-appearance:none;width:19px;height:19px;flex-shrink:0;margin-top:2px;
+    border:1.5px solid var(--border);border-radius:6px;background:var(--surface);cursor:pointer;
+    display:grid;place-content:center;
+  }
+  .item input[type=checkbox]:checked{background:var(--phase-color,var(--accent));border-color:var(--phase-color,var(--accent))}
+  .item input[type=checkbox]:checked::after{content:"✓";color:#fff;font-size:12px;font-weight:700}
+  .item label{font-size:.85rem;line-height:1.7;cursor:pointer;flex:1}
+  .item.done label{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--border)}
+  .item textarea.note{
+    width:100%;margin-top:6px;min-height:34px;resize:vertical;
+    border:1px solid var(--border);border-radius:8px;background:var(--surface-2);
+    color:var(--ink);font-family:inherit;font-size:.78rem;padding:6px 9px;
+  }
+  .item textarea.note::placeholder{color:var(--ink-faint)}
+
+  .topic-cat{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);
+    border-inline-start:5px solid var(--cat-color,var(--accent));
+  }
+  .cat-head{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none}
+  .cat-head-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .cat-dot{width:11px;height:11px;border-radius:99px;background:var(--cat-color,var(--accent));flex-shrink:0}
+  .cat-title{font-size:.9rem;font-weight:800}
+  .cat-stat{font-size:.73rem;color:var(--ink-faint)}
+  .cat-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .topic-cat.open .cat-body{max-height:60000px}
+  .cat-inner{padding:2px 15px 14px}
+
+  .topic-item{border-top:1px dashed var(--border)}
+  .topic-item:first-child{border-top:none}
+  .topic-list-btn{
+    width:100%;display:flex;align-items:center;gap:8px;padding:11px 2px;
+    background:none;border:none;cursor:pointer;text-align:right;font-family:inherit;
+  }
+  .topic-list-title{flex:1;min-width:100px;font-size:.85rem;font-weight:700;color:var(--ink)}
+  .topic-item .chev{flex-shrink:0;transition:transform .2s ease;color:var(--ink-faint);font-size:.75rem}
+  .topic-item.open .chev{transform:rotate(180deg)}
+  .topic-item.open .topic-list-title{color:var(--cat-color,var(--accent))}
+  .topic-detail{display:none;padding:0 2px 14px}
+  .topic-item.open .topic-detail{display:block}
+  .topic-pill{
+    font-family:"Vazirmatn",sans-serif;font-size:.7rem;font-weight:700;border:none;cursor:pointer;
+    padding:4px 11px;border-radius:99px;flex-shrink:0;
+  }
+  .topic-pill.st-نامشخص{background:var(--surface-2);color:var(--ink-faint)}
+  .topic-pill.st-ضعیف{background:var(--danger-soft);color:var(--danger)}
+  .topic-pill.st-متوسط{background:var(--warn-soft);color:var(--warn)}
+  .topic-pill.st-خوب{background:var(--done-bg);color:var(--accent-ink)}
+  .topic-note{
+    width:100%;min-height:30px;resize:vertical;border:1px solid var(--border);border-radius:8px;
+    background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:.76rem;padding:6px 9px;
+    margin-bottom:8px;
+  }
+  .topic-note::placeholder{color:var(--ink-faint)}
+
+  .learn-row{display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-top:2px}
+  .learn-btn{
+    font-family:"Vazirmatn",sans-serif;font-size:.7rem;font-weight:600;
+    border:1px solid var(--border);background:var(--surface);color:var(--ink-dim);
+    padding:4px 10px;border-radius:99px;cursor:pointer;
+  }
+  .learn-btn:hover{border-color:var(--cat-color,var(--accent));color:var(--cat-color,var(--accent))}
+  .learn-btn.active{background:var(--cat-color,var(--accent));border-color:var(--cat-color,var(--accent));color:#fff}
+  .learn-btn .cnt{font-family:"IBM Plex Mono",monospace;opacity:.75;margin-inline-start:3px}
+  .learn-panel{
+    width:100%;margin-top:8px;padding:10px 12px;border-radius:10px;
+    background:var(--surface-2);font-size:.82rem;line-height:1.8;display:none;
+  }
+  .learn-panel.open{display:block}
+  .learn-empty{color:var(--ink-faint);font-size:.8rem}
+  .lesson-section{margin-bottom:14px}
+  .lesson-section:last-child{margin-bottom:0}
+  .lesson-heading{font-weight:800;font-size:.86rem;color:var(--cat-color,var(--accent));margin-bottom:5px}
+  .lesson-body{color:var(--ink);line-height:1.95;font-size:.84rem}
+  .lesson-body p{margin:0 0 8px}
+  .lesson-body p:last-child{margin-bottom:0}
+  .lesson-embed-note{font-size:.78rem;color:var(--ink-faint);margin-bottom:8px;line-height:1.7}
+  .lesson-embed-frame{width:100%;height:min(80vh,900px);border:1px solid var(--border);border-radius:10px;background:#fff;display:block}
+  .fc-card{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:8px;background:var(--surface)}
+  .fc-card:last-child{margin-bottom:0}
+  .fc-front{font-weight:700;margin-bottom:6px}
+  .fc-back{color:var(--ink-dim);border-top:1px dashed var(--border);padding-top:6px;margin-top:6px}
+  .fc-reveal{
+    font-size:.72rem;border:none;background:var(--accent-soft);color:var(--accent-ink);
+    padding:3px 9px;border-radius:99px;cursor:pointer;
+  }
+  .mcq-block{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:10px;background:var(--surface)}
+  .mcq-block:last-child{margin-bottom:0}
+  .mcq-stem{font-weight:700;margin-bottom:7px}
+  .mcq-opt{
+    display:block;width:100%;text-align:right;margin-bottom:5px;padding:6px 9px;
+    border:1px solid var(--border);border-radius:8px;background:var(--surface-2);
+    color:var(--ink);font-family:inherit;font-size:.8rem;cursor:pointer;
+  }
+  .mcq-opt.correct{background:var(--done-bg);border-color:var(--accent);color:var(--accent-ink)}
+  .mcq-opt.incorrect{background:var(--danger-soft);border-color:var(--danger);color:var(--danger)}
+  .mcq-explain{margin-top:6px;color:var(--ink-dim);font-size:.78rem;border-top:1px dashed var(--border);padding-top:6px;display:none}
+  .mcq-explain.show{display:block}
+  .kfp-block{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:10px;background:var(--surface)}
+  .kfp-title{font-weight:700;margin-bottom:5px}
+  .kfp-vignette{color:var(--ink-dim);margin-bottom:8px}
+  .kfp-step{border-top:1px dashed var(--border);padding-top:6px;margin-top:6px}
+  .kfp-prompt{font-weight:600;margin-bottom:4px}
+  .kfp-answer{color:var(--ink-dim);border-top:1px dashed var(--border);margin-top:5px;padding-top:5px;display:none}
+  .kfp-answer.show{display:block}
+  .img-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--border)}
+  .img-row:first-child{border-top:none}
+  .img-row a{color:var(--accent-ink);font-weight:600;text-decoration:none;font-size:.82rem}
+  .img-row .cap-note{display:block;color:var(--ink-faint);font-size:.74rem;margin-top:2px}
+  .tbl-title{font-weight:700;margin-bottom:6px}
+  table.md-table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:.78rem}
+  table.md-table:last-child{margin-bottom:0}
+  table.md-table th,table.md-table td{border:1px solid var(--border);padding:6px 8px;text-align:right}
+  table.md-table th{background:var(--surface);font-weight:700}
+
+  footer.bottom{
+    margin-top:24px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+    font-size:.74rem;color:var(--ink-faint);flex-wrap:wrap;
+  }
+  .reset-btn{
+    background:none;border:1px solid var(--border);color:var(--ink-faint);font-size:.73rem;
+    padding:6px 12px;border-radius:99px;cursor:pointer;font-family:inherit;
+  }
+  .reset-btn:hover{border-color:var(--danger);color:var(--danger)}
+
+  @media (max-width:420px){ h1{font-size:.98rem} }
 </style>
-<script>
-  location.replace("https://claude.ai/artifact/KBQtkHAoVaaHvgEbcEEXBc");
-</script>
-</head>
-<body>
-  <div class="box">
-    <div class="spinner"></div>
-    <p>در حال انتقال به برنامهٔ مطالعهٔ زنده...</p>
-    <p>اگر منتقل نشدی، <a href="https://claude.ai/artifact/KBQtkHAoVaaHvgEbcEEXBc">این‌جا کلیک کن</a>.</p>
+
+<div class="app">
+  <header class="top">
+    <div class="title-row">
+      <h1>مسیر بورد داخلی</h1>
+      <span class="conn num" id="connStatus">در حال اتصال...</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="bar"><span id="barFill" style="width:0%"></span></div>
+      <div class="progress-pct num" id="barPct">۰٪</div>
+    </div>
+    <div class="tabbar">
+      <button type="button" class="tab-btn active" id="tabBtnDashboard">داشبورد</button>
+      <button type="button" class="tab-btn" id="tabBtnEducation">بخش آموزشی</button>
+    </div>
+  </header>
+
+  <div class="tab-panel active" id="tabPanelDashboard">
+    <section class="callout danger">
+      <h2>ارزیابی وضعیت، قبل از هر برنامه‌ای</h2>
+      <p><span class="tag certain">قطعی</span>فاز پایانی نقشهٔ اصلی روی «شهریور ۱۴۰۵» تنظیم شده بود — یعنی همین هفته، نه سال بعد. زمان‌بندی زیر از صفر و بر اساس فاصلهٔ واقعی تا آزمون بعدی بازسازی شده.</p>
+      <p><span class="tag likely">محتمل</span>تصمیم‌گیری بالینی خوب + نمرهٔ ۶۸ در ارتقا یعنی مشکل اصلی «ندانستن» نیست. نیاز اصلی‌تان تمرین closed-book و تایم‌دار است، نه مرور دوبارهٔ کتاب از اول.</p>
+      <p><span class="tag guess">حدسی</span>فرض شده امتحان ارتقا و بورد کشوری از نظر فرمت و منبع به‌قدر کافی شبیه‌اند که نمرهٔ ۶۸ سیگنال معتبری برای آمادگی بورد باشد. اگر ساختار این دو امتحان در دانشگاهتان فرق زیادی دارد، فاز صفر را جدی‌تر بگیرید.</p>
+    </section>
+
+    <div class="removed">
+      <b>چه چیزی از نقشهٔ اصلی حذف شد و چرا:</b>
+      معرفی کامل ساختار آزمون به یک خط تقلیل یافت. «تماشای کامل ویدیوها از پایه» فقط برای مباحث واقعاً ناآشنا نگه داشته شده. تست‌زنی از «فاز آخر» به «از هفتهٔ اول» منتقل شد، چون مشکل شما بر اساس داده‌ای که دادید تکنیک آزمون است نه محتوا.
+    </div>
+
+    <div class="here-card">
+      <div class="here-eyebrow">الان اینجام</div>
+      <h2 class="here-title" id="hereTitle">—</h2>
+      <p class="here-sub" id="hereSub"></p>
+      <div class="here-next" id="hereNext"></div>
+      <div class="here-override">
+        <label for="hereSelect">تغییر دستی مرحلهٔ فعلی:</label>
+        <select id="hereSelect"></select>
+      </div>
+    </div>
+
+    <h2 class="section-title">مسیر مطالعه (فازها)</h2>
+    <p class="section-desc">هر آیتم یک چک‌باکس است؛ زیرش جا برای یادداشت کوتاه هست — همون‌جایی که گیر کردی یا اشتباه فهمیدی. همه‌چیز آنلاین ذخیره می‌شه و بین موبایل و مک همگام می‌مونه.</p>
+    <div id="phasesRoot"></div>
   </div>
-</body>
-</html>
+
+  <div class="tab-panel" id="tabPanelEducation">
+    <h2 class="section-title">بخش آموزشی</h2>
+    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در گفتگو بگو.</p>
+    <div id="topicsRoot"></div>
+  </div>
+
+  <footer class="bottom">
+    <span>همه‌چیز در دیتابیس همین آرتیفکت ذخیره می‌شه — با هر دستگاهی که وارد حسابت بشی همگام می‌مونه؛ بدون اینترنت، تغییرات ذخیره نمی‌شن.</span>
+    <button class="reset-btn" id="resetBtn">ریست کامل (روی همهٔ دستگاه‌ها)</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  function faDigits(n){
+    var map=['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    return String(n).replace(/[0-9]/g,function(d){ return map[d]; });
+  }
+
+  // ---------------------------------------------------------------
+  // CONTENT — phases (static; only interactive state lives in db)
+  // ---------------------------------------------------------------
+  var PHASES = [
+    { id:"p0", color:"#5b6472", badge:"فاز ۰", title:"تشخیص دقیق، قبل از شروع مطالعه", when:"هفتهٔ اول",
+      goal:"هدف: به‌جای حدس زدن نقطه ضعف، از روی برگهٔ امتحان واقعی تصمیم بگیر. بدون این فاز، بقیهٔ برنامه حدسی می‌مونه.",
+      items:[
+        {id:"p0-1", text:"مرور کارنامهٔ آزمون ارتقای اخیر و لیست کردن سؤال‌های غلط بر اساس مبحث"},
+        {id:"p0-2", text:"برای هر غلط، نوع خطا رو مشخص کن: دانشی / بددقتی در خواندن سؤال / فشار زمان / حدس اشتباه"},
+        {id:"p0-3", text:"تاریخ دقیق دورهٔ بعدی آزمون دانشنامهٔ تخصصی داخلی رو از منبع رسمی تأیید کن و ماه‌های واقعی باقی‌مانده رو بشمار"},
+        {id:"p0-4", text:"۳ مبحث پراشتباه رو ثبت کن و در بخش «نقشه دانش» پایین صفحه وضعیتشون رو «ضعیف» بزن"}
+      ]
+    },
+    { id:"p1", color:"#1d6fbd", badge:"فاز ۱", title:"ساخت عادت تست‌زنیِ closed-book", when:"ماه ۱ تا ۳",
+      goal:"هدف: از همین اول عادت کن بدون تقلب کوچیک بالینی (بدون آپتودیت، بدون چک کردن دوز) جواب بدی — سر جلسهٔ بورد این ابزارها رو نداری.",
+      items:[
+        {id:"p1-1", text:"برای هر مبحث ضعیف فاز ۰: فقط جدول‌ها و الگوریتم‌های کلیدی هاریسون رو مرور کن — تماشای ویدیوی کامل فقط اگه مبحث واقعاً ناآشناست"},
+        {id:"p1-2", text:"هفته‌ای حداقل یک ست ۵۰ سؤالی تایم‌دار از تست‌های ۵ سال اخیر ارتقا/بورد — کاملاً closed-book"},
+        {id:"p1-3", text:"بعد از هر ست، تک‌تک گزینه‌های غلط رو تحلیل کن، نه فقط جواب درست"},
+        {id:"p1-4", text:"برای هر نکتهٔ دام‌دار، فلش‌کارت active recall بساز به‌جای خلاصه‌نویسی دستی"},
+        {id:"p1-5", text:"جدول داروهای خوراکی دیابت رو از حفظ، بدون نگاه کردن، روی کاغذ بازسازی کن — تکرار تا بدون خطا"},
+        {id:"p1-6", text:"الگوریتم تاکی‌کاردی QRS باریک/پهن و پروتکل فئوکروموسیتوم رو closed-book روی کاغذ بازسازی کن"}
+      ]
+    },
+    { id:"p2", color:"#7a3fc4", badge:"فاز ۲", title:"افزایش حجم تست + پوشش بقیهٔ دروس", when:"ماه ۴ تا ۷",
+      goal:"هدف: یک چک واقعی بگیر که نمره داره بالا میره یا نه. اگه بعد این حجم پیشرفت نبود، فرض «فقط مشکل تکنیکه» رو کنار بذار.",
+      items:[
+        {id:"p2-1", text:"حجم تست تایم‌دار رو به ۲ تا ۳ ست در هفته برسون"},
+        {id:"p2-2", text:"هفته‌ای دو بار شبیه‌سازی کیس KFP/PMP — مرحله‌به‌مرحله: اقدام فوری → تست تشخیصی → درمان قطعی"},
+        {id:"p2-3", text:"روماتولوژی، هماتولوژی/آنکولوژی و عفونی رو با همون روش دو-قدمی پوشش بده"},
+        {id:"p2-4", text:"نمرهٔ هر ست تایم‌دار رو ثبت کن"},
+        {id:"p2-5", text:"بعد از ۴ هفته: روند نمرات رو چک کن — اگه واضح بالا نرفته، این علامت خطره"},
+        {id:"p2-6", text:"سناریوی آدرنال اینسیدنتالوما و کوشینگ رو closed-book و الگوریتمی حل کن"}
+      ]
+    },
+    { id:"p3", color:"#c4711f", badge:"فاز ۳", title:"شبیه‌سازی کامل شرایط آزمون", when:"ماه ۸ تا ۱۰",
+      goal:"هدف: از تمرین قطعه‌قطعه به تحمل کامل ۱۵۰ سؤال زیر فشار زمان واقعی برس.",
+      items:[
+        {id:"p3-1", text:"هر ۲ هفته یک آزمون جامع کامل (۱۵۰ سؤال، زمان واقعی، بدون وقفه، بدون گوشی)"},
+        {id:"p3-2", text:"بعد از هر آزمون جامع، فقط روی غلط‌ها تمرکز کن نه مرور کامل"},
+        {id:"p3-3", text:"مرور کامل فلش‌کارت‌ها با spaced repetition"},
+        {id:"p3-4", text:"۳ مبحث ضعیفی که هنوز پیشرفت نکردن رو جداگانه و فشرده مرور کن"},
+        {id:"p3-5", text:"حداقل یک بار شبیه‌سازی آزمون شفاهی/OSCE با هم‌گروه یا با کلود"}
+      ]
+    },
+    { id:"p4", color:"#1c8a5a", badge:"فاز ۴", title:"مرور نهایی، بدون مطلب جدید", when:"۲ تا ۴ هفتهٔ آخر",
+      goal:"هدف: تثبیت، نه یادگیری. شروع مبحث جدید در این بازه معمولاً نمره رو پایین میاره نه بالا.",
+      items:[
+        {id:"p4-1", text:"فقط مرور فلش‌کارت‌ها و جداول کلیدی — هیچ مبحث جدیدی شروع نکن"},
+        {id:"p4-2", text:"یک آزمون جامع کامل در شرایط تا حد امکان شبیه روز واقعی"},
+        {id:"p4-3", text:"مرور نهایی ۳ مبحث ضعیف اصلی"},
+        {id:"p4-4", text:"خواب کافی در هفتهٔ آخر — بی‌خوابی شب امتحان جبران‌کنندهٔ هیچ مروری نیست"}
+      ]
+    }
+  ];
+
+  // ---------------------------------------------------------------
+  // CONTENT — knowledge map, grouped by Harrison's table of contents
+  // ---------------------------------------------------------------
+  var TOPICS = [
+    { id:"meta", color:"#5b6472", label:"مهارت‌های پایه و عمومی", subs:[
+      {id:"meta-basic-sciences", label:"علوم پایه (فیزیولوژی/فارماکولوژی پایه)"},
+      {id:"meta-test-taking", label:"تکنیک تست‌زنی و مدیریت زمان"}
+    ]},
+    { id:"cardio", color:"#c1273d", label:"قلب و عروق", subs:[
+      {id:"cardio-hf", label:"نارسایی قلبی (Heart Failure)"},
+      {id:"cardio-cardiomyopathy", label:"کاردیومیوپاتی و میوکاردیت"},
+      {id:"cardio-acs", label:"سندروم کرونری حاد / ایسکمی"},
+      {id:"cardio-arrhythmia", label:"آریتمی‌های دهلیزی و بطنی"},
+      {id:"cardio-ecg", label:"خواندن و تفسیر ECG"},
+      {id:"cardio-valve", label:"بیماری‌های دریچه‌ای"},
+      {id:"cardio-pericard", label:"پریکاردیت و تامپوناد"},
+      {id:"cardio-htn", label:"فشار خون بالا"},
+      {id:"cardio-pulm-htn", label:"پرفشاری خون ریوی"},
+      {id:"cardio-aorta", label:"بیماری‌های آئورت و عروق محیطی"}
+    ]},
+    { id:"pulm", color:"#1690c9", label:"ریه", subs:[
+      {id:"pulm-asthma", label:"آسم"},
+      {id:"pulm-copd", label:"COPD"},
+      {id:"pulm-ild", label:"بیماری‌های بینابینی ریه (ILD)"},
+      {id:"pulm-pe", label:"آمبولی ریه / ترومبوآمبولی وریدی"},
+      {id:"pulm-ards", label:"نارسایی تنفسی و ARDS"},
+      {id:"pulm-sleep", label:"اختلالات خواب و آپنه"}
+    ]},
+    { id:"nephro", color:"#0f9285", label:"کلیه", subs:[
+      {id:"nephro-aki", label:"آسیب حاد کلیه (AKI)"},
+      {id:"nephro-ckd", label:"بیماری مزمن کلیه (CKD)"},
+      {id:"nephro-lytes", label:"اختلالات الکترولیت و اسید-باز"},
+      {id:"nephro-gn", label:"گلومرولونفریت‌ها"},
+      {id:"nephro-stone", label:"سنگ‌های کلیوی"}
+    ]},
+    { id:"gi", color:"#a5751a", label:"گوارش و کبد", subs:[
+      {id:"gi-ibd", label:"بیماری‌های التهابی روده (IBD)"},
+      {id:"gi-cirrhosis", label:"سیروز و عوارض آن"},
+      {id:"gi-hepatitis", label:"هپاتیت‌های ویروسی"},
+      {id:"gi-pancreatitis", label:"پانکراتیت"},
+      {id:"gi-bleed", label:"خونریزی گوارشی"}
+    ]},
+    { id:"endo", color:"#7b3fc9", label:"غدد و متابولیسم", subs:[
+      {id:"endo-thyroid-physio", label:"فیزیولوژی غده تیروئید"},
+      {id:"endo-hypothyroid", label:"هیپوتیروئیدی"},
+      {id:"endo-hyperthyroid", label:"هایپرتیروئیدی"},
+      {id:"endo-thyroid-nodule-cancer", label:"بیماری ندولار تیروئید و کانسر تیروئید"},
+      {id:"endo-diabetes-dx", label:"تشخیص، طبقه‌بندی و پاتوفیزیولوژی دیابت"},
+      {id:"endo-diabetes-tx", label:"مدیریت و درمان دیابت"},
+      {id:"endo-diabetes-complications", label:"عوارض دیابت"},
+      {id:"endo-cushing", label:"کوشینگ"},
+      {id:"endo-mineralocorticoid-excess", label:"افزایش مینرالوکورتیکوئیدها"},
+      {id:"endo-incidentaloma", label:"اینسیدنتالوما"},
+      {id:"endo-adrenal-insufficiency", label:"نارسایی آدرنال"},
+      {id:"endo-osteoporosis", label:"استئوپروز"},
+      {id:"endo-bone-metabolism", label:"متابولیسم استخوان و مواد معدنی"},
+      {id:"endo-parathyroid-calcium", label:"بیماری‌های پاراتیروئید و اختلالات کلسیم"},
+      {id:"endo-hypoglycemia", label:"هیپوگلایسمی"},
+      {id:"endo-pituitary-insufficiency-tumors", label:"نارسایی هیپوفیز و سندرم تومورهای هیپوفیز قدامی"},
+      {id:"endo-neurohypophysis", label:"نوروهیپوفیز"},
+      {id:"endo-obesity", label:"ارزیابی و درمان چاقی"},
+      {id:"endo-lipoprotein", label:"اختلالات متابولیسم لیپوپروتئین"},
+      {id:"endo-female-puberty", label:"اختلالات بلوغ در جنس مونث"},
+      {id:"endo-sexual-development", label:"اختلالات نمو جنسی"},
+      {id:"endo-hirsutism", label:"هیرسوتیسم"},
+      {id:"endo-menopause-infertility", label:"یائسگی و ناباروری"},
+      {id:"endo-male-reproductive", label:"اختلالات بیضه و دستگاه تولید مثل مذکر"},
+      {id:"endo-pheo", label:"فئوکروموسیتوما"},
+      {id:"endo-aps", label:"سندروم‌های پلی‌اندوکرین اتوایمیون (APS)"},
+      {id:"endo-men", label:"نئوپلازی‌های متعدد اندوکرین (MEN)"},
+      {id:"endo-wilson", label:"ویلسون"},
+      {id:"endo-hemochromatosis", label:"هموکروماتوز"}
+    ]},
+    { id:"heme", color:"#c72f8a", label:"هماتولوژی و آنکولوژی", subs:[
+      {id:"heme-iron-anemia", label:"آنمی فقر آهن و سایر آنمی‌های هیپوپرولیفراتیو"},
+      {id:"heme-hemolytic-anemia", label:"آنمی‌های همولیتیک"},
+      {id:"heme-aml", label:"لوسمی‌های حاد (AML/ALL)"},
+      {id:"heme-cll", label:"لوسمی لنفوئیدی مزمن (CLL)"},
+      {id:"heme-cml", label:"لوسمی میلوئیدی مزمن (CML)"},
+      {id:"heme-lymphoma", label:"لنفوم‌ها (Lymphoma)"},
+      {id:"heme-coag", label:"اختلالات انعقادی و ترومبوز"},
+      {id:"heme-mds", label:"سندرم میلودیسپلاستیک"},
+      {id:"heme-mm", label:"مولتیپل میلوم"},
+      {id:"heme-breast-ca", label:"کانسر پستان"},
+      {id:"heme-lower-gi-cancer", label:"کنسرهای دستگاه گوارش تحتانی"},
+      {id:"heme-upper-gi-cancer", label:"کنسرهای دستگاه گوارش فوقانی"},
+      {id:"heme-cancer-infection", label:"عفونت در بیماران مبتلا به کنسر"}
+    ]},
+    { id:"rheum", color:"#d0631a", label:"روماتولوژی و ایمونولوژی", subs:[
+      {id:"rheum-ra", label:"آرتریت روماتوئید (RA)"},
+      {id:"rheum-sle", label:"لوپوس (SLE)"},
+      {id:"rheum-gout", label:"نقرس و بیماری‌های کریستالی"},
+      {id:"rheum-vasculitis", label:"واسکولیت‌ها"},
+      {id:"rheum-spa", label:"اسپوندیلوآرتروپاتی‌ها"}
+    ]},
+    { id:"id", color:"#1f9147", label:"عفونی", subs:[
+      {id:"id-sepsis", label:"سپسیس و شوک سپتیک"},
+      {id:"id-hiv", label:"HIV/AIDS"},
+      {id:"id-tb", label:"سل (TB)"},
+      {id:"id-hai", label:"عفونت‌های بیمارستانی"},
+      {id:"id-empiric", label:"آنتی‌بیوتیک‌درمانی تجربی"}
+    ]},
+    { id:"neuro", color:"#3949c4", label:"اعصاب", subs:[
+      {id:"neuro-stroke", label:"سکته مغزی (Stroke)"},
+      {id:"neuro-seizure", label:"تشنج و صرع"},
+      {id:"neuro-headache", label:"سردرد"},
+      {id:"neuro-dementia", label:"دمانس"},
+      {id:"neuro-neuropathy", label:"نوروپاتی‌های محیطی"}
+    ]},
+    { id:"crit", color:"#586170", label:"مراقبت ویژه و اورژانس داخلی", subs:[
+      {id:"crit-shock", label:"انواع شوک"},
+      {id:"crit-abg", label:"تفسیر ABG و اسید-باز پیشرفته"},
+      {id:"crit-poison", label:"مسمومیت‌های شایع"},
+      {id:"crit-vent", label:"اصول اولیهٔ ونتیلاتور"}
+    ]}
+  ];
+
+  var STATUS_ORDER = ["نامشخص","ضعیف","متوسط","خوب"];
+  var LEARN_TYPES = [
+    {key:"lesson", label:"درسنامه"},
+    {key:"flashcards", label:"فلش کارت نکات"},
+    {key:"mcq", label:"آزمون ۴ گزینه‌ای"},
+    {key:"kfPmp", label:"KF & PMP"},
+    {key:"images", label:"تصاویر مهم"},
+    {key:"tables", label:"جداول مهم"}
+  ];
+  var contentMap = {}; // topicId -> {flashcards,mcq,kfPmp,images,tables}
+
+  // ---------------------------------------------------------------
+  // DOM refs collected while building (built once, updated in place)
+  // ---------------------------------------------------------------
+  var phaseItemEls = {};   // id -> {row, cb, note, phaseId}
+  var topicEls = {};       // id -> {listBtn, detailEl, pill, note, catId}
+  var openTopicDetailId = null;
+  var allItemIds = [];
+  var allTopicIds = [];
+
+  var phasesRoot = document.getElementById("phasesRoot");
+  PHASES.forEach(function(phase, pIdx){
+    var el = document.createElement("div");
+    el.className = "phase" + (pIdx === 0 ? " open" : "");
+    el.style.setProperty("--phase-color", phase.color);
+
+    var head = document.createElement("div");
+    head.className = "phase-head";
+    head.innerHTML =
+      '<div class="phase-head-left"><span class="phase-badge">'+phase.badge+'</span>'+
+      '<div class="phase-titles"><h3>'+phase.title+'</h3><div class="when">'+phase.when+'</div></div></div>'+
+      '<div class="phase-right"><span class="phase-count num" data-count="'+phase.id+'"></span><span class="chev">▾</span></div>';
+    head.addEventListener("click", function(){ el.classList.toggle("open"); });
+    el.appendChild(head);
+
+    var body = document.createElement("div");
+    body.className = "phase-body";
+    var inner = document.createElement("div");
+    inner.className = "phase-inner";
+    var goal = document.createElement("p");
+    goal.className = "goal";
+    goal.textContent = phase.goal;
+    inner.appendChild(goal);
+
+    phase.items.forEach(function(item){
+      var row = document.createElement("div");
+      row.className = "item";
+      var top = document.createElement("div");
+      top.className = "item-row";
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = item.id;
+      var label = document.createElement("label");
+      label.setAttribute("for", item.id);
+      label.textContent = item.text;
+      top.appendChild(cb);
+      top.appendChild(label);
+      row.appendChild(top);
+      var note = document.createElement("textarea");
+      note.className = "note";
+      note.placeholder = "یادداشت: اینجا کجا گیر کردی یا چی رو اشتباه فهمیدی؟";
+      row.appendChild(note);
+      inner.appendChild(row);
+
+      phaseItemEls[item.id] = {row:row, cb:cb, note:note, phaseId:phase.id};
+      allItemIds.push(item.id);
+
+      cb.addEventListener("change", function(){
+        writeItemState(item.id, {checked:cb.checked, note: note.value});
+      });
+      note.addEventListener("input", function(){
+        scheduleNoteWrite(item.id, function(){
+          writeItemState(item.id, {checked:cb.checked, note: note.value});
+        });
+      });
+    });
+
+    body.appendChild(inner);
+    el.appendChild(body);
+    phasesRoot.appendChild(el);
+  });
+
+  var topicsRoot = document.getElementById("topicsRoot");
+  TOPICS.forEach(function(cat){
+    var catEl = document.createElement("div");
+    catEl.className = "topic-cat";
+    catEl.style.setProperty("--cat-color", cat.color);
+
+    var head = document.createElement("div");
+    head.className = "cat-head";
+    head.innerHTML =
+      '<div class="cat-head-left"><span class="cat-dot"></span><span class="cat-title">'+cat.label+'</span></div>'+
+      '<div class="phase-right"><span class="cat-stat num" data-cat-stat="'+cat.id+'"></span><span class="chev">▾</span></div>';
+    head.addEventListener("click", function(){ catEl.classList.toggle("open"); });
+    catEl.appendChild(head);
+
+    var body = document.createElement("div");
+    body.className = "cat-body";
+    var inner = document.createElement("div");
+    inner.className = "cat-inner";
+
+    cat.subs.forEach(function(sub){
+      var item = document.createElement("div");
+      item.className = "topic-item";
+
+      var listBtn = document.createElement("button");
+      listBtn.type = "button";
+      listBtn.className = "topic-list-btn";
+
+      var title = document.createElement("span");
+      title.className = "topic-list-title";
+      title.textContent = sub.label;
+
+      var pill = document.createElement("button");
+      pill.type = "button";
+      pill.className = "topic-pill st-نامشخص";
+      pill.textContent = "نامشخص";
+      pill.addEventListener("click", function(e){
+        e.stopPropagation();
+        var current = topicEls[sub.id].status || "نامشخص";
+        var idx = STATUS_ORDER.indexOf(current);
+        var next = STATUS_ORDER[(idx+1) % STATUS_ORDER.length];
+        topicEls[sub.id].status = next;
+        pill.className = "topic-pill st-" + next;
+        pill.textContent = next;
+        writeTopicState(sub.id, {status: next, note: note.value});
+        updateCatStat(cat);
+      });
+
+      var chev = document.createElement("span");
+      chev.className = "chev";
+      chev.textContent = "▾";
+
+      listBtn.appendChild(title);
+      listBtn.appendChild(pill);
+      listBtn.appendChild(chev);
+
+      var detail = document.createElement("div");
+      detail.className = "topic-detail";
+
+      var note = document.createElement("textarea");
+      note.className = "topic-note";
+      note.placeholder = "یادداشت کوتاه دربارهٔ این مبحث...";
+      note.addEventListener("input", function(){
+        scheduleNoteWrite(sub.id, function(){
+          writeTopicState(sub.id, {status: topicEls[sub.id].status || "نامشخص", note: note.value});
+        });
+      });
+      detail.appendChild(note);
+
+      var learnRow = document.createElement("div");
+      learnRow.className = "learn-row";
+      var learnPanel = document.createElement("div");
+      learnPanel.className = "learn-panel";
+      var learnBtns = {};
+      LEARN_TYPES.forEach(function(lt){
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "learn-btn";
+        b.innerHTML = lt.label + '<span class="cnt" data-lc="'+sub.id+'-'+lt.key+'"></span>';
+        b.addEventListener("click", function(e){
+          e.stopPropagation();
+          var isActive = b.classList.contains("active");
+          learnRow.querySelectorAll(".learn-btn").forEach(function(x){ x.classList.remove("active"); });
+          if(isActive){
+            learnPanel.classList.remove("open");
+            topicEls[sub.id].openType = null;
+          } else {
+            b.classList.add("active");
+            learnPanel.classList.add("open");
+            topicEls[sub.id].openType = lt.key;
+            renderLearnPanel(sub.id, lt.key);
+          }
+        });
+        learnBtns[lt.key] = b;
+        learnRow.appendChild(b);
+      });
+      detail.appendChild(learnRow);
+      detail.appendChild(learnPanel);
+
+      listBtn.addEventListener("click", function(){
+        var willOpen = openTopicDetailId !== sub.id;
+        if(openTopicDetailId && topicEls[openTopicDetailId]){
+          topicEls[openTopicDetailId].itemEl.classList.remove("open");
+        }
+        openTopicDetailId = willOpen ? sub.id : null;
+        item.classList.toggle("open", willOpen);
+      });
+
+      item.appendChild(listBtn);
+      item.appendChild(detail);
+      inner.appendChild(item);
+
+      topicEls[sub.id] = {itemEl:item, pill:pill, note:note, catId:cat.id, status:"نامشخص", learnBtns:learnBtns, learnPanel:learnPanel, openType:null};
+      allTopicIds.push(sub.id);
+    });
+
+    body.appendChild(inner);
+    catEl.appendChild(body);
+    topicsRoot.appendChild(catEl);
+  });
+
+  function updateCatStat(cat){
+    var good = cat.subs.filter(function(s){ return topicEls[s.id].status === "خوب"; }).length;
+    var el = document.querySelector('.cat-stat[data-cat-stat="'+cat.id+'"]');
+    if(el) el.textContent = faDigits(good) + "/" + faDigits(cat.subs.length) + " خوب";
+  }
+  TOPICS.forEach(updateCatStat);
+
+  var hereSelect = document.getElementById("hereSelect");
+  var autoOpt = document.createElement("option");
+  autoOpt.value = ""; autoOpt.textContent = "خودکار (پیش‌فرض)";
+  hereSelect.appendChild(autoOpt);
+  PHASES.forEach(function(phase){
+    var opt = document.createElement("option");
+    opt.value = phase.id;
+    opt.textContent = phase.badge + " — " + phase.title;
+    hereSelect.appendChild(opt);
+  });
+
+  // ---------------------------------------------------------------
+  // Progress / "الان اینجام"
+  // ---------------------------------------------------------------
+  function updatePhaseCounts(){
+    PHASES.forEach(function(phase){
+      var done = phase.items.filter(function(it){ return phaseItemEls[it.id].cb.checked; }).length;
+      var badge = document.querySelector('.phase-count[data-count="'+phase.id+'"]');
+      if(badge) badge.textContent = faDigits(done) + "/" + faDigits(phase.items.length);
+    });
+  }
+
+  function updateOverallBar(){
+    var total = allItemIds.length;
+    var done = allItemIds.filter(function(id){ return phaseItemEls[id].cb.checked; }).length;
+    var pct = total ? Math.round(done/total*100) : 0;
+    document.getElementById("barFill").style.width = pct + "%";
+    document.getElementById("barPct").textContent = faDigits(pct) + "٪";
+  }
+
+  function detectAutoPhase(){
+    for(var i=0;i<PHASES.length;i++){
+      var items = PHASES[i].items;
+      var allDone = items.length && items.every(function(it){ return phaseItemEls[it.id].cb.checked; });
+      if(!allDone) return PHASES[i];
+    }
+    return PHASES[PHASES.length-1];
+  }
+
+  var currentOverride = null;
+  function updateHereCard(){
+    var phase = currentOverride ? PHASES.filter(function(p){ return p.id === currentOverride; })[0] : null;
+    if(!phase) phase = detectAutoPhase();
+
+    document.getElementById("hereTitle").textContent = phase.badge + " — " + phase.title;
+    document.getElementById("hereSub").textContent = phase.when + " · " + phase.goal;
+
+    var nextItem = phase.items.filter(function(it){ return !phaseItemEls[it.id].cb.checked; })[0];
+    var nextEl = document.getElementById("hereNext");
+    if(nextItem){
+      nextEl.innerHTML = '<b>قدم بعدی:</b> ' + nextItem.text;
+    } else {
+      nextEl.innerHTML = '<b>همهٔ آیتم‌های این فاز تیک خورده.</b> اگه فاز بعدی رو شروع کردی، دستی عوضش کن یا بذار خودکار تشخیص بده.';
+    }
+    if(hereSelect.value !== (currentOverride || "")) hereSelect.value = currentOverride || "";
+  }
+
+  hereSelect.addEventListener("change", function(){
+    var val = hereSelect.value || null;
+    currentOverride = val;
+    updateHereCard();
+    writeMeta({currentPhaseOverride: val});
+  });
+
+  function refreshAll(){
+    updatePhaseCounts();
+    updateOverallBar();
+    updateHereCard();
+  }
+
+  // ---------------------------------------------------------------
+  // db wiring
+  // ---------------------------------------------------------------
+  var db = null;
+  var noteTimers = {};
+  function scheduleNoteWrite(id, fn){
+    if(noteTimers[id]) clearTimeout(noteTimers[id]);
+    noteTimers[id] = setTimeout(fn, 600);
+  }
+
+  function writeItemState(id, data){
+    if(!db) return;
+    db.doc('item_state/' + id).set(data).catch(function(){});
+  }
+  function writeTopicState(id, data){
+    if(!db) return;
+    db.doc('item_state/' + id).set(data).catch(function(){});
+  }
+  function writeMeta(data){
+    if(!db) return;
+    db.doc('meta/state').set(data).catch(function(){});
+  }
+
+  function applyItemSnapshot(snap){
+    snap.docs.forEach(function(doc){
+      var data = doc.data() || {};
+      var p = phaseItemEls[doc.id];
+      if(p){
+        p.cb.checked = !!data.checked;
+        p.row.classList.toggle("done", !!data.checked);
+        if(document.activeElement !== p.note) p.note.value = data.note || "";
+        return;
+      }
+      var t = topicEls[doc.id];
+      if(t){
+        var status = data.status || "نامشخص";
+        t.status = status;
+        t.pill.className = "topic-pill st-" + status;
+        t.pill.textContent = status;
+        if(document.activeElement !== t.note) t.note.value = data.note || "";
+      }
+    });
+    TOPICS.forEach(updateCatStat);
+    refreshAll();
+  }
+
+  (async function init(){
+    var connEl = document.getElementById("connStatus");
+    try{
+      db = window.claude ? await window.claude.use('db') : null;
+    }catch(e){ db = null; }
+
+    if(!db){
+      connEl.textContent = "نسخه ایستا — تغییرات ذخیره نمی‌شن";
+      connEl.className = "conn num bad";
+      fetch("content-bundle.json").then(function(r){ return r.json(); }).then(function(bundle){
+        contentMap = bundle || {};
+        allTopicIds.forEach(function(id){
+          updateLearnCounts(id);
+          var t = topicEls[id];
+          if(t && t.openType) renderLearnPanel(id, t.openType);
+        });
+      }).catch(function(){});
+      refreshAll();
+      return;
+    }
+
+    connEl.textContent = "آنلاین ✓";
+    connEl.className = "conn num ok";
+
+    db.collection('item_state').limit(500).onSnapshot(function(snap){
+      applyItemSnapshot(snap);
+    }, function(){
+      connEl.textContent = "خطا در همگام‌سازی";
+      connEl.className = "conn num bad";
+    });
+
+    db.doc('meta/state').onSnapshot(function(snap){
+      var data = snap.data() || {};
+      currentOverride = data.currentPhaseOverride || null;
+      updateHereCard();
+    }, function(){});
+
+    db.collection('topic_content').limit(500).onSnapshot(function(snap){
+      snap.docs.forEach(function(doc){
+        contentMap[doc.id] = doc.data() || {};
+      });
+      allTopicIds.forEach(function(id){
+        updateLearnCounts(id);
+        var t = topicEls[id];
+        if(t && t.openType) renderLearnPanel(id, t.openType);
+      });
+    }, function(){});
+
+    refreshAll();
+  })();
+
+  // ---------------------------------------------------------------
+  // Learn panels (flashcards / mcq / KF&PMP / images / tables)
+  // ---------------------------------------------------------------
+  function updateLearnCounts(topicId){
+    var data = contentMap[topicId] || {};
+    LEARN_TYPES.forEach(function(lt){
+      var n = (data[lt.key] || []).length;
+      var el = document.querySelector('[data-lc="'+topicId+'-'+lt.key+'"]');
+      if(el) el.textContent = n ? faDigits(n) : "";
+    });
+  }
+
+  function parseMdTable(md){
+    var lines = String(md||"").trim().split("\n").filter(function(l){ return l.trim(); });
+    if(lines.length < 2) return null;
+    var rows = lines.filter(function(l, i){ return i !== 1; }).map(function(l){
+      return l.trim().replace(/^\||\|$/g, "").split("|").map(function(c){ return c.trim(); });
+    });
+    return rows;
+  }
+
+  function renderLearnPanel(topicId, type){
+    var t = topicEls[topicId];
+    if(!t) return;
+    var data = (contentMap[topicId] || {})[type] || [];
+    var panel = t.learnPanel;
+
+    if(!data.length){
+      panel.innerHTML = '<div class="learn-empty">هنوز محتوایی برای این بخش ساخته نشده. در گفتگو با کلود بگو کجا منبعش رو پیدا کنه یا بساز.</div>';
+      return;
+    }
+
+    if(type === "lesson"){
+      panel.innerHTML = "";
+      data.forEach(function(sec){
+        var wrap = document.createElement("div");
+        wrap.className = "lesson-section";
+        var h = document.createElement("div");
+        h.className = "lesson-heading";
+        h.textContent = sec.heading;
+        wrap.appendChild(h);
+        if(sec.embedPath){
+          if(sec.embedNote){
+            var note = document.createElement("div");
+            note.className = "lesson-embed-note";
+            note.textContent = sec.embedNote;
+            wrap.appendChild(note);
+          }
+          var iframe = document.createElement("iframe");
+          iframe.className = "lesson-embed-frame";
+          iframe.src = sec.embedPath;
+          iframe.loading = "lazy";
+          wrap.appendChild(iframe);
+        } else {
+          var body = document.createElement("div");
+          body.className = "lesson-body";
+          String(sec.body || "").split(/\n\s*\n/).forEach(function(para){
+            if(!para.trim()) return;
+            var p = document.createElement("p");
+            p.textContent = para.trim();
+            body.appendChild(p);
+          });
+          wrap.appendChild(body);
+        }
+        panel.appendChild(wrap);
+      });
+      return;
+    }
+
+    if(type === "flashcards"){
+      panel.innerHTML = "";
+      data.forEach(function(fc){
+        var card = document.createElement("div");
+        card.className = "fc-card";
+        var front = document.createElement("div");
+        front.className = "fc-front";
+        front.textContent = fc.front;
+        var backWrap = document.createElement("div");
+        backWrap.className = "fc-back";
+        backWrap.style.display = "none";
+        backWrap.textContent = fc.back;
+        var btn = document.createElement("button");
+        btn.type = "button"; btn.className = "fc-reveal"; btn.textContent = "نمایش پاسخ";
+        btn.addEventListener("click", function(){
+          var showing = backWrap.style.display !== "none";
+          backWrap.style.display = showing ? "none" : "block";
+          btn.textContent = showing ? "نمایش پاسخ" : "مخفی کردن";
+        });
+        card.appendChild(front); card.appendChild(btn); card.appendChild(backWrap);
+        panel.appendChild(card);
+      });
+      return;
+    }
+
+    if(type === "mcq"){
+      panel.innerHTML = "";
+      data.forEach(function(q){
+        var block = document.createElement("div");
+        block.className = "mcq-block";
+        var stem = document.createElement("div");
+        stem.className = "mcq-stem"; stem.textContent = q.stem;
+        block.appendChild(stem);
+        var explain = document.createElement("div");
+        explain.className = "mcq-explain"; explain.textContent = q.explanation || "";
+        (q.options||[]).forEach(function(opt, idx){
+          var ob = document.createElement("button");
+          ob.type = "button"; ob.className = "mcq-opt"; ob.textContent = opt;
+          ob.addEventListener("click", function(){
+            block.querySelectorAll(".mcq-opt").forEach(function(x){ x.disabled = true; });
+            ob.classList.add(idx === q.correctIndex ? "correct" : "incorrect");
+            if(idx !== q.correctIndex){
+              var correctBtn = block.querySelectorAll(".mcq-opt")[q.correctIndex];
+              if(correctBtn) correctBtn.classList.add("correct");
+            }
+            explain.classList.add("show");
+          });
+          block.appendChild(ob);
+        });
+        block.appendChild(explain);
+        panel.appendChild(block);
+      });
+      return;
+    }
+
+    if(type === "kfPmp"){
+      panel.innerHTML = "";
+      data.forEach(function(kf){
+        var block = document.createElement("div");
+        block.className = "kfp-block";
+        var title = document.createElement("div");
+        title.className = "kfp-title"; title.textContent = kf.title;
+        block.appendChild(title);
+        if(kf.vignette){
+          var vig = document.createElement("div");
+          vig.className = "kfp-vignette"; vig.textContent = kf.vignette;
+          block.appendChild(vig);
+        }
+        (kf.steps||[]).forEach(function(step, i){
+          var stepEl = document.createElement("div");
+          stepEl.className = "kfp-step";
+          var prompt = document.createElement("div");
+          prompt.className = "kfp-prompt"; prompt.textContent = (i+1) + ". " + step.prompt;
+          var ans = document.createElement("div");
+          ans.className = "kfp-answer"; ans.textContent = step.expectedAnswer;
+          var btn = document.createElement("button");
+          btn.type = "button"; btn.className = "fc-reveal"; btn.textContent = "نمایش پاسخ";
+          btn.addEventListener("click", function(){
+            var showing = ans.classList.contains("show");
+            ans.classList.toggle("show", !showing);
+            btn.textContent = showing ? "نمایش پاسخ" : "مخفی کردن";
+          });
+          stepEl.appendChild(prompt); stepEl.appendChild(btn); stepEl.appendChild(ans);
+          block.appendChild(stepEl);
+        });
+        panel.appendChild(block);
+      });
+      return;
+    }
+
+    if(type === "images"){
+      panel.innerHTML = "";
+      data.forEach(function(img){
+        var row = document.createElement("div");
+        row.className = "img-row";
+        var a = document.createElement("a");
+        a.href = img.sourceUrl || "#"; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = "🖼 " + img.caption;
+        row.appendChild(a);
+        if(img.note){
+          var note = document.createElement("span");
+          note.className = "cap-note"; note.textContent = img.note;
+          row.appendChild(note);
+        }
+        panel.appendChild(row);
+      });
+      return;
+    }
+
+    if(type === "tables"){
+      panel.innerHTML = "";
+      data.forEach(function(tbl){
+        var titleEl = document.createElement("div");
+        titleEl.className = "tbl-title"; titleEl.textContent = tbl.title;
+        panel.appendChild(titleEl);
+        var rows = parseMdTable(tbl.markdown);
+        if(rows){
+          var table = document.createElement("table");
+          table.className = "md-table";
+          rows.forEach(function(cells, ri){
+            var tr = document.createElement("tr");
+            cells.forEach(function(cell){
+              var cellEl = document.createElement(ri === 0 ? "th" : "td");
+              cellEl.textContent = cell;
+              tr.appendChild(cellEl);
+            });
+            table.appendChild(tr);
+          });
+          panel.appendChild(table);
+        }
+      });
+      return;
+    }
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    if(!confirm("همهٔ تیک‌ها، وضعیت‌های دانش و یادداشت‌ها روی همهٔ دستگاه‌ها پاک بشه؟")) return;
+    if(!db) return;
+    var writes = [];
+    allItemIds.forEach(function(id){ writes.push(db.doc('item_state/'+id).set({checked:false, note:""}).catch(function(){})); });
+    allTopicIds.forEach(function(id){ writes.push(db.doc('item_state/'+id).set({status:"نامشخص", note:""}).catch(function(){})); });
+    writes.push(db.doc('meta/state').set({currentPhaseOverride:null}).catch(function(){}));
+    Promise.all(writes);
+  });
+
+  var tabBtnDashboard = document.getElementById("tabBtnDashboard");
+  var tabBtnEducation = document.getElementById("tabBtnEducation");
+  var tabPanelDashboard = document.getElementById("tabPanelDashboard");
+  var tabPanelEducation = document.getElementById("tabPanelEducation");
+  function setTab(name){
+    var isDash = name === "dashboard";
+    tabBtnDashboard.classList.toggle("active", isDash);
+    tabBtnEducation.classList.toggle("active", !isDash);
+    tabPanelDashboard.classList.toggle("active", isDash);
+    tabPanelEducation.classList.toggle("active", !isDash);
+  }
+  tabBtnDashboard.addEventListener("click", function(){ setTab("dashboard"); });
+  tabBtnEducation.addEventListener("click", function(){ setTab("education"); });
+
+  refreshAll();
+})();
+</script>

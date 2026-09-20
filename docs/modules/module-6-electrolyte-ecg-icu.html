@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماژول ۶ — تغییرات ECG ناشی از الکترولیت‌ها در ICU | آموزش ECG بالینی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ :root{
+ --ink:#0f1e1c; --paper:#f6f4ee; --card:#ffffff; --line:#d8d3c4;
+ --teal:#0f6e56; --teal-deep:#083f32; --coral:#c1502e; --amber:#a8711a; --muted:#6b6a5f;
+ }
+ *{box-sizing:border-box;}
+ body{ margin:0; font-family:'Vazirmatn', sans-serif; background:var(--paper); color:var(--ink); line-height:1.9; }
+ .mono{ font-family:'JetBrains Mono', monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; }
+ header{ padding:4rem 1.5rem 3rem; border-bottom:1px solid var(--line); text-align:center; }
+ .eyebrow{ font-size:13px; letter-spacing:0.05em; color:var(--teal); font-weight:700; }
+ h1{ font-size:clamp(28px,5vw,44px); font-weight:700; margin:0.5rem 0 1rem; color:var(--teal-deep); }
+ .sub{ color:var(--muted); font-size:16px; max-width:640px; margin:0 auto; }
+ main{ max-width:820px; margin:0 auto; padding:2rem 1.5rem 5rem; }
+ .group-title{ font-size:14px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:0.04em; margin:2.5rem 0 0.75rem; }
+ .group-title:first-child{ margin-top:0; }
+
+ .callout{ background:#eef1e5; border-right:4px solid var(--teal); padding:1rem 1.25rem; border-radius:4px; margin:1.2rem 0; font-size:15px; }
+ .callout.danger{ background:#fbebe6; border-right-color:var(--coral); }
+ .tag{ display:inline-block; font-size:12px; font-weight:700; padding:2px 10px; border-radius:100px; margin-left:6px; }
+ .tag.certain{ background:#dbe9df; color:var(--teal-deep); }
+ .tag.likely{ background:#f3e6cf; color:var(--amber); }
+ .range-badge{ display:inline-flex; align-items:center; gap:6px; background:#f0ede2; border:1px solid var(--line); border-radius:8px; padding:4px 10px; font-size:13px; margin:6px 6px 0 0; }
+ .range-badge .r{ font-family:'JetBrains Mono',monospace; color:var(--teal-deep); font-weight:600; direction:ltr; unicode-bidi:isolate; }
+
+ .acc-item{ background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden; }
+ .acc-head{ width:100%; text-align:right; background:none; border:none; display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; font-weight:500; font-size:15px; font-family:'Vazirmatn',sans-serif; color:var(--ink); }
+ .acc-head .num{ font-family:'JetBrains Mono', monospace; color:var(--teal); margin-left:10px; font-size:13px; }
+ .acc-head:hover{ background:#f4f2ea; }
+ .acc-icon{ font-size:18px; color:var(--teal); transition:transform 0.2s ease; line-height:1; }
+ .acc-item.open .acc-icon{ transform:rotate(45deg); }
+ .acc-panel{ display:none; padding:0 1.25rem 1.25rem; font-size:15px; color:#333; }
+ .acc-item.open .acc-panel{ display:block; }
+
+ figure.ecg{ margin:1rem 0; text-align:center; }
+ figure.ecg img{ max-width:100%; border-radius:8px; border:1px solid var(--line); display:block; margin:0 auto; }
+ figure.ecg figcaption{ font-size:12.5px; color:var(--muted); margin-top:6px; }
+ figure.ecg figcaption a{ color:var(--teal); text-decoration:none; }
+ figure.ecg figcaption a:hover{ text-decoration:underline; }
+
+ .severity-table{ width:100%; border-collapse:collapse; margin:1rem 0; font-size:14px; }
+ .severity-table th, .severity-table td{ border:1px solid var(--line); padding:8px 12px; text-align:center; }
+ .severity-table th{ background:#f0ede2; color:var(--teal-deep); }
+
+ .drug-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+ @media(max-width:600px){ .drug-grid{ grid-template-columns:1fr; } }
+ .drug-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.25rem; }
+ .drug-card h3{ margin:0 0 8px; font-size:17px; color:var(--teal-deep); }
+ .drug-card .dose{ font-size:14px; color:var(--muted); }
+
+ .ref-list{ list-style:none; padding:0; margin:0; }
+ .ref-list li{ border-bottom:1px solid var(--line); padding:12px 0; }
+ .ref-list a{ color:var(--teal-deep); text-decoration:none; font-weight:500; }
+
+ footer{ text-align:center; padding:2rem 1.5rem; font-size:13px; color:var(--muted); border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+ <div class="eyebrow">دوره آموزش ECG و آریتمی بالینی — ماژول ۶ از ۸</div>
+ <h1>تغییرات ECG ناشی از الکترولیت‌ها در ICU</h1>
+ <p class="sub">پتاسیم و کلسیم — دو الکترولیتی که در بیمار بدحال ICU جانِ بیمار به شناخت سریع الگوهایشان روی نوار وابسته است</p>
+</header>
+
+<main>
+
+ <div class="group-title">اصل بنیادی</div>
+ <div class="acc-item" id="acc-0">
+ <button class="acc-head" onclick="toggleAcc('acc-0')">
+ <span>افکت Push-Pull پتاسیم روی T wave</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="callout">
+ <strong>[قطعی]</strong> یک قاعده حافظه‌ای ساده برای کل این ماژول: در <strong>هیپرکالمی</strong>، T wave به سمت بالا «کشیده» می‌شود (نوک‌تیز و بلند) و باقی نوار هم به همین ترتیب کشیده می‌شود (P wave صاف، PR طولانی، QRS پهن). در <strong>هیپوکالمی</strong>، T wave به سمت پایین «هل داده» می‌شود (صاف/منفی) و U wave برجسته ظاهر می‌شود.
+ </div>
+ <div class="callout danger">
+ سطح سرمی پتاسیم همیشه با شدت تغییرات ECG هم‌خوانی ندارد — بیماری با ECG نسبتاً طبیعی می‌تواند دچار ایست قلبی ناگهانی ناشی از هیپرکالمی شود. در هر ایست قلبی با ریتم برادی‌کارد یا PEA، به هیپرکالمی مشکوک شو و درمانش کن.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">۱. هیپرکالمی</div>
+ <div class="acc-item" id="acc-1">
+ <button class="acc-head" onclick="toggleAcc('acc-1')">
+ <span><span class="num">۰۱</span>پیشرفت تدریجی الگو و درمان</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <table class="severity-table">
+ <tr><th>شدت</th><th>پتاسیم (mmol/L)</th></tr>
+ <tr><td>خفیف</td><td class="mono">5.3–6.0</td></tr>
+ <tr><td>متوسط</td><td class="mono">6.0–6.9</td></tr>
+ <tr><td>شدید</td><td class="mono">≥7.0</td></tr>
+ </table>
+ <p><strong>ترتیب پیشرفت تغییرات (به‌ترتیب زمانی):</strong> T wave نوک‌تیز و متقارن ← صاف‌شدن P wave و طولانی‌شدن PR ← پهن‌شدن QRS با مورفولوژی عجیب ← الگوی sine wave (ادغام QRS و T) ← VF یا آسیستول.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Hyperkalaemia-peaked-T-waves-serum-potassium-7.0.jpg" alt="T wave نوک‌تیز در هیپرکالمی" loading="lazy">
+ <figcaption>T wave نوک‌تیز و متقارن — پتاسیم سرم ۷.۰ · منبع: <a href="https://litfl.com/hyperkalaemia-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Hyperkalemia-sine-wave-serum-potassium-9.9.jpg" alt="الگوی sine wave در هیپرکالمی شدید" loading="lazy">
+ <figcaption>الگوی sine wave — پتاسیم ۹.۹، پیش‌درآمد ایست قلبی · منبع: <a href="https://litfl.com/hyperkalaemia-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout danger">
+ <strong>[قطعی]</strong> دلیل مکانیستیک برادی‌کاردی و بلوک: پتاسیم اضافه، تحریک‌پذیری میوکارد را کاهش می‌دهد و پیس‌میکینگ گره SA و هدایت گره AV/His-Purkinje را سرکوب می‌کند — دقیقاً به همین دلیل هر برادی‌آریتمی یا بلوک ناگهانی و توضیح‌ناپذیر باید مشکوک به هیپرکالمی باشد (ارتباط با ماژول ۴).
+ </div>
+ <div class="drug-grid">
+ <div class="drug-card">
+ <h3>کلسیم گلوکونات/کلراید</h3>
+ <p class="dose">اندیکاسیون: پهن‌شدن QRS، الگوی sine wave، یا ایست قلبی هیپرکالمیک</p>
+ <p class="dose" style="color:var(--teal)">پتاسیم را کم نمی‌کند — فقط میوکارد را برای ۱۵-۳۰ دقیقه تثبیت می‌کند (اقدام موقت)</p>
+ </div>
+ <div class="drug-card">
+ <h3>انسولین + گلوکز</h3>
+ <p class="dose">پتاسیم را به داخل سلول هل می‌دهد</p>
+ <p class="dose" style="color:var(--teal)">شروع اثر ۲۰-۳۰ دقیقه، افت ~۱mmol/L در پتاسیم</p>
+ </div>
+ </div>
+ <div class="callout">دیالیز برای حذف قطعی پتاسیم از بدن — به‌خصوص در نارسایی کلیوی. سالبوتامول نبولایز هم پتاسیم را به داخل سلول می‌راند (اثر تکمیلی، نه جایگزین انسولین/گلوکز).</div>
+ </div>
+ </div>
+
+ <div class="group-title">۲. هیپوکالمی</div>
+ <div class="acc-item" id="acc-2">
+ <button class="acc-head" onclick="toggleAcc('acc-2')">
+ <span><span class="num">۰۲</span>الگو، U wave و ریسک تورساد</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <table class="severity-table">
+ <tr><th>شدت</th><th>پتاسیم (mmol/L)</th></tr>
+ <tr><td>خفیف</td><td class="mono">3.0–3.4</td></tr>
+ <tr><td>متوسط</td><td class="mono">2.5–2.9</td></tr>
+ <tr><td>شدید</td><td class="mono">≤2.4</td></tr>
+ </table>
+ <p><strong>ویژگی‌ها:</strong> افزایش دامنه P wave، طولانی‌شدن PR، ST depression گسترده، صاف‌شدن/منفی‌شدن T wave، U wave برجسته (بهترین دید در V2-V3).</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-U-wave-Hypokalemia.jpg" alt="U wave برجسته در هیپوکالمی" loading="lazy">
+ <figcaption>T wave منفی و U wave برجسته · منبع: <a href="https://litfl.com/hypokalaemia-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout">
+ <strong>[قطعی]</strong> QTc ظاهراً طولانی که در هیپوکالمی می‌بینی، در واقع اغلب <strong>QU interval</strong> است — یعنی T wave واقعی گم شده و آنچه اندازه می‌گیری فاصله تا U wave است، نه T واقعی. این یک تله اندازه‌گیری رایج است.
+ </div>
+ <div class="callout danger">
+ <strong>ریسک بالینی:</strong> هیپوکالمی میوکارد را بیش‌تحریک‌پذیر می‌کند — زمینه‌ساز آریتمی‌های ری‌اینتری، اکتوپی‌های شدید، و در موارد شدید VT/VF/Torsades de Pointes.
+ </div>
+ <div class="callout">
+ <strong>درمان:</strong> پتاسیم را به ≥۴.۰mmol/L و منیزیم را به ≥۱.۰mmol/L برسان. <strong>[قطعی]</strong> هیپوکالمی معمولاً همراه هیپومنیزیمی است — اگر منیزیم اصلاح نشود، پتاسیم علی‌رغم جایگزینی مکرر همچنان پایین می‌ماند (کلیه منیزیم پایین را با دفع پتاسیم جبران می‌کند).
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">۳. هیپرکلسمی</div>
+ <div class="acc-item" id="acc-3">
+ <button class="acc-head" onclick="toggleAcc('acc-3')">
+ <span><span class="num">۰۳</span>کوتاه‌شدن QT و امواج Osborn</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <table class="severity-table">
+ <tr><th>شدت</th><th>کلسیم اصلاح‌شده (mmol/L)</th></tr>
+ <tr><td>خفیف</td><td class="mono">2.7–2.9</td></tr>
+ <tr><td>متوسط</td><td class="mono">3.0–3.4</td></tr>
+ <tr><td>شدید</td><td class="mono">&gt;3.4</td></tr>
+ </table>
+ <p><strong>ویژگی اصلی:</strong> کوتاه‌شدن QT interval (عمدتاً از طریق کوتاه‌شدن ST segment، نه T wave). در موارد شدید، امواج Osborn (J wave) ظاهر می‌شوند.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-QT-changes-Hypocalcaemia-Hypercalcaemia-2.png" alt="مقایسه QT در هیپرکلسمی و هیپوکلسمی" loading="lazy">
+ <figcaption>هیپرکلسمی: کوتاه‌شدن QT · منبع: <a href="https://litfl.com/hypercalcaemia-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Osborn-waves-in-severe-hypercalcaemia.jpg" alt="امواج Osborn در هیپرکلسمی شدید" loading="lazy">
+ <figcaption>امواج Osborn (J wave) در هیپرکلسمی شدید (۴.۱mmol/L) · منبع: <a href="https://litfl.com/hypercalcaemia-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout danger">در موارد شدید، خطر تحریک‌پذیری بطنی و ایست VF گزارش شده — این تشخیص افتراقی امواج Osborn را باید در ذهن داشته باشی، چون همین یافته در هیپوترمی هم دیده می‌شود (تشخیص افتراقی مهم در ICU).</div>
+ </div>
+ </div>
+
+ <div class="group-title">۴. هیپوکلسمی</div>
+ <div class="acc-item" id="acc-4">
+ <button class="acc-head" onclick="toggleAcc('acc-4')">
+ <span><span class="num">۰۴</span>طولانی‌شدن QT از طریق ST segment</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <table class="severity-table">
+ <tr><th>شدت</th><th>کلسیم اصلاح‌شده (mmol/L)</th></tr>
+ <tr><td>خفیف تا متوسط</td><td class="mono">1.9–2.2</td></tr>
+ <tr><td>شدید</td><td class="mono">&lt;1.9</td></tr>
+ </table>
+ <p><strong>ویژگی اصلی:</strong> طولانی‌شدن QTc، عمدتاً از طریق طولانی‌شدن <strong>ST segment</strong> (نه T wave — T wave معمولاً بدون تغییر می‌ماند). این نکته آن را از سایر علل طولانی‌شدن QT افتراق می‌دهد.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Hypocalcaemia-QTc-500.jpg" alt="QTc طولانی در هیپوکلسمی" loading="lazy">
+ <figcaption>QTc ۵۰۰ms در بیمار با کلسیم سرم ۱.۴۰mmol/L پس از تیروئیدکتومی · منبع: <a href="https://litfl.com/hypocalcaemia-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout">
+ <strong>[محتمل]</strong> آریتمی در هیپوکلسمی نسبتاً نادر است — و Torsades de Pointes بسیار کمتر از هیپوکالمی یا هیپومنیزیمی دیده می‌شود، هرچند امکان‌پذیر است. علائم بالینی همراه (تتانی، Chvostek/Trousseau مثبت، اسپاسم کارپوپدال) اغلب راهنمای تشخیصی قوی‌تری هستند تا خود ECG.
+ </div>
+ <div class="callout danger">علل شایع در ICU: پس از تیروئیدکتومی/پاراتیروئیدکتومی، پانکراتیت حاد، سپسیس، ترانسفوزیون حجیم (سیترات موجود در خون اهدایی کلسیم را می‌بندد).</div>
+ </div>
+ </div>
+
+ <div class="group-title">منابع علمی</div>
+ <div class="acc-item" id="acc-ref">
+ <button class="acc-head" onclick="toggleAcc('acc-ref')">
+ <span>منابع و رفرنس‌های این ماژول</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <ul class="ref-list">
+ <li><div>LITFL ECG Library: Hyperkalaemia, Hypokalaemia, Hypercalcaemia, Hypocalcaemia — litfl.com</div></li>
+ <li><div>تصاویر: LITFL ECG Library، تحت مجوز CC BY-NC-SA 4.0 (فقط استفاده غیرتجاری مجاز است)</div></li>
+ </ul>
+ </div>
+ </div>
+
+</main>
+
+<footer>
+ محتوای آموزشی — دوره ECG و آریتمی بالینی، ماژول ۶ از ۸ · قبل از انتشار نهایی، دقت بالینی مجدداً بررسی شود
+</footer>
+
+<script>
+ function toggleAcc(id){ document.getElementById(id).classList.toggle('open'); }
+</script>
+
+</body>
+</html>
