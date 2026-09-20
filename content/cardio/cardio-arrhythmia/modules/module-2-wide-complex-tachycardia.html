@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماژول ۲ — تاکی‌کاردی با کمپلکس پهن | آموزش ECG بالینی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ :root{
+ --ink:#0f1e1c; --paper:#f6f4ee; --card:#ffffff; --line:#d8d3c4;
+ --teal:#0f6e56; --teal-deep:#083f32; --coral:#c1502e; --amber:#a8711a; --muted:#6b6a5f;
+ }
+ *{box-sizing:border-box;}
+ body{ margin:0; font-family:'Vazirmatn', sans-serif; background:var(--paper); color:var(--ink); line-height:1.9; }
+ .mono{ font-family:'JetBrains Mono', monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; }
+ header{ padding:4rem 1.5rem 3rem; border-bottom:1px solid var(--line); text-align:center; }
+ .eyebrow{ font-size:13px; letter-spacing:0.05em; color:var(--teal); font-weight:700; }
+ h1{ font-size:clamp(28px,5vw,44px); font-weight:700; margin:0.5rem 0 1rem; color:var(--teal-deep); }
+ .sub{ color:var(--muted); font-size:16px; max-width:640px; margin:0 auto; }
+ main{ max-width:820px; margin:0 auto; padding:2rem 1.5rem 5rem; }
+ .group-title{ font-size:14px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:0.04em; margin:2.5rem 0 0.75rem; }
+ .group-title:first-child{ margin-top:0; }
+
+ .callout{ background:#eef1e5; border-right:4px solid var(--teal); padding:1rem 1.25rem; border-radius:4px; margin:1.2rem 0; font-size:15px; }
+ .callout.danger{ background:#fbebe6; border-right-color:var(--coral); }
+ .tag{ display:inline-block; font-size:12px; font-weight:700; padding:2px 10px; border-radius:100px; margin-left:6px; }
+ .tag.certain{ background:#dbe9df; color:var(--teal-deep); }
+ .tag.likely{ background:#f3e6cf; color:var(--amber); }
+
+ .acc-item{ background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden; }
+ .acc-head{ width:100%; text-align:right; background:none; border:none; display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; font-weight:500; font-size:15px; font-family:'Vazirmatn',sans-serif; color:var(--ink); }
+ .acc-head .num{ font-family:'JetBrains Mono', monospace; color:var(--teal); margin-left:10px; font-size:13px; }
+ .acc-head:hover{ background:#f4f2ea; }
+ .acc-icon{ font-size:18px; color:var(--teal); transition:transform 0.2s ease; line-height:1; }
+ .acc-item.open .acc-icon{ transform:rotate(45deg); }
+ .acc-panel{ display:none; padding:0 1.25rem 1.25rem; font-size:15px; color:#333; }
+ .acc-item.open .acc-panel{ display:block; }
+
+ figure.ecg{ margin:1rem 0; text-align:center; }
+ figure.ecg img{ max-width:100%; border-radius:8px; border:1px solid var(--line); display:block; margin:0 auto; }
+ figure.ecg figcaption{ font-size:12.5px; color:var(--muted); margin-top:6px; }
+ figure.ecg figcaption a{ color:var(--teal); text-decoration:none; }
+ figure.ecg figcaption a:hover{ text-decoration:underline; }
+
+ .flash-wrap{ text-align:center; }
+ .flash-meta{ font-size:13px; color:var(--muted); margin-bottom:8px; }
+ .flashcard{ background:var(--card); border:1px solid var(--line); border-radius:12px; min-height:170px; padding:1.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; text-align:center; font-size:16px; }
+ .flash-nav{ display:flex; gap:10px; margin-top:12px; }
+ .flash-nav button{ flex:1; padding:10px; border-radius:8px; border:1px solid var(--line); background:var(--card); cursor:pointer; font-family:'Vazirmatn',sans-serif; font-size:14px; }
+ .flash-nav button:hover{ background:#eee; }
+
+ .drug-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+ @media(max-width:600px){ .drug-grid{ grid-template-columns:1fr; } }
+ .drug-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.25rem; }
+ .drug-card h3{ margin:0 0 8px; font-size:17px; color:var(--teal-deep); }
+ .drug-card .dose{ font-size:14px; color:var(--muted); }
+
+ .ref-list{ list-style:none; padding:0; margin:0; }
+ .ref-list li{ border-bottom:1px solid var(--line); padding:12px 0; }
+ .ref-list a{ color:var(--teal-deep); text-decoration:none; font-weight:500; }
+ .ref-list a:hover{ text-decoration:underline; }
+
+ footer{ text-align:center; padding:2rem 1.5rem; font-size:13px; color:var(--muted); border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+ <div class="eyebrow">دوره آموزش ECG و آریتمی بالینی — ماژول ۲ از ۸</div>
+ <h1>تاکی‌کاردی با کمپلکس پهن</h1>
+ <p class="sub">افتراق <span class="mono">VT</span> از <span class="mono">SVT with aberrancy</span> و تصمیم‌گیری درمانی زیر فشار زمانی — برای اینترن‌ها، پزشکان عمومی و رزیدنت‌ها</p>
+</header>
+
+<main>
+
+ <div class="group-title">اصل بنیادی</div>
+ <div class="acc-item" id="acc-0">
+ <button class="acc-head" onclick="toggleAcc('acc-0')">
+ <span>در هر WCT با منشا نامشخص، فرض کن VT است</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="callout danger">
+ <strong>در هر <span class="mono">WCT</span> با منشا نامشخص، فرض کن <span class="mono">VT</span> است تا خلافش ثابت شود.</strong>
+ <span class="tag certain">قطعی</span><br>
+ دلیل: عدم تقارن ریسک — درمان اشتباه SVT به‌جای VT با ورا پامیل/دیلتیازم می‌تواند کشنده باشد؛ درمان اشتباه VT با آمیودارون در واقعیت SVT بودن، نسبتاً بی‌خطر است.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">الگوریتم بروگادا (Brugada Criteria)</div>
+ <p style="font-size:14px;color:var(--muted);margin-bottom:1rem;">چهار مرحله به‌ترتیب چک می‌شوند — هر مرحله مثبت شود یعنی VT، دیگر ادامه نده.</p>
+
+ <div class="acc-item" id="acc-1">
+ <button class="acc-head" onclick="toggleAcc('acc-1')">
+ <span><span class="num">۰۱</span>غیاب کمپلکس RS در تمام لیدهای پره‌کوردیال (Concordance)</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>در لیدهای V1 تا V6، همه کمپلکس‌ها یا تماماً مثبت‌اند یا تماماً منفی — هیچ الگوی RS دیده نمی‌شود. اگر این حالت برقرار باشد، ۱۰۰٪ اختصاصی برای VT است.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Positive-concordance-in-VT.jpg" alt="کنکوردانس مثبت در VT" loading="lazy">
+ <figcaption>کنکوردانس مثبت — همه کمپلکس‌های V1 تا V6 مثبت (R)، بدون هیچ RS · منبع: <a href="https://litfl.com/vt-versus-svt-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-VT-Negative-precordial-concordance-2.jpg" alt="کنکوردانس منفی در VT" loading="lazy">
+ <figcaption>کنکوردانس منفی — همه کمپلکس‌های V1 تا V6 منفی (QS) · منبع: <a href="https://litfl.com/vt-versus-svt-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-2">
+ <button class="acc-head" onclick="toggleAcc('acc-2')">
+ <span><span class="num">۰۲</span>فاصله R تا نادیر S بیش از ۱۰۰ میلی‌ثانیه</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>در هر لید پره‌کوردیال، از شروع R تا پایین‌ترین نقطه S را اندازه بگیر. اگر در حتی یک لید بیش از ۱۰۰ میلی‌ثانیه بود، به نفع VT است (Brugada's sign).</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/RS-interval.jpg" alt="اندازه‌گیری فاصله RS" loading="lazy">
+ <figcaption>نحوه اندازه‌گیری RS interval · منبع: <a href="https://litfl.com/vt-versus-svt-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-3">
+ <button class="acc-head" onclick="toggleAcc('acc-3')">
+ <span><span class="num">۰۳</span>تفکیک دهلیزی-بطنی (AV Dissociation) + ضربه کپچر/فیوژن</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>P wave ها با ریتم خودشان، مستقل از QRS، عبور می‌کنند. قوی‌ترین معیار منفرد ولی فقط در حدود نیمی از موارد VT قابل مشاهده است — نبودش VT را رد نمی‌کند.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/AV-dissociation.jpg" alt="تفکیک دهلیزی بطنی" loading="lazy">
+ <figcaption>P wave های مستقل از QRS در AV dissociation · منبع: <a href="https://litfl.com/vt-versus-svt-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <p><strong>ضربه کپچر و فیوژن</strong> — تقریباً پاتوگنومونیک برای VT. کپچر یعنی گره سینوسی-دهلیزی به‌طور گذرا بطن را می‌گیرد و یک QRS باریک طبیعی وسط ریتم پهن می‌سازد؛ فیوژن یعنی ترکیب هم‌زمان ایمپالس سینوسی و بطنی با شکل بینابین.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2022/05/Caputure-Beat-Fusion-Beat-VT-ECG-waves-1024x357.jpg" alt="ضربه کپچر و فیوژن" loading="lazy">
+ <figcaption>ضربات کپچر و فیوژن وسط VT · منبع: <a href="https://litfl.com/vt-versus-svt-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a>، تصویر اصلی از ECG waves (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ </div>
+ </div>
+
+ <div class="acc-item" id="acc-4">
+ <button class="acc-head" onclick="toggleAcc('acc-4')">
+ <span><span class="num">۰۴</span>معیارهای مورفولوژیک در V1-V2 و V6</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <p>الگوی شبه RBBB (گوش چپ بلندتر از راست) یا شبه LBBB که با بلوک شاخه‌ای کلاسیک تطابق ندارد، به نفع VT است.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-VT-Taller-left-rabbit-ear.jpg" alt="گوش چپ بلندتر در V1" loading="lazy">
+ <figcaption>گوش چپ بلندتر در V1 — اختصاصی‌ترین یافته منفرد برای VT · منبع: <a href="https://litfl.com/vt-versus-svt-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ </div>
+ </div>
+
+ <div class="callout" style="margin-top:1.25rem;">
+ منفی‌بودن هر چهار مرحله، VT را <strong>رد نمی‌کند</strong> — فقط یعنی نمی‌توانی با اطمینان تأیید کنی. حساسیت الگوریتم ~۹۰٪ است.
+ <span class="tag likely">محتمل</span>
+ </div>
+
+ <div class="group-title">فلش‌کارت مرور سریع</div>
+ <div class="flash-wrap">
+ <div class="flash-meta">کارت <span id="fc-idx">1</span> از <span id="fc-total"></span> — کلیک کن</div>
+ <div class="flashcard" id="fc-card" onclick="flipCard()"></div>
+ <div class="flash-nav">
+ <button onclick="navCard(-1)">قبلی</button>
+ <button onclick="navCard(1)">بعدی</button>
+ </div>
+ </div>
+
+ <div class="group-title">درمان دارویی VT پایدار مونومورفیک</div>
+ <div class="acc-item" id="acc-5">
+ <button class="acc-head" onclick="toggleAcc('acc-5')">
+ <span>پروکائین‌آمید و آمیودارون — دوز و انتخاب</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="drug-grid">
+ <div class="drug-card">
+ <h3>پروکائین‌آمید <span class="tag certain">خط اول عمومی</span></h3>
+ <p class="dose">دوز: <span class="mono">20–50 mg/min IV</span> تا کنترل آریتمی، افت فشار، پهن‌شدن QRS بیش از ۵۰٪، یا حداکثر <span class="mono">17 mg/kg</span></p>
+ <p class="dose">نگهدارنده: <span class="mono">1–4 mg/min</span></p>
+ <p class="dose" style="color:var(--coral)">منع مصرف: نارسایی قلبی شدید یا EF کاهش‌یافته</p>
+ </div>
+ <div class="drug-card">
+ <h3>آمیودارون <span class="tag likely">خط اول در HFrEF</span></h3>
+ <p class="dose">دوز اول: <span class="mono">150 mg IV / 10 min</span>، قابل تکرار در صورت عود</p>
+ <p class="dose">نگهدارنده: <span class="mono">1 mg/min</span> برای ۶ ساعت اول</p>
+ <p class="dose" style="color:var(--teal)">ترجیح در نارسایی قلبی شدید / EF پایین</p>
+ </div>
+ </div>
+ <div class="callout" style="margin-top:1rem;">
+ کارآزمایی <span class="mono">PROCAMIO</span> (Ortiz M, et al. Eur Heart J. 2017) — پروکائین‌آمید نسبت به آمیودارون عوارض قلبی کمتر (۱۸٪ در برابر ۳۱٪) و ختم موفق آریتمی بیشتر طی ۴۰ دقیقه (۶۷٪ در برابر ۳۸٪) داشت.
+ </div>
+ <div class="callout danger">
+ هرگز ورا پامیل یا دیلتیازم در WCT با منشا نامشخص تجویز نشود — خطر کولاپس همودینامیک حاد در صورت VT بودن.
+ </div>
+ <div class="callout danger">
+ <strong>بیمار ناپایدار — کاردیوورژن سنکرونایزه:</strong> برای VT منظم مونومورفیک با نبض، <span class="mono">100 ژول</span> بای‌فازیک دوز شروع.<br>
+ <strong>VT پلی‌مورفیک یا بدون نبض:</strong> دیفیبریلاسیون غیرسنکرونایزه (مثل VF) — <span class="mono">120–200 ژول</span> بای‌فازیک؛ اگر انرژی دستگاه نامشخص بود، از حداکثر انرژی استفاده کن.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">منابع علمی</div>
+ <div class="acc-item" id="acc-6">
+ <button class="acc-head" onclick="toggleAcc('acc-6')">
+ <span>منابع و رفرنس‌های این ماژول</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <ul class="ref-list">
+ <li><div>Brugada P, et al. Circulation. 1991;83(5):1649-1659.</div></li>
+ <li><div>Ortiz M, et al. (PROCAMIO). Eur Heart J. 2017;38(17):1329-1335. PMID: 27354046</div></li>
+ <li><div>AHA ACLS Adult Tachycardia Algorithm 2025 — cpr.heart.org</div></li>
+ <li><div>تصاویر: LITFL ECG Library — litfl.com، تحت مجوز CC BY-NC-SA 4.0 (فقط استفاده غیرتجاری مجاز است)</div></li>
+ </ul>
+ </div>
+ </div>
+
+</main>
+
+<footer>
+ پروتوتایپ محتوای آموزشی — دوره ECG و آریتمی بالینی، ماژول ۲ از ۸ · نسخه ۴ (ژول شوک اضافه شد) · قبل از انتشار نهایی، دقت بالینی مجدداً بررسی شود
+</footer>
+
+<script>
+ function toggleAcc(id){
+ document.getElementById(id).classList.toggle('open');
+ }
+
+ var cards = [
+ { q:"اگر کنکوردانس مثبت یا منفی در V1-V6 دیده شود، یعنی چه؟", a:"اختصاصیت ۱۰۰٪ برای VT — دیگر نیازی به بررسی مراحل بعدی نیست." },
+ { q:"چرا AV dissociation آخرین معیاری نیست که چک می‌شود با اینکه قوی‌ترین است؟", a:"پیدا کردنش زمان‌بر است و فقط در ~۵۰-۶۰٪ موارد VT قابل مشاهده. مراحل ۱ و ۲ سریع‌تر و در صورت مثبت بودن به همان اندازه قطعی‌اند." },
+ { q:"ضربه کپچر (Capture beat) چیست؟", a:"وقتی گره سینوسی-دهلیزی به‌طور گذرا بطن را می‌گیرد و وسط ریتم پهن، یک QRS باریک طبیعی می‌سازد." },
+ { q:"چرا هرگز نباید ورا پامیل در WCT نامشخص تجویز کرد؟", a:"اگر واقعاً VT باشد، اثر اینوتروپ منفی و کاهش مقاومت عروقی می‌تواند باعث کولاپس همودینامیک حاد شود." },
+ { q:"در EF شدیداً کاهش‌یافته، کدام دارو ترجیح دارد؟", a:"آمیودارون — چون پروکائین‌آمید در نارسایی قلبی شدید منع مصرف دارد (اثر اینوتروپ منفی قوی‌تر)." }
+ ];
+ var idx = 0, flipped = false;
+ document.getElementById('fc-total').textContent = cards.length;
+ function renderCard(){
+ document.getElementById('fc-idx').textContent = idx+1;
+ document.getElementById('fc-card').textContent = flipped ? cards[idx].a : cards[idx].q;
+ }
+ function flipCard(){ flipped = !flipped; renderCard(); }
+ function navCard(dir){ idx = (idx + dir + cards.length) % cards.length; flipped = false; renderCard(); }
+ renderCard();
+</script>
+
+</body>
+</html>

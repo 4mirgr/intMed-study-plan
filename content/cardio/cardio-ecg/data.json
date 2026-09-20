@@ -1,0 +1,27 @@
+{
+  "topicId": "cardio-ecg",
+  "category": "cardio",
+  "sourceNote": "سه ماژول تعاملی کامل از دورهٔ «آموزش ECG بالینی» (منبع Google Drive شخصی کاربر) در بخش درسنامه به‌صورت embed مستقیم HTML اصلی درج شده‌اند (نه خلاصه‌شده): ماژول ۱ (رویکرد سیستماتیک و پرچم‌های قرمز)، ماژول ۵ (STEMI و معادل‌هایش)، ماژول ۶ (تغییرات ECG ناشی از الکترولیت‌ها در ICU). محتوای تعاملی (آکاردئون، فلش‌کارت) و تصاویر LITFL ECG Library (CC BY-NC-SA 4.0) عیناً حفظ شده‌اند.",
+  "flashcards": [],
+  "mcq": [],
+  "kfPmp": [],
+  "images": [],
+  "tables": [],
+  "lesson": [
+    {
+      "heading": "ماژول ۱ — رویکرد سیستماتیک و پرچم‌های قرمز اورژانسی",
+      "embedPath": "modules/module-1-systematic-approach.html",
+      "embedNote": "محیط تعاملی کامل (آکاردئون قابل‌کلیک) — چارچوب ۶مرحله‌ای خواندن ECG و ۵ پرچم قرمز اورژانسی."
+    },
+    {
+      "heading": "ماژول ۵ — STEMI و معادل‌هایش",
+      "embedPath": "modules/module-5-stemi-equivalents.html",
+      "embedNote": "محیط تعاملی کامل — de Winter، Wellens، معیارهای اصلاح‌شده Sgarbossa، و MI خلفی با تصاویر ECG."
+    },
+    {
+      "heading": "ماژول ۶ — تغییرات ECG ناشی از الکترولیت‌ها در ICU",
+      "embedPath": "modules/module-6-electrolyte-ecg-icu.html",
+      "embedNote": "محیط تعاملی کامل — هیپر/هیپوکالمی و هیپر/هیپوکلسمی با جداول شدت و تصاویر ECG."
+    }
+  ]
+}

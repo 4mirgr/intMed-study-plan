@@ -1,0 +1,27 @@
+{
+  "topicId": "cardio-arrhythmia",
+  "category": "cardio",
+  "sourceNote": "سه ماژول تعاملی کامل از دورهٔ «آموزش ECG بالینی» (منبع Google Drive شخصی کاربر) در بخش درسنامه به‌صورت embed مستقیم HTML اصلی درج شده‌اند (نه خلاصه‌شده): ماژول ۲ (تاکی‌کاردی با کمپلکس پهن)، ماژول ۳ (تاکی‌کاردی با کمپلکس باریک)، ماژول ۴ (برادی‌آریتمی و بلوک‌های AV). محتوای تعاملی (آکاردئون، فلش‌کارت) و تصاویر LITFL ECG Library (CC BY-NC-SA 4.0) عیناً حفظ شده‌اند.",
+  "flashcards": [],
+  "mcq": [],
+  "kfPmp": [],
+  "images": [],
+  "tables": [],
+  "lesson": [
+    {
+      "heading": "ماژول ۲ — تاکی‌کاردی با کمپلکس پهن (WCT)",
+      "embedPath": "modules/module-2-wide-complex-tachycardia.html",
+      "embedNote": "محیط تعاملی کامل — الگوریتم بروگادا، درمان دارویی VT و فلش‌کارت مرور سریع."
+    },
+    {
+      "heading": "ماژول ۳ — تاکی‌کاردی با کمپلکس باریک (NCT)",
+      "embedPath": "modules/module-3-narrow-complex-tachycardia.html",
+      "embedNote": "محیط تعاملی کامل — AVNRT، فلوتر دهلیزی، آدنوزین، AFib در WPW، و MAT."
+    },
+    {
+      "heading": "ماژول ۴ — برادی‌آریتمی و بلوک‌های AV",
+      "embedPath": "modules/module-4-bradyarrhythmias-av-blocks.html",
+      "embedNote": "محیط تعاملی کامل — بلوک‌های درجه ۱ تا ۳، هشدار انفارکت RV، و درمان با آتروپین/پیسینگ."
+    }
+  ]
+}

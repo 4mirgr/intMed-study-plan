@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماژول ۵ — STEMI و معادل‌هایش | آموزش ECG بالینی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ :root{
+ --ink:#0f1e1c; --paper:#f6f4ee; --card:#ffffff; --line:#d8d3c4;
+ --teal:#0f6e56; --teal-deep:#083f32; --coral:#c1502e; --amber:#a8711a; --muted:#6b6a5f;
+ }
+ *{box-sizing:border-box;}
+ body{ margin:0; font-family:'Vazirmatn', sans-serif; background:var(--paper); color:var(--ink); line-height:1.9; }
+ .mono{ font-family:'JetBrains Mono', monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; }
+ header{ padding:4rem 1.5rem 3rem; border-bottom:1px solid var(--line); text-align:center; }
+ .eyebrow{ font-size:13px; letter-spacing:0.05em; color:var(--teal); font-weight:700; }
+ h1{ font-size:clamp(28px,5vw,44px); font-weight:700; margin:0.5rem 0 1rem; color:var(--teal-deep); }
+ .sub{ color:var(--muted); font-size:16px; max-width:640px; margin:0 auto; }
+ main{ max-width:820px; margin:0 auto; padding:2rem 1.5rem 5rem; }
+ .group-title{ font-size:14px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:0.04em; margin:2.5rem 0 0.75rem; }
+ .group-title:first-child{ margin-top:0; }
+
+ .callout{ background:#eef1e5; border-right:4px solid var(--teal); padding:1rem 1.25rem; border-radius:4px; margin:1.2rem 0; font-size:15px; }
+ .callout.danger{ background:#fbebe6; border-right-color:var(--coral); }
+ .tag{ display:inline-block; font-size:12px; font-weight:700; padding:2px 10px; border-radius:100px; margin-left:6px; }
+ .tag.certain{ background:#dbe9df; color:var(--teal-deep); }
+ .tag.likely{ background:#f3e6cf; color:var(--amber); }
+
+ .acc-item{ background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden; }
+ .acc-head{ width:100%; text-align:right; background:none; border:none; display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; font-weight:500; font-size:15px; font-family:'Vazirmatn',sans-serif; color:var(--ink); }
+ .acc-head .num{ font-family:'JetBrains Mono', monospace; color:var(--teal); margin-left:10px; font-size:13px; }
+ .acc-head:hover{ background:#f4f2ea; }
+ .acc-icon{ font-size:18px; color:var(--teal); transition:transform 0.2s ease; line-height:1; }
+ .acc-item.open .acc-icon{ transform:rotate(45deg); }
+ .acc-panel{ display:none; padding:0 1.25rem 1.25rem; font-size:15px; color:#333; }
+ .acc-item.open .acc-panel{ display:block; }
+
+ figure.ecg{ margin:1rem 0; text-align:center; }
+ figure.ecg img{ max-width:100%; border-radius:8px; border:1px solid var(--line); display:block; margin:0 auto; }
+ figure.ecg figcaption{ font-size:12.5px; color:var(--muted); margin-top:6px; }
+ figure.ecg figcaption a{ color:var(--teal); text-decoration:none; }
+ figure.ecg figcaption a:hover{ text-decoration:underline; }
+
+ .criteria-box{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.25rem; margin:1rem 0; }
+ .criteria-box ul{ margin:0.5rem 0 0; padding-right:1.2rem; }
+ .criteria-box li{ margin-bottom:6px; }
+
+ .ref-list{ list-style:none; padding:0; margin:0; }
+ .ref-list li{ border-bottom:1px solid var(--line); padding:12px 0; }
+ .ref-list a{ color:var(--teal-deep); text-decoration:none; font-weight:500; }
+
+ footer{ text-align:center; padding:2rem 1.5rem; font-size:13px; color:var(--muted); border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+ <div class="eyebrow">دوره آموزش ECG و آریتمی بالینی — ماژول ۵ از ۸</div>
+ <h1>STEMI و معادل‌هایش</h1>
+ <p class="sub">de Winter، Wellens، Sgarbossa و MI خلفی — چهار الگویی که علی‌رغم نبود ST elevation کلاسیک، انسداد کرونر حاد را نشان می‌دهند</p>
+</header>
+
+<main>
+
+ <div class="group-title">اصل بنیادی</div>
+ <div class="acc-item" id="acc-0">
+ <button class="acc-head" onclick="toggleAcc('acc-0')">
+ <span>معیار رسمی، جایگزین بیماری واقعی است نه خودش</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="callout danger">
+ <strong>[قطعی]</strong> معیار ۱mm ST elevation در دو لید مجاور، فقط یک نشانگر جایگزین (surrogate marker) برای بیماری واقعی — انسداد کامل یا نزدیک‌به‌کامل عروق کرونر — است. وقتی این معیار شکست می‌خورد ولی بیماری واقعی حاضر است، باید بیماری را درمان کنی، نه اینکه به این خاطر که «معیار رسمی satisfy نشد» دست نگه‌داری.
+ </div>
+ <p>STEMI equivalents در ۱۰-۲۵٪ موارد انسداد کرونری دیده می‌شوند — نادیده‌گرفتنشان یعنی تأخیر در reperfusion برای بخش قابل‌توجهی از بیماران.</p>
+ </div>
+ </div>
+
+ <div class="group-title">۱. de Winter Pattern</div>
+ <div class="acc-item" id="acc-1">
+ <button class="acc-head" onclick="toggleAcc('acc-1')">
+ <span><span class="num">۰۱</span>معیارهای تشخیصی و مکانیسم</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="criteria-box">
+ <strong>معیارها:</strong>
+ <ul>
+ <li>ST depression با شیب <strong>بالارونده (upsloping)</strong> بیش از ۱mm در نقطه J، در لیدهای پره‌کوردیال</li>
+ <li>T wave بلند، متقارن و نوک‌تیز — شاخه صعودی از زیر خط ایزوالکتریک شروع می‌شود</li>
+ <li>عدم وجود ST elevation در لیدهای پره‌کوردیال</li>
+ <li>ST elevation خفیف (۰.۵-۱mm) در aVR</li>
+ </ul>
+ </div>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-de-Winter-T-waves-V3-strip-1024x375.png" alt="نوار V3 با الگوی de Winter" loading="lazy">
+ <figcaption>ST depression با شیب بالارونده و T wave نوک‌تیز در V3 · منبع: <a href="https://litfl.com/de-winter-t-wave/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-De-Winter-T-Waves-1-1024x491.jpg" alt="نمونه کامل ۱۲ لید de Winter" loading="lazy">
+ <figcaption>نمونه کامل ۱۲ لید — انسداد پروگزیمال LAD · منبع: <a href="https://litfl.com/de-winter-t-wave/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout">
+ <strong>[محتمل]</strong> دیده‌شده در ~۲٪ انسدادهای حاد LAD، ولی وقتی حاضر باشد، PPV آن برای تنگی معنادار LAD حدود ۹۵-۱۰۰٪ است.
+ <span class="tag likely">محتمل</span>
+ </div>
+ <div class="callout danger">
+ <strong>درمان:</strong> معادل STEMI قدامی — آنژیوگرافی/PCI اورژانسی، بدون صبر برای تکامل ST elevation کلاسیک. الگو می‌تواند قبل یا بعد از STEMI کلاسیک ظاهر شود.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">۲. Wellens Syndrome</div>
+ <div class="acc-item" id="acc-2">
+ <button class="acc-head" onclick="toggleAcc('acc-2')">
+ <span><span class="num">۰۲</span>معیارهای تشخیصی و دو زیرتایپ</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="criteria-box">
+ <strong>معیارها (Rhinehart 2002):</strong>
+ <ul>
+ <li>T wave بای‌فازیک یا عمیقاً منفی در V2-3 (می‌تواند تا V1-V6 گسترش یابد)</li>
+ <li>الگو در حالت <strong>بدون درد</strong> حاضر است</li>
+ <li>ST segment ایزوالکتریک یا خیلی کم بالا (زیر ۱mm)</li>
+ <li>بدون Q wave پره‌کوردیال</li>
+ <li>پیشرفت طبیعی R wave حفظ شده</li>
+ <li>سابقه اخیر آنژین، آنزیم قلبی طبیعی یا کمی بالا</li>
+ </ul>
+ </div>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/Wellens-Pattern-A-Type-1-T-wave-2.jpg" alt="Wellens Type A بای‌فازیک" loading="lazy">
+ <figcaption>Wellens Type A — T wave بای‌فازیک (۲۵٪ موارد) · منبع: <a href="https://litfl.com/wellens-syndrome-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/09/Wellens-Pattern-B-Type-2-T-wave.jpg" alt="Wellens Type B عمیقاً منفی" loading="lazy">
+ <figcaption>Wellens Type B — T wave عمیقاً و متقارن منفی (۷۵٪ موارد) · منبع: <a href="https://litfl.com/wellens-syndrome-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout">
+ <strong>[قطعی]</strong> مکانیسم: تبدیل T wave به بای‌فازیک (Type A) سپس عمیقاً منفی (Type B) ← درد برطرف می‌شود ← reperfusion خودبه‌خودی ← STEMI گذرا با درد ← انسداد کامل گذرای LAD.
+ </div>
+ <div class="callout danger">
+ <strong>هشدار حیاتی — Pseudo-normalization:</strong> اگر T wave دوباره بلند و مثبت شود، یعنی عروق دوباره بسته شده — این یک علامت هشدار حاد است، نه بهبودی. معمولاً همراه بازگشت درد است.
+ </div>
+ <div class="callout danger">
+ <strong>هرگز استرس تست نکن</strong> — تنگی پروگزیمال LAD می‌تواند حین تست به MI یا ایست قلبی منجر شود. این بیماران نیاز به آنژیوگرافی دارند.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">۳. Sgarbossa Criteria (LBBB / ریتم پیس‌میکر)</div>
+ <div class="acc-item" id="acc-3">
+ <button class="acc-head" onclick="toggleAcc('acc-3')">
+ <span><span class="num">۰۳</span>معیارهای اصلاح‌شده Smith</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="criteria-box">
+ <strong>معیارهای اصلاح‌شده Smith (استفاده کن، نه نسخه اصلی):</strong>
+ <ul>
+ <li><strong>ST elevation هم‌جهت (concordant)</strong> ≥۱mm در هر لید — جهت ST همان جهت QRS اصلی</li>
+ <li><strong>ST depression هم‌جهت</strong> ≥۱mm در V1-V3 — معادل MI خلفی</li>
+ <li><strong>Discordant STE با نسبت غیرمتناسب:</strong> دامنه ST elevation ناهمسو بیش از ۲۵٪ عمق موج S قبلی (نه ۵mm مطلق مثل معیار قدیمی)</li>
+ </ul>
+ </div>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/LBBB-with-Sgarbossa.jpg" alt="Sgarbossa مثبت در LBBB" loading="lazy">
+ <figcaption>ST elevation هم‌جهت ۱mm در aVL (اسکور ۵) در بیمار LBBB با تروپونین مثبت · منبع: <a href="https://litfl.com/sgarbossa-criteria-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/Sgarbossa-criteria-ventricular-paced-rhythm.jpg" alt="Sgarbossa مثبت در ریتم پیس‌میکر" loading="lazy">
+ <figcaption>ST depression هم‌جهت در ریتم پیس‌میکر — MI خلفی تأییدشده · منبع: <a href="https://litfl.com/sgarbossa-criteria-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout">
+ <strong>[قطعی]</strong> اختصاصیت بالا (۹۰-۹۸٪) ولی حساسیت پایین — مثبت‌شدن تقریباً قطعی MI است، ولی منفی‌بودن MI را رد نمی‌کند. با داستان بالینی قوی، حتی با Sgarbossa منفی، مشورت اورژانسی کاردیولوژی لازم است.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">۴. MI خلفی (Posterior MI)</div>
+ <div class="acc-item" id="acc-4">
+ <button class="acc-head" onclick="toggleAcc('acc-4')">
+ <span><span class="num">۰۴</span>الگوی آینه‌ای در V1-V3 و لیدهای خلفی</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <div class="criteria-box">
+ <strong>الگوی آینه‌ای در V1-V3 (به نفع MI خلفی):</strong>
+ <ul>
+ <li>ST depression <strong>افقی (horizontal)</strong> — نه upsloping مثل ایسکمی ساب‌اندوکارد معمولی</li>
+ <li>R wave بلند و پهن (بیش از ۳۰ms) در V2-3</li>
+ <li>نسبت R/S بیش از ۱ در V2</li>
+ <li>T wave <strong>مثبت</strong> — نه منفی مثل ایسکمی معمولی</li>
+ </ul>
+ </div>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-posterior-infarction-in-V2.jpg" alt="الگوی معمول MI خلفی در V2" loading="lazy">
+ <figcaption>الگوی معمول MI خلفی در V2 — ST depression افقی، R بلند، T مثبت · منبع: <a href="https://litfl.com/posterior-myocardial-infarction-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/ECG-Posterior-AMI-flip-image-V2.jpg" alt="تست آینه — همان تصویر معکوس‌شده" loading="lazy">
+ <figcaption>تست آینه: همان تصویر بالا معکوس‌شده — حالا شبیه STEMI کلاسیک است · منبع: <a href="https://litfl.com/posterior-myocardial-infarction-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <p><strong>تکنیک تشخیصی سریع:</strong> ECG را با موبایل عکس بگیر، افقی flip کن و ۹۰ درجه بچرخان (یا کاغذ را برعکس نگه‌دار و از پشت نگاه کن) — اگر شبیه STEMI شد، تأییدکننده MI خلفی است.</p>
+ <figure class="ecg">
+ <img src="https://litfl.com/wp-content/uploads/2018/08/Posterior-leads-V7-V8-V9-ECG-placement.jpg" alt="محل قرارگیری لیدهای خلفی V7-V9" loading="lazy">
+ <figcaption>محل لیدهای خلفی: V7 خط زیر بغل خلفی چپ، V8 نوک کتف چپ، V9 پاراسپاینال چپ — همه در خط افقی V6 · منبع: <a href="https://litfl.com/posterior-myocardial-infarction-ecg-library/" target="_blank" rel="noopener">LITFL ECG Library</a> (CC BY-NC-SA 4.0)</figcaption>
+ </figure>
+ <div class="callout">
+ <strong>[قطعی]</strong> تأیید قطعی با ثبت لیدهای V7-V9 — فقط ۰.۵mm ST elevation در این لیدها برای تشخیص کافی است (چون فاصله الکترود از قلب بیشتر است، ولتاژ کمتر انتظار می‌رود).
+ </div>
+ <div class="callout danger">
+ معمولاً همراه MI تحتانی یا لترال است (۱۵-۲۰٪ موارد) — ایزوله نادرتر (۵-۱۰٪) و بیشتر جا می‌ماند. در هر MI تحتانی/لترال، همیشه به‌دنبال گسترش خلفی بگرد؛ درگیری خلفی یعنی ناحیه آسیب بزرگ‌تر و ریسک بالاتر نارسایی بطن چپ.
+ </div>
+ </div>
+ </div>
+
+ <div class="group-title">منابع علمی</div>
+ <div class="acc-item" id="acc-ref">
+ <button class="acc-head" onclick="toggleAcc('acc-ref')">
+ <span>منابع و رفرنس‌های این ماژول</span>
+ <span class="acc-icon">+</span>
+ </button>
+ <div class="acc-panel">
+ <ul class="ref-list">
+ <li><div>de Winter RJ, et al. A new ECG sign of proximal LAD occlusion. N Engl J Med. 2008;359(19):2071-3</div></li>
+ <li><div>Rhinehardt J, et al. Electrocardiographic manifestations of Wellens syndrome. Am J Emerg Med. 2002;20(7):638-643</div></li>
+ <li><div>Smith SW, et al. Diagnosis of STEMI in the Presence of LBBB using the ST Elevation to S-Wave Ratio in a Modified Sgarbossa Rule. Ann Emerg Med. 2012;60:766-776</div></li>
+ <li><div>LITFL ECG Library: De Winter T Wave, Wellens Syndrome, Sgarbossa Criteria, Posterior Myocardial Infarction — litfl.com</div></li>
+ <li><div>تصاویر: LITFL ECG Library، تحت مجوز CC BY-NC-SA 4.0 (فقط استفاده غیرتجاری مجاز است)</div></li>
+ </ul>
+ </div>
+ </div>
+
+</main>
+
+<footer>
+ محتوای آموزشی — دوره ECG و آریتمی بالینی، ماژول ۵ از ۸ · قبل از انتشار نهایی، دقت بالینی مجدداً بررسی شود
+</footer>
+
+<script>
+ function toggleAcc(id){ document.getElementById(id).classList.toggle('open'); }
+</script>
+
+</body>
+</html>
