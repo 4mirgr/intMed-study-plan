@@ -44,7 +44,9 @@
 
   *{box-sizing:border-box}
   body{background:var(--bg);color:var(--ink);font-family:"Vazirmatn","Tahoma",sans-serif}
-  .app{direction:rtl;text-align:right;max-width:780px;margin:0 auto;padding-inline:16px;padding-block:20px 64px;}
+  .app{direction:rtl;text-align:right;max-width:1600px;margin:0 auto;padding-inline:16px;padding-block:20px 64px;}
+  @media (min-width:900px){ .app{padding-inline:40px;} }
+  @media (min-width:1300px){ .app{padding-inline:64px;} }
   .num{font-family:"IBM Plex Mono","Vazirmatn",monospace;font-variant-numeric:tabular-nums;}
 
   header.top{
