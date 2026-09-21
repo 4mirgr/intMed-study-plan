@@ -56,7 +56,9 @@ when a single turn can't fit all of them.
    `content/_schema/topic-content.schema.json` via a scratchpad Python build script
    (pattern: `flashcards`, `mcq`, `kfPmp`, `images: []`, `tables`, `lesson`).
 3. Validate: run the script, then grep the output for `جگر` (must be 0 unless a proper
-   noun) and sanity-check field counts.
+   noun), sanity-check field counts, and actively check rules 2 and 3 above (flashcard
+   front→back direction; no English-word breaking a Persian sentence's grammar) on every
+   card/section produced — not just جگر — so new content doesn't join the QA backlog below.
 4. Regenerate the bundle: `python3 scripts/build_content_bundle.py` (writes
    `docs/content-bundle.json`).
 5. Sync the topic(s) to the live artifact db via `ArtifactData` batch `set` on
@@ -92,9 +94,12 @@ single turn's context limit doesn't quietly drop them.
   explicitly exempt from this pass unless the user asks.
 
 - **Broader "reversed flashcards" / "English-breaks-Persian-sentence" QA pass** the user
-  asked for early on, across all topics. Only concretely fixed instances found so far; the
-  user was offered a full topic-by-topic pass and did not respond either way before moving
-  to other work. Not actively being worked unless the user brings it up again.
+  asked for early on, across all topics **built before 2026-09-21** (when rules 2/3 became an
+  active per-build check per the workflow step above, not just a passive standing rule).
+  Only concretely fixed instances found so far; the user confirmed this is deferred — don't
+  start it until asked. Content built from 2026-09-21 onward should already comply (checked
+  at build time), so it does not need to be re-swept when this pass eventually happens —
+  scope the pass to topics that existed before that date.
 
 ## Recently completed (for context, trim as it goes stale)
 
