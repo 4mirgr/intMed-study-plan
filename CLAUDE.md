@@ -70,19 +70,24 @@ when a single turn can't fit all of them.
    `Artifact action:"read"` first — the local cached path changes every read), then
    republish the artifact.
 7. `git add`/`commit`/`push` to the current working branch.
-8. **Email notification (standing instruction, added 2026-09-23):** after any update that
-   commits/pushes (content changes, taxonomy changes, or bug fixes to `docs/index.html`),
-   send an email via the `mcp__Gmail__send_message` tool from the user's own connected
-   Gmail account, with the current `docs/index.html` attached as the final prepared HTML
-   file, to all four addresses:
-   - amirgr20@gmail.com
-   - dr.gerami.md@gmail.com
-   - amir.h.gerami@sbmu.ac.ir
-   - drgerami@iran.ir
-   Read `docs/index.html` fresh (post-update) and base64-encode it as the attachment
-   content; a short subject/body noting what changed is enough. Do this once per logical
-   batch of changes (not once per individual file edit) — e.g. once at the end of a
-   multi-topic session, not after every single topic.
+8. **Notification (standing instruction, added 2026-09-23, method fixed 2026-09-23):** after
+   any update that commits/pushes (content changes, taxonomy changes, or bug fixes to
+   `docs/index.html`), do BOTH of the following once per logical batch of changes (not once
+   per individual file edit — e.g. once at the end of a multi-topic session):
+   - **`SendUserFile`** with the current `docs/index.html` path, so a copy lands on whatever
+     device/browser the user is chatting from right now.
+   - **Email** via `mcp__Gmail__send_message` from the user's own connected Gmail account, to
+     all four addresses — amirgr20@gmail.com, dr.gerami.md@gmail.com,
+     amir.h.gerami@sbmu.ac.ir, drgerami@iran.ir — with a short subject/body noting what
+     changed, **linking to `https://drgerami-md.ir`** (the live GitHub Pages deployment of
+     this same `docs/` folder, per `docs/CNAME`) rather than attaching the file.
+   - **Do NOT attach `docs/index.html` to the email as base64.** Tried this once: the file
+     (~60KB → ~80,000 base64 chars) has to be reproduced as literal text in the tool call,
+     and manual reconstruction from a chunked file read silently diverged from the original
+     at char 401, confirmed via `cmp` — undetectable without an explicit byte-level check.
+     The Gmail tool has no file-path/attachment-by-reference option, so there is no reliable
+     way to attach a file this size through it. The user confirmed (2026-09-23) this
+     link+SendUserFile combination is the correct replacement, not a fallback to revisit.
 
 Live artifact URL: `https://claude.ai/artifact/KBQtkHAoVaaHvgEbcEEXBc` ("مسیر بورد").
 
