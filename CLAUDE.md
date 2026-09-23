@@ -70,6 +70,19 @@ when a single turn can't fit all of them.
    `Artifact action:"read"` first — the local cached path changes every read), then
    republish the artifact.
 7. `git add`/`commit`/`push` to the current working branch.
+8. **Email notification (standing instruction, added 2026-09-23):** after any update that
+   commits/pushes (content changes, taxonomy changes, or bug fixes to `docs/index.html`),
+   send an email via the `mcp__Gmail__send_message` tool from the user's own connected
+   Gmail account, with the current `docs/index.html` attached as the final prepared HTML
+   file, to all four addresses:
+   - amirgr20@gmail.com
+   - dr.gerami.md@gmail.com
+   - amir.h.gerami@sbmu.ac.ir
+   - drgerami@iran.ir
+   Read `docs/index.html` fresh (post-update) and base64-encode it as the attachment
+   content; a short subject/body noting what changed is enough. Do this once per logical
+   batch of changes (not once per individual file edit) — e.g. once at the end of a
+   multi-topic session, not after every single topic.
 
 Live artifact URL: `https://claude.ai/artifact/KBQtkHAoVaaHvgEbcEEXBc` ("مسیر بورد").
 
@@ -107,21 +120,6 @@ Existing shared topic: `rhabdo-myopathy` (canonical, `content/nephro/rhabdo-myop
 Tracked here so a future session can pick them up without the user re-explaining, and so a
 single turn's context limit doesn't quietly drop them.
 
-- **Condense lesson prose in already-built English-sourced topics** (rule 4 above, applied
-  retroactively). Built before this rule existed, so their `lesson[].body` text runs long.
-  Revisit each and tighten without losing tested facts:
-  - `crit/crit-vent`
-  - `id/id-sepsis`
-  - `gi/gi-lft`
-  - `nephro/nephro-azotemia`
-  - `poison/poison-general`
-  - `poison/poison-heavy-metal`
-  - `poison/poison-snakebite`
-  - `poison/poison-arthropod`
-  - (`crit/crit-shock` was condensed — see done list below.)
-  Persian-sourced topics (`poison/poison-opioid`, anything from Dr. Hashemi's slides) are
-  explicitly exempt from this pass unless the user asks.
-
 - **Broader "reversed flashcards" / "English-breaks-Persian-sentence" QA pass** the user
   asked for early on, across all topics **built before 2026-09-21** (when rules 2/3 became an
   active per-build check per the workflow step above, not just a passive standing rule).
@@ -135,3 +133,12 @@ single turn's context limit doesn't quietly drop them.
 - Built `poison` category (5 topics: general, opioid, heavy-metal, snakebite, arthropod)
   from Harrison Ch 469-472 + Dr. Hashemi's opioid slides.
 - Condensed `crit/crit-shock` lesson prose per rule 4.
+- Condensed lesson prose per rule 4 in all 8 remaining English-sourced topics from the
+  backlog: `crit/crit-vent`, `id/id-sepsis`, `gi/gi-lft`, `nephro/nephro-azotemia` (old
+  Harrison-sourced sections only — the newer serum-enzymes section was left untouched, it
+  was already concise), `poison/poison-general` (only its 7 original Harrison Ch470
+  sections — the later Persian-sourced toxidrome/order-set sections were left untouched),
+  `poison/poison-heavy-metal`, `poison/poison-snakebite`, `poison/poison-arthropod`.
+  Reductions ranged ~46-63%; field counts (flashcards/mcq/kfPmp/tables) unchanged in every
+  file, only `lesson[].body` text was shortened. This closes the backlog item that used to
+  live here.
