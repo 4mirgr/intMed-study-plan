@@ -73,6 +73,35 @@ when a single turn can't fit all of them.
 
 Live artifact URL: `https://claude.ai/artifact/KBQtkHAoVaaHvgEbcEEXBc` ("مسیر بورد").
 
+## Shared topics (same content, listed under two categories)
+
+Sometimes a topic genuinely belongs under two categories at once (e.g. "رابدومیولیز و
+میوپاتی" under both `poison` and `nephro`) and edits to it must apply to both listings
+automatically — never two hand-maintained copies that can drift apart. The renderer's
+per-topic DOM/state (`topicEls[id]` in the artifact's `index.html`/board-plan JS) assumes
+one unique topicId per nav entry, so **do not** list the literal same topicId twice in
+`TOPICS` — that causes real state-sync bugs (status pill, notes, learn-panel state only
+track whichever instance was rendered last).
+
+Correct pattern instead:
+1. Exactly **one** canonical content file, e.g. `content/nephro/rhabdo-myopathy/data.json`
+   (`topicId: "rhabdo-myopathy"`). This is the only file ever hand-edited for this topic.
+2. Give the second nav listing a distinct **alias topicId** (e.g.
+   `"poison-rhabdo-myopathy"`) in `TOPICS` under the other category, in both
+   `docs/index.html` and the live artifact HTML.
+3. `scripts/build_content_bundle.py` has a `SHARED_TOPIC_ALIASES` dict (alias → canonical)
+   near the top; it duplicates the canonical topic's bundle entry under the alias key after
+   the normal file scan. Add new shared topics there — that's the only place the alias
+   mapping needs to be declared for the bundle.
+4. When syncing to the live artifact db, `set` **both** `topic_content/<canonical>` and
+   `topic_content/<alias>` docs with the identical data (batch write, one `file_path`/`data`
+   reused for both doc_ids).
+5. Editing later: only ever touch the canonical file, then redo steps 3-4 (rebuild bundle,
+   re-sync both db docs) — never hand-edit the alias's content anywhere.
+
+Existing shared topic: `rhabdo-myopathy` (canonical, `content/nephro/rhabdo-myopathy/`) /
+`poison-rhabdo-myopathy` (alias, same content, listed under `poison`).
+
 ## Pending cross-project follow-ups (bulk tasks not yet done)
 
 Tracked here so a future session can pick them up without the user re-explaining, and so a

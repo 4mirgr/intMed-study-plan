@@ -20,6 +20,18 @@ BLOB_OVERRIDES = {
     "cardio-hf:0": "assets/heart-failure-mortality-figure.jpg",
 }
 
+# Topics that are genuinely the same content shown under two different
+# category listings (e.g. a chapter relevant to both "poison" and "nephro").
+# There is exactly ONE source file (at the canonical topicId's folder); the
+# alias topicId is a pure build-time duplicate of that bundle entry, so
+# editing the single source file and rerunning this script keeps both nav
+# entries identical automatically. Keep this in sync with any alias entries
+# added to docs/index.html's TOPICS array and with the extra ArtifactData
+# db doc_id synced alongside the canonical one.
+SHARED_TOPIC_ALIASES = {
+    "poison-rhabdo-myopathy": "rhabdo-myopathy",
+}
+
 FIELDS = ["flashcards", "mcq", "kfPmp", "images", "tables", "lesson"]
 
 
@@ -34,6 +46,11 @@ def main():
             if key in BLOB_OVERRIDES:
                 img["sourceUrl"] = BLOB_OVERRIDES[key]
         bundle[topic_id] = entry
+
+    for alias_id, canonical_id in SHARED_TOPIC_ALIASES.items():
+        if canonical_id not in bundle:
+            raise KeyError(f"SHARED_TOPIC_ALIASES: canonical topic '{canonical_id}' not found for alias '{alias_id}'")
+        bundle[alias_id] = bundle[canonical_id]
 
     out_path = os.path.join(REPO_ROOT, "docs", "content-bundle.json")
     json.dump(bundle, open(out_path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
