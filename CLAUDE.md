@@ -91,6 +91,23 @@ when a single turn can't fit all of them.
 
 Live artifact URL: `https://claude.ai/artifact/KBQtkHAoVaaHvgEbcEEXBc` ("مسیر بورد").
 
+## Login gate on `docs/index.html` (added 2026-09-26)
+
+`docs/index.html` has a client-side login gate (`#loginGate` overlay + `#appRoot` wrapping the
+`.app` div, plus a small IIFE at the top of the `<script>` block, before the main app IIFE).
+Credentials are checked as a SHA-256 hash of `username:password` against a hardcoded hex
+constant (`GATE_HASH`) — not real security (this is a static site, no backend; anyone with
+devtools can bypass it), it's deterrence against casual/accidental visitors only, by explicit
+user decision. `content-bundle.json` itself is NOT protected — it's fetched by unauthenticated
+requests too if someone hits that URL directly; the user explicitly accepted this scope.
+
+- Passing auth sets `localStorage['bp_authed'] = '1'` so the user isn't re-prompted every visit
+  (per-browser/per-device — a new device/browser needs to log in once).
+- **When editing `docs/index.html` for taxonomy or other changes**: preserve this gate markup
+  and script block exactly — don't remove `#loginGate`/`#appRoot`/the auth IIFE while doing
+  unrelated edits (e.g. `TOPICS` array changes). Never edit the credentials without an explicit
+  new instruction from the user.
+
 ## Shared topics (same content, listed under two categories)
 
 Sometimes a topic genuinely belongs under two categories at once (e.g. "رابدومیولیز و

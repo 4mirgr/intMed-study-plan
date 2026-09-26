@@ -273,9 +273,40 @@
   .reset-btn:hover{border-color:var(--danger);color:var(--danger)}
 
   @media (max-width:420px){ h1{font-size:.98rem} }
+
+  .login-gate{
+    position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+    background:var(--bg);padding:16px;
+  }
+  .login-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:24px 22px;max-width:340px;width:100%;box-shadow:var(--shadow);
+    direction:rtl;text-align:right;font-family:"Vazirmatn","Tahoma",sans-serif;
+  }
+  .login-card h2{font-size:1rem;font-weight:800;margin:0 0 14px}
+  .login-card input{
+    width:100%;padding:10px 12px;margin-bottom:10px;border:1px solid var(--border);
+    border-radius:8px;background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:.9rem;
+  }
+  .login-card button{
+    width:100%;padding:10px;border:none;border-radius:8px;background:var(--accent);
+    color:#fff;font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;margin-top:4px;
+  }
+  .login-card .login-err{color:var(--danger);font-size:.8rem;margin-top:8px;display:none}
+  .login-card .login-err.show{display:block}
 </style>
 
-<div class="app">
+<div class="login-gate" id="loginGate">
+  <form class="login-card" id="loginForm">
+    <h2>ورود به مسیر بورد</h2>
+    <input type="text" id="loginUser" placeholder="نام کاربری" autocomplete="username" required>
+    <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password" required>
+    <button type="submit">ورود</button>
+    <div class="login-err" id="loginErr">نام کاربری یا رمز عبور اشتباه است.</div>
+  </form>
+</div>
+
+<div class="app" id="appRoot" style="display:none">
   <header class="top">
     <div class="title-row">
       <h1>مسیر بورد داخلی</h1>
@@ -333,6 +364,44 @@
 </div>
 
 <script>
+(function(){
+  "use strict";
+  var GATE_HASH = "a1d920519341d5c90e47a1763a87f5519a91e4ec3cdc4370093f974f4377eb1c";
+  var gateEl = document.getElementById("loginGate");
+  var appEl = document.getElementById("appRoot");
+  function revealApp(){
+    gateEl.style.display = "none";
+    appEl.style.display = "";
+  }
+  function sha256Hex(str){
+    var buf = new TextEncoder().encode(str);
+    return crypto.subtle.digest("SHA-256", buf).then(function(hashBuf){
+      return Array.from(new Uint8Array(hashBuf)).map(function(b){
+        return b.toString(16).padStart(2, "0");
+      }).join("");
+    });
+  }
+  try{
+    if(localStorage.getItem("bp_authed") === "1"){ revealApp(); }
+  }catch(e){}
+  var loginForm = document.getElementById("loginForm");
+  var loginErr = document.getElementById("loginErr");
+  loginForm.addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var u = document.getElementById("loginUser").value.trim();
+    var p = document.getElementById("loginPass").value;
+    sha256Hex(u + ":" + p).then(function(hex){
+      if(hex === GATE_HASH){
+        try{ localStorage.setItem("bp_authed", "1"); }catch(e){}
+        loginErr.classList.remove("show");
+        revealApp();
+      } else {
+        loginErr.classList.add("show");
+      }
+    });
+  });
+})();
+
 (function(){
   "use strict";
 
