@@ -95,11 +95,25 @@ Live artifact URL: `https://claude.ai/artifact/KBQtkHAoVaaHvgEbcEEXBc` ("مسی�
 
 `docs/index.html` has a client-side login gate (`#loginGate` overlay + `#appRoot` wrapping the
 `.app` div, plus a small IIFE at the top of the `<script>` block, before the main app IIFE).
-Credentials are checked as a SHA-256 hash of `username:password` against a hardcoded hex
-constant (`GATE_HASH`) — not real security (this is a static site, no backend; anyone with
-devtools can bypass it), it's deterrence against casual/accidental visitors only, by explicit
-user decision. `content-bundle.json` itself is NOT protected — it's fetched by unauthenticated
-requests too if someone hits that URL directly; the user explicitly accepted this scope.
+Credentials are checked via `fnv1aHex(username + ":" + password)` against a hardcoded hex
+constant (`GATE_HASH`) — a plain synchronous JS hash (FNV-1a), deliberately **not**
+`crypto.subtle`/SHA-256 (tried that first; it broke for the user because Web Crypto's
+`subtle` requires a secure context and their browser/webview didn't have one — no `https://`
+enforcement or an in-app browser can both cause this). Not real security either way (static
+site, no backend; anyone with devtools can bypass it) — deterrence against casual/accidental
+visitors only, by explicit user decision. `content-bundle.json` itself is NOT protected — it's
+fetched by unauthenticated requests too if someone hits that URL directly; the user explicitly
+accepted this scope.
+
+Login input also runs through `normalizeDigits()` before hashing (strips stray Unicode
+direction-mark characters, converts Persian ۰-۹ and Arabic-Indic ٠-٩ digits to ASCII, trims) —
+the password is a phone number, and Persian mobile keyboards commonly type Persian/Arabic-Indic
+digits instead of ASCII, which would otherwise hash to something else and silently fail.
+
+The file also now has `<meta charset="utf-8">` as its first line (it has no `<head>`/`<body>`,
+just a fragment) — added because without it, encoding depended entirely on the server's
+Content-Type header, and literal Persian-digit characters inside the inline JS could get
+misinterpreted before the script even ran. Keep this tag if the file is ever restructured.
 
 - Passing auth sets `localStorage['bp_authed'] = '1'` so the user isn't re-prompted every visit
   (per-browser/per-device — a new device/browser needs to log in once).
