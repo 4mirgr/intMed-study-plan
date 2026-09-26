@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>مسیر بورد</title>
 <style>
   @font-face{font-family:"Vazirmatn";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/Vazirmatn-Regular.woff2") format("woff2");}
@@ -374,12 +375,24 @@
     appEl.style.display = "";
   }
   function sha256Hex(str){
+    if(!(window.crypto && window.crypto.subtle)){
+      return Promise.reject(new Error("crypto.subtle unavailable (needs HTTPS)"));
+    }
     var buf = new TextEncoder().encode(str);
     return crypto.subtle.digest("SHA-256", buf).then(function(hashBuf){
       return Array.from(new Uint8Array(hashBuf)).map(function(b){
         return b.toString(16).padStart(2, "0");
       }).join("");
     });
+  }
+  function normalizeDigits(s){
+    // Persian/Arabic-Indic digits + stray direction-mark chars some mobile
+    // keyboards insert are common when typing a phone-number password.
+    return String(s)
+      .replace(/[‌‎‏‪-‮]/g, "")
+      .replace(/[۰-۹]/g, function(d){ return String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)); })
+      .replace(/[٠-٩]/g, function(d){ return String("٠١٢٣٤٥٦٧٨٩".indexOf(d)); })
+      .trim();
   }
   try{
     if(localStorage.getItem("bp_authed") === "1"){ revealApp(); }
@@ -388,16 +401,20 @@
   var loginErr = document.getElementById("loginErr");
   loginForm.addEventListener("submit", function(ev){
     ev.preventDefault();
-    var u = document.getElementById("loginUser").value.trim();
-    var p = document.getElementById("loginPass").value;
+    var u = normalizeDigits(document.getElementById("loginUser").value);
+    var p = normalizeDigits(document.getElementById("loginPass").value);
     sha256Hex(u + ":" + p).then(function(hex){
       if(hex === GATE_HASH){
         try{ localStorage.setItem("bp_authed", "1"); }catch(e){}
         loginErr.classList.remove("show");
         revealApp();
       } else {
+        loginErr.textContent = "نام کاربری یا رمز عبور اشتباه است.";
         loginErr.classList.add("show");
       }
+    }).catch(function(e){
+      loginErr.textContent = "خطای فنی: " + e.message;
+      loginErr.classList.add("show");
     });
   });
 })();
