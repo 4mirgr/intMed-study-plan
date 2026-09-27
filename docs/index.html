@@ -300,8 +300,8 @@
 <div class="login-gate" id="loginGate">
   <form class="login-card" id="loginForm">
     <h2>ورود به مسیر بورد</h2>
-    <input type="text" id="loginUser" placeholder="نام کاربری" autocomplete="username" required>
-    <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password" required>
+    <input type="text" id="loginUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+    <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     <button type="submit">ورود</button>
     <div class="login-err" id="loginErr">نام کاربری یا رمز عبور اشتباه است.</div>
   </form>
@@ -401,7 +401,7 @@
   var loginErr = document.getElementById("loginErr");
   loginForm.addEventListener("submit", function(ev){
     ev.preventDefault();
-    var u = normalizeDigits(document.getElementById("loginUser").value);
+    var u = normalizeDigits(document.getElementById("loginUser").value).toLowerCase();
     var p = normalizeDigits(document.getElementById("loginPass").value);
     if(fnv1aHex(u + ":" + p) === GATE_HASH){
       try{ localStorage.setItem("bp_authed", "1"); }catch(e){}
