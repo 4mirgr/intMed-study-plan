@@ -178,3 +178,19 @@ single turn's context limit doesn't quietly drop them.
   Reductions ranged ~46-63%; field counts (flashcards/mcq/kfPmp/tables) unchanged in every
   file, only `lesson[].body` text was shortened. This closes the backlog item that used to
   live here.
+- Added 4 new `poison` topics from 5 official Iranian MOH clinical protocol PDFs the user
+  uploaded, built in parallel by 5 background agents (one per PDF, one editing an existing
+  file): `poison-alcohols` (ethanol/methanol/ethylene glycol/isopropanol), `poison-
+  aluminum-phosphide` (AlP/"rice pill" — standalone deep-dive; the older brief order-table
+  section in `poison-general` was left as-is, not merged), `poison-hallucinogens`, and
+  `poison-antidotes` (a 37-antidote reference topic built from the 58-page antidote-therapy
+  service standard — dosing/indication/contraindication data lives in grouped markdown
+  tables, flashcards focus on high-yield distinguishing facts rather than one card per
+  antidote). Also supplemented `poison-heavy-metal` with an aluminum-toxicity-in-dialysis
+  section from a 6th, shorter protocol. Each agent's output was independently re-verified
+  (field counts, جگر=0) before syncing/committing — trust the report, verify the file.
+  Integration lesson: don't run `build_content_bundle.py` (or otherwise treat a topic as
+  final) while a parallel build agent might still be writing that same file — a directory
+  that exists on disk isn't proof an agent is done; only its actual completion report is.
+  When agents are still running, defer the bundle regen and commit only the topics already
+  confirmed complete, file by file.
