@@ -194,3 +194,23 @@ single turn's context limit doesn't quietly drop them.
   that exists on disk isn't proof an agent is done; only its actual completion report is.
   When agents are still running, defer the bundle regen and commit only the topics already
   confirmed complete, file by file.
+- Added 6 more official Iranian MOH protocol PDFs across two overlapping upload batches
+  (same "خلاصه، بدون حذف مفاهیم اصلی" instruction), each built by its own background agent
+  and independently re-verified against the actual file before syncing/committing:
+  supplemented `poison-arthropod` with an antiscorpion-venom-serum section (38→50
+  flashcards), `poison-snakebite` with an antisnake-venom-serum section (42→54), `poison-
+  alcohols` with a methanol acute-optic-neuropathy-care section (56→71), `poison-
+  hallucinogens` with a magic-mushroom section (45→63), and `poison-opioid` with both the
+  naloxone-administration service standard (38→50) and, in a second pass once the file was
+  free again, the 48-page acute-opioid-poisoning protocol (50→101 flashcards — per-opioid
+  subtype sections, ceiling effect, NCPE/ARDS, ICU admission/discharge criteria). Also
+  built one brand-new topic, `poison-opioid-dependence` (pediatric/adolescent opioid
+  dependence protocol, MOH+UNICEF), added to `TOPICS` in both `docs/index.html` and the
+  live artifact HTML. Two agents in this batch (`poison-opioid-dependence` and the
+  magic-mushroom `poison-hallucinogens` supplement) reported back as "failed" due to
+  hitting the session's rate limit, but had already written complete, schema-valid content
+  before failing — don't take a "failed" status notification as proof no work landed;
+  always check the actual file on disk before deciding whether to re-run an agent. (The
+  third failed agent, the 48-page opioid protocol, genuinely hadn't written anything and
+  was re-launched from scratch.) `docs/content-bundle.json` regenerated once (40 topics)
+  only after every agent's real output was confirmed, per the lesson above.
