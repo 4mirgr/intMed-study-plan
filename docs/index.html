@@ -421,8 +421,10 @@
     <div class="title-row">
       <h1>مسیر بورد داخلی</h1>
       <span>
+        <span class="conn num" id="userLabel"></span>
         <span class="conn num" id="connStatus">در حال اتصال...</span>
         <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال به GitHub</button>
+        <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
       </span>
     </div>
     <div class="progress-wrap">
@@ -479,7 +481,14 @@
 <script>
 (function(){
   "use strict";
-  var GATE_HASH = "49e9c6e4";
+  // Each entry: fnv1aHex(lowercased-username + ":" + normalized-password) -> a stable
+  // userId used to namespace that person's phase-checklist/notes/highlights in the
+  // shared GitHub state.json (see STATE.users below). Adding a third person later is
+  // just one more {hash, id} entry here.
+  var GATE_USERS = [
+    { hash: "49e9c6e4", id: "amir" },
+    { hash: "2113c3e8", id: "hamkar" }
+  ];
   var gateEl = document.getElementById("loginGate");
   var appEl = document.getElementById("appRoot");
   function revealApp(){
@@ -507,7 +516,11 @@
       .trim();
   }
   try{
-    if(localStorage.getItem("bp_authed") === "1"){ revealApp(); }
+    if(localStorage.getItem("bp_authed") === "1"){
+      // Backfill for sessions authenticated before multi-user support existed.
+      if(!localStorage.getItem("bp_user_id")){ localStorage.setItem("bp_user_id", "amir"); }
+      revealApp();
+    }
   }catch(e){}
   var loginForm = document.getElementById("loginForm");
   var loginErr = document.getElementById("loginErr");
@@ -515,10 +528,17 @@
     ev.preventDefault();
     var u = normalizeDigits(document.getElementById("loginUser").value).toLowerCase();
     var p = normalizeDigits(document.getElementById("loginPass").value);
-    if(fnv1aHex(u + ":" + p) === GATE_HASH){
-      try{ localStorage.setItem("bp_authed", "1"); }catch(e){}
+    var h = fnv1aHex(u + ":" + p);
+    var matched = null;
+    for(var i=0;i<GATE_USERS.length;i++){ if(GATE_USERS[i].hash === h){ matched = GATE_USERS[i]; break; } }
+    if(matched){
+      try{ localStorage.setItem("bp_authed", "1"); localStorage.setItem("bp_user_id", matched.id); }catch(e){}
       loginErr.classList.remove("show");
-      revealApp();
+      // Full reload (not just revealApp()) because the main app script below
+      // already ran and fixed CURRENT_USER_ID from localStorage as it was
+      // *before* this login — without a reload, a fresh login would keep
+      // operating under the fallback user id for the rest of this tab.
+      location.reload();
     } else {
       loginErr.textContent = "نام کاربری یا رمز عبور اشتباه است.";
       loginErr.classList.add("show");
@@ -533,6 +553,25 @@
     var map=['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
     return String(n).replace(/[0-9]/g,function(d){ return map[d]; });
   }
+
+  // ---------------------------------------------------------------
+  // Logged-in user — set by the login-gate IIFE above via localStorage.
+  // Namespaces this person's own phase-checklist/notes/highlights inside
+  // the shared GitHub state.json (see STATE.users below) so two people
+  // using this same site never see or overwrite each other's data.
+  // ---------------------------------------------------------------
+  var USER_NAMES = { amir: "دکتر گرامی", hamkar: "همکار" };
+  var CURRENT_USER_ID = (function(){
+    try{ return localStorage.getItem("bp_user_id") || "amir"; }catch(e){ return "amir"; }
+  })();
+  (function(){
+    var el = document.getElementById("userLabel");
+    if(el) el.textContent = USER_NAMES[CURRENT_USER_ID] || CURRENT_USER_ID;
+  })();
+  document.getElementById("logoutBtn").addEventListener("click", function(){
+    try{ localStorage.removeItem("bp_authed"); localStorage.removeItem("bp_user_id"); }catch(e){}
+    location.reload();
+  });
 
   // ---------------------------------------------------------------
   // CONTENT — phases (static; only interactive state lives in db)
@@ -1116,7 +1155,15 @@
       });
   }
 
-  var STATE = { version:1, itemState:{}, meta:{currentPhaseOverride:null}, highlights:{} };
+  // STATE.users namespaces each logged-in person's own data inside the one
+  // shared state.json — see CURRENT_USER_ID above. myBucket() always returns
+  // (creating if needed) the bucket for whoever is currently logged in.
+  var STATE = { version:2, users:{} };
+  function emptyBucket(){ return {itemState:{}, meta:{currentPhaseOverride:null}, highlights:{}}; }
+  function myBucket(){
+    if(!STATE.users[CURRENT_USER_ID]) STATE.users[CURRENT_USER_ID] = emptyBucket();
+    return STATE.users[CURRENT_USER_ID];
+  }
 
   function setConn(kind){
     var el = document.getElementById("connStatus");
@@ -1129,13 +1176,19 @@
 
   var flushTimer = null, flushing = false, flushQueued = false, dirty = false;
   function cleanedStateForSave(){
-    var hl = {}, k;
-    for(k in STATE.highlights){
-      if(STATE.highlights.hasOwnProperty(k) && STATE.highlights[k] && STATE.highlights[k].length){
-        hl[k] = STATE.highlights[k];
+    var users = {}, uid, k;
+    for(uid in STATE.users){
+      if(!STATE.users.hasOwnProperty(uid)) continue;
+      var bucket = STATE.users[uid];
+      var hl = {};
+      for(k in bucket.highlights){
+        if(bucket.highlights.hasOwnProperty(k) && bucket.highlights[k] && bucket.highlights[k].length){
+          hl[k] = bucket.highlights[k];
+        }
       }
+      users[uid] = { itemState: bucket.itemState || {}, meta: bucket.meta || {currentPhaseOverride:null}, highlights: hl };
     }
-    return { version:1, updatedAt:new Date().toISOString(), itemState: STATE.itemState, meta: STATE.meta, highlights: hl };
+    return { version:2, updatedAt:new Date().toISOString(), users: users };
   }
   function doFlush(){
     if(!getPat()) return;
@@ -1171,23 +1224,24 @@
   }
 
   function writeItemState(id, data){
-    STATE.itemState[id] = data;
+    myBucket().itemState[id] = data;
     scheduleFlush(400);
   }
   function writeTopicState(id, data){
-    STATE.itemState[id] = data;
+    myBucket().itemState[id] = data;
     scheduleFlush(400);
   }
   function writeMeta(data){
-    STATE.meta = mergeObj(STATE.meta, data);
+    myBucket().meta = mergeObj(myBucket().meta, data);
     scheduleFlush(400);
   }
 
   function applyLoadedState(){
     var id, data, p, t, status;
-    for(id in STATE.itemState){
-      if(!STATE.itemState.hasOwnProperty(id)) continue;
-      data = STATE.itemState[id] || {};
+    var bucket = myBucket();
+    for(id in bucket.itemState){
+      if(!bucket.itemState.hasOwnProperty(id)) continue;
+      data = bucket.itemState[id] || {};
       p = phaseItemEls[id];
       if(p){
         p.cb.checked = !!data.checked;
@@ -1205,7 +1259,7 @@
       }
     }
     TOPICS.forEach(updateCatStat);
-    currentOverride = (STATE.meta && STATE.meta.currentPhaseOverride) || null;
+    currentOverride = (bucket.meta && bucket.meta.currentPhaseOverride) || null;
     refreshAll();
     allTopicIds.forEach(function(tid){
       updateLearnCounts(tid);
@@ -1214,13 +1268,26 @@
     });
   }
 
+  // A state.json written before multi-user support has itemState/meta/highlights
+  // at the top level instead of under STATE.users — treat that as the original
+  // user's ("amir") data so nothing is lost on first load after this update.
+  function migrateStateShape(remote){
+    if(remote && remote.users) return remote;
+    var legacy = remote || {};
+    var users = {};
+    users.amir = {
+      itemState: legacy.itemState || {},
+      meta: legacy.meta || {currentPhaseOverride:null},
+      highlights: legacy.highlights || {}
+    };
+    return { version:2, users: users };
+  }
+
   function connectGithub(){
     setConn("connecting");
     return ghFetchState().then(function(remote){
-      STATE = mergeObj({version:1, itemState:{}, meta:{currentPhaseOverride:null}, highlights:{}}, remote || {});
-      STATE.itemState = STATE.itemState || {};
-      STATE.meta = STATE.meta || {currentPhaseOverride:null};
-      STATE.highlights = STATE.highlights || {};
+      STATE = migrateStateShape(remote);
+      if(!STATE.users) STATE.users = {};
       setConn("online");
       applyLoadedState();
       updateGhBtn();
@@ -1283,7 +1350,7 @@
   function updateLearnCounts(topicId){
     var data = contentMap[topicId] || {};
     LEARN_TYPES.forEach(function(lt){
-      var n = lt.key === "highlights" ? (STATE.highlights[topicId] || []).length : (data[lt.key] || []).length;
+      var n = lt.key === "highlights" ? (myBucket().highlights[topicId] || []).length : (data[lt.key] || []).length;
       var el = document.querySelector('[data-lc="'+topicId+'-'+lt.key+'"]');
       if(el) el.textContent = n ? faDigits(n) : "";
     });
@@ -1307,10 +1374,11 @@
   // exists in storage (visible via "هایلایت‌های من"), it just won't
   // show as a <mark> anymore.
   // ---------------------------------------------------------------
-  function getHighlights(topicId){ return STATE.highlights[topicId] || []; }
+  function getHighlights(topicId){ return myBucket().highlights[topicId] || []; }
   function ensureHighlightsArr(topicId){
-    if(!STATE.highlights[topicId]) STATE.highlights[topicId] = [];
-    return STATE.highlights[topicId];
+    var hl = myBucket().highlights;
+    if(!hl[topicId]) hl[topicId] = [];
+    return hl[topicId];
   }
   function makeHlId(){ return "h" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
@@ -1762,11 +1830,12 @@
   }
 
   document.getElementById("resetBtn").addEventListener("click", function(){
-    if(!confirm("همهٔ تیک‌ها، وضعیت‌های دانش و یادداشت‌های فاز/مبحث روی همهٔ دستگاه‌ها پاک بشه؟ (هایلایت‌ها و یادداشت‌های درسنامه/فلش‌کارت/جدول دست نمی‌خورن)")) return;
+    if(!confirm("همهٔ تیک‌ها، وضعیت‌های دانش و یادداشت‌های فاز/مبحث خودِ تو (" + (USER_NAMES[CURRENT_USER_ID]||CURRENT_USER_ID) + ") روی همهٔ دستگاه‌ها پاک بشه؟ (هایلایت‌ها و یادداشت‌های درسنامه/فلش‌کارت/جدول، و داده‌های کاربر دیگر دست نمی‌خورن)")) return;
     if(!getPat()){ alert("اول باید به GitHub وصل بشی."); return; }
-    allItemIds.forEach(function(id){ STATE.itemState[id] = {checked:false, note:""}; });
-    allTopicIds.forEach(function(id){ STATE.itemState[id] = {status:"نامشخص", note:""}; });
-    STATE.meta = {currentPhaseOverride:null};
+    var bucket = myBucket();
+    allItemIds.forEach(function(id){ bucket.itemState[id] = {checked:false, note:""}; });
+    allTopicIds.forEach(function(id){ bucket.itemState[id] = {status:"نامشخص", note:""}; });
+    bucket.meta = {currentPhaseOverride:null};
     applyLoadedState();
     scheduleFlush(50);
   });

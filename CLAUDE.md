@@ -203,8 +203,110 @@ desktop, chosen over a custom modal to keep this scope-contained.
 ### If asked to "extract my highlights"
 Read `state.json` directly off the `study-state` branch (`GET /repos/4mirgr/intMed-study-plan/
 contents/state.json?ref=study-state` — a plain git fetch of that branch, or the GitHub API,
-both work since this session already has repo access) and parse `highlights[topicId]`. Don't
-try to read this from the live artifact's own db — highlights are never stored there.
+both work since this session already has repo access). As of the multi-user change below,
+the shape is `{version:2, users:{<userId>:{itemState, meta, highlights}}}` — parse
+`users[userId].highlights[topicId]`, not a top-level `highlights` key (that was the pre-
+multi-user v1 shape; `migrateStateShape()` in both HTML files converts an old v1 document to
+v2 on first load, but a file read directly off the branch could still be v1 if no client has
+written to it since). If the user doesn't say which user, ask, or default to `amir` (the
+primary user) and say you assumed that.
+
+## Multi-user support (added 2026-10-01)
+
+### Why
+The user asked for a second person to be able to log in with their own username/password and
+have their phase-checklist/topic-status/notes/highlights kept separate from the primary
+user's — not just highlights, per the user's explicit choice ("همه‌چیز جدا بشه") when asked
+whether to scope the separation to highlights only or to all persisted state.
+
+### Login: `GATE_USERS` array, not a single hash
+`docs/index.html`'s login-gate IIFE (near the top of the single `<script>` block) now holds:
+```js
+var GATE_USERS = [
+  { hash: "49e9c6e4", id: "amir" },      // درگرامی / دکتر گرامی
+  { hash: "2113c3e8", id: "hamkar" }     // همکار
+];
+```
+Each entry is `fnv1aHex(lowercased-username + ":" + normalized-password)` (same `fnv1aHex`/
+`normalizeDigits` used before multi-user support — see the login-gate section above) paired
+with a stable `userId` used to namespace that person's data. **To add a third person**:
+compute their hash the same way and append one more `{hash, id}` entry — nothing else needs
+to change structurally. Current credentials (chosen by Claude at the user's explicit request
+"همینجا بگو چی باشه" — state them plainly if the user asks, don't treat them as secret from
+the user themselves): primary user **drgerami / 09125448285** (`id: "amir"`), second user
+**hamkar / 482917** (`id: "hamkar"`). `USER_NAMES = {amir: "دکتر گرامی", hamkar: "همکار"}`
+drives the header label and reset-confirm text.
+
+On successful login the submit handler sets `localStorage.bp_authed` and
+`localStorage.bp_user_id`, then calls `location.reload()` — **not** just `revealApp()`. This
+is load-bearing: the main app IIFE's `CURRENT_USER_ID` is computed once, synchronously, from
+`localStorage.getItem("bp_user_id")` at script-load time (it runs immediately even while the
+login gate is covering the screen, since that's just a CSS overlay). For an already-
+authenticated session this is fine (bp_user_id is already set before the script runs). But
+for a brand-new login in a tab that was never authenticated, the main IIFE already ran and
+fixed `CURRENT_USER_ID` to its fallback (`"amir"`) before the form was even submitted — so
+without a reload, a fresh hamkar login would silently keep writing into amir's bucket for the
+rest of that tab's lifetime. Caught this via Playwright testing before shipping; if this
+reload is ever "simplified" away, that bug comes back. A logout (`#logoutBtn`) clears both
+localStorage keys and also reloads (via `location.reload()` inside the click handler).
+
+### Storage shape: `STATE.users.<userId>`, not flat
+`state.json` on the `study-state` branch moved from the old flat v1 shape
+(`{version:1, itemState, meta, highlights}`) to:
+```json
+{
+  "version": 2,
+  "updatedAt": "ISO timestamp",
+  "users": {
+    "amir":   { "itemState": {...}, "meta": {...}, "highlights": {...} },
+    "hamkar": { "itemState": {...}, "meta": {...}, "highlights": {...} }
+  }
+}
+```
+Both `docs/index.html` and the live artifact implement the same pattern:
+- `myBucket()` (artifact: hardcoded id `ARTIFACT_USER_ID = "amir"`; docs/index.html: reads
+  `CURRENT_USER_ID` from localStorage) lazily creates and returns `STATE.users[<id>]`, and
+  every write path (`writeItemState`, `writeTopicState`, `writeMeta`, `ensureHighlightsArr`,
+  `commitHighlight`) goes through it instead of touching `STATE` directly.
+- `migrateStateShape(remote)` runs on every `connectGithub()` load: if `remote.users` already
+  exists it's returned as-is (already v2); otherwise the old flat `remote` is wrapped as
+  `{version:2, users:{amir:{itemState, meta, highlights}}}` — **always attributed to `amir`**,
+  since any pre-multi-user data belongs to the original single user. This is a one-way,
+  non-destructive read-time conversion — nothing is migrated in place on GitHub until the
+  next save, which naturally writes back in v2 shape.
+- `cleanedStateForSave()` iterates every key in `STATE.users` (not just the current user's)
+  and writes all of them back — this is what keeps one user's save from clobbering another's
+  bucket, since the whole document is still a single GET-sha-then-PUT write (see the
+  dual-backend/last-write-wins notes above, which still apply at the document level).
+- The reset button (`#resetBtn`) only clears `myBucket()`'s `itemState`/`meta`/`highlights` —
+  confirm text names the current user by their display name and explicitly states the other
+  user's data is untouched.
+
+### The artifact has no login gate — hardcoded to `amir`
+The claude.ai artifact ("مسیر بورد") has no username/password UI of its own (it's already
+private via claude.ai's own access control). Its highlight-sync module (the GitHub-backed
+half — its native `db`-backed phase-checklist/topic-status code, untouched, still has no
+concept of multiple users at all) hardcodes `ARTIFACT_USER_ID = "amir"`. It still round-trips
+correctly: `migrateStateShape`/`cleanedStateForSave` are generic over however many keys exist
+under `STATE.users`, so a `hamkar` bucket written from drgerami-md.ir passes through the
+artifact's reads/writes unchanged — the artifact just never reads or writes to it. Don't add
+a second PAT-connect/identity option to the artifact without the user asking; if a real
+second identity is ever needed there, it needs its own UI decision, not just copying
+`CURRENT_USER_ID`'s localStorage read (the artifact iframe's localStorage isn't shared with
+drgerami-md.ir's origin anyway).
+
+### Testing note
+End-to-end multi-user testing (login as each user, confirm bucket isolation, confirm v1→v2
+migration preserves the original user's data as `amir`) was done via Playwright against a
+local HTTP server (pattern: `python3 -m http.server`, Chromium at
+`/opt/pw-browsers/chromium-1194/chrome-linux/chrome` since `playwright install` is blocked in
+this environment) plus an instrumented scratch copy of each HTML file that exposes internal
+functions (`migrateStateShape`, `myBucket`, `cleanedStateForSave`, `CURRENT_USER_ID`/
+`ARTIFACT_USER_ID`) onto `window.__test` for direct inspection — never add such a hook to the
+real committed files. A real GitHub PAT-authenticated round trip (the actual Contents API
+GET/PUT) still can't be exercised from inside a Claude Code session (same credential-
+exploration boundary as the original single-user sync work) — only the user can confirm that
+leg, on a real device with a real token.
 
 ## Shared topics (same content, listed under two categories)
 
