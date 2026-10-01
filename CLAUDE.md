@@ -224,18 +224,26 @@ whether to scope the separation to highlights only or to all persisted state.
 ```js
 var GATE_USERS = [
   { hash: "49e9c6e4", id: "amir" },      // درگرامی / دکتر گرامی
-  { hash: "2113c3e8", id: "hamkar" }     // همکار
+  { hash: "bd59ba56", id: "arash" }      // آرش
 ];
 ```
 Each entry is `fnv1aHex(lowercased-username + ":" + normalized-password)` (same `fnv1aHex`/
 `normalizeDigits` used before multi-user support — see the login-gate section above) paired
 with a stable `userId` used to namespace that person's data. **To add a third person**:
 compute their hash the same way and append one more `{hash, id}` entry — nothing else needs
-to change structurally. Current credentials (chosen by Claude at the user's explicit request
-"همینجا بگو چی باشه" — state them plainly if the user asks, don't treat them as secret from
-the user themselves): primary user **drgerami / 09125448285** (`id: "amir"`), second user
-**hamkar / 482917** (`id: "hamkar"`). `USER_NAMES = {amir: "دکتر گرامی", hamkar: "همکار"}`
-drives the header label and reset-confirm text.
+to change structurally. Current credentials: primary user **drgerami / 09125448285**
+(`id: "amir"`), second user **arash / 09127389946** (`id: "arash"`) — state them plainly if
+the user asks, don't treat them as secret from the user themselves. `USER_NAMES =
+{amir: "دکتر گرامی", arash: "آرش"}` drives the header label and reset-confirm text.
+
+(History: the second user's id/credentials were originally shipped as a placeholder,
+`hamkar`/482917 — since the user hadn't yet said who the second person actually was. Updated
+2026-10-01, same day, once the user specified the real person: username `arash`, password
+`09127389946`, id renamed `hamkar`→`arash`. No real data existed under the old `hamkar` bucket
+key yet when this happened, so the rename was a clean swap, not a migration. If a future
+rename ever needs to preserve an already-populated bucket, do the migration explicitly —
+don't assume `migrateStateShape` handles a bucket-key rename, it only handles the v1→v2
+shape change.)
 
 On successful login the submit handler sets `localStorage.bp_authed` and
 `localStorage.bp_user_id`, then calls `location.reload()` — **not** just `revealApp()`. This
@@ -245,8 +253,8 @@ login gate is covering the screen, since that's just a CSS overlay). For an alre
 authenticated session this is fine (bp_user_id is already set before the script runs). But
 for a brand-new login in a tab that was never authenticated, the main IIFE already ran and
 fixed `CURRENT_USER_ID` to its fallback (`"amir"`) before the form was even submitted — so
-without a reload, a fresh hamkar login would silently keep writing into amir's bucket for the
-rest of that tab's lifetime. Caught this via Playwright testing before shipping; if this
+without a reload, a fresh second-user login would silently keep writing into amir's bucket
+for the rest of that tab's lifetime. Caught this via Playwright testing before shipping; if this
 reload is ever "simplified" away, that bug comes back. A logout (`#logoutBtn`) clears both
 localStorage keys and also reloads (via `location.reload()` inside the click handler).
 
@@ -258,8 +266,8 @@ localStorage keys and also reloads (via `location.reload()` inside the click han
   "version": 2,
   "updatedAt": "ISO timestamp",
   "users": {
-    "amir":   { "itemState": {...}, "meta": {...}, "highlights": {...} },
-    "hamkar": { "itemState": {...}, "meta": {...}, "highlights": {...} }
+    "amir":  { "itemState": {...}, "meta": {...}, "highlights": {...} },
+    "arash": { "itemState": {...}, "meta": {...}, "highlights": {...} }
   }
 }
 ```
@@ -288,7 +296,7 @@ private via claude.ai's own access control). Its highlight-sync module (the GitH
 half — its native `db`-backed phase-checklist/topic-status code, untouched, still has no
 concept of multiple users at all) hardcodes `ARTIFACT_USER_ID = "amir"`. It still round-trips
 correctly: `migrateStateShape`/`cleanedStateForSave` are generic over however many keys exist
-under `STATE.users`, so a `hamkar` bucket written from drgerami-md.ir passes through the
+under `STATE.users`, so an `arash` bucket written from drgerami-md.ir passes through the
 artifact's reads/writes unchanged — the artifact just never reads or writes to it. Don't add
 a second PAT-connect/identity option to the artifact without the user asking; if a real
 second identity is ever needed there, it needs its own UI decision, not just copying
