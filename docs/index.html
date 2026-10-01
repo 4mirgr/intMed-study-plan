@@ -25,6 +25,7 @@
     --border:#dde3e0;
     --done-bg:#e4f2ec;
     --shadow:0 1px 2px rgba(15,33,29,.06),0 6px 20px -8px rgba(15,33,29,.12);
+    --hl-yellow:#fde68a; --hl-green:#bbf0c9; --hl-pink:#fbcfe8; --hl-blue:#bfdbfe;
   }
   :root:not([data-theme="light"]){
     @media (prefers-color-scheme: dark){
@@ -33,6 +34,7 @@
       --accent-soft:#1c3a33; --warn:#e3ab5f; --warn-soft:#3a2c16; --danger:#e28a8a;
       --danger-soft:#3a1f1f; --border:#283a34; --done-bg:#17352c;
       --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -10px rgba(0,0,0,.5);
+      --hl-yellow:#6b5a12; --hl-green:#1f4d33; --hl-pink:#5c2a44; --hl-blue:#1f3f66;
     }
   }
   :root[data-theme="dark"]{
@@ -41,6 +43,7 @@
     --accent-soft:#1c3a33; --warn:#e3ab5f; --warn-soft:#3a2c16; --danger:#e28a8a;
     --danger-soft:#3a1f1f; --border:#283a34; --done-bg:#17352c;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -10px rgba(0,0,0,.5);
+    --hl-yellow:#6b5a12; --hl-green:#1f4d33; --hl-pink:#5c2a44; --hl-blue:#1f3f66;
   }
 
   *{box-sizing:border-box}
@@ -295,6 +298,89 @@
   }
   .login-card .login-err{color:var(--danger);font-size:.8rem;margin-top:8px;display:none}
   .login-card .login-err.show{display:block}
+
+  .gh-connect-btn{
+    font-family:"Vazirmatn",sans-serif;font-size:.7rem;font-weight:600;border:1px solid var(--border);
+    background:var(--surface);color:var(--ink-dim);padding:3px 9px;border-radius:99px;cursor:pointer;
+    margin-inline-start:6px;
+  }
+  .gh-modal{
+    position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.45);padding:16px;
+  }
+  .gh-modal-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px;
+    max-width:380px;width:100%;box-shadow:var(--shadow);direction:rtl;text-align:right;
+    font-family:"Vazirmatn","Tahoma",sans-serif;max-height:85vh;overflow:auto;
+  }
+  .gh-modal-card h3{font-size:.95rem;font-weight:800;margin:0 0 10px}
+  .gh-modal-desc{font-size:.78rem;color:var(--ink-dim);line-height:1.9;margin:0 0 10px}
+  .gh-modal-desc a{color:var(--accent-ink)}
+  .gh-modal-card input{
+    width:100%;padding:9px 11px;margin-bottom:8px;border:1px solid var(--border);border-radius:8px;
+    background:var(--surface-2);color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:.8rem;
+  }
+  .gh-modal-actions{display:flex;gap:8px;margin-top:4px}
+  .gh-modal-actions button{
+    flex:1;padding:9px;border:none;border-radius:8px;font-family:inherit;font-weight:700;
+    font-size:.82rem;cursor:pointer;
+  }
+  #ghPatSave{background:var(--accent);color:#fff}
+  #ghPatCancel{background:var(--surface-2);color:var(--ink-dim)}
+  .gh-modal-err{color:var(--danger);font-size:.78rem;margin-top:8px;min-height:1em}
+  .gh-modal-disconnect{
+    width:100%;margin-top:10px;padding:8px;border:1px solid var(--border);background:none;color:var(--danger);
+    border-radius:8px;font-family:inherit;font-size:.78rem;cursor:pointer;
+  }
+
+  mark.hl{border-radius:3px;padding:0 1px;cursor:pointer;color:inherit}
+  mark.hl-yellow{background:var(--hl-yellow)}
+  mark.hl-green{background:var(--hl-green)}
+  mark.hl-pink{background:var(--hl-pink)}
+  mark.hl-blue{background:var(--hl-blue)}
+  mark.hl-noted{box-shadow:inset 0 -2px 0 var(--ink-faint)}
+
+  .hl-toolbar{
+    position:absolute;z-index:9997;display:none;gap:4px;background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:5px;box-shadow:var(--shadow);align-items:center;
+  }
+  .hl-swatch{width:20px;height:20px;border-radius:99px;border:1px solid var(--border);cursor:pointer;padding:0}
+  .hl-swatch.hl-yellow{background:var(--hl-yellow)}
+  .hl-swatch.hl-green{background:var(--hl-green)}
+  .hl-swatch.hl-pink{background:var(--hl-pink)}
+  .hl-swatch.hl-blue{background:var(--hl-blue)}
+  .hl-note-btn{
+    font-family:"Vazirmatn",sans-serif;font-size:.7rem;font-weight:600;border:1px solid var(--border);
+    background:var(--surface-2);color:var(--ink-dim);padding:3px 8px;border-radius:8px;cursor:pointer;
+    white-space:nowrap;
+  }
+
+  .hl-popover{
+    position:absolute;z-index:9997;display:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:10px;box-shadow:var(--shadow);max-width:260px;font-size:.78rem;
+    direction:rtl;text-align:right;
+  }
+  .hl-popover-note{color:var(--ink-dim);line-height:1.7;margin-bottom:8px;white-space:pre-wrap}
+  .hl-popover-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .hl-popover-actions button{
+    font-family:inherit;font-size:.72rem;border:1px solid var(--border);background:var(--surface-2);
+    color:var(--ink-dim);padding:4px 8px;border-radius:8px;cursor:pointer;
+  }
+  #hlPopoverDelete{color:var(--danger)}
+
+  .hl-list-item{
+    border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:8px;background:var(--surface);
+    border-inline-start:4px solid var(--hl-yellow);
+  }
+  .hl-list-item.hl-list-green{border-inline-start-color:var(--hl-green)}
+  .hl-list-item.hl-list-pink{border-inline-start-color:var(--hl-pink)}
+  .hl-list-item.hl-list-blue{border-inline-start-color:var(--hl-blue)}
+  .hl-list-quote{font-weight:700;margin-bottom:4px}
+  .hl-list-meta{color:var(--ink-faint);font-size:.74rem;margin-bottom:6px}
+  .hl-list-del{
+    font-size:.7rem;border:none;background:var(--danger-soft);color:var(--danger);padding:3px 9px;
+    border-radius:99px;cursor:pointer;
+  }
 </style>
 
 <div class="login-gate" id="loginGate">
@@ -307,11 +393,37 @@
   </form>
 </div>
 
+<div class="gh-modal" id="ghModal">
+  <div class="gh-modal-card">
+    <h3>اتصال به GitHub برای ذخیره‌سازی</h3>
+    <p class="gh-modal-desc">
+      پیشرفت، یادداشت‌ها و هایلایت‌هات روی یک ریپوی GitHub ذخیره می‌شن تا بین دستگاه‌ها همگام بمونن. هر دستگاه باید یک‌بار جدا وصل بشه:<br>
+      ۱. به <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> برو (باید وارد حساب گیت‌هابت باشی).<br>
+      ۲. «Resource owner» را حساب خودت بگذار؛ در «Repository access» فقط ریپوی <b>intMed-study-plan</b> را انتخاب کن.<br>
+      ۳. در «Permissions → Repository permissions» فقط «Contents» را روی «Read and write» بگذار — بقیه را دست نزن.<br>
+      ۴. توکن ساخته‌شده را کپی و اینجا پیست کن.
+    </p>
+    <p class="gh-modal-desc">
+      این توکن فقط در همین مرورگر (localStorage) ذخیره می‌شه، نه جای دیگه. قفل ورود این سایت امنیت واقعی نیست؛ اگه کسی به این دستگاه دسترسی فیزیکی پیدا کنه می‌تونه این توکن رو از devtools بخونه — برای همین توکن رو فقط به همین یک ریپو (نه کل حسابت) محدود کن.
+    </p>
+    <input type="password" id="ghPatInput" placeholder="Personal Access Token (github_pat_...)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <div class="gh-modal-actions">
+      <button type="button" id="ghPatSave">ذخیره و اتصال</button>
+      <button type="button" id="ghPatCancel">انصراف</button>
+    </div>
+    <div class="gh-modal-err" id="ghModalErr"></div>
+    <button type="button" id="ghPatDisconnect" class="gh-modal-disconnect" style="display:none">قطع اتصال این دستگاه</button>
+  </div>
+</div>
+
 <div class="app" id="appRoot" style="display:none">
   <header class="top">
     <div class="title-row">
       <h1>مسیر بورد داخلی</h1>
-      <span class="conn num" id="connStatus">در حال اتصال...</span>
+      <span>
+        <span class="conn num" id="connStatus">در حال اتصال...</span>
+        <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال به GitHub</button>
+      </span>
     </div>
     <div class="progress-wrap">
       <div class="bar"><span id="barFill" style="width:0%"></span></div>
@@ -354,12 +466,12 @@
 
   <div class="tab-panel" id="tabPanelEducation">
     <h2 class="section-title">بخش آموزشی</h2>
-    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در گفتگو بگو.</p>
+    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، پشت فلش‌کارت‌ها و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در گفتگو بگو.</p>
     <div id="topicsRoot"></div>
   </div>
 
   <footer class="bottom">
-    <span>همه‌چیز در دیتابیس همین آرتیفکت ذخیره می‌شه — با هر دستگاهی که وارد حسابت بشی همگام می‌مونه؛ بدون اینترنت، تغییرات ذخیره نمی‌شن.</span>
+    <span>تیک فازها، وضعیت مباحث، یادداشت‌ها و هایلایت‌ها روی GitHub ذخیره می‌شن (دکمهٔ «اتصال به GitHub» بالای صفحه) — هر دستگاه باید یک‌بار جدا وصل بشه؛ بدون اتصال یا بدون اینترنت، تغییرات ذخیره نمی‌شن.</span>
     <button class="reset-btn" id="resetBtn">ریست کامل (روی همهٔ دستگاه‌ها)</button>
   </footer>
 </div>
@@ -618,7 +730,8 @@
     {key:"mcq", label:"آزمون ۴ گزینه‌ای"},
     {key:"kfPmp", label:"KF & PMP"},
     {key:"images", label:"تصاویر مهم"},
-    {key:"tables", label:"جداول مهم"}
+    {key:"tables", label:"جداول مهم"},
+    {key:"highlights", label:"هایلایت‌های من"}
   ];
   var contentMap = {}; // topicId -> {flashcards,mcq,kfPmp,images,tables}
 
@@ -827,7 +940,10 @@
   function topicHasContent(topicId){
     var data = contentMap[topicId];
     if(!data) return null;
-    return LEARN_TYPES.some(function(lt){ return (data[lt.key] || []).length > 0; });
+    return LEARN_TYPES.some(function(lt){
+      if(lt.key === "highlights") return false; // personal annotations, not board-prep content
+      return (data[lt.key] || []).length > 0;
+    });
   }
 
   function updateContentBadge(topicId){
@@ -928,9 +1044,126 @@
   }
 
   // ---------------------------------------------------------------
-  // db wiring
+  // GitHub-backed state sync (progress, notes, highlights).
+  // This is a plain static site (GitHub Pages) with no backend, so
+  // persistence/cross-device sync is implemented via the GitHub Contents
+  // API against a dedicated branch (study-state) that Pages never builds
+  // from. Each device stores its own Personal Access Token in
+  // localStorage and does whole-document GET-before-PUT writes —
+  // simple last-write-wins at the document level, not a field-level
+  // merge. Fine for one person's own few devices; two tabs saving at
+  // literally the same moment can clobber each other.
   // ---------------------------------------------------------------
-  var db = null;
+  var GH_OWNER = "4mirgr";
+  var GH_REPO = "intMed-study-plan";
+  var GH_BRANCH = "study-state";
+  var GH_PATH = "state.json";
+  var GH_API = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + GH_PATH;
+
+  function mergeObj(a, b){
+    var out = {}, k;
+    for(k in a){ if(a.hasOwnProperty(k)) out[k] = a[k]; }
+    for(k in b){ if(b.hasOwnProperty(k)) out[k] = b[k]; }
+    return out;
+  }
+  function b64EncodeUtf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function b64DecodeUtf8(str){ return decodeURIComponent(escape(atob(str.replace(/\n/g, "")))); }
+
+  function getPat(){ try{ return localStorage.getItem("gh_pat") || ""; }catch(e){ return ""; } }
+  function setPat(v){ try{ if(v){ localStorage.setItem("gh_pat", v); } else { localStorage.removeItem("gh_pat"); } }catch(e){} }
+  function ghHeaders(){
+    return {
+      "Authorization": "Bearer " + getPat(),
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
+  }
+
+  function ghFetchState(){
+    return fetch(GH_API + "?ref=" + GH_BRANCH, { headers: ghHeaders() })
+      .then(function(r){
+        if(r.status === 401 || r.status === 403) throw new Error("auth");
+        if(!r.ok) throw new Error("http " + r.status);
+        return r.json();
+      })
+      .then(function(json){
+        return JSON.parse(b64DecodeUtf8(json.content));
+      });
+  }
+
+  function ghSaveState(stateObj){
+    return fetch(GH_API + "?ref=" + GH_BRANCH, { headers: ghHeaders() })
+      .then(function(r){
+        if(r.status === 401 || r.status === 403) throw new Error("auth");
+        return r.ok ? r.json() : null;
+      })
+      .then(function(json){
+        var body = {
+          message: "update study state " + new Date().toISOString(),
+          content: b64EncodeUtf8(JSON.stringify(stateObj)),
+          branch: GH_BRANCH
+        };
+        if(json && json.sha) body.sha = json.sha;
+        return fetch(GH_API, {
+          method: "PUT",
+          headers: mergeObj({"Content-Type":"application/json"}, ghHeaders()),
+          body: JSON.stringify(body)
+        });
+      })
+      .then(function(r){
+        if(r.status === 401 || r.status === 403) throw new Error("auth");
+        if(!r.ok) throw new Error("http " + r.status);
+      });
+  }
+
+  var STATE = { version:1, itemState:{}, meta:{currentPhaseOverride:null}, highlights:{} };
+
+  function setConn(kind){
+    var el = document.getElementById("connStatus");
+    if(kind === "online"){ el.textContent = "آنلاین ✓ (GitHub)"; el.className = "conn num ok"; }
+    else if(kind === "connecting"){ el.textContent = "در حال اتصال..."; el.className = "conn num"; }
+    else if(kind === "nopat"){ el.textContent = "برای ذخیره‌سازی وصل نیست"; el.className = "conn num bad"; }
+    else if(kind === "error"){ el.textContent = "خطا در همگام‌سازی گیت‌هاب"; el.className = "conn num bad"; }
+    else if(kind === "auth"){ el.textContent = "توکن نامعتبر — دوباره وصل شو"; el.className = "conn num bad"; }
+  }
+
+  var flushTimer = null, flushing = false, flushQueued = false, dirty = false;
+  function cleanedStateForSave(){
+    var hl = {}, k;
+    for(k in STATE.highlights){
+      if(STATE.highlights.hasOwnProperty(k) && STATE.highlights[k] && STATE.highlights[k].length){
+        hl[k] = STATE.highlights[k];
+      }
+    }
+    return { version:1, updatedAt:new Date().toISOString(), itemState: STATE.itemState, meta: STATE.meta, highlights: hl };
+  }
+  function doFlush(){
+    if(!getPat()) return;
+    if(flushing){ flushQueued = true; return; }
+    flushing = true;
+    dirty = false;
+    ghSaveState(cleanedStateForSave()).then(function(){
+      flushing = false;
+      setConn("online");
+      if(flushQueued){ flushQueued = false; scheduleFlush(200); }
+    }).catch(function(err){
+      flushing = false;
+      setConn(err && err.message === "auth" ? "auth" : "error");
+    });
+  }
+  function scheduleFlush(delay){
+    if(!getPat()) return;
+    dirty = true;
+    if(flushTimer) clearTimeout(flushTimer);
+    flushTimer = setTimeout(function(){ flushTimer = null; doFlush(); }, delay == null ? 400 : delay);
+  }
+  setInterval(function(){
+    if(dirty && !flushing && !flushTimer) doFlush();
+  }, 20000);
+  document.addEventListener("visibilitychange", function(){
+    if(document.visibilityState === "hidden" && flushTimer){ clearTimeout(flushTimer); flushTimer = null; doFlush(); }
+  });
+
   var noteTimers = {};
   function scheduleNoteWrite(id, fn){
     if(noteTimers[id]) clearTimeout(noteTimers[id]);
@@ -938,93 +1171,109 @@
   }
 
   function writeItemState(id, data){
-    if(!db) return;
-    db.doc('item_state/' + id).set(data).catch(function(){});
+    STATE.itemState[id] = data;
+    scheduleFlush(400);
   }
   function writeTopicState(id, data){
-    if(!db) return;
-    db.doc('item_state/' + id).set(data).catch(function(){});
+    STATE.itemState[id] = data;
+    scheduleFlush(400);
   }
   function writeMeta(data){
-    if(!db) return;
-    db.doc('meta/state').set(data).catch(function(){});
+    STATE.meta = mergeObj(STATE.meta, data);
+    scheduleFlush(400);
   }
 
-  function applyItemSnapshot(snap){
-    snap.docs.forEach(function(doc){
-      var data = doc.data() || {};
-      var p = phaseItemEls[doc.id];
+  function applyLoadedState(){
+    var id, data, p, t, status;
+    for(id in STATE.itemState){
+      if(!STATE.itemState.hasOwnProperty(id)) continue;
+      data = STATE.itemState[id] || {};
+      p = phaseItemEls[id];
       if(p){
         p.cb.checked = !!data.checked;
         p.row.classList.toggle("done", !!data.checked);
         if(document.activeElement !== p.note) p.note.value = data.note || "";
-        return;
+        continue;
       }
-      var t = topicEls[doc.id];
+      t = topicEls[id];
       if(t){
-        var status = data.status || "نامشخص";
+        status = data.status || "نامشخص";
         t.status = status;
         t.pill.className = "topic-pill st-" + status;
         t.pill.textContent = status;
         if(document.activeElement !== t.note) t.note.value = data.note || "";
       }
-    });
+    }
     TOPICS.forEach(updateCatStat);
+    currentOverride = (STATE.meta && STATE.meta.currentPhaseOverride) || null;
     refreshAll();
+    allTopicIds.forEach(function(tid){
+      updateLearnCounts(tid);
+      var te = topicEls[tid];
+      if(te && te.openType) renderLearnPanel(tid, te.openType);
+    });
   }
 
-  (async function init(){
-    var connEl = document.getElementById("connStatus");
-    try{
-      db = window.claude ? await window.claude.use('db') : null;
-    }catch(e){ db = null; }
-
-    if(!db){
-      connEl.textContent = "نسخه ایستا — تغییرات ذخیره نمی‌شن";
-      connEl.className = "conn num bad";
-      fetch("content-bundle.json").then(function(r){ return r.json(); }).then(function(bundle){
-        contentMap = bundle || {};
-        allTopicIds.forEach(function(id){
-          updateLearnCounts(id);
-          updateContentBadge(id);
-          var t = topicEls[id];
-          if(t && t.openType) renderLearnPanel(id, t.openType);
-        });
-        TOPICS.forEach(updateCatContentBadge);
-      }).catch(function(){});
-      refreshAll();
-      return;
-    }
-
-    connEl.textContent = "آنلاین ✓";
-    connEl.className = "conn num ok";
-
-    db.collection('item_state').limit(500).onSnapshot(function(snap){
-      applyItemSnapshot(snap);
-    }, function(){
-      connEl.textContent = "خطا در همگام‌سازی";
-      connEl.className = "conn num bad";
+  function connectGithub(){
+    setConn("connecting");
+    return ghFetchState().then(function(remote){
+      STATE = mergeObj({version:1, itemState:{}, meta:{currentPhaseOverride:null}, highlights:{}}, remote || {});
+      STATE.itemState = STATE.itemState || {};
+      STATE.meta = STATE.meta || {currentPhaseOverride:null};
+      STATE.highlights = STATE.highlights || {};
+      setConn("online");
+      applyLoadedState();
+      updateGhBtn();
+    }).catch(function(err){
+      setConn(err && err.message === "auth" ? "auth" : "error");
+      updateGhBtn();
     });
+  }
 
-    db.doc('meta/state').onSnapshot(function(snap){
-      var data = snap.data() || {};
-      currentOverride = data.currentPhaseOverride || null;
-      updateHereCard();
-    }, function(){});
+  var ghModal = document.getElementById("ghModal");
+  var ghPatInput = document.getElementById("ghPatInput");
+  var ghModalErr = document.getElementById("ghModalErr");
+  var ghConnectBtn = document.getElementById("ghConnectBtn");
+  var ghPatDisconnectBtn = document.getElementById("ghPatDisconnect");
 
-    db.collection('topic_content').limit(500).onSnapshot(function(snap){
-      snap.docs.forEach(function(doc){
-        contentMap[doc.id] = doc.data() || {};
-      });
+  function updateGhBtn(){
+    ghConnectBtn.textContent = getPat() ? "⚙ تنظیمات همگام‌سازی" : "اتصال به GitHub";
+  }
+  ghConnectBtn.addEventListener("click", function(){
+    ghModalErr.textContent = "";
+    ghPatInput.value = "";
+    ghPatDisconnectBtn.style.display = getPat() ? "" : "none";
+    ghModal.style.display = "flex";
+  });
+  document.getElementById("ghPatCancel").addEventListener("click", function(){ ghModal.style.display = "none"; });
+  document.getElementById("ghPatSave").addEventListener("click", function(){
+    var v = ghPatInput.value.trim();
+    if(!v){ ghModalErr.textContent = "توکن را وارد کن."; return; }
+    setPat(v);
+    ghModal.style.display = "none";
+    updateGhBtn();
+    connectGithub();
+  });
+  ghPatDisconnectBtn.addEventListener("click", function(){
+    if(!confirm("اتصال گیت‌هاب از این دستگاه قطع بشه؟ (داده‌ها روی گیت‌هاب می‌مونن، فقط این دستگاه دیگه باهاشون همگام نمی‌شه)")) return;
+    setPat("");
+    ghModal.style.display = "none";
+    setConn("nopat");
+    updateGhBtn();
+  });
+
+  (function init(){
+    fetch("content-bundle.json").then(function(r){ return r.json(); }).then(function(bundle){
+      contentMap = bundle || {};
       allTopicIds.forEach(function(id){
         updateLearnCounts(id);
         updateContentBadge(id);
-        var t = topicEls[id];
-        if(t && t.openType) renderLearnPanel(id, t.openType);
       });
       TOPICS.forEach(updateCatContentBadge);
-    }, function(){});
+    }).catch(function(){});
 
+    updateGhBtn();
+    if(getPat()){ connectGithub(); } else { setConn("nopat"); }
     refreshAll();
   })();
 
@@ -1034,7 +1283,7 @@
   function updateLearnCounts(topicId){
     var data = contentMap[topicId] || {};
     LEARN_TYPES.forEach(function(lt){
-      var n = (data[lt.key] || []).length;
+      var n = lt.key === "highlights" ? (STATE.highlights[topicId] || []).length : (data[lt.key] || []).length;
       var el = document.querySelector('[data-lc="'+topicId+'-'+lt.key+'"]');
       if(el) el.textContent = n ? faDigits(n) : "";
     });
@@ -1049,20 +1298,287 @@
     return rows;
   }
 
+  // ---------------------------------------------------------------
+  // Highlights / notes (lesson prose, flashcard backs, table cells).
+  // Anchored by (topicId, locKey, quote, occurrence) — a stable id where
+  // one exists (flashcard id), otherwise a position key (section/row/col
+  // index). If the underlying content text changes later, an orphaned
+  // highlight just silently stops re-attaching on render — it still
+  // exists in storage (visible via "هایلایت‌های من"), it just won't
+  // show as a <mark> anymore.
+  // ---------------------------------------------------------------
+  function getHighlights(topicId){ return STATE.highlights[topicId] || []; }
+  function ensureHighlightsArr(topicId){
+    if(!STATE.highlights[topicId]) STATE.highlights[topicId] = [];
+    return STATE.highlights[topicId];
+  }
+  function makeHlId(){ return "h" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+  function nthIndexOf(fullText, quote, n){
+    var idx = -1;
+    for(var i=0;i<=n;i++){
+      idx = fullText.indexOf(quote, idx+1);
+      if(idx === -1) return -1;
+    }
+    return idx;
+  }
+  function countOccurrencesBefore(fullText, quote, beforeIndex){
+    var count = 0, idx = fullText.indexOf(quote);
+    while(idx !== -1 && idx < beforeIndex){ count++; idx = fullText.indexOf(quote, idx+1); }
+    return count;
+  }
+
+  function buildHighlightedFragment(fullText, list){
+    var ranges = [], i;
+    for(i=0;i<list.length;i++){
+      var h = list[i];
+      var start = nthIndexOf(fullText, h.quote, h.occurrence || 0);
+      if(start === -1) continue; // anchor lost (source text changed since this highlight was made)
+      ranges.push({start:start, end:start + h.quote.length, h:h});
+    }
+    ranges.sort(function(a,b){ return a.start - b.start; });
+    var clean = [], lastEnd = -1;
+    for(i=0;i<ranges.length;i++){
+      if(ranges[i].start >= lastEnd){ clean.push(ranges[i]); lastEnd = ranges[i].end; }
+    }
+    var frag = document.createDocumentFragment();
+    var cursor = 0;
+    clean.forEach(function(r){
+      if(r.start > cursor) frag.appendChild(document.createTextNode(fullText.slice(cursor, r.start)));
+      var mark = document.createElement("mark");
+      mark.className = "hl hl-" + (r.h.color || "yellow") + (r.h.note ? " hl-noted" : "");
+      mark.textContent = fullText.slice(r.start, r.end);
+      mark.dataset.hlId = r.h.id;
+      if(r.h.note) mark.title = r.h.note;
+      frag.appendChild(mark);
+      cursor = r.end;
+    });
+    if(cursor < fullText.length) frag.appendChild(document.createTextNode(fullText.slice(cursor)));
+    return frag;
+  }
+
+  function applyHighlightsToContainer(container, topicId, locKey){
+    var fullText = container.dataset.hlRawText;
+    if(fullText == null) return;
+    var list = getHighlights(topicId).filter(function(h){ return h.loc === locKey; });
+    container.innerHTML = "";
+    if(!list.length){ container.appendChild(document.createTextNode(fullText)); return; }
+    container.appendChild(buildHighlightedFragment(fullText, list));
+  }
+
+  function offsetWithinContainer(container, targetNode, targetOffset){
+    var offset = 0, found = false;
+    function walk(node){
+      if(found) return;
+      if(node.nodeType === 3){
+        if(node === targetNode){ offset += targetOffset; found = true; return; }
+        offset += node.textContent.length;
+      } else {
+        for(var i=0;i<node.childNodes.length;i++){ walk(node.childNodes[i]); if(found) return; }
+      }
+    }
+    walk(container);
+    return offset;
+  }
+
+  function refreshHighlightsListIfOpen(topicId){
+    var t = topicEls[topicId];
+    if(!t) return;
+    updateLearnCounts(topicId);
+    if(t.openType === "highlights") renderLearnPanel(topicId, "highlights");
+  }
+
+  function commitHighlight(sel, color, note){
+    var list = ensureHighlightsArr(sel.topicId);
+    list.push({
+      id: makeHlId(),
+      loc: sel.locKey,
+      quote: sel.quote,
+      occurrence: sel.occurrence,
+      color: color,
+      note: note || "",
+      createdAt: new Date().toISOString()
+    });
+    applyHighlightsToContainer(sel.container, sel.topicId, sel.locKey);
+    scheduleFlush(400);
+    refreshHighlightsListIfOpen(sel.topicId);
+  }
+
+  // --- selection -> floating toolbar ---
+  var hlToolbar = document.createElement("div");
+  hlToolbar.className = "hl-toolbar";
+  hlToolbar.innerHTML =
+    '<button type="button" class="hl-swatch hl-yellow" data-color="yellow" title="زرد"></button>' +
+    '<button type="button" class="hl-swatch hl-green" data-color="green" title="سبز"></button>' +
+    '<button type="button" class="hl-swatch hl-pink" data-color="pink" title="صورتی"></button>' +
+    '<button type="button" class="hl-swatch hl-blue" data-color="blue" title="آبی"></button>' +
+    '<button type="button" class="hl-note-btn" id="hlNoteBtn">+ یادداشت</button>';
+  document.body.appendChild(hlToolbar);
+
+  var pendingSelection = null;
+  function hideToolbar(){ hlToolbar.style.display = "none"; pendingSelection = null; }
+
+  function findAnnotatable(node){
+    while(node && node.nodeType !== 1) node = node.parentNode;
+    if(!node || !node.closest) return null;
+    return node.closest("[data-hl-loc]");
+  }
+
+  document.addEventListener("selectionchange", function(){
+    clearTimeout(window.__hlSelTimer);
+    window.__hlSelTimer = setTimeout(function(){
+      var sel = window.getSelection();
+      if(!sel || sel.isCollapsed || sel.rangeCount === 0){ hideToolbar(); return; }
+      var c1 = findAnnotatable(sel.anchorNode);
+      var c2 = findAnnotatable(sel.focusNode);
+      if(!c1 || c1 !== c2){ hideToolbar(); return; }
+      var range = sel.getRangeAt(0);
+      var fullText = c1.dataset.hlRawText || "";
+      var startOff = offsetWithinContainer(c1, range.startContainer, range.startOffset);
+      var endOff = offsetWithinContainer(c1, range.endContainer, range.endOffset);
+      if(startOff > endOff){ var tmp = startOff; startOff = endOff; endOff = tmp; }
+      var quote = fullText.slice(startOff, endOff);
+      if(!quote || !quote.trim()){ hideToolbar(); return; }
+      pendingSelection = {
+        container: c1,
+        topicId: c1.dataset.hlTopic,
+        locKey: c1.dataset.hlLoc,
+        quote: quote,
+        occurrence: countOccurrencesBefore(fullText, quote, startOff)
+      };
+      var rect = range.getBoundingClientRect();
+      hlToolbar.style.left = Math.max(4, rect.left + window.scrollX) + "px";
+      hlToolbar.style.top = Math.max(4, rect.top + window.scrollY - 38) + "px";
+      hlToolbar.style.display = "flex";
+    }, 180);
+  });
+
+  hlToolbar.querySelectorAll(".hl-swatch").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      if(!pendingSelection) return;
+      commitHighlight(pendingSelection, btn.dataset.color, null);
+      hideToolbar();
+      window.getSelection().removeAllRanges();
+    });
+  });
+  document.getElementById("hlNoteBtn").addEventListener("click", function(){
+    if(!pendingSelection) return;
+    var noteText = prompt("یادداشت برای این بخش:", "");
+    if(noteText === null) return;
+    commitHighlight(pendingSelection, "yellow", noteText);
+    hideToolbar();
+    window.getSelection().removeAllRanges();
+  });
+
+  // --- click existing <mark> -> view/edit/delete popover ---
+  var hlPopover = document.createElement("div");
+  hlPopover.className = "hl-popover";
+  hlPopover.innerHTML =
+    '<div class="hl-popover-note" id="hlPopoverNote"></div>' +
+    '<div class="hl-popover-actions">' +
+      '<button type="button" id="hlPopoverEdit">ویرایش یادداشت</button>' +
+      '<button type="button" id="hlPopoverDelete">حذف هایلایت</button>' +
+      '<button type="button" id="hlPopoverClose">بستن</button>' +
+    '</div>';
+  document.body.appendChild(hlPopover);
+  var popoverCtx = null;
+  function closeHlPopover(){ hlPopover.style.display = "none"; popoverCtx = null; }
+  function openHlPopover(mark, topicId, locKey, h, container){
+    popoverCtx = {topicId:topicId, locKey:locKey, hlId:h.id, container:container};
+    document.getElementById("hlPopoverNote").textContent = h.note ? h.note : "(بدون یادداشت — فقط هایلایت)";
+    var rect = mark.getBoundingClientRect();
+    hlPopover.style.left = Math.max(4, rect.left + window.scrollX) + "px";
+    hlPopover.style.top = (rect.bottom + window.scrollY + 6) + "px";
+    hlPopover.style.display = "block";
+  }
+  function findHl(topicId, hlId){
+    var list = getHighlights(topicId);
+    for(var i=0;i<list.length;i++){ if(list[i].id === hlId) return list[i]; }
+    return null;
+  }
+  document.getElementById("hlPopoverClose").addEventListener("click", closeHlPopover);
+  document.getElementById("hlPopoverEdit").addEventListener("click", function(){
+    if(!popoverCtx) return;
+    var h = findHl(popoverCtx.topicId, popoverCtx.hlId);
+    if(!h) return;
+    var v = prompt("یادداشت:", h.note || "");
+    if(v === null) return;
+    h.note = v;
+    applyHighlightsToContainer(popoverCtx.container, popoverCtx.topicId, popoverCtx.locKey);
+    scheduleFlush(400);
+    refreshHighlightsListIfOpen(popoverCtx.topicId);
+    closeHlPopover();
+  });
+  document.getElementById("hlPopoverDelete").addEventListener("click", function(){
+    if(!popoverCtx) return;
+    if(!confirm("این هایلایت حذف بشه؟")) return;
+    var list = getHighlights(popoverCtx.topicId);
+    for(var i=0;i<list.length;i++){
+      if(list[i].id === popoverCtx.hlId){ list.splice(i,1); break; }
+    }
+    applyHighlightsToContainer(popoverCtx.container, popoverCtx.topicId, popoverCtx.locKey);
+    scheduleFlush(400);
+    refreshHighlightsListIfOpen(popoverCtx.topicId);
+    closeHlPopover();
+  });
+  document.addEventListener("click", function(e){
+    if(hlPopover.contains(e.target)) return;
+    var mark = e.target.closest ? e.target.closest("mark.hl") : null;
+    if(mark){
+      var container = mark.closest("[data-hl-loc]");
+      if(!container) return;
+      var topicId = container.dataset.hlTopic, locKey = container.dataset.hlLoc;
+      var h = findHl(topicId, mark.dataset.hlId);
+      if(h) openHlPopover(mark, topicId, locKey, h, container);
+      return;
+    }
+    if(!hlToolbar.contains(e.target)) closeHlPopover();
+  });
+
   function renderLearnPanel(topicId, type){
     var t = topicEls[topicId];
     if(!t) return;
-    var data = (contentMap[topicId] || {})[type] || [];
+    var data = type === "highlights" ? getHighlights(topicId) : ((contentMap[topicId] || {})[type] || []);
     var panel = t.learnPanel;
 
     if(!data.length){
-      panel.innerHTML = '<div class="learn-empty">هنوز محتوایی برای این بخش ساخته نشده. در گفتگو با کلود بگو کجا منبعش رو پیدا کنه یا بساز.</div>';
+      panel.innerHTML = type === "highlights"
+        ? '<div class="learn-empty">هنوز هایلایت یا یادداشتی برای این مبحث نساختی. متن رو در درسنامه/فلش‌کارت/جدول انتخاب کن تا دکمهٔ هایلایت ظاهر بشه.</div>'
+        : '<div class="learn-empty">هنوز محتوایی برای این بخش ساخته نشده. در گفتگو با کلود بگو کجا منبعش رو پیدا کنه یا بساز.</div>';
+      return;
+    }
+
+    if(type === "highlights"){
+      panel.innerHTML = "";
+      data.slice().reverse().forEach(function(h){
+        var row = document.createElement("div");
+        row.className = "hl-list-item hl-list-" + (h.color || "yellow");
+        var src = h.loc.indexOf("lesson:") === 0 ? "درسنامه" : (h.loc.indexOf("fc:") === 0 ? "فلش‌کارت" : "جدول");
+        var quote = document.createElement("div");
+        quote.className = "hl-list-quote";
+        quote.textContent = "«" + h.quote + "»";
+        var meta = document.createElement("div");
+        meta.className = "hl-list-meta";
+        meta.textContent = src + (h.note ? " · " + h.note : "");
+        var del = document.createElement("button");
+        del.type = "button"; del.className = "hl-list-del"; del.textContent = "حذف";
+        del.addEventListener("click", function(){
+          if(!confirm("این هایلایت حذف بشه؟")) return;
+          var arr = getHighlights(topicId);
+          for(var i=0;i<arr.length;i++){ if(arr[i].id === h.id){ arr.splice(i,1); break; } }
+          scheduleFlush(400);
+          renderLearnPanel(topicId, "highlights");
+          updateLearnCounts(topicId);
+        });
+        row.appendChild(quote); row.appendChild(meta); row.appendChild(del);
+        panel.appendChild(row);
+      });
       return;
     }
 
     if(type === "lesson"){
       panel.innerHTML = "";
-      data.forEach(function(sec){
+      data.forEach(function(sec, secIdx){
         var wrap = document.createElement("div");
         wrap.className = "lesson-section";
         var h = document.createElement("div");
@@ -1084,10 +1600,15 @@
         } else {
           var body = document.createElement("div");
           body.className = "lesson-body";
-          String(sec.body || "").split(/\n\s*\n/).forEach(function(para){
-            if(!para.trim()) return;
+          String(sec.body || "").split(/\n\s*\n/).forEach(function(para, paraIdx){
+            var trimmed = para.trim();
+            if(!trimmed) return;
             var p = document.createElement("p");
-            p.textContent = para.trim();
+            var locKey = "lesson:" + secIdx + ":" + paraIdx;
+            p.dataset.hlRawText = trimmed;
+            p.dataset.hlLoc = locKey;
+            p.dataset.hlTopic = topicId;
+            applyHighlightsToContainer(p, topicId, locKey);
             body.appendChild(p);
           });
           wrap.appendChild(body);
@@ -1099,7 +1620,7 @@
 
     if(type === "flashcards"){
       panel.innerHTML = "";
-      data.forEach(function(fc){
+      data.forEach(function(fc, fcIdx){
         var card = document.createElement("div");
         card.className = "fc-card";
         var front = document.createElement("div");
@@ -1108,7 +1629,11 @@
         var backWrap = document.createElement("div");
         backWrap.className = "fc-back";
         backWrap.style.display = "none";
-        backWrap.textContent = fc.back;
+        var fcLocKey = "fc:" + (fc.id || fcIdx);
+        backWrap.dataset.hlRawText = fc.back;
+        backWrap.dataset.hlLoc = fcLocKey;
+        backWrap.dataset.hlTopic = topicId;
+        applyHighlightsToContainer(backWrap, topicId, fcLocKey);
         var btn = document.createElement("button");
         btn.type = "button"; btn.className = "fc-reveal"; btn.textContent = "نمایش پاسخ";
         btn.addEventListener("click", function(){
@@ -1208,7 +1733,7 @@
 
     if(type === "tables"){
       panel.innerHTML = "";
-      data.forEach(function(tbl){
+      data.forEach(function(tbl, tblIdx){
         var titleEl = document.createElement("div");
         titleEl.className = "tbl-title"; titleEl.textContent = tbl.title;
         panel.appendChild(titleEl);
@@ -1218,9 +1743,13 @@
           table.className = "md-table";
           rows.forEach(function(cells, ri){
             var tr = document.createElement("tr");
-            cells.forEach(function(cell){
+            cells.forEach(function(cell, ci){
               var cellEl = document.createElement(ri === 0 ? "th" : "td");
-              cellEl.textContent = cell;
+              var cellLocKey = "table:" + tblIdx + ":" + ri + ":" + ci;
+              cellEl.dataset.hlRawText = cell;
+              cellEl.dataset.hlLoc = cellLocKey;
+              cellEl.dataset.hlTopic = topicId;
+              applyHighlightsToContainer(cellEl, topicId, cellLocKey);
               tr.appendChild(cellEl);
             });
             table.appendChild(tr);
@@ -1233,13 +1762,13 @@
   }
 
   document.getElementById("resetBtn").addEventListener("click", function(){
-    if(!confirm("همهٔ تیک‌ها، وضعیت‌های دانش و یادداشت‌ها روی همهٔ دستگاه‌ها پاک بشه؟")) return;
-    if(!db) return;
-    var writes = [];
-    allItemIds.forEach(function(id){ writes.push(db.doc('item_state/'+id).set({checked:false, note:""}).catch(function(){})); });
-    allTopicIds.forEach(function(id){ writes.push(db.doc('item_state/'+id).set({status:"نامشخص", note:""}).catch(function(){})); });
-    writes.push(db.doc('meta/state').set({currentPhaseOverride:null}).catch(function(){}));
-    Promise.all(writes);
+    if(!confirm("همهٔ تیک‌ها، وضعیت‌های دانش و یادداشت‌های فاز/مبحث روی همهٔ دستگاه‌ها پاک بشه؟ (هایلایت‌ها و یادداشت‌های درسنامه/فلش‌کارت/جدول دست نمی‌خورن)")) return;
+    if(!getPat()){ alert("اول باید به GitHub وصل بشی."); return; }
+    allItemIds.forEach(function(id){ STATE.itemState[id] = {checked:false, note:""}; });
+    allTopicIds.forEach(function(id){ STATE.itemState[id] = {status:"نامشخص", note:""}; });
+    STATE.meta = {currentPhaseOverride:null};
+    applyLoadedState();
+    scheduleFlush(50);
   });
 
   var tabBtnDashboard = document.getElementById("tabBtnDashboard");

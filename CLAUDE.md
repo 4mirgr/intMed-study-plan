@@ -122,6 +122,90 @@ misinterpreted before the script even ran. Keep this tag if the file is ever res
   unrelated edits (e.g. `TOPICS` array changes). Never edit the credentials without an explicit
   new instruction from the user.
 
+## GitHub-backed sync: progress, notes, and highlights (added 2026-10-01)
+
+### Why this exists
+`docs/index.html` (served at drgerami-md.ir) is a plain static GitHub Pages file with
+**no backend**. Before 2026-10-01, it tried `window.claude.use('db')` for all persistence
+(phase checklist, topic status/notes) — that API only exists inside the claude.ai artifact
+iframe, so on the actual static site `db` was always `null` and the UI silently showed
+"نسخه ایستا — تغییرات ذخیره نمی‌شن" (no persistence at all, not even the phase checklist).
+This was a pre-existing bug, discovered while scoping the highlight/note-taking feature the
+user asked for, and fixed as part of the same change.
+
+### Storage: a dedicated branch, not the content repo's normal history
+Persistent state lives in a single JSON file, `state.json`, on a **separate orphan branch**
+`study-state` in this same repo (`4mirgr/intMed-study-plan`) — never the branch GitHub Pages
+builds from. Shape:
+```json
+{
+  "version": 1,
+  "updatedAt": "ISO timestamp",
+  "itemState": { "<phase-item-id or topic-id>": {checked/status, note} },
+  "meta": { "currentPhaseOverride": null },
+  "highlights": { "<topicId>": [ {id, loc, quote, occurrence, color, note, createdAt} ] }
+}
+```
+Kept on its own branch so frequent small writes (every checkbox tick, every highlight)
+don't trigger GitHub Pages rebuilds and don't clutter the content-commit history that
+`git log` on the main working branch shows.
+
+### Client: GitHub Contents API, no server
+Both `docs/index.html` and the live artifact's HTML read/write `state.json` directly from
+the browser via the GitHub REST Contents API (`GET`/`PUT .../contents/state.json?ref=study-state`),
+authenticated with a **per-device Personal Access Token** the user pastes into a small modal
+("اتصال به GitHub" button in the header) and that's stored in that browser's `localStorage`
+(key `gh_pat`) — never sent anywhere but api.github.com. CORS on api.github.com is open
+(`Access-Control-Allow-Origin: *`), confirmed via curl before building this. Each device/
+browser needs its own one-time connect; the modal's own copy walks the user through creating
+a **fine-grained PAT scoped to only this repo**, Contents: Read & write — explicitly not a
+classic/all-repos token, since the token sits in localStorage behind only the existing
+(non-real-security) login gate.
+
+Writes are whole-document, debounced, GET-sha-then-PUT (standard Contents API update
+pattern) — **last-write-wins at the document level, not a field-level merge.** Fine for one
+person's own few devices used at different times; two tabs saving at literally the same
+moment can clobber each other. Discrete actions (checkbox, status pill, highlight add/
+delete) flush almost immediately (~400ms debounce); free-text note typing debounces longer
+(~900ms net, via the pre-existing `scheduleNoteWrite` wrapper). A 20s fallback interval
+flushes anything still dirty (covers continuous typing), and a `visibilitychange`→hidden
+listener does a best-effort flush on tab-switch/app-background. There is **no reliable
+flush on tab close** (`sendBeacon` can't do authenticated PUT) — a quick close right after
+typing can lose the last ~1s of an edit; this is a known, accepted limitation.
+
+### The live artifact is a special case: two backends, intentionally
+The claude.ai artifact's phase-checklist/topic-status/notes (`item_state`, `meta`) already
+persisted fine there via the artifact's own native `db` capability (`window.claude.use('db')`
+genuinely works inside claude.ai) — that code path was **left untouched**. Only the new
+highlight/note feature on the artifact was wired to the GitHub `state.json`, via a second,
+independent PAT-connect button, so highlights end up in the **same place** regardless of
+whether the user studies via drgerami-md.ir or the claude.ai artifact — required for "ask
+Claude to extract my highlights later" to work from one canonical source. If you ever revisit
+this: it means the artifact's `item_state` and `highlights` genuinely live in two different
+stores (db vs. GitHub) by design, not by accident — don't try to "fix" that into one store
+without the user asking.
+
+### Highlight/note feature itself
+Scope (per 2026-10-01 user decision): lesson prose paragraphs, flashcard backs, and table
+cells — not MCQ/KF-PMP/images. Anchoring is by `(topicId, loc, quote, occurrence)`: `loc` is
+`lesson:<sectionIdx>:<paraIdx>`, `fc:<flashcard.id or index>`, or `table:<tableIdx>:<row>:<col>`;
+`occurrence` disambiguates repeated identical substrings within the same block. If the
+underlying content text is later edited, an orphaned highlight just silently stops
+re-attaching as a `<mark>` on render — it's still in storage (visible via "هایلایت‌های من"
+per topic), it just won't show inline anymore. No image/offset-based anchoring, no OCR —
+pure substring matching, deliberately simple.
+
+Selecting text inside an annotatable container shows a small floating toolbar (4 color
+swatches + a note button); a existing `<mark>` is clickable to view/edit/delete via a small
+popover. Both use `prompt()`/`confirm()` for note entry — plain, works identically on mobile/
+desktop, chosen over a custom modal to keep this scope-contained.
+
+### If asked to "extract my highlights"
+Read `state.json` directly off the `study-state` branch (`GET /repos/4mirgr/intMed-study-plan/
+contents/state.json?ref=study-state` — a plain git fetch of that branch, or the GitHub API,
+both work since this session already has repo access) and parse `highlights[topicId]`. Don't
+try to read this from the live artifact's own db — highlights are never stored there.
+
 ## Shared topics (same content, listed under two categories)
 
 Sometimes a topic genuinely belongs under two categories at once (e.g. "رابدومیولیز و
