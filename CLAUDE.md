@@ -430,3 +430,27 @@ single turn's context limit doesn't quietly drop them.
   same source already used to build the topic (no new content from it); the genuinely new
   content came from the RCT and the teaching notes. Synced to the artifact db (version 1→2),
   bundle regenerated to 42 topics.
+- Added the user-clarified COHb-based GIK threshold ("co level" in the teaching notes meant
+  carboxyhemoglobin) to `poison-aluminum-phosphide` as a flashcard + lesson addendum, but
+  explicitly caveated: phosphine doesn't bind hemoglobin the way CO does, so COHb isn't part
+  of AlP poisoning's known pathophysiology or the official MOH protocol — flagged as an
+  institutional/experiential threshold, not an evidence-based or board-standard criterion.
+  Synced (version 2→3).
+- Supplemented `poison-aluminum-phosphide` again (46→56 flashcards, 13→15 MCQs, 4→5 tables,
+  11→12 lesson sections) from Goldfrank's Toxicologic Emergencies' "Metal Phosphides and
+  Phosphine" section (used only the phosphide-relevant part of that chapter — methyl
+  bromide/dichloropropene/sulfuryl fluoride/methyl iodide sections of the same chapter were
+  out of scope and skipped): zinc/calcium/magnesium phosphide (same PH3-release mechanism,
+  own toxic doses), occupational exposure limits (REL/STEL/IDLH) and phosphine's LEL,
+  phosphine-hemoglobin chemistry (Heinz bodies/hemichromes), APACHE/SAPS prognostic scores,
+  a second lactate-mortality study with different cutoffs/timepoints than the one already in
+  the topic (kept both, flagged as distinct studies rather than merged into one "the"
+  number), NAC/vitamin E outcome data (specific mortality-reduction percentages), and a new
+  table of investigated-but-not-routinely-recommended therapies (liothyronine, IV lipid
+  emulsion, atropine/pralidoxime, hyperbaric oxygen, HDI). This pass also caught and fixed a
+  real evidence conflict from the previous session's Loghman-teaching-notes addition: the
+  potassium-permanganate 1:10000-dilution gastric lavage flashcard/lesson paragraph had been
+  added as a plain practical technique, but Goldfrank's explicitly states neither that
+  approach nor boric acid is recommended (risks without proven benefit) — both spots now
+  carry that caveat instead of presenting the institutional practice as consensus. Synced to
+  the artifact db (version 3→4).
