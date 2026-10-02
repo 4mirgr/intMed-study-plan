@@ -416,3 +416,17 @@ single turn's context limit doesn't quietly drop them.
   third failed agent, the 48-page opioid protocol, genuinely hadn't written anything and
   was re-launched from scratch.) `docs/content-bundle.json` regenerated once (40 topics)
   only after every agent's real output was confirmed, per the lesson above.
+- Supplemented `poison-aluminum-phosphide` (35→45 flashcards, 10→13 MCQs, 3→4 tables, 8→11
+  lesson sections) from two new sources: a 2024 Iranian Journal of Toxicology RCT
+  (Samsaam Shariat/Gheshlaghi/Zoofaghari) on plasmapheresis in AlP poisoning — finding it
+  raised HCO3 significantly at 12h but did not reduce mortality (27.3% vs 24.1%, not
+  significant) — and Persian clinical teaching notes (Loghman Hospital experience) covering
+  the AlP hydrolysis chemistry and why dissolve-then-drink vs. swallow-then-lavage changes
+  severity, RSI drug choice (etomidate preferred, avoid thiopental, ketamine/awake-intubation
+  tradeoffs in progressive hypotension), 1:10000 dilution of potassium permanganate before
+  gastric lavage, central-line administration of caustic antioxidant drugs, insulin's
+  cardioprotective/inotrope rationale (generalizable to other cardiotoxic poisonings), and
+  the VBG calibration formula. Confirmed the re-uploaded official MOH protocol PDF was the
+  same source already used to build the topic (no new content from it); the genuinely new
+  content came from the RCT and the teaching notes. Synced to the artifact db (version 1→2),
+  bundle regenerated to 42 topics.
