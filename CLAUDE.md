@@ -353,6 +353,71 @@ Correct pattern instead:
 Existing shared topic: `rhabdo-myopathy` (canonical, `content/nephro/rhabdo-myopathy/`) /
 `poison-rhabdo-myopathy` (alias, same content, listed under `poison`).
 
+## Generating a custom infographic for the `images` section (added 2026-10-03)
+
+When asked to build an original summary graphic/infographic for a topic (not extract a
+copyrighted publisher figure — rule 6 still bans that), the working pattern is:
+
+1. Design it as a self-contained HTML file (RTL, Persian font via Google Fonts `@import`,
+   fixed pixel width e.g. 1500px so layout is deterministic) in the scratchpad, pulling the
+   actual facts from that topic's own `flashcards`/`lesson`/`tables` — don't invent content
+   not already established in the topic.
+2. Render it to PNG via Playwright (`p.chromium.launch(executable_path='/opt/pw-browsers/
+   chromium-1194/chrome-linux/chrome')`, screenshot `full_page=True` after resizing the
+   viewport to the page's measured `scrollHeight`). Actually look at the screenshot (Read
+   tool) before moving on — check for clipped/overlapping elements at the edges (e.g. a
+   flex-row connector arrow on the last item in an RTL row can clip against
+   `overflow:hidden` — remove or hide it on the last item).
+3. Shrink the file before doing anything else with it: `im.quantize(colors=256,
+   method=Image.MEDIANCUT, dither=Image.NONE)` (Pillow, available in this environment) on a
+   flat-color/text-heavy infographic cuts file size roughly 4x with no visible quality loss
+   — cheaper than downscaling resolution. Re-view the quantized output to confirm.
+4. **Where the image ends up — this took real trial and error, don't redo the exploration:**
+   - **Google Drive upload is impractical for an image this size.** The `mcp__Google_Drive__
+     create_file` tool only accepts inline `base64Content` (no file-path/reference option),
+     and a single Read of a ~180,000-character base64 file measured at roughly **1 token per
+     base64 character** in this tokenizer — i.e. ~170,000 tokens just to read it back, before
+     even reproducing it in a tool call. This is the same failure category the
+     Gmail-attachment pitfall above warned about (silent corruption from manual
+     reconstruction), except here the token cost alone rules it out even before corruption
+     risk enters into it. Do not attempt Drive upload for a generated infographic this way.
+   - **The `Artifact` tool's own asset upload (`asset: true`, `file_path: <local path>`,
+     against an artifact with `capabilities: {assets: {}}` declared) avoids the inline-base64
+     problem entirely** — it reads the local file server-side, no retyping. It works and is
+     fast. **But its resulting blob URL (`/_blob/<id>`) returned HTTP 403 when fetched with a
+     plain unauthenticated `curl`** (verified directly) — it only resolves for someone who can
+     already open that artifact in claude.ai. Since `docs/index.html`'s images panel just does
+     `a.href = img.sourceUrl; target="_blank"` for an arbitrary browser tab on
+     drgerami-md.ir with no claude.ai session, this route doesn't serve the actual use case
+     unless the user explicitly shares that artifact publicly first (their call, via the
+     artifact's own Share menu — not something this session can do).
+   - **What actually works today: embed the image as a `data:image/png;base64,...` URI
+     directly in that topic's `images[].sourceUrl`.** Build it with a Python script (Bash
+     tool) that reads the PNG and writes the URI straight into `content/<cat>/<topic>/
+     data.json` — never pass the base64 through a tool-call parameter by hand. **Verify
+     integrity after writing**: re-read the saved JSON, decode the embedded data URI, and
+     compare its SHA-256 against the original PNG's SHA-256 (compute both once, before and
+     after) — this is the explicit byte-level check the Gmail incident's postmortem said was
+     missing; do it every time, it's cheap insurance.
+   - Sync to the artifact db the same way: write a local `{id, data}` JSON file with the
+     embedded URI and pass it to `ArtifactData` via `file_path` (never `data` inline, for the
+     same token-cost reason as Drive). The server itself warns on a write like this
+     ("Documents hold data, not files... a document is at most 256 KiB") — the write still
+     succeeds under that cap, but **check the resulting document size against the 256 KiB/doc
+     limit** (a ~135 KB PNG's data URI alone is ~180 KB after base64 inflation, so a topic
+     with much existing flashcard/lesson text can get close to the ceiling fast — `endo-wilson`
+     sits around 221/256 KiB after its one infographic; a second image on the same topic will
+     likely not fit without a different hosting approach).
+5. Tradeoff to tell the user plainly, every time: embedding in `content-bundle.json` adds the
+   image's full base64 weight to **every visitor's** page load (the bundle is fetched whole,
+   unconditionally, on every visit — see the GitHub-backed-sync section above), not just
+   people who open that topic's images tab. For one infographic this is a few hundred KB,
+   tolerable; it does not scale cleanly to many images across many topics. If the user wants
+   more of these later, the better long-term fix is a genuinely public image host (e.g. they
+   set a Drive folder to "anyone with the link," or they share the assets-capable artifact
+   publicly) rather than repeating the data-URI pattern topic after topic — raise this instead
+   of silently repeating the workaround if asked for a second or third infographic.
+
 ## Pending cross-project follow-ups (bulk tasks not yet done)
 
 Tracked here so a future session can pick them up without the user re-explaining, and so a
@@ -454,3 +519,14 @@ single turn's context limit doesn't quietly drop them.
   approach nor boric acid is recommended (risks without proven benefit) — both spots now
   carry that caveat instead of presenting the institutional practice as consensus. Synced to
   the artifact db (version 3→4).
+- Built and added the first real entry in any topic's `images` field: an original one-page
+  infographic for `endo-wilson` (pathophysiology flow, clinical findings by organ system,
+  diagnostic workup, exam pearls, treatment algorithm — all drawn from that topic's existing
+  flashcards/lesson, nothing new invented). See the new "Generating a custom infographic..."
+  section above for the full method and the hosting tradeoffs worked out along the way
+  (Drive base64 upload is impractical — ~170K tokens just to read back a ~180K-char base64
+  string at this tokenizer's apparent ~1 token/char rate for base64; Artifact asset blobs
+  are private, confirmed 403 on an unauthenticated curl; data: URI embedded directly in
+  `images[].sourceUrl` is what actually works for an unauthenticated link from the static
+  site, verified byte-for-byte via SHA-256 before/after). Synced to the artifact db
+  (version 3→4, now ~221/256 KiB — tight headroom for this topic).
