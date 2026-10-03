@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>مسیر بورد</title>
+<title>IntMed</title>
 <style>
   @font-face{font-family:"Vazirmatn";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/Vazirmatn-Regular.woff2") format("woff2");}
   @font-face{font-family:"Vazirmatn";font-style:normal;font-weight:500;font-display:swap;src:url("fonts/Vazirmatn-Medium.woff2") format("woff2");}
@@ -298,6 +298,10 @@
   .learn-btn:hover{border-color:var(--cat-color,var(--accent));color:var(--cat-color,var(--accent))}
   .learn-btn.active{background:var(--cat-color,var(--accent));border-color:var(--cat-color,var(--accent));color:#fff}
   .learn-btn .cnt{font-family:"IBM Plex Mono",monospace;opacity:.8;margin-inline-start:3px}
+  .learn-row-highlights{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .learn-row-highlights-label{
+    display:block;width:100%;font-size:.72rem;font-weight:600;color:var(--ink-faint);margin-bottom:1px;
+  }
   .learn-panel{
     width:100%;max-width:860px;margin:10px auto 0;padding:18px 20px;border-radius:var(--radius-lg);
     background:var(--surface-strong);border:1px solid var(--border);box-shadow:var(--shadow-sm);
@@ -411,6 +415,14 @@
     margin-inline-start:6px;min-height:30px;transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease),transform var(--dur) var(--ease);
   }
   .gh-connect-btn:hover{border-color:var(--accent);color:var(--accent-ink);transform:translateY(-1px)}
+  .theme-toggle-btn{
+    font-size:.92rem;line-height:1;border:1px solid var(--border);background:var(--surface-2);
+    color:var(--ink-dim);border-radius:var(--radius-pill);cursor:pointer;
+    width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+    margin-inline-start:6px;vertical-align:middle;
+    transition:border-color var(--dur) var(--ease),transform var(--dur) var(--ease);
+  }
+  .theme-toggle-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
   .gh-modal{
     position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;
     background:rgba(10,18,32,.45); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); padding:16px;
@@ -452,25 +464,25 @@
   mark.hl-noted{box-shadow:inset 0 -2px 0 var(--ink-faint)}
 
   .hl-toolbar{
-    position:absolute;z-index:9997;display:none;gap:5px;
+    position:absolute;z-index:9997;display:none;gap:8px;
     background:var(--surface-strong); -webkit-backdrop-filter:blur(var(--blur)); backdrop-filter:blur(var(--blur));
     border:1px solid rgba(255,255,255,.6); border-radius:var(--radius-md);
-    padding:6px;box-shadow:var(--shadow-md);align-items:center;
+    padding:9px;box-shadow:var(--shadow-md);align-items:center;
   }
   :root[data-theme="dark"] .hl-toolbar, :root:not([data-theme="light"]) .hl-toolbar{ border-color:rgba(255,255,255,.08); }
   .hl-swatch{
-    width:22px;height:22px;border-radius:var(--radius-pill);border:1px solid rgba(0,0,0,.08);cursor:pointer;padding:0;
-    transition:transform var(--dur) var(--ease);
+    width:36px;height:36px;border-radius:var(--radius-pill);border:2px solid rgba(0,0,0,.1);cursor:pointer;padding:0;
+    flex-shrink:0;transition:transform var(--dur) var(--ease);
   }
-  .hl-swatch:hover{transform:scale(1.15)}
+  .hl-swatch:hover{transform:scale(1.12)}
   .hl-swatch.hl-yellow{background:var(--hl-yellow)}
   .hl-swatch.hl-green{background:var(--hl-green)}
   .hl-swatch.hl-pink{background:var(--hl-pink)}
   .hl-swatch.hl-blue{background:var(--hl-blue)}
   .hl-note-btn{
-    font-family:"Vazirmatn",sans-serif;font-size:.7rem;font-weight:600;border:1px solid var(--border);
-    background:var(--surface-2);color:var(--ink-dim);padding:4px 9px;border-radius:var(--radius-sm);cursor:pointer;
-    white-space:nowrap;
+    font-family:"Vazirmatn",sans-serif;font-size:.74rem;font-weight:600;border:1px solid var(--border);
+    background:var(--surface-2);color:var(--ink-dim);padding:8px 13px;border-radius:var(--radius-sm);cursor:pointer;
+    white-space:nowrap;min-height:36px;
   }
 
   .hl-popover{
@@ -506,7 +518,7 @@
 
 <div class="login-gate" id="loginGate">
   <form class="login-card" id="loginForm">
-    <h2>ورود به مسیر بورد</h2>
+    <h2>ورود به IntMed</h2>
     <input type="text" id="loginUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     <button type="submit">ورود</button>
@@ -540,10 +552,11 @@
 <div class="app" id="appRoot" style="display:none">
   <header class="top">
     <div class="title-row">
-      <h1>مسیر بورد داخلی</h1>
+      <h1>IntMed</h1>
       <span>
         <span class="conn num" id="userLabel"></span>
         <span class="conn num" id="connStatus">در حال اتصال...</span>
+        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="تغییر حالت تاریک/روشن" title="تغییر حالت تاریک/روشن">🌙</button>
         <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال به GitHub</button>
         <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
       </span>
@@ -602,6 +615,35 @@
 <script>
 (function(){
   "use strict";
+
+  // Dark/light toggle — applied immediately (before login reveal) so a returning
+  // user's stored preference also covers the login card, not just the app.
+  var THEME_KEY = "bp_theme";
+  function getStoredTheme(){ try{ return localStorage.getItem(THEME_KEY); }catch(e){ return null; } }
+  function setStoredTheme(v){ try{ if(v){ localStorage.setItem(THEME_KEY, v); } else { localStorage.removeItem(THEME_KEY); } }catch(e){} }
+  function systemPrefersDark(){ return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches); }
+  function applyTheme(theme){
+    if(theme === "dark"){ document.documentElement.setAttribute("data-theme","dark"); }
+    else if(theme === "light"){ document.documentElement.setAttribute("data-theme","light"); }
+    else { document.documentElement.removeAttribute("data-theme"); }
+    var btn = document.getElementById("themeToggleBtn");
+    if(btn){
+      var isDark = theme === "dark" || (theme == null && systemPrefersDark());
+      btn.textContent = isDark ? "☀️" : "🌙";
+    }
+  }
+  applyTheme(getStoredTheme());
+  var themeBtn = document.getElementById("themeToggleBtn");
+  if(themeBtn){
+    themeBtn.addEventListener("click", function(){
+      var current = getStoredTheme();
+      var isDark = current === "dark" || (current == null && systemPrefersDark());
+      var next = isDark ? "light" : "dark";
+      setStoredTheme(next);
+      applyTheme(next);
+    });
+  }
+
   // Each entry: fnv1aHex(lowercased-username + ":" + normalized-password) -> a stable
   // userId used to namespace that person's phase-checklist/notes/highlights in the
   // shared GitHub state.json (see STATE.users below). Adding a third person later is
@@ -1041,6 +1083,12 @@
 
       var learnRow = document.createElement("div");
       learnRow.className = "learn-row";
+      var hlRow = document.createElement("div");
+      hlRow.className = "learn-row learn-row-highlights";
+      var hlRowLabel = document.createElement("span");
+      hlRowLabel.className = "learn-row-highlights-label";
+      hlRowLabel.textContent = "هایلایت و یادداشت‌های شخصی من در این مبحث:";
+      hlRow.appendChild(hlRowLabel);
       var learnPanel = document.createElement("div");
       learnPanel.className = "learn-panel";
       var learnBtns = {};
@@ -1053,6 +1101,7 @@
           e.stopPropagation();
           var isActive = b.classList.contains("active");
           learnRow.querySelectorAll(".learn-btn").forEach(function(x){ x.classList.remove("active"); });
+          hlRow.querySelectorAll(".learn-btn").forEach(function(x){ x.classList.remove("active"); });
           if(isActive){
             learnPanel.classList.remove("open");
             topicEls[sub.id].openType = null;
@@ -1064,9 +1113,10 @@
           }
         });
         learnBtns[lt.key] = b;
-        learnRow.appendChild(b);
+        if(lt.key === "highlights"){ hlRow.appendChild(b); } else { learnRow.appendChild(b); }
       });
       detail.appendChild(learnRow);
+      detail.appendChild(hlRow);
       detail.appendChild(learnPanel);
 
       listBtn.addEventListener("click", function(){
