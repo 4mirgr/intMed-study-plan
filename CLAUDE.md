@@ -677,6 +677,18 @@ in three places in `docs/index.html` (header `.title-row`, inside `#loginForm`'s
 next to "ورود به IntMed") and one place in the artifact (header only — the artifact has no
 login gate). Same CSS/markup pattern in both files, same `assets/logo.png` reference.
 
+**Follow-up same day**: the user asked for the badge bigger and the halo changed from the
+accent-colored glow to **white, ~35% opacity, `mix-blend-mode:overlay`, glass** — `.logo-badge`
+went 36px→46px (header) / 56px→78px (login-lg); the halo is now a plain
+`rgba(255,255,255,.35)` circle with `backdrop-filter:blur(10px)` and
+`mix-blend-mode:overlay`, applied only to the `::before` pseudo-element (not the `.logo-badge`
+element itself) so the blend mode affects just the glow layer, not the `<img>` painted after
+it — putting the blend mode on the parent would blend the logo image too and wash it out.
+Overlay blend math means this reads differently per background: a soft visible glass highlight
+against the translucent header surface, much subtler against solid white (login card) or
+near-black (dark mode) — that's inherent to how overlay blend works against very light/dark
+backdrops, not a bug. Republished as version 28.
+
 **Site rename**: "مسیر بورد" → **IntMed**, per explicit user instruction, wherever it serves
 as the app's own name (`<title>`, header `<h1>`, the login card's "ورود به ..." heading) —
 left alone everywhere else (GitHub modal copy, footer text, etc., which were never the site
