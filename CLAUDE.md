@@ -611,3 +611,29 @@ single turn's context limit doesn't quietly drop them.
   CSS file, verified byte-for-byte unchanged outside the `<style>` block. Republished
   (version 25). See the updated "Not yet done" → now "Done" note in the UI design system
   section above.
+- Four small UI changes, applied identically to `docs/index.html` and the live artifact
+  (republished version 26, also renamed to "IntMed" on claude.ai): (1) renamed the app from
+  "مسیر بورد" to **IntMed** everywhere it appears as the site name (`<title>`, header `<h1>`,
+  login card heading on `docs/index.html`) — other Persian copy (GitHub modal text, footer,
+  etc.) was left alone since it's not the site name. (2) Added a **manual dark/light toggle**
+  (🌙/☀️ button in the header, id `themeToggleBtn`): previously the existing dark-mode CSS
+  tokens only ever followed `prefers-color-scheme`, with no way to override it. Stored in
+  `localStorage["bp_theme"]` (`"dark"`/`"light"`/absent=auto), applied via
+  `document.documentElement.setAttribute("data-theme", …)` — this reuses the CSS variable
+  system that was already there (`:root[data-theme="dark"]` / `:root:not([data-theme="light"])`
+  + the media query), so no new CSS tokens were needed, only the toggle logic + button markup/
+  style. In `docs/index.html` this lives in the login-gate IIFE (applied before the login
+  reveal, so the login card itself also respects it, no flash of wrong theme); in the artifact
+  (no login gate) it's its own small IIFE at the top of the main script. (3) **Split the
+  "هایلایت‌های من" button** out of the row of content-type pills (`درسنامه`/`فلش کارت نکات`/
+  `آزمون ۴ گزینه‌ای`/`KF & PMP`/`تصاویر مهم`/`جداول مهم`) into its own row (`.learn-row-
+  highlights`, with a `.learn-row-highlights-label` caption above it) below a dashed divider —
+  it's a different kind of thing (personal annotations) from the static content types, so it
+  reads that way now instead of being just another pill in the same row. Both rows still
+  toggle the same shared `learnPanel` and clear each other's `.active` state on click (handled
+  in `LEARN_TYPES.forEach`, routing the `"highlights"` key to `hlRow` instead of `learnRow`).
+  (4) **Enlarged the highlight color swatches** (`.hl-swatch`: 22px→36px, border 1px→2px) and
+  the note button (`.hl-note-btn`) in the floating selection toolbar, plus more toolbar
+  padding/gap — easier to tap accurately on a phone screen. Verified via local Playwright
+  renders (dashboard, dark toggle, highlight-row split, enlarged toolbar) before committing/
+  publishing. `SendUserFile` sent per the standing notification rule.
