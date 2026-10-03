@@ -1,5 +1,7 @@
 <meta charset="utf-8">
 <title>IntMed</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <style>
   @font-face{font-family:"Vazirmatn";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/Vazirmatn-Regular.woff2") format("woff2");}
   @font-face{font-family:"Vazirmatn";font-style:normal;font-weight:500;font-display:swap;src:url("fonts/Vazirmatn-Medium.woff2") format("woff2");}
@@ -116,13 +118,33 @@
     header.top{ background:var(--surface-solid); }
   }
   .title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .brand{display:inline-flex;align-items:center;gap:9px}
   h1{font-size:1.08rem;font-weight:800;margin:0;letter-spacing:.2px;color:var(--primary)}
+  .logo-badge{
+    position:relative;display:inline-flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:50%;flex-shrink:0;
+    background:radial-gradient(circle, color-mix(in srgb, var(--accent) 38%, transparent), color-mix(in srgb, var(--accent) 10%, transparent) 60%, transparent 78%);
+  }
+  .logo-badge::before{
+    content:"";position:absolute;inset:-7px;border-radius:50%;z-index:0;
+    background:radial-gradient(circle, color-mix(in srgb, var(--accent) 55%, transparent), transparent 70%);
+    filter:blur(7px);
+  }
+  .logo-badge img{
+    position:relative;z-index:1;width:76%;height:76%;object-fit:contain;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.3));
+  }
+  .logo-badge.logo-badge-lg{width:56px;height:56px}
   .conn{
     font-size:.72rem;color:var(--ink-faint);background:var(--surface-2);border:1px solid var(--border);
     padding:4px 10px;border-radius:var(--radius-pill);
   }
   .conn.ok{color:var(--accent-ink);background:var(--accent-soft);border-color:rgba(22,184,200,.25)}
   .conn.bad{color:var(--danger);background:var(--danger-soft);border-color:rgba(198,47,63,.25)}
+  .header-clock{
+    font-size:.68rem;color:var(--ink-faint);margin-top:7px;
+    font-family:"IBM Plex Mono","Vazirmatn",monospace;letter-spacing:.2px;
+  }
   .progress-wrap{margin-top:14px;display:flex;align-items:center;gap:12px}
   .bar{flex:1;height:10px;border-radius:var(--radius-pill);background:var(--surface-2);border:1px solid var(--border);overflow:hidden}
   .bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--primary-light),var(--accent));border-radius:var(--radius-pill);transition:width .5s var(--ease)}
@@ -347,6 +369,52 @@
   .kfp-prompt{font-weight:600;margin-bottom:5px}
   .kfp-answer{color:var(--ink-dim);border-top:1px dashed var(--border);margin-top:6px;padding-top:6px;display:none}
   .kfp-answer.show{display:block}
+
+  .vent-card{
+    border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 15px;
+    margin-bottom:14px;background:var(--surface-2);
+  }
+  .vent-card:last-child{margin-bottom:0}
+  .vent-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .vent-title{font-weight:800;font-size:.92rem;color:var(--cat-color,var(--accent))}
+  .vent-badge{
+    font-size:.68rem;font-weight:700;background:var(--accent-soft);color:var(--accent-ink);
+    padding:3px 10px;border-radius:var(--radius-pill);white-space:nowrap;
+  }
+  .vent-risk{font-size:.78rem;color:var(--ink-faint);margin-bottom:6px;line-height:1.7}
+  .vent-indication{font-size:.82rem;color:var(--ink-dim);line-height:1.85;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--border)}
+  .vent-subtitle{font-weight:700;font-size:.8rem;color:var(--ink);margin:10px 0 7px}
+  .vent-subtitle-warn{color:var(--danger)}
+  .vent-settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+  @media (max-width:480px){ .vent-settings-grid{grid-template-columns:1fr} }
+  .vent-setting-item{
+    background:var(--surface-solid);border:1px solid var(--border);border-radius:var(--radius-sm);
+    padding:7px 10px;display:flex;flex-direction:column;gap:2px;
+  }
+  .vent-setting-label{font-size:.68rem;color:var(--ink-faint);font-weight:600}
+  .vent-setting-value{font-size:.82rem;color:var(--ink);line-height:1.6}
+  .vent-other-list{margin:0 0 8px;padding-inline-start:18px;font-size:.8rem;color:var(--ink-dim);line-height:1.9}
+  .vent-other-list li{margin-bottom:2px}
+  .vent-rationale{font-size:.82rem;color:var(--ink-dim);line-height:1.9;background:var(--surface-solid);border-inline-start:3px solid var(--accent);border-radius:var(--radius-sm);padding:9px 12px;margin-bottom:4px}
+  .vent-abg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:6px}
+  @media (max-width:480px){ .vent-abg-grid{grid-template-columns:repeat(2,1fr)} }
+  .vent-abg-item{
+    background:var(--surface-solid);border:1px solid var(--border);border-radius:var(--radius-sm);
+    padding:6px 8px;text-align:center;
+  }
+  .vent-abg-label{display:block;font-size:.66rem;color:var(--ink-faint);font-weight:700;font-family:"IBM Plex Mono",monospace}
+  .vent-abg-value{display:block;font-size:.78rem;color:var(--ink);margin-top:2px;font-family:"IBM Plex Mono","Vazirmatn",monospace}
+  .vent-abg-interp{font-size:.8rem;color:var(--ink-dim);line-height:1.85;margin-bottom:4px}
+  .vent-titration-row{
+    display:flex;flex-direction:column;gap:2px;font-size:.8rem;line-height:1.8;
+    padding:7px 0;border-top:1px dashed var(--border);
+  }
+  .vent-titration-row:first-of-type{border-top:none}
+  .vent-trigger{color:var(--ink-dim)}
+  .vent-action{color:var(--accent-ink);font-weight:600}
+  .vent-pitfall-list{margin:0;padding-inline-start:18px;font-size:.8rem;color:var(--danger);line-height:1.9}
+  .vent-pitfall-list li{margin-bottom:2px}
+
   .img-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--border)}
   .img-row:first-child{border-top:none}
   .img-row a{color:var(--accent-ink);font-weight:600;text-decoration:none;font-size:.82rem}
@@ -391,7 +459,8 @@
     direction:rtl;text-align:right;font-family:"Vazirmatn",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
   }
   :root[data-theme="dark"] .login-card, :root:not([data-theme="light"]) .login-card{ border-color:rgba(255,255,255,.08); }
-  .login-card h2{font-size:1.05rem;font-weight:800;margin:0 0 16px;color:var(--primary)}
+  .login-card .brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px}
+  .login-card h2{font-size:1.05rem;font-weight:800;margin:0;color:var(--primary)}
   .login-card input{
     width:100%;padding:11px 13px;margin-bottom:11px;border:1px solid var(--border);
     border-radius:var(--radius-sm);background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:.9rem;
@@ -464,14 +533,14 @@
   mark.hl-noted{box-shadow:inset 0 -2px 0 var(--ink-faint)}
 
   .hl-toolbar{
-    position:absolute;z-index:9997;display:none;gap:8px;
+    position:absolute;z-index:9997;display:none;gap:6px;
     background:var(--surface-strong); -webkit-backdrop-filter:blur(var(--blur)); backdrop-filter:blur(var(--blur));
     border:1px solid rgba(255,255,255,.6); border-radius:var(--radius-md);
-    padding:9px;box-shadow:var(--shadow-md);align-items:center;
+    padding:7px;box-shadow:var(--shadow-md);align-items:center;
   }
   :root[data-theme="dark"] .hl-toolbar, :root:not([data-theme="light"]) .hl-toolbar{ border-color:rgba(255,255,255,.08); }
   .hl-swatch{
-    width:36px;height:36px;border-radius:var(--radius-pill);border:2px solid rgba(0,0,0,.1);cursor:pointer;padding:0;
+    width:26px;height:26px;border-radius:var(--radius-pill);border:1.5px solid rgba(0,0,0,.1);cursor:pointer;padding:0;
     flex-shrink:0;transition:transform var(--dur) var(--ease);
   }
   .hl-swatch:hover{transform:scale(1.12)}
@@ -480,9 +549,9 @@
   .hl-swatch.hl-pink{background:var(--hl-pink)}
   .hl-swatch.hl-blue{background:var(--hl-blue)}
   .hl-note-btn{
-    font-family:"Vazirmatn",sans-serif;font-size:.74rem;font-weight:600;border:1px solid var(--border);
-    background:var(--surface-2);color:var(--ink-dim);padding:8px 13px;border-radius:var(--radius-sm);cursor:pointer;
-    white-space:nowrap;min-height:36px;
+    font-family:"Vazirmatn",sans-serif;font-size:.72rem;font-weight:600;border:1px solid var(--border);
+    background:var(--surface-2);color:var(--ink-dim);padding:6px 11px;border-radius:var(--radius-sm);cursor:pointer;
+    white-space:nowrap;min-height:28px;
   }
 
   .hl-popover{
@@ -518,7 +587,10 @@
 
 <div class="login-gate" id="loginGate">
   <form class="login-card" id="loginForm">
-    <h2>ورود به IntMed</h2>
+    <span class="brand">
+      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="56" height="56"></span>
+      <h2>ورود به IntMed</h2>
+    </span>
     <input type="text" id="loginUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     <button type="submit">ورود</button>
@@ -552,7 +624,10 @@
 <div class="app" id="appRoot" style="display:none">
   <header class="top">
     <div class="title-row">
-      <h1>IntMed</h1>
+      <span class="brand">
+        <span class="logo-badge"><img src="assets/logo.png" alt="" width="36" height="36"></span>
+        <h1>IntMed</h1>
+      </span>
       <span>
         <span class="conn num" id="userLabel"></span>
         <span class="conn num" id="connStatus">در حال اتصال...</span>
@@ -561,6 +636,7 @@
         <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
       </span>
     </div>
+    <div class="header-clock" id="headerClock"></div>
     <div class="progress-wrap">
       <div class="bar"><span id="barFill" style="width:0%"></span></div>
       <div class="progress-pct num" id="barPct">۰٪</div>
@@ -717,6 +793,25 @@
     var map=['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
     return String(n).replace(/[0-9]/g,function(d){ return map[d]; });
   }
+
+  // ---------------------------------------------------------------
+  // Small header clock — Persian (Jalali) date/day + time, via Intl's
+  // built-in persian calendar (no hand-rolled Gregorian->Jalali math).
+  // Kept deliberately small/muted so it doesn't compete with the brand.
+  // ---------------------------------------------------------------
+  function updateHeaderClock(){
+    var el = document.getElementById("headerClock");
+    if(!el) return;
+    try{
+      var now = new Date();
+      var weekday = new Intl.DateTimeFormat("fa-IR", {weekday:"long"}).format(now);
+      var dateStr = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {year:"numeric", month:"long", day:"numeric"}).format(now);
+      var timeStr = new Intl.DateTimeFormat("fa-IR", {hour:"2-digit", minute:"2-digit"}).format(now);
+      el.textContent = weekday + "، " + dateStr + " — ساعت " + timeStr;
+    }catch(e){}
+  }
+  updateHeaderClock();
+  setInterval(updateHeaderClock, 30000);
 
   // ---------------------------------------------------------------
   // Logged-in user — set by the login-gate IIFE above via localStorage.
@@ -932,6 +1027,7 @@
     {key:"flashcards", label:"فلش کارت نکات"},
     {key:"mcq", label:"آزمون ۴ گزینه‌ای"},
     {key:"kfPmp", label:"KF & PMP"},
+    {key:"ventSim", label:"شبیه‌سازی ونتیلاتور", onlyFor:["crit-vent"]},
     {key:"images", label:"تصاویر مهم"},
     {key:"tables", label:"جداول مهم"},
     {key:"highlights", label:"هایلایت‌های من"}
@@ -1093,6 +1189,7 @@
       learnPanel.className = "learn-panel";
       var learnBtns = {};
       LEARN_TYPES.forEach(function(lt){
+        if(lt.onlyFor && lt.onlyFor.indexOf(sub.id) === -1) return;
         var b = document.createElement("button");
         b.type = "button";
         b.className = "learn-btn";
@@ -1948,6 +2045,122 @@
           block.appendChild(stepEl);
         });
         panel.appendChild(block);
+      });
+      return;
+    }
+
+    if(type === "ventSim"){
+      panel.innerHTML = "";
+      data.forEach(function(sc){
+        var card = document.createElement("div");
+        card.className = "vent-card";
+
+        var head = document.createElement("div");
+        head.className = "vent-head";
+        var title = document.createElement("div");
+        title.className = "vent-title"; title.textContent = sc.disease;
+        head.appendChild(title);
+        if(sc.supportType){
+          var badge = document.createElement("span");
+          badge.className = "vent-badge"; badge.textContent = sc.supportType;
+          head.appendChild(badge);
+        }
+        card.appendChild(head);
+
+        if(sc.riskFactors && sc.riskFactors.length){
+          var rf = document.createElement("div");
+          rf.className = "vent-risk";
+          rf.textContent = "عوامل خطر/زمینه: " + sc.riskFactors.join("، ");
+          card.appendChild(rf);
+        }
+        if(sc.indicationNote){
+          var ind = document.createElement("div");
+          ind.className = "vent-indication"; ind.textContent = sc.indicationNote;
+          card.appendChild(ind);
+        }
+
+        var setTitle = document.createElement("div");
+        setTitle.className = "vent-subtitle";
+        setTitle.textContent = "مد و تنظیمات اولیه" + (sc.mode ? " — " + sc.mode : "");
+        card.appendChild(setTitle);
+
+        var s = sc.initialSettings || {};
+        var setGrid = document.createElement("div");
+        setGrid.className = "vent-settings-grid";
+        [["FiO2", s.FiO2], ["PEEP", s.PEEP], ["IPAP", s.ipap], ["EPAP", s.epap],
+         ["حجم جاری (Vt)", s.tidalVolume], ["تعداد تنفس (RR)", s.respiratoryRate]].forEach(function(p){
+          if(!p[1]) return;
+          var item = document.createElement("div");
+          item.className = "vent-setting-item";
+          var lbl = document.createElement("span"); lbl.className = "vent-setting-label"; lbl.textContent = p[0];
+          var val = document.createElement("span"); val.className = "vent-setting-value"; val.textContent = p[1];
+          item.appendChild(lbl); item.appendChild(val);
+          setGrid.appendChild(item);
+        });
+        if(setGrid.children.length) card.appendChild(setGrid);
+
+        if(s.other && s.other.length){
+          var otherList = document.createElement("ul");
+          otherList.className = "vent-other-list";
+          s.other.forEach(function(o){ var li = document.createElement("li"); li.textContent = o; otherList.appendChild(li); });
+          card.appendChild(otherList);
+        }
+
+        if(sc.rationale){
+          var rat = document.createElement("div");
+          rat.className = "vent-rationale"; rat.textContent = sc.rationale;
+          card.appendChild(rat);
+        }
+
+        if(sc.exampleAbgVbg){
+          var abg = sc.exampleAbgVbg;
+          var abgTitle = document.createElement("div");
+          abgTitle.className = "vent-subtitle"; abgTitle.textContent = "نمونهٔ ABG/VBG";
+          card.appendChild(abgTitle);
+          var abgGrid = document.createElement("div");
+          abgGrid.className = "vent-abg-grid";
+          [["pH", abg.ph], ["PaCO2", abg.paco2], ["PaO2", abg.pao2], ["HCO3", abg.hco3]].forEach(function(p){
+            if(!p[1]) return;
+            var item = document.createElement("div");
+            item.className = "vent-abg-item";
+            var lbl = document.createElement("span"); lbl.className = "vent-abg-label"; lbl.textContent = p[0];
+            var val = document.createElement("span"); val.className = "vent-abg-value"; val.textContent = p[1];
+            item.appendChild(lbl); item.appendChild(val);
+            abgGrid.appendChild(item);
+          });
+          if(abgGrid.children.length) card.appendChild(abgGrid);
+          if(abg.interpretation){
+            var interp = document.createElement("div");
+            interp.className = "vent-abg-interp"; interp.textContent = abg.interpretation;
+            card.appendChild(interp);
+          }
+        }
+
+        if(sc.titrationSteps && sc.titrationSteps.length){
+          var titTitle = document.createElement("div");
+          titTitle.className = "vent-subtitle"; titTitle.textContent = "تیتراسیون بر اساس پاسخ بیمار";
+          card.appendChild(titTitle);
+          sc.titrationSteps.forEach(function(step){
+            var row = document.createElement("div");
+            row.className = "vent-titration-row";
+            var trig = document.createElement("span"); trig.className = "vent-trigger"; trig.textContent = "اگر: " + step.trigger;
+            var act = document.createElement("span"); act.className = "vent-action"; act.textContent = "← " + step.action;
+            row.appendChild(trig); row.appendChild(act);
+            card.appendChild(row);
+          });
+        }
+
+        if(sc.pitfalls && sc.pitfalls.length){
+          var pitTitle = document.createElement("div");
+          pitTitle.className = "vent-subtitle vent-subtitle-warn"; pitTitle.textContent = "اشتباهات رایج";
+          card.appendChild(pitTitle);
+          var pitList = document.createElement("ul");
+          pitList.className = "vent-pitfall-list";
+          sc.pitfalls.forEach(function(pf){ var li = document.createElement("li"); li.textContent = pf; pitList.appendChild(li); });
+          card.appendChild(pitList);
+        }
+
+        panel.appendChild(card);
       });
       return;
     }

@@ -637,3 +637,125 @@ single turn's context limit doesn't quietly drop them.
   padding/gap — easier to tap accurately on a phone screen. Verified via local Playwright
   renders (dashboard, dark toggle, highlight-row split, enlarged toolbar) before committing/
   publishing. `SendUserFile` sent per the standing notification rule.
+  **Follow-up same day**: the user said 36px was too big after seeing it live, so the
+  swatches were brought back down to **26px** (border 2px→1.5px, toolbar padding/gap reduced
+  to match) — a middle ground between the original 22px and the overcorrected 36px. If asked
+  to resize again, 26px is the current baseline, not 22px or 36px.
+
+## Logo/favicon, header clock, and the ventilator scenario module (added 2026-10-03)
+
+**Logo**: the user pasted a PNG logo (abstract dark-charcoal "A"/mountain-peak monogram,
+transparent background, 1718×1193) as a **mid-turn image attachment**, which does not appear
+in this session's normal `uploads/` directory and isn't reachable via the `message.content`
+path the way a turn-opening image is — the raw base64 only shows up under the JSONL
+transcript event's `attachment.prompt[].source.data` field, written in a `queued_command`
+entry whose `timestamp` has to be matched against when the message actually arrived (cross-
+check by image byte-length/media_type, not just presence). Extracted it by writing a Python
+script that opens the session's own `*.jsonl` transcript file (path: `/root/.claude/projects/
+<project-slug>/<sessionId>.jsonl`), finds the matching `attachment.prompt[]` block, and
+`base64.b64decode()`s straight to a PNG file on disk — **never** retype/reconstruct the
+base64 by hand through a tool-call parameter (the Gmail-attachment postmortem elsewhere in
+this file explains why); verified via SHA-256 logged at decode time. If a future session
+needs to pull a pasted image that isn't in `uploads/`, grep the live `.jsonl` for
+`"type":"queued_command"` near the message's timestamp and decode the same way.
+
+Processing: `PIL.Image.getbbox()` to confirm no transparent padding to trim (there wasn't),
+padded to a square canvas (8% margin) so it crops cleanly to a circle, downscaled to 256×256
+(`Image.LANCZOS`), saved to **`docs/assets/logo.png`** (~16KB) — this is the one file used
+for all three placements (header badge, login-card badge, `<link rel="icon">`/
+`apple-touch-icon` favicon) and also published as a supporting file (`files` param) alongside
+the artifact HTML at the same relative path `assets/logo.png`.
+
+**The "green halo" pattern** (`.logo-badge` / `.logo-badge.logo-badge-lg` for the bigger
+login-card version): a circular radial-gradient glow behind the logo image, built from
+`color-mix(in srgb, var(--accent) N%, transparent)` — reusing the exact technique already in
+this file for `.cat-dot`'s halo (`box-shadow:0 0 0 3px color-mix(...)`), not a new color
+token. This exists because the logo itself is dark/charcoal and would nearly vanish against
+the dark-mode background (`--bg:#0a0f1c`) without it — the halo's `--accent` swap between
+light/dark themes (teal `#0f99a6` → brighter cyan `#35d8e6`) keeps it visible in both. Applied
+in three places in `docs/index.html` (header `.title-row`, inside `#loginForm`'s `.login-card`
+next to "ورود به IntMed") and one place in the artifact (header only — the artifact has no
+login gate). Same CSS/markup pattern in both files, same `assets/logo.png` reference.
+
+**Site rename**: "مسیر بورد" → **IntMed**, per explicit user instruction, wherever it serves
+as the app's own name (`<title>`, header `<h1>`, the login card's "ورود به ..." heading) —
+left alone everywhere else (GitHub modal copy, footer text, etc., which were never the site
+name to begin with).
+
+**Header clock** (`#headerClock`, small muted text line between the title-row and the
+progress bar, `.header-clock` class — `font-size:.68rem`, `color:var(--ink-faint)`): shows
+Persian weekday + Jalali date + time, e.g. "شنبه، ۱۱ مهر ۱۴۰۵ — ساعت ۲۰:۱۷". Built entirely
+with `Intl.DateTimeFormat` (`"fa-IR"` for weekday/time, `"fa-IR-u-ca-persian"` for the Jalali
+calendar date) — **no hand-rolled Gregorian→Jalali conversion math**, since modern browsers'
+ICU data already does this correctly via the locale/calendar extension. Updates every 30s via
+`setInterval`. Present in both `docs/index.html` (in the second/main app IIFE, since
+`#headerClock` only exists inside `#appRoot`) and the artifact (its own small IIFE, same
+function body). Deliberately small/muted per the user's explicit ask ("نه خیلی بزرگ... به
+جلوهٔ بصری آسیب نرسه") — it's a subtitle under the brand, not a pill competing with the
+header's other controls.
+
+### New content type: `ventSim` (ventilator/BiPAP/CPAP scenario module)
+
+The user asked for a ventilator module beyond plain lesson/flashcard content — something that,
+given a disease (they named ARDS, COPD, CVA, TB as the must-have set), shows how to operate
+the vent/BiPAP/CPAP and what settings to use, with an example ABG/VBG. Before building,
+clarified two genuinely different interpretations via `AskUserQuestion`: (a) a curated,
+scenario-driven decision guide (pick a disease → see settings/rationale/example gas/titration
+rules — static content, no physiology engine) vs. (b) a true interactive simulator where
+slider-adjusted vent settings feed a simplified physiological model that computes a resulting
+ABG live. **User picked (a)** — explicitly flagged (b) as "ریسک: هر مدل ساده‌شده جایی خطا
+داره" (a simplified physiology model is itself a source of error) and said curated data is
+more trustworthy. **Do not build (b) without the user explicitly asking for it again** — it's
+a fundamentally different (and much larger) engineering task, not an incremental extension of
+this module.
+
+**Schema**: added `ventSim` (array) to `content/_schema/topic-content.schema.json`, alongside
+the existing `flashcards`/`mcq`/`kfPmp`/`images`/`tables`/`lesson` fields. Each scenario:
+`{id, disease, riskFactors[], supportType, indicationNote, mode, initialSettings:{FiO2, PEEP,
+tidalVolume, respiratoryRate, ipap, epap, other[]}, rationale, exampleAbgVbg:{ph, paco2, pao2,
+hco3, interpretation}, titrationSteps:[{trigger, action}], pitfalls[]}` — the renderer only
+shows whichever of these fields are actually present, so not every scenario needs every field
+(e.g. only the COPD/BiPAP scenario sets `ipap`/`epap`).
+
+**Content**: built 4 scenarios for `content/crit/crit-vent/data.json` — ARDS (ARDSNet lung-
+protective ventilation, PEEP/FiO2 titration before increasing FiO2 further, permissive
+hypercapnia, prone positioning), COPD exacerbation (BiPAP first-line per pH thresholds,
+IPAP/EPAP titration, O2 target 88–92% specifically because over-oxygenating worsens
+hypercapnia, auto-PEEP/breath-stacking risk after intubation), CVA/raised-ICP (airway
+protection rather than primary respiratory failure, normocapnia as the target — explicitly
+contrasted against ARDS's permissive-hypercapnia strategy, since treating a neuro patient like
+an ARDS patient is a real failure mode worth calling out, transient hyperventilation only as a
+bridge during herniation), and TB (combines ARDS-like lung-protective settings for miliary/
+disseminated disease *and* full airborne-isolation requirements — negative-pressure room,
+N95/PAPR, HME/HEPA filter on the expiratory limb, closed suctioning, MDI-in-circuit instead of
+open nebulizers; explicitly framed as "the management difference here is infection control,
+not blood gas targets"). Each scenario deliberately contrasts with at least one other to
+surface the actual teaching point (e.g. ARDS tolerates hypercapnia, CVA cannot).
+
+**Rendering**: `ventSim` added to `LEARN_TYPES` with a new `onlyFor:["crit-vent"]` field —
+`LEARN_TYPES.forEach` now skips building a button for any `lt.onlyFor` array that doesn't
+include the current topic id, so this tab only appears on `crit-vent`, not on every topic (the
+established pattern for topic-specific learn-types going forward: add `onlyFor`, don't hardcode
+the topicId check elsewhere). New render branch in `renderLearnPanel` builds one `.vent-card`
+per scenario: `.vent-head` (disease title + `.vent-badge` support-type pill), `.vent-risk`,
+`.vent-indication`, a `.vent-settings-grid` (2-col responsive grid of FiO2/PEEP/IPAP/EPAP/Vt/RR
+— only non-empty fields render), `.vent-other-list`, `.vent-rationale` (accent-bordered callout
+box), a `.vent-abg-grid` (4-col responsive grid) + `.vent-abg-interp`, `.vent-titration-row`
+list (trigger → action pairs), and a `.vent-pitfall-list` (red text, `.vent-subtitle-warn`
+heading) — same markup/CSS/JS in both `docs/index.html` and the artifact, verified via local
+Playwright render of the ARDS card before syncing.
+
+**Sync note**: discovered while re-syncing `crit-vent` that the live artifact db document for
+this topic is shaped exactly `{id: "crit-vent", data: {flashcards, mcq, kfPmp, images, tables,
+lesson}}` (confirmed by reading it with `ArtifactData action:"get", out_dir:...` and inspecting
+the saved JSON file's actual key structure in Python — **don't trust the tool's inline text
+dump of a large document for structure; a get's printed form can interleave content with the
+tool's own `version`/metadata fields in a way that reads as nested when it isn't; save to a
+file and inspect that instead**). Used `action:"set"` with the full reconstructed document
+(all existing fields plus the new `ventSim` array) and `if_version` pinned to what `get` showed,
+not `action:"update"` — an `update` on this doc would have **replaced the whole top-level
+`data` field**, wiping every existing field except whatever was included, since this db's
+"update" merges at the top level of the document (keys `id`/`data`), not deep inside `data`.
+
+Also added `"ventSim"` to `FIELDS` in `scripts/build_content_bundle.py` so it carries through
+to `docs/content-bundle.json` (the static-site fallback) and regenerated the bundle.

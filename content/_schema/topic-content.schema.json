@@ -92,6 +92,58 @@
           "body": { "type": "string", "description": "One or more paragraphs, separated by a blank line (\\n\\n)." }
         }
       }
+    },
+    "ventSim": {
+      "type": "array",
+      "description": "Disease-driven ventilator/BiPAP/CPAP decision-support scenarios — curated clinical guidance (initial settings, rationale, an example ABG/VBG, titration steps, common pitfalls), NOT a live physiological simulator with settings-driven gas-exchange computation. Rendered as its own learn-type tab ('شبیه‌سازی ونتیلاتور'), scoped in the app's JS to specific topicIds that opt in (currently only crit-vent) rather than shown for every topic.",
+      "items": {
+        "type": "object",
+        "required": ["id", "disease", "supportType", "mode", "initialSettings", "rationale"],
+        "properties": {
+          "id": { "type": "string" },
+          "disease": { "type": "string", "description": "e.g. 'ARDS', 'تشدید حاد COPD'." },
+          "riskFactors": { "type": "array", "items": { "type": "string" } },
+          "supportType": { "type": "string", "description": "e.g. invasive ventilation / BiPAP / NIV contraindicated." },
+          "indicationNote": { "type": "string" },
+          "mode": { "type": "string" },
+          "initialSettings": {
+            "type": "object",
+            "description": "Any subset of these fields; the renderer only shows the ones present.",
+            "properties": {
+              "FiO2": { "type": "string" },
+              "PEEP": { "type": "string" },
+              "tidalVolume": { "type": "string" },
+              "respiratoryRate": { "type": "string" },
+              "ipap": { "type": "string" },
+              "epap": { "type": "string" },
+              "other": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "rationale": { "type": "string" },
+          "exampleAbgVbg": {
+            "type": "object",
+            "properties": {
+              "ph": { "type": "string" },
+              "paco2": { "type": "string" },
+              "pao2": { "type": "string" },
+              "hco3": { "type": "string" },
+              "interpretation": { "type": "string" }
+            }
+          },
+          "titrationSteps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["trigger", "action"],
+              "properties": {
+                "trigger": { "type": "string" },
+                "action": { "type": "string" }
+              }
+            }
+          },
+          "pitfalls": { "type": "array", "items": { "type": "string" } }
+        }
+      }
     }
   }
 }

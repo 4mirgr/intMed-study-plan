@@ -32,7 +32,7 @@ SHARED_TOPIC_ALIASES = {
     "poison-rhabdo-myopathy": "rhabdo-myopathy",
 }
 
-FIELDS = ["flashcards", "mcq", "kfPmp", "images", "tables", "lesson"]
+FIELDS = ["flashcards", "mcq", "kfPmp", "images", "tables", "lesson", "ventSim"]
 
 
 def main():
