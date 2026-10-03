@@ -472,14 +472,17 @@ wait) — don't spend time trying to "fix" this as part of an unrelated change, 
 a real user's click is affected (it isn't; this is a Playwright-specific interaction-stability
 check, not a real rendering/click-target bug).
 
-**Not yet done**: the live claude.ai artifact ("مسیر بورد") still has the old (pre-redesign)
-styling — it's a separate HTML file from `docs/index.html` and this pass didn't touch it. The
-user asked specifically about the drgerami-md.ir site. If they want the same visual system on
-the artifact, that's a follow-up: read it fresh (`Artifact action:"read"` first, per the
-existing rule elsewhere in this file), apply the same CSS-only discipline, verify the artifact
-has no `<script>`/db-capability differences this redesign would clash with (it has its own
-`db`-backed item_state/meta code plus the GitHub-sync highlight module — same "don't touch
-anything after the `<style>` block" approach should still apply), then republish.
+**Done** (2026-10-03, follow-up pass): the same glassmorphism redesign was also applied to the
+live claude.ai artifact ("مسیر بورد"). Read fresh via `Artifact action:"read", page:true` first
+(required before publishing to an artifact not yet read/published in-session), located its
+single real `<style>` block (the file has a second, tiny inline `<style>` in `<head>` before
+`<title>` — that one is part of the artifact platform's own page shell, not this app's CSS, and
+was left untouched), spliced in the identical `new_style.css` content used for `docs/index.html`
+(same selector names — the two files were built in parallel and share markup/JS almost exactly),
+and verified byte-for-byte that everything before and after that `<style>` block was unchanged
+(`node --check` on the extracted `<script>` also passed). Republished to the same artifact URL
+(version 25). Its own `db`-backed item_state/meta code and the separate GitHub-sync highlight
+module were not touched — only CSS moved.
 
 ## Pending cross-project follow-ups (bulk tasks not yet done)
 
@@ -603,3 +606,8 @@ single turn's context limit doesn't quietly drop them.
   and a Playwright testing quirk discovered along the way (pre-existing on the original file
   too, not caused by this change). Live artifact not touched — static site only, per the
   request.
+- Applied the identical glassmorphism redesign to the live claude.ai artifact ("مسیر بورد"),
+  per the user's immediate follow-up request. Same CSS-only splice technique, same source
+  CSS file, verified byte-for-byte unchanged outside the `<style>` block. Republished
+  (version 25). See the updated "Not yet done" → now "Done" note in the UI design system
+  section above.
