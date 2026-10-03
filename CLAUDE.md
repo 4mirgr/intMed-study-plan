@@ -689,6 +689,19 @@ against the translucent header surface, much subtler against solid white (login 
 near-black (dark mode) — that's inherent to how overlay blend works against very light/dark
 backdrops, not a bug. Republished as version 28.
 
+**Second follow-up, same day**: exactly the predicted weak spot above turned out to matter —
+in dark mode the overlay-blend halo was too washed out and the dark logo mark was nearly
+invisible against the near-black header. Per the user's explicit ask ("لوگو... بازم بزرگتر...
+در دارک مود لوگو معلوم نمیشه"), **dropped `mix-blend-mode:overlay` entirely** and replaced the
+`::before` halo with a near-opaque white disc (`rgba(255,255,255,.92)`, no blend mode, plain
+`backdrop-filter:blur(10px)` + border + drop shadow) — reliable contrast in both themes beats
+a blend-mode glass effect that only works against one kind of background. Sized up again:
+`.logo-badge` 46px→58px (header) / 78px→96px (login-lg). If asked to make the badge "glassy"
+again, reconsider blend modes only with an explicit test against the dark-mode background
+first — `mix-blend-mode:overlay`/`soft-light`/etc. against a near-black backdrop will have the
+same washed-out problem by construction, not just for this particular white color choice.
+Republished as version 29.
+
 **Site rename**: "مسیر بورد" → **IntMed**, per explicit user instruction, wherever it serves
 as the app's own name (`<title>`, header `<h1>`, the login card's "ورود به ..." heading) —
 left alone everywhere else (GitHub modal copy, footer text, etc., which were never the site
