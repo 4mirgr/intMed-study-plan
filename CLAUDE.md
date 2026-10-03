@@ -232,17 +232,19 @@ whether to scope the separation to highlights only or to all persisted state.
 ```js
 var GATE_USERS = [
   { hash: "49e9c6e4", id: "amir" },      // درگرامی / دکتر گرامی
-  { hash: "bd59ba56", id: "arash" }      // آرش
+  { hash: "bd59ba56", id: "arash" },     // آرش
+  { hash: "2e75e6cc", id: "alisalehi" }  // علی صالحی
 ];
 ```
 Each entry is `fnv1aHex(lowercased-username + ":" + normalized-password)` (same `fnv1aHex`/
 `normalizeDigits` used before multi-user support — see the login-gate section above) paired
-with a stable `userId` used to namespace that person's data. **To add a third person**:
+with a stable `userId` used to namespace that person's data. **To add another person**:
 compute their hash the same way and append one more `{hash, id}` entry — nothing else needs
 to change structurally. Current credentials: primary user **drgerami / 09125448285**
-(`id: "amir"`), second user **arash / 09127389946** (`id: "arash"`) — state them plainly if
-the user asks, don't treat them as secret from the user themselves. `USER_NAMES =
-{amir: "دکتر گرامی", arash: "آرش"}` drives the header label and reset-confirm text.
+(`id: "amir"`), second user **arash / 09127389946** (`id: "arash"`), third user **alisalehi /
+09130523880** (`id: "alisalehi"`) — state them plainly if the user asks, don't treat them as
+secret from the user themselves. `USER_NAMES = {amir: "دکتر گرامی", arash: "آرش", alisalehi:
+"علی صالحی"}` drives the header label and reset-confirm text.
 
 (History: the second user's id/credentials were originally shipped as a placeholder,
 `hamkar`/482917 — since the user hadn't yet said who the second person actually was. Updated
