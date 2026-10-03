@@ -420,6 +420,67 @@ copyrighted publisher figure — rule 6 still bans that), the working pattern is
    publicly) rather than repeating the data-URI pattern topic after topic — raise this instead
    of silently repeating the workaround if asked for a second or third infographic.
 
+## UI design system for `docs/index.html` (added 2026-10-03)
+
+`docs/index.html` was redesigned visually — "Premium Medical SaaS Glassmorphism" (navy/cyan
+palette, glass surfaces, soft Bento cards, floating pill nav, segmented controls) — as a
+**CSS-only** change: every id, every JS-generated `className`, every `data-*` attribute, and
+the entire HTML body and `<script>` block are untouched from before the redesign (verified by
+diffing everything after `</style>` byte-for-byte against the prior commit — it was identical).
+If you ever need to redo a pass like this (new palette, more components), the same discipline
+applies: **only rewrite the `<style>` block**, keep every selector name that's referenced from
+`<script>`, and diff the post-`</style>` content against the previous version before committing
+to prove nothing else moved.
+
+**Design tokens** live in `:root` (light) and the existing `:root[data-theme="dark"]` /
+`@media(prefers-color-scheme:dark)` dark variant (same pattern pre-dating this redesign, just
+with new values): `--bg`/`--bg-grad-1/2/3` (ambient blob gradients painted on `body` via
+`background-image`, not extra DOM elements), `--surface`/`--surface-strong`/`--surface-solid`
+(glass vs. solid-fallback surfaces), `--primary`/`--primary-light`/`--accent`/`--accent-ink`,
+`--border`/`--border-strong`, `--shadow-sm/md/lg`, `--blur` (18px), `--radius-sm/md/lg/xl/pill`,
+`--ease`/`--dur` (shared transition timing, `cubic-bezier(.2,.8,.2,1)` / 200ms). Per-category
+and per-phase accent colors (`--phase-color`/`--cat-color`, set inline by JS from the
+`PHASES`/`TOPICS` config arrays — do not touch those JS-set custom properties) layer on top of
+these tokens via the existing `var(--phase-color,var(--accent))` fallback pattern.
+
+**Glass surfaces** use `background:var(--surface|--surface-strong)` (translucent) +
+`backdrop-filter:blur(var(--blur))` + `-webkit-backdrop-filter` + a light translucent border,
+with a plain `@supports not (backdrop-filter...)` fallback to `--surface-solid` for browsers
+without support. Applied to: `header.top` (floating pill nav), `.callout`, `.here-card`,
+`.phase`, `.topic-cat`, `.learn-panel`, modals (`.login-card`, `.gh-modal-card`), and the
+highlight toolbar/popover (`.hl-toolbar`, `.hl-popover`).
+
+**Scope of the redesign — what it does NOT include**, since the dashboard only restyles what
+already exists and has real backing data: there's no separate "Weak Topics" / "Recent
+Activity" / "Quick Access" bento cards, no circular progress ring (kept the horizontal bar —
+switching to a ring would need JS changes to drive stroke-dashoffset, which this pass
+deliberately avoided), and the floating nav only has the two real tabs (Dashboard/Education)
+plus the existing GitHub-connect/Logout buttons — no "Progress" or "My Highlights" top-level
+nav items, since those aren't separate views in the app (progress is inline on the dashboard;
+highlights are per-topic, not a global aggregate). If the user wants any of this as actual new
+functionality later, that's a logic change, not a restyle — flag it as such rather than
+quietly inventing fake data to fill a bento slot.
+
+**Known pre-existing quirk, not caused by this redesign**: clicking a `.item input[type=checkbox]`
+inside an opened `.phase` via Playwright's standard `locator.click()` times out on
+"element is not stable" / a sibling element "intercepts pointer events" — reproduced
+identically on the pre-redesign file (tested both, same failure). Likely related to the
+`.phase-body{max-height:0 → 20000px}` transition combined with the sticky header's scroll
+math never fully "settling" by Playwright's strict actionability heuristic. Work around it in
+tests via `page.evaluate(() => el.click())` (direct DOM click, bypasses the actionability
+wait) — don't spend time trying to "fix" this as part of an unrelated change, and don't assume
+a real user's click is affected (it isn't; this is a Playwright-specific interaction-stability
+check, not a real rendering/click-target bug).
+
+**Not yet done**: the live claude.ai artifact ("مسیر بورد") still has the old (pre-redesign)
+styling — it's a separate HTML file from `docs/index.html` and this pass didn't touch it. The
+user asked specifically about the drgerami-md.ir site. If they want the same visual system on
+the artifact, that's a follow-up: read it fresh (`Artifact action:"read"` first, per the
+existing rule elsewhere in this file), apply the same CSS-only discipline, verify the artifact
+has no `<script>`/db-capability differences this redesign would clash with (it has its own
+`db`-backed item_state/meta code plus the GitHub-sync highlight module — same "don't touch
+anything after the `<style>` block" approach should still apply), then republish.
+
 ## Pending cross-project follow-ups (bulk tasks not yet done)
 
 Tracked here so a future session can pick them up without the user re-explaining, and so a
@@ -532,3 +593,13 @@ single turn's context limit doesn't quietly drop them.
   `images[].sourceUrl` is what actually works for an unauthenticated link from the static
   site, verified byte-for-byte via SHA-256 before/after). Synced to the artifact db
   (version 3→4, now ~221/256 KiB — tight headroom for this topic).
+- Redesigned `docs/index.html`'s entire visual system ("Premium Medical SaaS Glassmorphism" —
+  navy/cyan glass palette, floating pill nav, Bento cards, segmented controls) as a CSS-only
+  change — rewrote just the `<style>` block, verified the rest of the file (full HTML body +
+  entire `<script>` block: auth, GitHub sync, state, highlights, checkboxes, flashcards/MCQ/
+  KF-PMP rendering) is byte-for-byte identical to before. See the new "UI design system for
+  docs/index.html" section above for the design tokens, what was deliberately left out
+  (no fake bento cards with no backing data, no circular progress, no invented nav items),
+  and a Playwright testing quirk discovered along the way (pre-existing on the original file
+  too, not caused by this change). Live artifact not touched — static site only, per the
+  request.
