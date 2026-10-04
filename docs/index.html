@@ -117,8 +117,28 @@
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     header.top{ background:var(--surface-solid); }
   }
+  header.top.collapsed{padding-bottom:12px}
   .title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .brand{display:inline-flex;align-items:center;gap:9px}
+  .title-row-right{display:inline-flex;align-items:center;flex-wrap:wrap}
+  .title-row-extras{display:inline-flex;align-items:center;flex-wrap:wrap}
+  header.top.collapsed .title-row-extras{display:none}
+  .header-collapse-btn{
+    font-size:.85rem;line-height:1;border:1px solid var(--border);background:var(--surface-2);
+    color:var(--ink-dim);border-radius:var(--radius-pill);cursor:pointer;
+    width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+    margin-inline-start:6px;vertical-align:middle;flex-shrink:0;
+    transition:border-color var(--dur) var(--ease),transform var(--dur) var(--ease);
+  }
+  .header-collapse-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .header-collapse-btn .chev-ic{display:inline-block;transition:transform var(--dur) var(--ease)}
+  header.top.collapsed .header-collapse-btn .chev-ic{transform:rotate(180deg)}
+  .header-collapsible{
+    max-height:20000px;overflow:hidden;
+    transition:max-height .35s var(--ease), opacity .25s var(--ease), margin-top .35s var(--ease);
+    opacity:1;
+  }
+  header.top.collapsed .header-collapsible{max-height:0;opacity:0;margin-top:0;pointer-events:none}
+  .brand{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap}
   h1{font-size:1.08rem;font-weight:800;margin:0;letter-spacing:.2px;color:var(--primary)}
   .logo-badge{
     position:relative;display:inline-flex;align-items:center;justify-content:center;
@@ -142,9 +162,11 @@
   .conn.ok{color:var(--accent-ink);background:var(--accent-soft);border-color:rgba(22,184,200,.25)}
   .conn.bad{color:var(--danger);background:var(--danger-soft);border-color:rgba(198,47,63,.25)}
   .header-clock{
-    font-size:.68rem;color:var(--ink-faint);margin-top:7px;
+    font-size:.68rem;color:var(--ink-faint);
     font-family:"IBM Plex Mono","Vazirmatn",monospace;letter-spacing:.2px;
+    display:inline-flex;align-items:center;margin-inline-start:4px;
   }
+  .header-clock::before{content:"—";margin-inline-end:4px;color:var(--border-strong)}
   .progress-wrap{margin-top:14px;display:flex;align-items:center;gap:12px}
   .bar{flex:1;height:10px;border-radius:var(--radius-pill);background:var(--surface-2);border:1px solid var(--border);overflow:hidden}
   .bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--primary-light),var(--accent));border-radius:var(--radius-pill);transition:width .5s var(--ease)}
@@ -636,23 +658,28 @@
       <span class="brand">
         <span class="logo-badge"><img src="assets/logo.png" alt="" width="64" height="64"></span>
         <h1>IntMed</h1>
+        <span class="header-clock" id="headerClock"></span>
       </span>
-      <span>
-        <span class="conn num" id="userLabel"></span>
-        <span class="conn num" id="connStatus">در حال اتصال...</span>
-        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="تغییر حالت تاریک/روشن" title="تغییر حالت تاریک/روشن">🌙</button>
-        <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال به GitHub</button>
-        <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
+      <span class="title-row-right">
+        <span class="title-row-extras" id="titleRowExtras">
+          <span class="conn num" id="userLabel"></span>
+          <span class="conn num" id="connStatus">در حال اتصال...</span>
+          <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="تغییر حالت تاریک/روشن" title="تغییر حالت تاریک/روشن">🌙</button>
+          <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال به GitHub</button>
+          <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
+        </span>
+        <button type="button" class="header-collapse-btn" id="headerCollapseBtn" aria-expanded="true" aria-label="جمع‌کردن نوار بالا" title="جمع‌کردن/بازکردن نوار بالا"><span class="chev-ic">⌄</span></button>
       </span>
     </div>
-    <div class="header-clock" id="headerClock"></div>
-    <div class="progress-wrap">
-      <div class="bar"><span id="barFill" style="width:0%"></span></div>
-      <div class="progress-pct num" id="barPct">۰٪</div>
-    </div>
-    <div class="tabbar">
-      <button type="button" class="tab-btn active" id="tabBtnDashboard">داشبورد</button>
-      <button type="button" class="tab-btn" id="tabBtnEducation">بخش آموزشی</button>
+    <div class="header-collapsible" id="headerCollapsible">
+      <div class="progress-wrap">
+        <div class="bar"><span id="barFill" style="width:0%"></span></div>
+        <div class="progress-pct num" id="barPct">۰٪</div>
+      </div>
+      <div class="tabbar">
+        <button type="button" class="tab-btn active" id="tabBtnDashboard">داشبورد</button>
+        <button type="button" class="tab-btn" id="tabBtnEducation">بخش آموزشی</button>
+      </div>
     </div>
   </header>
 
@@ -728,6 +755,19 @@
       applyTheme(next);
     });
   }
+})();
+
+// Header collapse toggle — shrinks the top bar down to just logo/title/clock while
+// studying, so it stops taking up screen space; transient per-session state (not
+// persisted), since it only matters while this tab stays open on a topic.
+(function(){
+  var topHeader = document.querySelector("header.top");
+  var collapseBtn = document.getElementById("headerCollapseBtn");
+  if(!topHeader || !collapseBtn) return;
+  collapseBtn.addEventListener("click", function(){
+    var collapsed = topHeader.classList.toggle("collapsed");
+    collapseBtn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  });
 
   // Each entry: fnv1aHex(lowercased-username + ":" + normalized-password) -> a stable
   // userId used to namespace that person's phase-checklist/notes/highlights in the
