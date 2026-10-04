@@ -44,10 +44,26 @@ when a single turn can't fit all of them.
    AGMA, ORL1), keep it in English. Common, well-established Persian medical vocabulary
    (فشار خون, نارسایی کلیه, etc.) stays Persian as normal.
 
-6. **Copyrighted figures never get embedded.** Publisher figures/diagrams/photos are
-   described in lesson prose or rebuilt as markdown tables (for algorithms/flowcharts), never
-   extracted as images, because this content syncs to a public static site. Plain factual
-   data tables (not artwork) ARE reproduced verbatim as markdown tables.
+6. **Copyrighted figures: embed sparingly, with explicit source citation — reversed
+   2026-10-04.** Originally this rule banned embedding publisher figures outright (diagrams/
+   algorithms went into markdown tables, photos/plots into lesson prose). The user explicitly
+   reversed this, pointing to a pre-existing precedent they'd already approved in
+   `cardio-hf`'s `images[]` (a Harrison figure embedded with a citation note) and asking for
+   the same treatment, with source citation, for the images they'd attached for other
+   topics. Current rule: a Harrison (or other publisher) figure CAN be embedded in a topic's
+   `images[]` when the user has supplied that figure as an attachment for that topic,
+   **always** with a `note` field citing the source verbatim (e.g. "تصویر هاریسون؛ منبع:
+   Harrison's Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill.")
+   — never silently, never without attribution. This is the user's own call to make for
+   their own content/copyright exposure, not something to keep refusing. Still apply
+   judgment on **how many** to embed per topic, not whether: the 256 KiB per-db-doc limit
+   (see the infographic section below) and the content-bundle weight tradeoff (every
+   embedded image adds to every visitor's page load) still bound this — pick the figures
+   with the most standalone visual teaching value (clinical photos a table can't replace,
+   the single most load-bearing diagram) rather than embedding every attached figure for a
+   chapter; plain factual data tables and algorithms that are equally well captured as
+   markdown tables don't need the image too. Document which figures were embedded vs. left
+   as table/prose reconstructions, and why, same as every other content-build entry below.
 
 ## Workflow for building/updating a topic from a PDF
 
@@ -1855,3 +1871,106 @@ topic — or abbreviation-adjacent-to-Persian-punctuation, never an actual gramm
 a 10-card random sample confirmed correct front→back direction. Synced to the artifact db
 (version 1→2, ~88 KB). Bundle regenerated, still 52 topics (no new topic added, only an
 existing one supplemented).
+
+## `nephro-ckd` supplemented from Harrison's Chapter 322 (2026-10-04)
+
+Picked up from an interruption earlier this session (a build script for CKD flashcards had
+been written but never run — found and finished as the explicit "finish the unfinished
+work" ask). Read all 22 pages of Harrison's 22nd ed. Ch. 322 (Chronic Kidney Disease) plus
+the 3 attached figures. The existing `nephro-ckd` topic (63 flashcards/15 mcq/3 kfPmp/4
+tables/14 lesson sections, built earlier this session from a background agent) already
+covered CKD-MBD drug mechanisms, anemia/iron/ESA targets, ACEI/ARB nuance, AF/calciphylaxis,
+PD peritonitis, and dialysis adequacy in depth — so the supplement focused on genuinely new
+material: risk factors/genetics (APOL1, monogenic CKD, Table 322-1/322-2), GFR estimation
+equations (Table 322-3), leading etiology categories (Table 322-4), the KDIGO risk
+heat-map concept (Fig 322-1, rebuilt as a G-stage×A-stage grid table), intraglomerular-
+hypertension/hyperfiltration pathophysiology (ties the gliflozin-TGF mechanism from Fig
+322-5 into the existing ACEI/ARB section), bone-disease detail including tumoral calcinosis
+as a distinct entity from calciphylaxis (Fig 322-3), cardiovascular complications (troponin
+caveat, low-pressure pulmonary edema, uremic pericarditis as a dialysis-urgency indication,
+reverse epidemiology), hemostasis/neuromuscular/GI/endocrine/dermatologic manifestations
+(including NSF/gadolinium), diagnostic evaluation (imaging size exceptions, biopsy
+contraindications, genetic-testing indications), and RRT preparation/timing. Added 40
+flashcards (63→103), 8 MCQs (15→23), 2 KF/PMP cases (3→5: an ACEI-induced-GFR-drop
+reassurance case, a tumoral-calcinosis-vs-calciphylaxis differential case), 6 tables (4→10),
+and 7 lesson sections (14→21). Same build-script lesson as the AKI pass applied here too:
+tables drafted as `{headers,rows}` then converted to the schema's `{title,markdown}` shape;
+MCQs used `correctIndex` from the start this time (lesson learned); one KF/PMP id collision
+with a pre-existing `ckd-kf-4` was caught by the id-skip logic (silently dropped the
+duplicate rather than overwriting) and re-added under a fresh id (`ckd-kf-6`) rather than
+being lost. Validated: schema-valid, 0 جگر, no duplicate ids, front→back direction spot-
+checked on a random sample. Synced to the artifact db (version 1→2). Bundle regenerated,
+still 52 topics.
+
+## Copyrighted-figure policy reversed; images embedded in nephro-aki/nephro-ckd; highlighting extended to KF/PMP everywhere (2026-10-04)
+
+Same day, a new message arrived: "اگه به مبحث نارسایی قلب نگاه کنی میبینی که از یک تصویر با
+زیرنویس هاریسون استفاده کردیم. با ذکر منبع میتونی این کار رو با تصاویری که بهت دادم برای هر
+مبحث بکنی." (if you look at the heart-failure topic, you'll see we used one image with a
+Harrison caption — with source citation, you can do this for each topic with the images I
+gave you.) Checked `cardio-hf/data.json`'s `images[]` and confirmed it: a real embedded
+Harrison figure (Figure 265-3, GDMT mortality-reduction staircase) with a citation note —
+pre-existing content the user had evidently already accepted, that the no-embed rule (rule 6
+above) hadn't caught up with. This is a legitimate, explicit policy reversal from the user
+for their own content, not something to keep resisting — updated rule 6 in place (see
+above) rather than overriding it silently or leaving it stale.
+
+**What got embedded, and what didn't, and why** (judgment still applies to *how many*, not
+*whether*, per the updated rule): checked each topic's current db-doc size against the 256
+KiB cap before deciding how many images that topic's budget could actually hold.
+- **`nephro-ckd`**: the 3 attached images were Fig 322-2 (intraglomerular-hypertension
+  schematic, 2-panel diagram — already fully captured as the KDIGO-grid/hyperfiltration
+  tables and lesson prose from the CKD supplement above) and Figs 322-3/322-4 (tumoral
+  calcinosis and calciphylaxis — real clinical photographs, the kind of visual pattern a
+  table genuinely cannot replace). Embedded only the two photographs; skipped the diagram
+  since its content was already fully captured elsewhere and doc size was closer to budget.
+  Processed as JPEG (photographic content compresses far better as JPEG than the PNG-
+  quantize method used for flat-color infographics elsewhere in this file) at quality 85:
+  147KB/339KB/494KB originals → 56KB (unused)/29KB/39KB. Final doc size 234.5 KB / 256 KiB
+  (89.5%) — tight but fits.
+- **`nephro-aki`**: 5 attached images, all diagrams/algorithms already fully reconstructed
+  as the 6 markdown tables from the earlier AKI supplement. Given this topic's doc was
+  already supplemented heavily this session (71% of budget before any image), embedded only
+  the single most load-bearing one — Fig 321-1, the three-way prerenal/intrinsic/postrenal
+  classification flowchart that opens the chapter's Etiology section — via PNG palette
+  quantization (flat-color diagram, same method as the Wilson infographic): 106.9KB →
+  28.4KB. Final doc size 186.6 KB / 256 KiB (71.2%).
+- Every embedded image's `note` field cites the source verbatim: "تصویر هاریسون؛ منبع:
+  Harrison's Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill." plus
+  a plain-language description of what the figure shows and, where relevant, a pointer to
+  the table/lesson section covering the same content in text form.
+- Integrity verified the established way: SHA-256 of each source file compared against the
+  SHA-256 of the re-decoded data URI read back from the saved JSON, both before syncing to
+  the artifact db — all matched byte-for-byte.
+- Not every attached figure got embedded, and that's deliberate, not an oversight: the
+  user's own example was a **single** image per topic ("یک تصویر"), and the per-doc size
+  budget plus the bundle-weight tradeoff (documented in the infographic section above —
+  every embedded image adds to every visitor's unconditional page load) both argue against
+  reflexively embedding all 5-6 figures per chapter when most of them are diagrams already
+  captured losslessly as text/tables. If the user wants more of the AKI/CKD figures embedded
+  specifically, that's a quick follow-up (the quantized/compressed files are already
+  prepared in scratchpad), but it wasn't assumed without asking.
+
+**Highlighting extended to KF/PMP, in both files, closing a dual gap.** The user also asked,
+same message: "قابلیت هایلایت کردن رو در همه ی بخش ها از جمله kf pmp فعال کن" (enable
+highlighting in every section, KF/PMP included). KF/PMP was the one remaining un-wired
+content type in `docs/index.html` (lesson/flashcard-front/flashcard-back/MCQ-stem/MCQ-
+explain/table-cells were already wired from earlier sessions) — added `kf:<id>:vignette`,
+`kf:<id>:step<i>:prompt`, and `kf:<id>:step<i>:answer` loc-key wiring to the `kfPmp` render
+branch, same generic `dataset.hlRawText`/`hlLoc`/`hlTopic` + `applyHighlightsToContainer()`
+pattern as everything else; extended the هایلایت‌های من source-label branch with a "KF &
+PMP" case; updated the education-tab intro sentence listing highlightable content types.
+
+While doing this, re-confirmed (per the standing flag in the MCQ-numbering section above)
+that the **live artifact was further behind than just KF/PMP** — it was missing flashcard-
+front and MCQ-stem/explain wiring too, not just KF/PMP; only lesson/flashcard-back/table-
+cells were wired there. Brought it to full parity in the same pass rather than leaving a
+partial fix: added flashcard-front, MCQ-stem/explain, and KF/PMP wiring to the artifact's
+`renderLearnPanel`, matching `docs/index.html` exactly loc-key-for-loc-key. Verified via a
+full diff against the freshly-read pre-edit artifact HTML that only these intended blocks
+(plus the matching intro-text and source-label edits) changed — everything else byte-
+identical — before republishing (version 39).
+
+Both files' extracted `<script>` blocks passed `node --check` after editing. `docs/
+index.html` changes, the two content-file image/text additions, and the regenerated bundle
+were committed together; the artifact was republished independently per its own versioning.

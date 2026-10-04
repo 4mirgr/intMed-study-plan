@@ -1036,7 +1036,7 @@
 
   <div class="tab-panel active" id="tabPanelEducation">
     <h2 class="section-title">بخش آموزشی</h2>
-    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، فلش‌کارت‌ها، تست‌ها و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در پنل کاربری خود نظرتان را ارسال بفرمایید.</p>
+    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، فلش‌کارت‌ها، تست‌ها، KF‌وPMP و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در پنل کاربری خود نظرتان را ارسال بفرمایید.</p>
     <div id="topicsRoot"></div>
   </div>
 
@@ -3129,6 +3129,7 @@
         var src = h.loc.indexOf("lesson:") === 0 ? "درسنامه"
           : (h.loc.indexOf("fc:") === 0 || h.loc.indexOf("fc-front:") === 0) ? "فلش‌کارت"
           : h.loc.indexOf("mcq:") === 0 ? "تست"
+          : h.loc.indexOf("kf:") === 0 ? "KF & PMP"
           : "جدول";
         var quote = document.createElement("div");
         quote.className = "hl-list-quote";
@@ -3271,7 +3272,8 @@
 
     if(type === "kfPmp"){
       panel.innerHTML = "";
-      data.forEach(function(kf){
+      data.forEach(function(kf, kfIdx){
+        var kfKey = kf.id || kfIdx;
         var block = document.createElement("div");
         block.className = "kfp-block";
         var title = document.createElement("div");
@@ -3280,15 +3282,31 @@
         if(kf.vignette){
           var vig = document.createElement("div");
           vig.className = "kfp-vignette"; vig.textContent = kf.vignette;
+          var vigLocKey = "kf:" + kfKey + ":vignette";
+          vig.dataset.hlRawText = kf.vignette;
+          vig.dataset.hlLoc = vigLocKey;
+          vig.dataset.hlTopic = topicId;
+          applyHighlightsToContainer(vig, topicId, vigLocKey);
           block.appendChild(vig);
         }
         (kf.steps||[]).forEach(function(step, i){
           var stepEl = document.createElement("div");
           stepEl.className = "kfp-step";
           var prompt = document.createElement("div");
-          prompt.className = "kfp-prompt"; prompt.textContent = (i+1) + ". " + step.prompt;
+          var promptText = (i+1) + ". " + step.prompt;
+          prompt.className = "kfp-prompt"; prompt.textContent = promptText;
+          var promptLocKey = "kf:" + kfKey + ":step" + i + ":prompt";
+          prompt.dataset.hlRawText = promptText;
+          prompt.dataset.hlLoc = promptLocKey;
+          prompt.dataset.hlTopic = topicId;
+          applyHighlightsToContainer(prompt, topicId, promptLocKey);
           var ans = document.createElement("div");
           ans.className = "kfp-answer"; ans.textContent = step.expectedAnswer;
+          var ansLocKey = "kf:" + kfKey + ":step" + i + ":answer";
+          ans.dataset.hlRawText = step.expectedAnswer;
+          ans.dataset.hlLoc = ansLocKey;
+          ans.dataset.hlTopic = topicId;
+          applyHighlightsToContainer(ans, topicId, ansLocKey);
           var btn = document.createElement("button");
           btn.type = "button"; btn.className = "fc-reveal"; btn.textContent = "نمایش پاسخ";
           btn.addEventListener("click", function(){
