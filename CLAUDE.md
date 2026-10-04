@@ -1387,6 +1387,7 @@ multi-user login gate the artifact doesn't have (see the "User profile/ticket se
 above), so none of this was ported. The `connectGithub()` merge-bug fix specifically: the
 artifact's own equivalent sync function (hardcoded to `ARTIFACT_USER_ID = "amir"`, no
 tickets/profile/signups concept) was **not checked or patched** in this pass — if the same
+blind-overwrite pattern exists there for highlights, it would need its own look.
 
 ## Green topic titles, expanded profile fields, ticket replies, admin accordion (2026-10-04)
 
@@ -1462,4 +1463,20 @@ here): open the sheet → Extensions → Apps Script → paste the script → De
 to a future session (or ask directly) to drop into `GOOGLE_SHEET_WEBHOOK_URL`. Until that
 happens, profile saves keep working exactly as before (GitHub `state.json` + admin panel),
 just without the Sheet mirror.
-blind-overwrite pattern exists there for highlights, it would need its own look.
+
+## Missing viewport meta tag — every mobile visitor was getting the desktop layout (2026-10-04)
+
+`docs/index.html` is a bare HTML fragment with no `<head>`/`<body>` of its own (see the login-
+gate section near the top of this file) — and it turns out it never had a
+`<meta name="viewport">` tag either, in the entire history of this project. Without one,
+mobile browsers lay the page out in a virtual ~980px desktop-width viewport and scale the
+whole thing down to fit the screen — exactly the "looks like the desktop version, everything
+tiny" symptom the user reported. Fixed with one line, right after the existing charset meta:
+`<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,
+viewport-fit=cover">`. Verified via Playwright mobile emulation (390×844, device-scale-factor
+3, `is_mobile`/`has_touch`): `document.documentElement.clientWidth` went from the implicit
+~980 to the real `390`, with no horizontal overflow (`body.scrollWidth` also 390).
+
+Not an issue on the claude.ai artifact — that page runs inside claude.ai's own page shell,
+which supplies its own `<head>`/viewport already (see the "tiny inline `<style>` in `<head>`"
+note in the UI-design-system section above — same shell). This fix is `docs/index.html`-only.
