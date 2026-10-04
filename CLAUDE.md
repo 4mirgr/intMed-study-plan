@@ -809,3 +809,43 @@ not `action:"update"` — an `update` on this doc would have **replaced the whol
 
 Also added `"ventSim"` to `FIELDS` in `scripts/build_content_bundle.py` so it carries through
 to `docs/content-bundle.json` (the static-site fallback) and regenerated the bundle.
+
+**Follow-up, next day (2026-10-04): collapsible cards + 4 more scenarios.** The initial 4
+scenarios all rendered fully expanded in sequence, making the panel ~9400px tall on one
+screenshot — the user asked for each one to be its own expandable bar, plus more scenarios
+("RSI در اورژانس یا مسمومیت یا ICU"). Restructured each `.vent-card` into the same
+open/closed accordion pattern already used by `.phase`/`.topic-cat` elsewhere in the app:
+`.vent-head` (now `.vent-head-left` wrapping title+badge, plus a `.vent-chev` chevron) is a
+`cursor:pointer` toggle that flips `.vent-card`'s `open` class; everything that used to hang
+directly off `card` now lives in `.vent-body > .vent-body-inner` (`max-height:0` → `20000px`
+on `.open`, same transition timing as `.phase-body`). Cards toggle **independently**, not
+mutually-exclusive — opening one doesn't close another, matching `.phase`/`.topic-cat`. The
+first scenario (`scIdx===0`) opens by default so the tab isn't empty-looking on first view;
+the rest start collapsed. Verified via Playwright: 8 `.vent-card`s render, exactly 1 open by
+default, both independent-open and panel-height-shrunk-when-collapsed confirmed.
+
+Added 4 more scenarios (total now 8), deliberately chosen for physiological contrast with the
+first 4 and with each other, not just "more of the same":
+- `rsi-general` — generic safe initial settings **immediately after ED RSI**, before the
+  underlying diagnosis is known. Teaching point: in the first minutes, the real risk is
+  peri-intubation hypotension/hypoxia and tube-position confirmation, not fine ventilator
+  tuning — treat these settings as a temporary default, re-triage to the matching specific
+  scenario (ARDS, COPD, a poisoning, etc.) the moment a diagnosis is clear.
+- `poisoning-salicylate` — **the** classic poisoning/ventilator teaching point: severe
+  salicylate toxicity drives a deep compensatory respiratory alkalosis, and intubating these
+  patients is dangerous because the apnea/induction period interrupts that compensation and
+  pH can crash. If intubation is unavoidable, match or exceed the patient's own pre-intubation
+  minute ventilation — explicitly the **opposite** of ARDS's permissive-hypercapnia strategy,
+  called out as such.
+- `icu-shock-rsi` — intubating a patient already in septic/hypovolemic shock: positive-pressure
+  ventilation's effect on venous return/preload as the central hemodynamic teaching point
+  (peri-intubation cardiac arrest risk), not primarily a lung-mechanics scenario at all.
+- `poisoning-opioid-resp` — pure hypoventilation respiratory failure with essentially normal
+  lung mechanics (no V/Q mismatch like ARDS, no air-trapping like COPD, no ICP consideration
+  like CVA) — deliberately placed to contrast with the other scenarios' physiology; also covers
+  naloxone-first management and opioid-associated noncardiogenic pulmonary edema as a watch-for.
+
+Content built the same way as the first 4 (own Python build script in scratchpad, same field
+shape per the schema, جگر-checked, schema-validated). Bundle regenerated, `crit-vent` db doc
+re-synced in full via `action:"set"` (not `update`, same reason as above) — version 3→4 — and
+the artifact republished (version 31).
