@@ -1700,3 +1700,60 @@ Verified the whole chain via Playwright: forgot-link toggles the panel correctly
 the right WhatsApp URL; separately, created+approved a fresh signup, set a password for it,
 confirmed the OLD password now fails to log in and the NEW one succeeds; confirmed the
 static-account note renders instead of a form for `arash`.
+
+## MCQ stems now numbered at render time (2026-10-04)
+
+The user asked that every topic's 4-option questions be numbered "in their own text." Rather
+than hand-editing the `stem` string in every topic's content file (50+ files, including ones
+not yet built), added the number at **render time**: `renderLearnPanel()`'s `type==="mcq"`
+branch now prepends `"سوال " + faDigits(qIdx+1) + ": "` to the stem before it's set as the
+highlightable raw text (`dataset.hlRawText`) — so it's literally part of the displayed/
+selectable text, not a separate styled badge, matching what was asked. This is safe for
+existing stored highlights: `buildHighlightedFragment()` locates a highlight's `quote` via a
+plain substring search (`nthIndexOf`) within whatever the current full text is, so a prefix
+added before the original stem doesn't shift or break any previously-anchored highlight.
+Verified via Playwright across a real topic's full MCQ set (numbers came out sequential and
+correct). Ported the same one-line change to the live artifact (version 38) — note while
+doing so: the artifact's MCQ renderer still doesn't have the highlight-wiring
+`docs/index.html`'s does (added in the "Highlighting in MCQ/flashcard fronts..." section
+above) — a pre-existing gap, not touched by this change, flagged here so it doesn't get
+assumed-fixed later.
+
+## `pulm-copd` built from Harrison's Chapter 303 (2026-10-04)
+
+Built from the user-uploaded PDF (Harrison's 22nd ed., Ch. 303) plus 6 image attachments the
+user sent alongside it, asking the images section be completed too. **The 6 images are
+McGraw Hill's own copyrighted figures** (each carries an explicit "Copyright © McGraw Hill.
+All rights reserved." line) — per standing rule 6, none were embedded. Flagged this to the
+user up front, before reading the PDF, rather than silently building around it. Handled each
+figure by what it actually was:
+- **Figure 303-1** (CT patterns of emphysema) and **303-2** (pathobiology pathways diagram):
+  genuinely structured/categorical content → rebuilt as markdown tables (emphysema-type
+  comparison; effector-cell/pathway/key-molecule/result table), titled to make clear they're
+  a textual reconstruction, not the original artwork.
+- **Figure 303-5** (GOLD ABE assessment tool) and **303-6** (initial/follow-up pharmacotherapy
+  algorithm): these are literally grading tables and decision rules already stated in the
+  chapter's own prose (the eosinophil-threshold rules for ICS, the GOLD grade/exacerbation-
+  history → group logic) → rebuilt as markdown tables matching that prose exactly, not a
+  node-by-node flowchart transcription (more useful and more verifiably accurate to the
+  source text than trying to reproduce box-and-arrow layout in text).
+- **Figure 303-3** (FEV1-by-pack-years histogram) and **303-4** (natural-history tracking
+  curves): a population distribution plot and line-graph curves — not tabulatable data, so
+  described narratively in the "ریسک‌فاکتورها: سیگار..." and "سیر طبیعی بیماری" lesson
+  sections instead (including the specific finding from 303-4 that most patients with fixed
+  airflow obstruction follow curve C — reduced growth, normal subsequent decline rate — not
+  the classically-assumed curve D accelerated-decline pattern).
+- `images: []` stays empty — there's no non-copyrighted image to put there instead; this is
+  the same images.sourceUrl constraint already in the schema ("never a redistributable copy
+  of copyrighted material").
+
+Content: 83 flashcards, 15 MCQ, 3 KF/PMP cases (acute exacerbation with respiratory failure,
+early-onset emphysema → α1-antitrypsin deficiency workup, GOLD ABE-driven drug escalation),
+6 tables, 14 lesson sections. Condensed per rule 4 (English-sourced chapter) while building,
+not as a separate pass. Validated: schema-valid (`jsonschema`), 0 جگر occurrences, no
+duplicate ids, no rule-3 grammar breaks found in a scripted Latin/Persian-adjacency scan
+(remaining matches were all expected — Persian plural/genitive suffixes directly attached to
+a Latin abbreviation, e.g. "PiZها", "Z-scoreهای", which is standard Persian typography, not a
+grammar break). `pulm-copd` already existed in `TOPICS` in both `docs/index.html` and the
+artifact (added in an earlier, unlogged step this session) — no taxonomy edit needed. Synced
+to the artifact db as a new doc (version 1, ~97 KiB). Bundle regenerated to 51 topics.
