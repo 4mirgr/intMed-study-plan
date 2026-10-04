@@ -1480,3 +1480,40 @@ viewport-fit=cover">`. Verified via Playwright mobile emulation (390×844, devic
 Not an issue on the claude.ai artifact — that page runs inside claude.ai's own page shell,
 which supplies its own `<head>`/viewport already (see the "tiny inline `<style>` in `<head>`"
 note in the UI-design-system section above — same shell). This fix is `docs/index.html`-only.
+
+## Fallout from the viewport fix: reclaiming mobile text width, and a ticket-reply feedback gap (2026-10-04)
+
+### Mobile padding was never tuned against a real phone width
+Immediate user follow-up after the viewport fix above: "نسخه موبایل هم خیلی جمع و جور شده...
+زود خط تمام میشه" (lines wrap too soon, feels cramped). Correct read of this: the page's
+padding values were chosen while the page had never actually rendered at a true ~390px
+width (the missing-viewport bug predates this entire project), so nobody had tuned them
+against that width — once the viewport fix let the page render correctly, the padding
+stacked at every nesting level on the reading path (`.app` → `.topic-cat`'s `.cat-inner` →
+`.learn-panel`) added up to ~113px of pure gutter on a 390px screen, leaving only ~277px
+(71%) for actual text. Added a `@media (max-width:480px)` block tightening `.app`,
+`.cat-inner`, `.learn-panel`, and `section.callout` padding specifically — reclaims ~45px,
+content width goes to ~304px (78%). Verified via Playwright at a real 390×844 mobile
+viewport (`is_mobile`/`has_touch`/`device_scale_factor:3`) + a full-page screenshot reviewed
+for layout before committing.
+
+### Admin ticket-reply button: real tap worked, but gave no feedback either way
+Same session, the user reported "روی دکمه ارسال پاسخ که میزنم اتفاقی نمی‌افتد" (nothing
+happens when I tap send). Verified with a genuine Playwright **touch tap** (`element.tap()`,
+not a scripted `.click()` — the two can diverge on real interaction quirks, per the
+pre-existing Playwright-actionability-quirk precedent elsewhere in this file) that the tap
+itself, the event listener, and the state update all worked correctly end to end. So the
+reported symptom wasn't a broken handler — it was a **missing-feedback** bug with two real
+causes, both now fixed in `renderAdminTickets()`'s reply-send handler:
+1. Clicking send with an **empty textarea** silently did nothing (`if(!reply) return;`, no
+   message) — now shows "اول پاسخ رو بنویس." next to the button.
+2. On a **successful** send, the only visible effect used to be an instant full re-render of
+   the reply box back to looking *exactly the same* (same textarea, now just pre-filled with
+   the text the admin had just typed) — indistinguishable from nothing having happened at a
+   glance. Now shows "ارسال شد ✓" immediately, and the re-render that would wipe that note is
+   delayed ~900ms (`setTimeout(renderAdminTickets, 900)`) so the confirmation is actually
+   seen before the box refreshes.
+
+Verified both paths via Playwright: empty-send shows the warning note and doesn't crash;
+a real send shows "ارسال شد ✓" within 150ms (well before the 900ms re-render) and the ticket
+object correctly ends up with `reply`/`replyAt`/`read:true` after the re-render completes.
