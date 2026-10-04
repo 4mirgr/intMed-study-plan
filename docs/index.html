@@ -371,16 +371,25 @@
   .kfp-answer.show{display:block}
 
   .vent-card{
-    border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 15px;
-    margin-bottom:14px;background:var(--surface-2);
+    border:1px solid var(--border);border-radius:var(--radius-md);
+    margin-bottom:10px;background:var(--surface-2);overflow:hidden;
   }
   .vent-card:last-child{margin-bottom:0}
-  .vent-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .vent-head{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:13px 15px;cursor:pointer;user-select:none;min-height:44px;
+  }
+  .vent-head-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
   .vent-title{font-weight:800;font-size:.92rem;color:var(--cat-color,var(--accent))}
   .vent-badge{
     font-size:.68rem;font-weight:700;background:var(--accent-soft);color:var(--accent-ink);
     padding:3px 10px;border-radius:var(--radius-pill);white-space:nowrap;
   }
+  .vent-chev{transition:transform var(--dur) var(--ease);color:var(--ink-faint);font-size:.75rem;flex-shrink:0}
+  .vent-card.open .vent-chev{transform:rotate(180deg)}
+  .vent-body{max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
+  .vent-card.open .vent-body{max-height:20000px}
+  .vent-body-inner{padding:8px 15px 15px;border-top:1px dashed var(--border)}
   .vent-risk{font-size:.78rem;color:var(--ink-faint);margin-bottom:6px;line-height:1.7}
   .vent-indication{font-size:.82rem;color:var(--ink-dim);line-height:1.85;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--border)}
   .vent-subtitle{font-weight:700;font-size:.8rem;color:var(--ink);margin:10px 0 7px}
@@ -2051,38 +2060,50 @@
 
     if(type === "ventSim"){
       panel.innerHTML = "";
-      data.forEach(function(sc){
+      data.forEach(function(sc, scIdx){
         var card = document.createElement("div");
-        card.className = "vent-card";
+        card.className = "vent-card" + (scIdx === 0 ? " open" : "");
 
         var head = document.createElement("div");
         head.className = "vent-head";
-        var title = document.createElement("div");
+        var headLeft = document.createElement("div");
+        headLeft.className = "vent-head-left";
+        var title = document.createElement("span");
         title.className = "vent-title"; title.textContent = sc.disease;
-        head.appendChild(title);
+        headLeft.appendChild(title);
         if(sc.supportType){
           var badge = document.createElement("span");
           badge.className = "vent-badge"; badge.textContent = sc.supportType;
-          head.appendChild(badge);
+          headLeft.appendChild(badge);
         }
+        var chev = document.createElement("span");
+        chev.className = "vent-chev"; chev.textContent = "▾";
+        head.appendChild(headLeft);
+        head.appendChild(chev);
+        head.addEventListener("click", function(){ card.classList.toggle("open"); });
         card.appendChild(head);
+
+        var body = document.createElement("div");
+        body.className = "vent-body";
+        var inner = document.createElement("div");
+        inner.className = "vent-body-inner";
 
         if(sc.riskFactors && sc.riskFactors.length){
           var rf = document.createElement("div");
           rf.className = "vent-risk";
           rf.textContent = "عوامل خطر/زمینه: " + sc.riskFactors.join("، ");
-          card.appendChild(rf);
+          inner.appendChild(rf);
         }
         if(sc.indicationNote){
           var ind = document.createElement("div");
           ind.className = "vent-indication"; ind.textContent = sc.indicationNote;
-          card.appendChild(ind);
+          inner.appendChild(ind);
         }
 
         var setTitle = document.createElement("div");
         setTitle.className = "vent-subtitle";
         setTitle.textContent = "مد و تنظیمات اولیه" + (sc.mode ? " — " + sc.mode : "");
-        card.appendChild(setTitle);
+        inner.appendChild(setTitle);
 
         var s = sc.initialSettings || {};
         var setGrid = document.createElement("div");
@@ -2097,26 +2118,26 @@
           item.appendChild(lbl); item.appendChild(val);
           setGrid.appendChild(item);
         });
-        if(setGrid.children.length) card.appendChild(setGrid);
+        if(setGrid.children.length) inner.appendChild(setGrid);
 
         if(s.other && s.other.length){
           var otherList = document.createElement("ul");
           otherList.className = "vent-other-list";
           s.other.forEach(function(o){ var li = document.createElement("li"); li.textContent = o; otherList.appendChild(li); });
-          card.appendChild(otherList);
+          inner.appendChild(otherList);
         }
 
         if(sc.rationale){
           var rat = document.createElement("div");
           rat.className = "vent-rationale"; rat.textContent = sc.rationale;
-          card.appendChild(rat);
+          inner.appendChild(rat);
         }
 
         if(sc.exampleAbgVbg){
           var abg = sc.exampleAbgVbg;
           var abgTitle = document.createElement("div");
           abgTitle.className = "vent-subtitle"; abgTitle.textContent = "نمونهٔ ABG/VBG";
-          card.appendChild(abgTitle);
+          inner.appendChild(abgTitle);
           var abgGrid = document.createElement("div");
           abgGrid.className = "vent-abg-grid";
           [["pH", abg.ph], ["PaCO2", abg.paco2], ["PaO2", abg.pao2], ["HCO3", abg.hco3]].forEach(function(p){
@@ -2128,38 +2149,40 @@
             item.appendChild(lbl); item.appendChild(val);
             abgGrid.appendChild(item);
           });
-          if(abgGrid.children.length) card.appendChild(abgGrid);
+          if(abgGrid.children.length) inner.appendChild(abgGrid);
           if(abg.interpretation){
             var interp = document.createElement("div");
             interp.className = "vent-abg-interp"; interp.textContent = abg.interpretation;
-            card.appendChild(interp);
+            inner.appendChild(interp);
           }
         }
 
         if(sc.titrationSteps && sc.titrationSteps.length){
           var titTitle = document.createElement("div");
           titTitle.className = "vent-subtitle"; titTitle.textContent = "تیتراسیون بر اساس پاسخ بیمار";
-          card.appendChild(titTitle);
+          inner.appendChild(titTitle);
           sc.titrationSteps.forEach(function(step){
             var row = document.createElement("div");
             row.className = "vent-titration-row";
             var trig = document.createElement("span"); trig.className = "vent-trigger"; trig.textContent = "اگر: " + step.trigger;
             var act = document.createElement("span"); act.className = "vent-action"; act.textContent = "← " + step.action;
             row.appendChild(trig); row.appendChild(act);
-            card.appendChild(row);
+            inner.appendChild(row);
           });
         }
 
         if(sc.pitfalls && sc.pitfalls.length){
           var pitTitle = document.createElement("div");
           pitTitle.className = "vent-subtitle vent-subtitle-warn"; pitTitle.textContent = "اشتباهات رایج";
-          card.appendChild(pitTitle);
+          inner.appendChild(pitTitle);
           var pitList = document.createElement("ul");
           pitList.className = "vent-pitfall-list";
           sc.pitfalls.forEach(function(pf){ var li = document.createElement("li"); li.textContent = pf; pitList.appendChild(li); });
-          card.appendChild(pitList);
+          inner.appendChild(pitList);
         }
 
+        body.appendChild(inner);
+        card.appendChild(body);
         panel.appendChild(card);
       });
       return;
