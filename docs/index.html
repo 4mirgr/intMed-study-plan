@@ -33,6 +33,8 @@
     --warn-soft:#fbeedd;
     --danger:#c62f3f;
     --danger-soft:#fbe6ea;
+    --success:#1c8a5a;
+    --success-soft:#e1f5ec;
     --border:rgba(15,76,129,.12);
     --border-strong:rgba(15,76,129,.22);
     --done-bg:rgba(22,184,200,.16);
@@ -55,6 +57,7 @@
       --accent-soft:rgba(53,216,230,.16);
       --warn:#e3ab5f; --warn-soft:rgba(227,171,95,.14);
       --danger:#f08a93; --danger-soft:rgba(240,138,147,.14);
+      --success:#4ade80; --success-soft:rgba(74,222,128,.16);
       --border:rgba(255,255,255,.10); --border-strong:rgba(255,255,255,.20);
       --done-bg:rgba(53,216,230,.16);
       --shadow-sm:0 2px 10px rgba(0,0,0,.30); --shadow-md:0 8px 30px rgba(0,0,0,.36); --shadow-lg:0 22px 60px -14px rgba(0,0,0,.58);
@@ -71,6 +74,7 @@
     --accent-soft:rgba(53,216,230,.16);
     --warn:#e3ab5f; --warn-soft:rgba(227,171,95,.14);
     --danger:#f08a93; --danger-soft:rgba(240,138,147,.14);
+    --success:#4ade80; --success-soft:rgba(74,222,128,.16);
     --border:rgba(255,255,255,.10); --border-strong:rgba(255,255,255,.20);
     --done-bg:rgba(53,216,230,.16);
     --shadow-sm:0 2px 10px rgba(0,0,0,.30); --shadow-md:0 8px 30px rgba(0,0,0,.36); --shadow-lg:0 22px 60px -14px rgba(0,0,0,.58);
@@ -278,6 +282,36 @@
     box-shadow:var(--shadow-sm);transition:transform var(--dur) var(--ease);
   }
   .connect-reminder-btn:hover{transform:translateY(-1px)}
+
+  .admin-signup-pending{
+    display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;
+    background:var(--warn-soft);border:1px solid rgba(227,171,95,.35);border-radius:var(--radius-lg);
+    padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow-sm);
+  }
+  .admin-signup-pending-icon{
+    flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:1rem;font-weight:800;color:var(--warn);background:var(--surface-solid);
+    box-shadow:0 0 0 2px rgba(227,171,95,.4), 0 0 12px 2px rgba(227,171,95,.5);
+  }
+  .admin-signup-pending-body{flex:1;min-width:160px;font-size:.8rem;line-height:1.8;color:var(--ink-dim)}
+  .admin-signup-pending-body b{color:var(--warn);display:block;margin-bottom:2px;font-size:.84rem}
+  .admin-signup-pending-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+  .admin-signup-approve-btn{
+    border:none;border-radius:var(--radius-pill);padding:7px 14px;font-family:inherit;font-weight:700;
+    font-size:.76rem;cursor:pointer;min-height:32px;color:#fff;
+    background:linear-gradient(135deg,var(--primary-light),var(--accent));
+  }
+  .admin-signup-reject-btn{
+    border:1px solid var(--border);border-radius:var(--radius-pill);padding:7px 14px;font-family:inherit;
+    font-weight:600;font-size:.76rem;cursor:pointer;min-height:32px;background:var(--surface-solid);color:var(--ink-dim);
+  }
+  .admin-add-signup-btn{
+    width:100%;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-2);
+    color:var(--ink-dim);font-family:inherit;font-weight:700;font-size:.8rem;padding:10px;cursor:pointer;margin-bottom:12px;
+    transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease);
+  }
+  .admin-add-signup-btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .admin-signup-form{margin-bottom:16px;padding-bottom:16px;border-bottom:1px dashed var(--border)}
 
   .removed{
     background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;font-size:.8rem;
@@ -584,6 +618,32 @@
   .login-card button:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
   .login-card .login-err{color:var(--danger);font-size:.8rem;margin-top:10px;display:none}
   .login-card .login-err.show{display:block}
+  .login-switch{text-align:center;margin-top:16px;font-size:.8rem;color:var(--ink-faint)}
+  .login-switch a{color:var(--accent-ink);text-decoration:none;font-weight:700;cursor:pointer}
+  .login-switch a:hover{text-decoration:underline}
+
+  .signup-success{
+    display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;
+    background:var(--surface-strong); -webkit-backdrop-filter:blur(var(--blur)); backdrop-filter:blur(var(--blur));
+    border:1px solid var(--success); border-radius:var(--radius-xl);
+    padding:28px 24px;max-width:360px;width:100%;box-shadow:var(--shadow-lg);
+    direction:rtl;font-family:"Vazirmatn",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  }
+  .signup-success-icon{
+    flex-shrink:0;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:1.5rem;font-weight:900;color:var(--success);background:var(--success-soft);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--success) 25%, transparent), 0 0 18px 3px color-mix(in srgb, var(--success) 55%, transparent);
+  }
+  .signup-success-text{font-size:.84rem;line-height:1.9;color:var(--ink-dim)}
+  .signup-success-text b{color:var(--success);display:block;margin-bottom:4px;font-size:.92rem}
+  .signup-success-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .signup-success-actions button{
+    border:none;border-radius:var(--radius-sm);padding:9px 16px;font-family:inherit;font-weight:700;
+    font-size:.8rem;cursor:pointer;min-height:38px;color:#fff;
+    background:linear-gradient(135deg,var(--primary-light),var(--accent));
+    transition:transform var(--dur) var(--ease);
+  }
+  .signup-success-actions button:hover{transform:translateY(-1px)}
 
   /* ===== GitHub connect ===== */
   .gh-connect-btn{
@@ -630,6 +690,11 @@
   .gh-modal-disconnect{
     width:100%;margin-top:11px;padding:9px;border:1px solid var(--border);background:none;color:var(--danger);
     border-radius:var(--radius-sm);font-family:inherit;font-size:.78rem;cursor:pointer;min-height:40px;
+  }
+  .gh-token-label{
+    font-size:.82rem;font-weight:800;color:var(--warn);background:var(--warn-soft);
+    border:1px solid rgba(227,171,95,.35);border-radius:var(--radius-sm);
+    padding:7px 12px;margin-bottom:9px;display:inline-block;
   }
 
   /* ===== Highlights ===== */
@@ -703,22 +768,45 @@
     <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     <button type="submit">ورود</button>
     <div class="login-err" id="loginErr">نام کاربری یا رمز عبور اشتباه است.</div>
+    <div class="login-switch"><a href="#" id="showSignupLink">عضویت</a></div>
   </form>
+
+  <form class="login-card" id="signupForm" style="display:none">
+    <span class="brand">
+      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="108" height="108"></span>
+      <h2>عضویت در IntMed</h2>
+    </span>
+    <input type="text" id="signupUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+    <input type="password" id="signupPass" placeholder="رمز عبور" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+    <input type="text" id="signupFullName" placeholder="نام و نام خانوادگی" required>
+    <input type="text" id="signupDegree" placeholder="آخرین مدرک تحصیلی">
+    <input type="text" id="signupIdNumber" placeholder="کد نظام پزشکی / شماره دانشجویی">
+    <input type="tel" id="signupMobile" placeholder="شماره موبایل" required>
+    <input type="email" id="signupEmail" placeholder="ایمیل">
+    <button type="submit">ثبت‌نام</button>
+    <div class="login-err" id="signupErr">نام کاربری و رمز عبور و نام/موبایل الزامی‌اند.</div>
+    <div class="login-switch"><a href="#" id="showLoginLink">بازگشت به ورود</a></div>
+  </form>
+
+  <div class="signup-success" id="signupSuccessBox" style="display:none">
+    <div class="signup-success-icon">✓</div>
+    <div class="signup-success-text">
+      <b>ثبت‌نام شما دریافت شد.</b>
+      بعد از تایید مدیر، توکن در اختیارتان قرار خواهد گرفت. تا آن زمان لطفاً اطلاعاتی که وارد کردی رو برای مدیر هم بفرست تا سریع‌تر بررسی بشه.
+    </div>
+    <div class="signup-success-actions">
+      <button type="button" id="signupSendWhatsapp">ارسال به مدیر (واتساپ)</button>
+      <button type="button" id="signupCopyInfo">کپی اطلاعات</button>
+    </div>
+    <div class="login-switch"><a href="#" id="backToLoginFromSuccess">بازگشت به صفحه ورود</a></div>
+  </div>
 </div>
 
 <div class="gh-modal" id="ghModal">
   <div class="gh-modal-card">
     <h3>تنظیمات همگام‌سازی</h3>
-    <p class="gh-modal-desc">
-      پیشرفت، یادداشت‌ها و هایلایت‌هات روی یک ریپوی GitHub ذخیره می‌شن تا بین دستگاه‌ها همگام بمونن. هر دستگاه باید یک‌بار جدا وصل بشه:<br>
-      ۱. به <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> برو (باید وارد حساب گیت‌هابت باشی).<br>
-      ۲. «Resource owner» را حساب خودت بگذار؛ در «Repository access» فقط ریپوی <b>intMed-study-plan</b> را انتخاب کن.<br>
-      ۳. در «Permissions → Repository permissions» فقط «Contents» را روی «Read and write» بگذار — بقیه را دست نزن.<br>
-      ۴. توکن ساخته‌شده را کپی و اینجا پیست کن.
-    </p>
-    <p class="gh-modal-desc">
-      این توکن فقط در همین مرورگر (localStorage) ذخیره می‌شه، نه جای دیگه. قفل ورود این سایت امنیت واقعی نیست؛ اگه کسی به این دستگاه دسترسی فیزیکی پیدا کنه می‌تونه این توکن رو از devtools بخونه — برای همین توکن رو فقط به همین یک ریپو (نه کل حسابت) محدود کن.
-    </p>
+    <p class="gh-modal-desc">پیشرفت، پروفایل، پیام‌ها و هایلایت‌هات ذخیره می‌شن تا بین دستگاه‌ها همگام بمونن. توکن اتصال رو از مدیریت سایت بگیر.</p>
+    <div class="gh-token-label">توکن را وارد کن</div>
     <input type="password" id="ghPatInput" placeholder="Personal Access Token (github_pat_...)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
     <div class="gh-modal-actions">
       <button type="button" id="ghPatSave">ذخیره و اتصال</button>
@@ -726,6 +814,18 @@
     </div>
     <div class="gh-modal-err" id="ghModalErr"></div>
     <button type="button" id="ghPatDisconnect" class="gh-modal-disconnect" style="display:none">قطع اتصال این دستگاه</button>
+
+    <div id="ghAdminInstructions" style="display:none">
+      <p class="gh-modal-desc">
+        ۱. به <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> برو (باید وارد حساب گیت‌هابت باشی).<br>
+        ۲. «Resource owner» را حساب خودت بگذار؛ در «Repository access» فقط ریپوی <b>intMed-study-plan</b> را انتخاب کن.<br>
+        ۳. در «Permissions → Repository permissions» فقط «Contents» را روی «Read and write» بگذار — بقیه را دست نزن.<br>
+        ۴. توکن ساخته‌شده را کپی و بالا پیست کن.
+      </p>
+      <p class="gh-modal-desc">
+        این توکن فقط در همین مرورگر (localStorage) ذخیره می‌شه، نه جای دیگه. قفل ورود این سایت امنیت واقعی نیست؛ اگه کسی به این دستگاه دسترسی فیزیکی پیدا کنه می‌تونه این توکن رو از devtools بخونه — برای همین توکن رو فقط به همین یک ریپو (نه کل حسابت) محدود کن.
+      </p>
+    </div>
   </div>
 </div>
 
@@ -765,7 +865,7 @@
       <div class="connect-reminder-icon">⚠</div>
       <div class="connect-reminder-text">
         <b>هنوز وصل نیستی.</b>
-        بدون اتصال، پروفایل و پیام‌هات ذخیره نمی‌شن. کد اتصال رو از دکتر گرامی بگیر، روی دکمهٔ زیر بزن و کد رو پیست کن.
+        بدون اتصال توکن پروفایل، پیام‌ها، هایلایت و یادداشت‌ها ذخیره نمی‌شوند. توکن اتصال را از مدیریت سایت دریافت کنید.
       </div>
       <button type="button" class="connect-reminder-btn" id="connectReminderBtn">اتصال الان</button>
     </div>
@@ -799,6 +899,22 @@
 
     <section class="callout" id="adminPanelCard" style="display:none">
       <h2>پنل مدیریت</h2>
+
+      <div id="adminSignupsList"></div>
+      <button type="button" class="admin-add-signup-btn" id="adminAddSignupToggle">+ افزودن درخواست ثبت‌نام</button>
+      <div class="admin-signup-form" id="adminSignupForm" style="display:none">
+        <div class="profile-grid">
+          <div class="profile-field"><label for="adminSignupUser">نام کاربری</label><input type="text" id="adminSignupUser"></div>
+          <div class="profile-field"><label for="adminSignupPass">رمز عبور</label><input type="text" id="adminSignupPass"></div>
+          <div class="profile-field"><label for="adminSignupFullName">نام و نام خانوادگی</label><input type="text" id="adminSignupFullName"></div>
+          <div class="profile-field"><label for="adminSignupDegree">آخرین مدرک تحصیلی</label><input type="text" id="adminSignupDegree"></div>
+          <div class="profile-field"><label for="adminSignupIdNumber">کد نظام/دانشجویی</label><input type="text" id="adminSignupIdNumber"></div>
+          <div class="profile-field"><label for="adminSignupMobile">شماره موبایل</label><input type="text" id="adminSignupMobile"></div>
+          <div class="profile-field"><label for="adminSignupEmail">ایمیل</label><input type="text" id="adminSignupEmail"></div>
+        </div>
+        <button type="button" class="profile-save-btn" id="adminSignupSubmit">ثبت درخواست</button>
+      </div>
+
       <div class="admin-tabs">
         <button type="button" class="admin-tab-btn active" id="adminTabUsers">کاربران</button>
         <button type="button" class="admin-tab-btn" id="adminTabTickets">پیام‌ها و تیکت‌ها<span class="admin-badge" id="adminTicketBadge" style="display:none"></span></button>
@@ -849,7 +965,6 @@
 
   <footer class="bottom">
     <span>تیک فازها، وضعیت مباحث، یادداشت‌ها و هایلایت‌ها ذخیره می‌شن (دکمهٔ «اتصال برای ذخیره‌سازی» بالای صفحه) — هر دستگاه باید یک‌بار جدا وصل بشه؛ بدون اتصال یا بدون اینترنت، تغییرات ذخیره نمی‌شن.</span>
-    <button class="reset-btn" id="resetBtn">ریست کامل (روی همهٔ دستگاه‌ها)</button>
   </footer>
 </div>
 
@@ -942,6 +1057,26 @@
   }catch(e){}
   var loginForm = document.getElementById("loginForm");
   var loginErr = document.getElementById("loginErr");
+  function doLogin(userId){
+    try{ localStorage.setItem("bp_authed", "1"); localStorage.setItem("bp_user_id", userId); }catch(e){}
+    // Full reload (not just revealApp()) because the main app script below
+    // already ran and fixed CURRENT_USER_ID from localStorage as it was
+    // *before* this login — without a reload, a fresh login would keep
+    // operating under the fallback user id for the rest of this tab.
+    location.reload();
+  }
+
+  // Unauthenticated read of state.json — works because the repo is public,
+  // used here only to check approved signups at login time (no PAT needed
+  // for a GET on a public repo, only for writes).
+  function fetchPublicState(){
+    var url = "https://api.github.com/repos/4mirgr/intMed-study-plan/contents/state.json?ref=study-state";
+    return fetch(url, { headers: { "Accept": "application/vnd.github.raw+json" } }).then(function(r){
+      if(!r.ok) throw new Error("http " + r.status);
+      return r.json();
+    });
+  }
+
   loginForm.addEventListener("submit", function(ev){
     ev.preventDefault();
     var u = normalizeDigits(document.getElementById("loginUser").value).toLowerCase();
@@ -950,17 +1085,124 @@
     var matched = null;
     for(var i=0;i<GATE_USERS.length;i++){ if(GATE_USERS[i].hash === h){ matched = GATE_USERS[i]; break; } }
     if(matched){
-      try{ localStorage.setItem("bp_authed", "1"); localStorage.setItem("bp_user_id", matched.id); }catch(e){}
       loginErr.classList.remove("show");
-      // Full reload (not just revealApp()) because the main app script below
-      // already ran and fixed CURRENT_USER_ID from localStorage as it was
-      // *before* this login — without a reload, a fresh login would keep
-      // operating under the fallback user id for the rest of this tab.
-      location.reload();
-    } else {
+      doLogin(matched.id);
+      return;
+    }
+    // Not one of the static accounts — check approved signups (STATE.signups,
+    // written by the admin from the admin panel; see the main app IIFE).
+    loginErr.classList.remove("show");
+    var loginBtn = loginForm.querySelector("button[type=submit]");
+    if(loginBtn){ loginBtn.disabled = true; loginBtn.textContent = "در حال بررسی..."; }
+    fetchPublicState().then(function(remote){
+      var signups = (remote && remote.signups) || [];
+      var found = null;
+      for(var j=0;j<signups.length;j++){
+        if(signups[j].hash === h && signups[j].status === "approved" && signups[j].userId){ found = signups[j]; break; }
+      }
+      if(loginBtn){ loginBtn.disabled = false; loginBtn.textContent = "ورود"; }
+      if(found){ doLogin(found.userId); return; }
       loginErr.textContent = "نام کاربری یا رمز عبور اشتباه است.";
       loginErr.classList.add("show");
+    }).catch(function(){
+      if(loginBtn){ loginBtn.disabled = false; loginBtn.textContent = "ورود"; }
+      loginErr.textContent = "نام کاربری یا رمز عبور اشتباه است.";
+      loginErr.classList.add("show");
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // عضویت (signup): collects profile fields + a username/password the
+  // person chooses themselves, computed into the same fnv1aHex login hash
+  // used everywhere else (plaintext password never stored anywhere). This
+  // does NOT write anywhere by itself — there is no secure way for an
+  // anonymous visitor to write into the public state.json (any token
+  // capable of that write would be sitting in this public page's source
+  // for anyone to take, which is exactly the problem flagged and refused
+  // earlier for a shared sync token). So submitting here only shows the
+  // success panel and hands the person a way to relay their own info to
+  // the admin (WhatsApp / copy); the admin enters it into the admin panel
+  // themselves (an authenticated write, with their own already-connected
+  // PAT) to actually create the pending signup record. See CLAUDE.md.
+  // ---------------------------------------------------------------
+  var signupForm = document.getElementById("signupForm");
+  var signupErr = document.getElementById("signupErr");
+  var signupSuccessBox = document.getElementById("signupSuccessBox");
+  var lastSignupInfo = null;
+
+  document.getElementById("showSignupLink").addEventListener("click", function(ev){
+    ev.preventDefault();
+    loginForm.style.display = "none";
+    signupForm.style.display = "";
+    signupSuccessBox.style.display = "none";
+  });
+  document.getElementById("showLoginLink").addEventListener("click", function(ev){
+    ev.preventDefault();
+    signupForm.style.display = "none";
+    loginForm.style.display = "";
+  });
+  document.getElementById("backToLoginFromSuccess").addEventListener("click", function(ev){
+    ev.preventDefault();
+    signupSuccessBox.style.display = "none";
+    loginForm.style.display = "";
+  });
+
+  signupForm.addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var username = normalizeDigits(document.getElementById("signupUser").value).toLowerCase().trim();
+    var password = normalizeDigits(document.getElementById("signupPass").value);
+    var fullName = document.getElementById("signupFullName").value.trim();
+    var degree = document.getElementById("signupDegree").value.trim();
+    var idNumber = document.getElementById("signupIdNumber").value.trim();
+    var mobile = normalizeDigits(document.getElementById("signupMobile").value).trim();
+    var email = document.getElementById("signupEmail").value.trim();
+    if(!username || !password || !fullName || !mobile){
+      signupErr.classList.add("show");
+      return;
     }
+    signupErr.classList.remove("show");
+    lastSignupInfo = {
+      username: username, hash: fnv1aHex(username + ":" + password), fullName: fullName,
+      degree: degree, idNumber: idNumber, mobile: mobile, email: email
+    };
+    signupForm.style.display = "none";
+    signupSuccessBox.style.display = "";
+  });
+
+  document.getElementById("signupSendWhatsapp").addEventListener("click", function(){
+    if(!lastSignupInfo) return;
+    var text = "درخواست عضویت IntMed:\n" +
+      "نام کاربری: " + lastSignupInfo.username + "\n" +
+      "نام و نام خانوادگی: " + lastSignupInfo.fullName + "\n" +
+      "آخرین مدرک تحصیلی: " + (lastSignupInfo.degree || "-") + "\n" +
+      "کد نظام/دانشجویی: " + (lastSignupInfo.idNumber || "-") + "\n" +
+      "شماره موبایل: " + lastSignupInfo.mobile + "\n" +
+      "ایمیل: " + (lastSignupInfo.email || "-") + "\n" +
+      "هش رمز عبور: " + lastSignupInfo.hash;
+    // Admin's own number (same as the primary account's login password,
+    // per the existing "password is a phone number" convention), in
+    // international format for a wa.me deep link.
+    var adminMobile = "989125448285";
+    window.open("https://wa.me/" + adminMobile + "?text=" + encodeURIComponent(text), "_blank");
+  });
+
+  document.getElementById("signupCopyInfo").addEventListener("click", function(){
+    if(!lastSignupInfo) return;
+    var text = "درخواست عضویت IntMed:\n" +
+      "نام کاربری: " + lastSignupInfo.username + "\n" +
+      "نام و نام خانوادگی: " + lastSignupInfo.fullName + "\n" +
+      "آخرین مدرک تحصیلی: " + (lastSignupInfo.degree || "-") + "\n" +
+      "کد نظام/دانشجویی: " + (lastSignupInfo.idNumber || "-") + "\n" +
+      "شماره موبایل: " + lastSignupInfo.mobile + "\n" +
+      "ایمیل: " + (lastSignupInfo.email || "-") + "\n" +
+      "هش رمز عبور: " + lastSignupInfo.hash;
+    var btn = document.getElementById("signupCopyInfo");
+    try{
+      navigator.clipboard.writeText(text).then(function(){
+        var old = btn.textContent; btn.textContent = "کپی شد ✓";
+        setTimeout(function(){ btn.textContent = old; }, 1800);
+      });
+    }catch(e){}
   });
 })();
 
@@ -1609,7 +1851,7 @@
   // STATE.users namespaces each logged-in person's own data inside the one
   // shared state.json — see CURRENT_USER_ID above. myBucket() always returns
   // (creating if needed) the bucket for whoever is currently logged in.
-  var STATE = { version:2, users:{}, tickets:[] };
+  var STATE = { version:2, users:{}, tickets:[], signups:[] };
   function emptyBucket(){ return {itemState:{}, meta:{currentPhaseOverride:null}, highlights:{}, profile:{}, loginLog:[]}; }
   function myBucket(){
     if(!STATE.users[CURRENT_USER_ID]) STATE.users[CURRENT_USER_ID] = emptyBucket();
@@ -1647,7 +1889,10 @@
         profile: bucket.profile || {}, loginLog: (bucket.loginLog || []).slice(-500)
       };
     }
-    return { version:2, updatedAt:new Date().toISOString(), users: users, tickets: (STATE.tickets || []).slice(-1000) };
+    return {
+      version:2, updatedAt:new Date().toISOString(), users: users,
+      tickets: (STATE.tickets || []).slice(-1000), signups: (STATE.signups || []).slice(-1000)
+    };
   }
   function doFlush(){
     if(!getPat()) return;
@@ -1733,6 +1978,7 @@
   function migrateStateShape(remote){
     if(remote && remote.users){
       if(!remote.tickets) remote.tickets = [];
+      if(!remote.signups) remote.signups = [];
       return remote;
     }
     var legacy = remote || {};
@@ -1743,7 +1989,7 @@
       highlights: legacy.highlights || {},
       profile: {}, loginLog: []
     };
-    return { version:2, users: users, tickets: [] };
+    return { version:2, users: users, tickets: [], signups: [] };
   }
 
   // Marks a usage event for the currently logged-in user — called once per
@@ -1762,17 +2008,105 @@
     }
   }
 
+  // Bug fixed 2026-10-04: connectGithub() used to do a blind
+  // `STATE = migrateStateShape(remote)`, which silently discarded any
+  // not-yet-flushed local data — most commonly a ticket typed and sent
+  // *before* the user had ever connected a token (scheduleFlush/doFlush
+  // no-op without a PAT, so it only ever lived in local STATE), wiped the
+  // instant the user then connected. Same hole existed for itemState/
+  // highlights/profile/signups edited right before a reconnect. Reported by
+  // the user: a ticket from "arash" never appeared in the admin panel even
+  // after connecting with a token. Fix: merge whatever the local STATE
+  // holds into the freshly-fetched remote (local wins per-key for things
+  // that can only be edited by this user, append-by-id for lists) before
+  // replacing STATE, then flush the merge back so it isn't lost again on
+  // the next connect.
+  function mergeLocalIntoRemote(local, migrated){
+    var mergedAnything = false;
+    var localTickets = (local && local.tickets) || [];
+    if(localTickets.length){
+      var knownTicketIds = {};
+      migrated.tickets.forEach(function(t){ knownTicketIds[t.id] = true; });
+      localTickets.forEach(function(t){
+        if(!knownTicketIds[t.id]){ migrated.tickets.push(t); mergedAnything = true; }
+      });
+    }
+    var localSignups = (local && local.signups) || [];
+    if(localSignups.length){
+      var knownSignupIds = {};
+      migrated.signups.forEach(function(s){ knownSignupIds[s.id] = true; });
+      localSignups.forEach(function(s){
+        if(!knownSignupIds[s.id]){ migrated.signups.push(s); mergedAnything = true; }
+      });
+    }
+    var localBucket = local && local.users && local.users[CURRENT_USER_ID];
+    if(localBucket){
+      if(!migrated.users[CURRENT_USER_ID]) migrated.users[CURRENT_USER_ID] = emptyBucket();
+      var remoteBucket = migrated.users[CURRENT_USER_ID];
+      var k;
+      for(k in localBucket.itemState){
+        if(localBucket.itemState.hasOwnProperty(k)){ remoteBucket.itemState[k] = localBucket.itemState[k]; mergedAnything = true; }
+      }
+      for(k in localBucket.highlights){
+        if(!localBucket.highlights.hasOwnProperty(k)) continue;
+        var localArr = localBucket.highlights[k] || [];
+        if(!localArr.length) continue;
+        if(!remoteBucket.highlights[k]) remoteBucket.highlights[k] = [];
+        var knownHlIds = {};
+        remoteBucket.highlights[k].forEach(function(h){ knownHlIds[h.id] = true; });
+        localArr.forEach(function(h){
+          if(!knownHlIds[h.id]){ remoteBucket.highlights[k].push(h); mergedAnything = true; }
+        });
+      }
+      if(localBucket.profile && localBucket.profile.updatedAt){
+        if(!remoteBucket.profile || !remoteBucket.profile.updatedAt || localBucket.profile.updatedAt >= remoteBucket.profile.updatedAt){
+          remoteBucket.profile = localBucket.profile;
+          mergedAnything = true;
+        }
+      }
+      var localLog = (localBucket.loginLog || []);
+      if(localLog.length){
+        remoteBucket.loginLog = remoteBucket.loginLog || [];
+        var knownLogTimes = {};
+        remoteBucket.loginLog.forEach(function(e){ knownLogTimes[e.at] = true; });
+        localLog.forEach(function(e){
+          if(!knownLogTimes[e.at]){ remoteBucket.loginLog.push(e); mergedAnything = true; }
+        });
+      }
+    }
+    return mergedAnything;
+  }
+
   function connectGithub(){
     setConn("connecting");
+    var localSnapshot = STATE;
     return ghFetchState().then(function(remote){
-      STATE = migrateStateShape(remote);
-      if(!STATE.users) STATE.users = {};
-      if(!STATE.tickets) STATE.tickets = [];
+      var migrated = migrateStateShape(remote);
+      if(!migrated.users) migrated.users = {};
+      if(!migrated.tickets) migrated.tickets = [];
+      if(!migrated.signups) migrated.signups = [];
+      var mergedAnything = mergeLocalIntoRemote(localSnapshot, migrated);
+      STATE = migrated;
       setConn("online");
       applyLoadedState();
       logLoginIfDue();
       renderUserPanel();
       updateGhBtn();
+      // A dynamically-approved signup user isn't in the static USER_NAMES
+      // map the header label resolved from at script-load time — backfill
+      // from their own saved profile name once it's loaded.
+      if(!USER_NAMES[CURRENT_USER_ID]){
+        var ownName = (myBucket().profile && myBucket().profile.fullName) || "";
+        if(ownName){
+          var labelEl = document.getElementById("userLabel");
+          if(labelEl) labelEl.textContent = ownName;
+        }
+      }
+      // Local-only data (e.g. a ticket typed before this connect) just got
+      // merged in-memory above — write it back now so a second connect
+      // right after this one doesn't lose it again before the normal
+      // debounced flush would have fired.
+      if(mergedAnything) scheduleFlush(200);
     }).catch(function(err){
       setConn(err && err.message === "auth" ? "auth" : "error");
       updateGhBtn();
@@ -1787,6 +2121,26 @@
   // are per-user (myBucket().profile / .loginLog) alongside the existing
   // itemState/meta/highlights.
   // ---------------------------------------------------------------
+  // Same hash used by the login gate — duplicated here (separate IIFE/closure)
+  // so the admin's "add signup" mini-form can compute a login-compatible
+  // hash from a password the admin types in, without touching the gate's
+  // own scope.
+  function fnv1aHex(str){
+    var h = 0x811c9dc5;
+    for(var i = 0; i < str.length; i++){
+      h ^= str.charCodeAt(i);
+      h = (h + ((h<<1) + (h<<4) + (h<<7) + (h<<8) + (h<<24))) >>> 0;
+    }
+    return (h >>> 0).toString(16).padStart(8, "0");
+  }
+  function normalizeDigits(s){
+    return String(s)
+      .replace(/[‌‎‏‪-‮]/g, "")
+      .replace(/[۰-۹]/g, function(d){ return String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)); })
+      .replace(/[٠-٩]/g, function(d){ return String("٠١٢٣٤٥٦٧٨٩".indexOf(d)); })
+      .trim();
+  }
+
   function escapeHtml(s){
     return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
       return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
@@ -1874,6 +2228,13 @@
   function renderAdminUsers(){
     if(!adminUsersPanel) return;
     var ids = Object.keys(USER_NAMES).filter(function(id){ return id !== "amir"; });
+    var approvedSignupById = {};
+    (STATE.signups || []).forEach(function(s){
+      if(s.status === "approved" && s.userId){
+        approvedSignupById[s.userId] = s;
+        if(ids.indexOf(s.userId) === -1) ids.push(s.userId);
+      }
+    });
     var html = ids.map(function(id){
       var bucket = STATE.users[id] || {};
       var p = bucket.profile || {};
@@ -1881,8 +2242,9 @@
       var count = log.length;
       var last = count ? formatFaDateTime(log[log.length - 1].at) : "هنوز وارد نشده";
       var recent = log.slice(-5).reverse().map(function(l){ return formatFaDateTime(l.at); }).join("، ") || "—";
+      var displayName = USER_NAMES[id] || (approvedSignupById[id] && approvedSignupById[id].fullName) || id;
       return '<div class="admin-user-card">' +
-        '<div class="admin-user-name">' + escapeHtml(USER_NAMES[id] || id) + '</div>' +
+        '<div class="admin-user-name">' + escapeHtml(displayName) + '</div>' +
         '<div class="admin-user-row"><span>نام ثبت‌شده:</span><b>' + (escapeHtml(p.fullName) || "—") + '</b></div>' +
         '<div class="admin-user-row"><span>شماره نظام/دانشجویی:</span><b>' + (escapeHtml(p.idNumber) || "—") + '</b></div>' +
         '<div class="admin-user-row"><span>شماره تماس:</span><b>' + (escapeHtml(p.phone) || "—") + '</b></div>' +
@@ -1920,6 +2282,115 @@
     });
   }
 
+  // Known, taken userIds — the static accounts plus every signup already
+  // approved — used to keep a newly-approved signup's derived id from
+  // colliding with an existing one.
+  function knownUserIds(){
+    var ids = Object.keys(USER_NAMES).slice();
+    (STATE.signups || []).forEach(function(s){
+      if(s.status === "approved" && s.userId && ids.indexOf(s.userId) === -1) ids.push(s.userId);
+    });
+    return ids;
+  }
+  function deriveUserId(username){
+    var base = normalizeDigits(username).toLowerCase().replace(/[^a-z0-9]/g, "") || ("u" + Date.now());
+    var taken = knownUserIds();
+    var candidate = base, n = 2;
+    while(taken.indexOf(candidate) !== -1){ candidate = base + n; n++; }
+    return candidate;
+  }
+
+  function renderAdminSignups(){
+    var root = document.getElementById("adminSignupsList");
+    if(!root) return;
+    var pending = (STATE.signups || []).filter(function(s){ return s.status === "pending"; }).slice().reverse();
+    if(!pending.length){ root.innerHTML = ""; return; }
+    root.innerHTML = pending.map(function(s){
+      return '<div class="admin-signup-pending" data-signup-id="' + escapeHtml(s.id) + '">' +
+        '<div class="admin-signup-pending-icon">⚠</div>' +
+        '<div class="admin-signup-pending-body">' +
+          '<b>درخواست ثبت‌نام: ' + escapeHtml(s.fullName || s.username) + '</b>' +
+          'نام کاربری: ' + escapeHtml(s.username) + ' — مدرک: ' + (escapeHtml(s.degree) || '—') +
+          ' — کد نظام/دانشجویی: ' + (escapeHtml(s.idNumber) || '—') + '<br>' +
+          'موبایل: ' + escapeHtml(s.mobile || '—') + ' — ایمیل: ' + (escapeHtml(s.email) || '—') +
+          '<br>' + formatFaDateTime(s.createdAt) +
+        '</div>' +
+        '<div class="admin-signup-pending-actions">' +
+          '<button type="button" class="admin-signup-approve-btn" data-approve-signup="' + escapeHtml(s.id) + '">تایید</button>' +
+          '<button type="button" class="admin-signup-reject-btn" data-reject-signup="' + escapeHtml(s.id) + '">رد</button>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+    root.querySelectorAll("[data-approve-signup]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var id = btn.getAttribute("data-approve-signup");
+        var s = (STATE.signups || []).find(function(x){ return x.id === id; });
+        if(!s) return;
+        var userId = deriveUserId(s.username);
+        s.status = "approved";
+        s.userId = userId;
+        s.decidedAt = new Date().toISOString();
+        STATE.users[userId] = emptyBucket();
+        STATE.users[userId].profile = {
+          fullName: s.fullName || "", idNumber: s.idNumber || "", phone: s.mobile || "",
+          updatedAt: new Date().toISOString()
+        };
+        scheduleFlush(200);
+        renderAdminSignups();
+        renderAdminUsers();
+      });
+    });
+    root.querySelectorAll("[data-reject-signup]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var id = btn.getAttribute("data-reject-signup");
+        var s = (STATE.signups || []).find(function(x){ return x.id === id; });
+        if(!s) return;
+        if(!confirm("درخواست ثبت‌نام «" + (s.fullName || s.username) + "» رد بشه؟")) return;
+        s.status = "rejected";
+        s.decidedAt = new Date().toISOString();
+        scheduleFlush(200);
+        renderAdminSignups();
+      });
+    });
+  }
+
+  var adminAddSignupToggle = document.getElementById("adminAddSignupToggle");
+  var adminSignupForm = document.getElementById("adminSignupForm");
+  if(adminAddSignupToggle){
+    adminAddSignupToggle.addEventListener("click", function(){
+      var open = adminSignupForm.style.display !== "none";
+      adminSignupForm.style.display = open ? "none" : "";
+      adminAddSignupToggle.textContent = open ? "+ افزودن درخواست ثبت‌نام" : "− بستن فرم";
+    });
+  }
+  var adminSignupSubmit = document.getElementById("adminSignupSubmit");
+  if(adminSignupSubmit){
+    adminSignupSubmit.addEventListener("click", function(){
+      var username = normalizeDigits(document.getElementById("adminSignupUser").value).toLowerCase().trim();
+      var password = normalizeDigits(document.getElementById("adminSignupPass").value);
+      var fullName = document.getElementById("adminSignupFullName").value.trim();
+      var degree = document.getElementById("adminSignupDegree").value.trim();
+      var idNumber = document.getElementById("adminSignupIdNumber").value.trim();
+      var mobile = normalizeDigits(document.getElementById("adminSignupMobile").value).trim();
+      var email = document.getElementById("adminSignupEmail").value.trim();
+      if(!username || !password || !fullName){ alert("نام کاربری، رمز عبور و نام الزامی‌اند."); return; }
+      if(!STATE.signups) STATE.signups = [];
+      STATE.signups.push({
+        id: "su" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+        username: username, hash: fnv1aHex(username + ":" + password),
+        fullName: fullName, degree: degree, idNumber: idNumber, mobile: mobile, email: email,
+        status: "pending", createdAt: new Date().toISOString()
+      });
+      ["adminSignupUser","adminSignupPass","adminSignupFullName","adminSignupDegree","adminSignupIdNumber","adminSignupMobile","adminSignupEmail"].forEach(function(id){
+        document.getElementById(id).value = "";
+      });
+      adminSignupForm.style.display = "none";
+      adminAddSignupToggle.textContent = "+ افزودن درخواست ثبت‌نام";
+      scheduleFlush(200);
+      renderAdminSignups();
+    });
+  }
+
   function renderUserPanel(){
     var isAdmin = CURRENT_USER_ID === "amir";
     var profileCard = document.getElementById("userProfileCard");
@@ -1927,6 +2398,7 @@
     if(profileCard) profileCard.style.display = isAdmin ? "none" : "";
     if(adminCard) adminCard.style.display = isAdmin ? "" : "none";
     if(isAdmin){
+      renderAdminSignups();
       renderAdminUsers();
       renderAdminTickets();
     } else {
@@ -1951,6 +2423,8 @@
     ghModalErr.textContent = "";
     ghPatInput.value = "";
     ghPatDisconnectBtn.style.display = getPat() ? "" : "none";
+    var adminInstr = document.getElementById("ghAdminInstructions");
+    if(adminInstr) adminInstr.style.display = (CURRENT_USER_ID === "amir") ? "" : "none";
     ghModal.style.display = "flex";
   });
   var connectReminderBtn = document.getElementById("connectReminderBtn");
@@ -2602,17 +3076,6 @@
       return;
     }
   }
-
-  document.getElementById("resetBtn").addEventListener("click", function(){
-    if(!confirm("همهٔ تیک‌ها، وضعیت‌های دانش و یادداشت‌های فاز/مبحث خودِ تو (" + (USER_NAMES[CURRENT_USER_ID]||CURRENT_USER_ID) + ") روی همهٔ دستگاه‌ها پاک بشه؟ (هایلایت‌ها و یادداشت‌های درسنامه/فلش‌کارت/جدول، و داده‌های کاربر دیگر دست نمی‌خورن)")) return;
-    if(!getPat()){ alert("اول باید وصل بشی."); return; }
-    var bucket = myBucket();
-    allItemIds.forEach(function(id){ bucket.itemState[id] = {checked:false, note:""}; });
-    allTopicIds.forEach(function(id){ bucket.itemState[id] = {status:"نامشخص", note:""}; });
-    bucket.meta = {currentPhaseOverride:null};
-    applyLoadedState();
-    scheduleFlush(50);
-  });
 
   var tabBtnDashboard = document.getElementById("tabBtnDashboard");
   var tabBtnEducation = document.getElementById("tabBtnEducation");

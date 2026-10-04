@@ -1232,3 +1232,159 @@ in the public page. **The token pasted into this conversation should be treated 
 compromised and revoked/regenerated** — it was typed in plaintext into a chat session,
 which is standard reason enough to rotate a credential regardless of where it ends up, even
 though it was never committed anywhere by this session.
+
+## Signup (عضویت) flow, removed reset button, and a real data-loss bug fix (2026-10-04/05)
+
+### Reset button removed
+The footer "ریست کامل (روی همهٔ دستگاه‌ها)" button and its click handler were deleted
+outright, per explicit user request — not hidden, gone, along with the handler that zeroed
+out `itemState`/`meta` for every phase item and topic in the current user's bucket.
+
+### Signup (عضویت) flow — a human-relay, not an automatic pipeline
+Built because the user asked for a self-serve way for a new person to request an account,
+without the admin having to hand-create every GitHub PAT walkthrough in person. **This is
+NOT an automatic/instant signup** — it can't be, for the same reason the shared-token request
+above was refused: this is a 100%-static site with no backend, so there is no code that can
+run with permission to WRITE `state.json` except whoever's browser is holding a real PAT.
+Any secret capable of "just writing this one new signup" would, on a public page, be a secret
+capable of overwriting everyone's data — there is no way to scope a browser-held credential
+to one JSON key. So the flow is a **relay through the admin**, by design:
+
+1. **Public signup form** (`#signupForm`, reached via `#showSignupLink` under the login
+   form, same `.login-card` visual treatment): نام کاربری، رمز، نام و نام خانوادگی (kept as
+   a field **separate from** نام کاربری per the user's explicit correction), آخرین مدرک
+   تحصیلی، کد نظام/دانشجویی، شماره موبایل، ایمیل. Submitting does **not** write anywhere —
+   it only computes `hash = fnv1aHex(username + ":" + password)` client-side (same hash the
+   login gate itself checks against) and shows a green success box (`#signupSuccessBox`,
+   new `--success`/`--success-soft` design tokens — see below) with the exact wording asked
+   for ("بعد از تایید مدیر توکن در اختیارتان قرار خواهد گرفت...").
+2. **Relay to the admin**: the success box offers "ارسال به مدیر (واتساپ)" (a `wa.me` deep
+   link pre-filled with all the submitted fields + the computed hash, opened to the admin's
+   own number) and "کپی اطلاعات" (clipboard copy of the same text) — whichever the signer's
+   device supports.
+3. **Admin-side intake** (`#adminPanelCard`, `amir`-only): a "+ افزودن درخواست ثبت‌نام"
+   toggle (`#adminAddSignupToggle`) reveals a mini-form (`#adminSignupForm`) with the same 7
+   fields; the admin re-types what came in over WhatsApp/copy-paste. Submitting pushes a
+   `{id, username, hash, fullName, degree, idNumber, mobile, email, status:"pending",
+   createdAt}` record into `STATE.signups` — this write is secured by the **admin's own**
+   already-connected PAT, same as every other write in this app.
+4. **Pending requests shown first in the admin panel**, in their own amber/warning-styled
+   box (`#adminSignupsList`, same visual language as `.connect-reminder`), per the user's
+   explicit ask — above the existing کاربران/تیکت‌ها tabs, not buried in a tab.
+5. **Approve/reject** (`data-approve-signup`/`data-reject-signup` buttons): approving calls
+   `deriveUserId(username)` (lowercases, strips non-alphanumerics, disambiguates against
+   every known static + already-approved id with a numeric suffix) to mint a `userId`,
+   creates `STATE.users[userId]` via `emptyBucket()`, pre-fills its `profile` from the
+   signup's fullName/idNumber/mobile, and flips the signup's `status` to `"approved"`.
+6. **Dynamic login check**: the login-gate IIFE's submit handler still checks the static
+   `GATE_USERS` array first (fast path, works offline), and only if that misses, calls a new
+   `fetchPublicState()` (a plain **unauthenticated** `GET` of `state.json` — works because
+   the repo is public, no PAT needed to read) and checks `remote.signups` for a `hash` match
+   with `status === "approved"`, logging in as that signup's `userId` if found.
+
+**Why this can't be made more automatic without the user asking for new infrastructure**:
+investigated Google Forms/Sheets as a possible anonymous-intake backend (so a new signup
+could write directly into a sheet without the admin relaying anything by hand) — this
+account's available tools only support whole-document Drive operations
+(`mcp__Google_Drive__create_file`/`update_file`, etc.), there's no Forms-creation API and no
+granular Sheets-values-append API reachable from here, so a live anonymous-submission
+pipeline into a spreadsheet isn't buildable with current tooling either. A static roster
+sheet **was** created (see below) but it is not wired to receive live submissions.
+
+### A real production bug this surfaced and fixed: `connectGithub()` discarding local writes
+While verifying this flow, the user reported a concrete symptom: a ticket sent from `arash`
+(tried once disconnected, once after connecting with a token) never showed up in the admin
+panel. **Checked the actual `state.json` on the `study-state` branch directly** (plain
+unauthenticated `GET`, no tooling needed) — `tickets` was genuinely `[]` there, so this
+wasn't "admin just needs to refresh," the write itself was never landing.
+
+Root cause, in `connectGithub()`: it did a blind `STATE = migrateStateShape(remote)`, which
+**unconditionally discards whatever was in the in-memory `STATE` before the fetch resolved**.
+Combined with the fact that `scheduleFlush()`/`doFlush()` are no-ops whenever `getPat()` is
+falsy (by design — nothing to write to without a token), the natural, common sequence that
+loses data every time is: a user interacts with the ticket box / profile fields / a
+highlight / a checkbox **before ever connecting a token** (very likely — connecting is a
+deliberate extra step, not a precondition the UI blocks on), those edits sit only in local
+`STATE` with nothing flushing them, and then the moment that same tab connects (or
+reconnects — e.g. opens the sync-settings modal and re-saves the same token to check the
+connection), `connectGithub()` fetches the remote and throws the local edits away before
+they ever reach GitHub. This is not limited to tickets — the exact same hole existed for
+`itemState` (checkboxes/status pills), `highlights`, and `profile`, for anyone's very first
+connect of a session.
+
+**Fix**: `connectGithub()` now snapshots the local `STATE` before fetching, then
+`mergeLocalIntoRemote(localSnapshot, migrated)` folds it into the freshly-fetched remote
+*before* replacing `STATE`:
+- `tickets`/`signups`: append any local-only entry whose `id` isn't already in the remote
+  array.
+- `itemState`: per-key overwrite from local onto remote (every key here only exists because
+  the user actually touched that item — `applyLoadedState()`/`writeItemState()` never
+  pre-seed defaults — so "local wins per key" can't clobber real remote data with
+  untouched-item defaults).
+- `highlights`: per-topic, append any local highlight `id` not already in the remote array
+  for that topic.
+- `profile`: local wins only if it has an `updatedAt` at least as new as the remote's.
+- `loginLog`: append any local entry whose timestamp isn't already present.
+
+If the merge actually added anything, `connectGithub()` schedules a flush (`scheduleFlush(200)`)
+right after, so the recovered data is written back immediately rather than waiting on some
+unrelated future edit to trigger the next flush (which could otherwise be lost again to a
+second reconnect first). Verified with two Playwright-driven unit-style tests against an
+instrumented scratch copy (mocking the GitHub GET/PUT via `page.route`): (1) a ticket added
+to local `STATE` with no PAT set, then connecting — ticket survives in `STATE.tickets` after
+`connectGithub()` *and* gets included in the resulting PUT body; (2) a no-op case (nothing
+local to merge, remote already has the real data) produces **zero** PUT calls — confirms the
+fix doesn't turn every normal connect into a spurious extra write.
+
+**This was a real correctness bug independent of the signup-flow feature** (it predates this
+session's work — the function already existed), just surfaced by testing the ticket feature.
+If anything else in this app writes to `STATE` before guaranteeing a connected token first
+(future features should keep this in mind), this merge is what keeps those edits from being
+silently dropped on the next connect.
+
+### Sync-settings modal reordered
+The PAT input + a new amber "توکن را وارد کن" label (`--warn` styling, matching the existing
+warning-box color) now sit at the very top of `#ghModal`, right under the heading — moved
+ahead of the step-by-step GitHub-token-creation instructions, which still exist but are now
+wrapped in `#ghAdminInstructions` and only shown when `CURRENT_USER_ID === "amir"` (everyone
+else just sees the token field + the short "get your token from the admin" line, not a
+walkthrough for creating their own GitHub PAT, since non-admin users are expected to receive
+a token via the admin's connect flow, not mint their own).
+
+### Connect-reminder box wording
+Updated to the user's exact requested text: "بدون اتصال توکن پروفایل، پیام‌ها، هایلایت و
+یادداشت‌ها ذخیره نمی‌شوند. توکن اتصال را از مدیریت سایت دریافت کنید." — same amber box,
+same trigger logic (`nopat`/`error`/`auth` conn states), just the copy changed.
+
+### New design tokens: `--success`/`--success-soft`
+Added to all three `:root` blocks (light, `prefers-color-scheme:dark` media query, and
+`:root[data-theme="dark"]`) because the signup-success box needed a true green with a neon
+checkmark per the user's spec, and the existing `--accent` teal isn't green enough to read
+as a distinct "success" color from the app's normal accent. Light: `#1c8a5a`/`#e1f5ec`.
+Dark: `#4ade80`/`rgba(74,222,128,.16)`. Follows the same `color-mix(in srgb, var(--success)
+N%, transparent)` halo pattern already used for `.cat-dot`/`.logo-badge` elsewhere in this
+file.
+
+### Google Sheet created — static roster only, not a live backend
+Per the user's mid-turn ask ("در گوگل درایو یک فایل گوگل شیت بساز و اطلاعات این کاربران را
+آنجا ثبت کن"), created **"IntMed - کاربران و ثبت‌نام‌ها"** as a native Google Sheet via
+`mcp__Google_Drive__create_file` (CSV content, `application/vnd.google-apps.spreadsheet`
+mimeType) — `fileId: 1D0PuHnOUEeUrhFZw2BT4QVmaburvwQDOhsHzgIlPF7c`,
+`https://docs.google.com/spreadsheets/d/1D0PuHnOUEeUrhFZw2BT4QVmaburvwQDOhsHzgIlPF7c/edit`.
+Seeded with the 3 known static users (drgerami/arash/alisalehi) and their non-sensitive
+fields only (no passwords/hashes). **This sheet is a one-time snapshot, not wired to receive
+live signups** — per the Google Forms/Sheets tooling-limitation note above, there's no
+anonymous-write path available to append new signups into it automatically. If live rows in
+this sheet are wanted, the only path with current tooling is the admin manually re-entering
+each approved signup here too (or asking in a future session to revisit once a Sheets
+values-append tool becomes available).
+
+### Artifact (claude.ai "IntMed") — NOT touched by this batch
+Everything in this section (reset-button removal, signup flow, admin intake, dynamic login,
+modal reorder, connect-reminder wording, the `connectGithub()` merge fix) is
+`docs/index.html`-only. The signup/profile/admin-panel feature already depends on the
+multi-user login gate the artifact doesn't have (see the "User profile/ticket section" entry
+above), so none of this was ported. The `connectGithub()` merge-bug fix specifically: the
+artifact's own equivalent sync function (hardcoded to `ARTIFACT_USER_ID = "amir"`, no
+tickets/profile/signups concept) was **not checked or patched** in this pass — if the same
+blind-overwrite pattern exists there for highlights, it would need its own look.
