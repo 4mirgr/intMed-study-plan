@@ -1011,3 +1011,55 @@ Synced to the artifact db in three batches (`nephro-candiduria` alone, `nephro-a
 `nephro-catheter-infection` together, `nephro-ckd` alone once it landed and was trimmed).
 Bundle regenerated to 50 topics across two passes (49 after the first four topics, 50 once
 `nephro-ckd` was verified and trimmed).
+
+## Collapsible header toggle (added 2026-10-05)
+
+The top nav bar (logo/title, connection-status pill, theme toggle, GitHub-connect button,
+progress bar, dashboard/education tabbar) was taking up real screen space while actually
+reading a lesson on a phone. Added a small chevron button (`.header-collapse-btn`,
+id `headerCollapseBtn`) that toggles a `collapsed` class on `header.top`, shrinking it down
+to a single compact line (logo + "IntMed" + the Jalali clock) and expanding it back on a
+second click.
+
+**Structural change**: `#headerClock` moved from its own line below `.title-row` into the
+`.brand` span itself (inline, right after `<h1>IntMed</h1>`) — this is what lets the
+collapsed state read as one line rather than two, since logo/title/clock were already
+rendered together in `.title-row`. Its CSS lost `margin-top:7px` (no longer needed as a
+standalone block) and gained `display:inline-flex` plus a small `—` separator via
+`::before`. The conn-status/theme-toggle/GitHub-connect/logout buttons were wrapped in a new
+`.title-row-extras` span (`id="titleRowExtras"` in `docs/index.html`, which also has
+`userLabel`/`logoutBtn` there that the artifact doesn't, since the artifact has no login
+gate) that hides via `header.top.collapsed .title-row-extras{display:none}`; the toggle
+button itself lives in a sibling `.title-row-right` span so it's never hidden by its own
+collapse. The progress bar and tabbar were wrapped in a new `.header-collapsible` div
+(`id="headerCollapsible"`) that collapses via the same `max-height:0` accordion pattern
+already used for `.phase-body`/`.vent-body` elsewhere in this file (large fixed max-height
+when open, 0 when `.collapsed`, both with a `.35s` transition) — no JS height measurement
+needed, consistent with the rest of the codebase's accordion components.
+
+**State is transient, not persisted** — no `localStorage` key, unlike the theme toggle. It
+only needs to survive while the tab stays open on a topic (which is the actual use case:
+collapse it, read, maybe flip back later in the same sitting); a fresh page load reasonably
+starts expanded again, and persisting it would've meant one more piece of per-device state
+to manage for no real benefit here.
+
+**`docs/index.html` wiring note**: this file's login-gate IIFE used to be one single IIFE
+wrapping both the theme-toggle logic and everything after it (GATE_USERS, login form
+handling, etc.). Rather than inserting the header-collapse logic awkwardly mid-IIFE, the
+theme-toggle block was closed into its own IIFE (`})();` added right after it) and the
+header-collapse toggle became its own small IIFE immediately after — the GATE_USERS/login
+code that used to follow inside the same closure now runs inside the header-collapse IIFE's
+closure instead, which is harmless since it never referenced anything from the theme-toggle
+IIFE's local scope (`getStoredTheme`/`applyTheme`/etc. were never used anywhere else).
+Verified via `node --check` on the extracted `<script>` block, both before and after, and
+confirmed no downstream code referenced those theme-toggle-local functions before making the
+split. In the artifact (no login gate, theme toggle already lives in its own small IIFE
+inside the main app IIFE), this wasn't an issue — the new header-collapse IIFE was just
+added as a normal sibling IIFE right after the theme-toggle one.
+
+Verified via local Playwright (420×800 viewport, logged in as the primary user): collapse
+click hides `#titleRowExtras` (`display:none` confirmed) and the progress/tab section, the
+clock stays visible and correctly formatted, and a second click fully re-expands the header
+— screenshots confirmed the collapsed state reads as the intended single compact line with
+just logo/title/clock/chevron, content starts immediately below it. Republished the artifact
+(version 36).
