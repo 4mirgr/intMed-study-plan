@@ -983,18 +983,31 @@ invented fresh.
   immediate rather than contingent on treatment response) and hemodialysis catheter
   types/complications (tunneled vs. non-tunneled, the infection/thrombosis/stenosis triad, SVC
   syndrome from chronic central-line thrombosis/stenosis — including why subclavian catheters
-  are avoided over internal jugular in future-fistula candidates). **Known overlap to watch**:
-  `nephro-ckd` (built in the same batch, from an earlier, terser PD-peritonitis mention in its
-  own source) also has a PD-peritonitis section — not reconciled against each other yet since
-  `nephro-ckd` was still mid-build when this topic was written; a future session should compare
-  the two once both are stable and either cross-reference or trim the thinner one, same pattern
-  as the rhabdomyolysis cross-references elsewhere in this file.
+  are avoided over internal jugular in future-fistula candidates).
+- **`nephro-ckd`** (new, background agent, independently re-verified, including the two
+  clinical-directionality risk areas flagged in the build brief — both confirmed correct):
+  calcitriol/paricalcitol (raise Ca, suppress PTH, for high-PTH states, avoided when
+  low-turnover/adynamic risk is present) vs. cinacalcet (lowers PTH without raising Ca,
+  preferred when Ca is already elevated); and the ACEI/ARB-in-advanced-CKD nuance, correctly
+  citing the STOP-ACEi (2022) trial rather than presenting a flat stop/continue rule. 70
+  flashcards, 17 mcq, 4 kfPmp, 6 tables, 14 lesson sections as delivered.
 
-All four independently re-verified (schema validation, جگر grep, duplicate-id check,
-flashcard-direction spot-check) before committing — agent reports trusted as a starting point,
-never as the final word. Taxonomy entries added for `nephro-candiduria` and
-`nephro-catheter-infection` in both `docs/index.html` and the artifact HTML (republished
-version 34, then 35); `nephro-aki`/`nephro-ckd` entries were already present. Synced to the
-artifact db (`nephro-candiduria` as its own batch write, `nephro-aki`+`nephro-catheter-
-infection` as a second batch write once `nephro-aki` was verified). Bundle regenerated to 49
-topics after this round (nephro-ckd not yet included — still building as of this entry).
+**Overlap found and resolved**: `nephro-ckd`'s own PD-peritonitis section (built from an
+earlier, terser mention in its own source PDF) substantially duplicated
+`nephro-catheter-infection`'s deeper treatment of the same material — 8 flashcards, 2 mcq, 1
+kfPmp, and 2 tables' worth of near-identical content (PD peritonitis diagnostic threshold,
+empiric IP antibiotics, exit-site/tunnel infection, catheter malposition). Trimmed all of it
+out of `nephro-ckd` down to a short overview paragraph plus an explicit cross-reference
+flashcard and lesson sentence pointing to `nephro-catheter-infection`, matching the existing
+rhabdomyolysis cross-reference pattern elsewhere in this file — final `nephro-ckd` counts:
+63 flashcards, 15 mcq, 3 kfPmp, 4 tables (down from 70/17/4/6 as the agent delivered it).
+
+All five independently re-verified (schema validation, جگر grep, duplicate-id check,
+flashcard-direction spot-check, plus the overlap check above) before committing — agent
+reports trusted as a starting point, never as the final word. Taxonomy entries added for
+`nephro-candiduria` and `nephro-catheter-infection` in both `docs/index.html` and the artifact
+HTML (republished version 34, then 35); `nephro-aki`/`nephro-ckd` entries were already present.
+Synced to the artifact db in three batches (`nephro-candiduria` alone, `nephro-aki`+
+`nephro-catheter-infection` together, `nephro-ckd` alone once it landed and was trimmed).
+Bundle regenerated to 50 topics across two passes (49 after the first four topics, 50 once
+`nephro-ckd` was verified and trimmed).
