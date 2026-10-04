@@ -1063,3 +1063,115 @@ clock stays visible and correctly formatted, and a second click fully re-expands
 — screenshots confirmed the collapsed state reads as the intended single compact line with
 just logo/title/clock/chevron, content starts immediately below it. Republished the artifact
 (version 36).
+
+## User profile/ticket section + admin panel (added 2026-10-05, `docs/index.html` only)
+
+### Why this is static-site-only, not in the artifact too
+The ask was: a profile-fill-in + ticket/message box for every logged-in user except `amir`,
+and an admin panel visible only to `amir` showing everyone's profile info, login
+count/timing, and submitted messages. This fundamentally depends on the multi-user login
+gate (`GATE_USERS`/`CURRENT_USER_ID`/`USER_NAMES`) that only exists in `docs/index.html` —
+the live artifact has no login UI of its own and is hardcoded to a single identity
+(`ARTIFACT_USER_ID = "amir"`, see the multi-user section above), so there is no "other
+users" concept there to build an admin view over. Not ported, and shouldn't be without the
+user asking for a real identity system on the artifact side first.
+
+### Privacy decision — read this before touching this feature again
+Before building, checked whether `4mirgr/intMed-study-plan` is a private repo (it determines
+whether anything stored here is actually access-controlled): confirmed via
+`curl https://api.github.com/repos/4mirgr/intMed-study-plan` → `"private": false`. This
+repo is **public**. That means profile data (full name, medical-council/student number,
+phone number) and ticket messages stored in `state.json` on the `study-state` branch get
+the same protection level already accepted for `content-bundle.json` — readable by anyone
+who hits the GitHub Contents API unauthenticated, same "casual visitor" trust model, not
+real access control. This is a materially different category of data than study progress
+(it's other real people's PII, not just the current user's own notes), so this was
+explicitly surfaced to the user via `AskUserQuestion` before writing any code, offering: (a)
+proceed on the existing public GitHub-backed store, (b) scope the whole feature to the
+artifact's private `db` instead (rejected above — doesn't fit the multi-user requirement),
+(c) split state storage into a separate private repo. **User chose (a) — proceed on the
+existing public `state.json`, explicitly accepting the exposure.** If this is ever revisited
+(e.g. someone asks "why can anyone see my phone number"), that's the answer: it was a known,
+discussed tradeoff, not an oversight. Don't silently "fix" it into a private store without
+the user asking — that's a real infrastructure change (breaks the current single-repo/
+single-PAT-scope setup documented in the GitHub-backed-sync section above).
+
+### Data model
+Extended the existing `STATE.users.<userId>` bucket shape (`itemState`/`meta`/`highlights`)
+with two more per-user fields:
+```json
+"profile": { "fullName": "...", "idNumber": "...", "phone": "...", "updatedAt": "ISO" },
+"loginLog": [ { "at": "ISO timestamp" }, ... ]
+```
+`loginLog` is capped to the most recent 500 entries (trimmed in `cleanedStateForSave()`,
+same trim-before-save pattern as everything else that writes to `state.json`).
+
+Added one new **top-level** field, `tickets` (sibling of `users`, not namespaced per-user —
+the whole point is the admin needs to see every user's messages in one list):
+```json
+"tickets": [ { "id": "...", "userId": "...", "userName": "...", "message": "...",
+               "createdAt": "ISO", "read": false }, ... ]
+```
+Capped to the most recent 1000 entries on save. `migrateStateShape()` now also ensures
+`remote.tickets` exists (defaults to `[]`) on both the already-v2 and the legacy-v1 migration
+paths, so an old `state.json` written before this feature doesn't crash the admin panel.
+
+### Login tracking — what "logged in" actually means here
+`logLoginIfDue()` is called once per `connectGithub()` success (i.e. once per app session
+where GitHub sync is active), **not** on every literal credential-entry at the login gate —
+since `bp_authed` persists in `localStorage` indefinitely, most visits don't re-enter
+credentials at all, so gating on the login form submit would barely produce any usable
+"when do they actually use this" signal. A user who reconnects to GitHub within 5 minutes of
+their last logged entry doesn't get a duplicate — this dedupe window exists so a user
+refreshing the tab a lot doesn't flood their own log. **Real limitation, not a bug**: this
+only fires once a user has connected GitHub with a PAT (same precondition every other
+persisted feature in this app already has) — a user who's never connected, or who's
+mid-session before their first connect, won't show any login history yet. The admin panel
+shows "هنوز وارد نشده" for such users rather than a fabricated zero-with-no-context.
+
+### UI
+Two new `<section class="callout">` blocks at the very top of the Dashboard tab (before the
+existing "ارزیابی وضعیت" callout), toggled by `CURRENT_USER_ID === "amir"` in
+`renderUserPanel()`:
+- `#userProfileCard` (non-admin): `.profile-grid` (full name / council-or-student number /
+  phone inputs) + save button, then a `.ticket-box` (textarea + send) + `#ticketHistoryList`
+  showing that user's own previously-sent messages (read receipt shown if the admin marked
+  it read).
+- `#adminPanelCard` (`amir` only): a small `.admin-tabs` pill-switcher (reuses the
+  `.tabbar`/`.tab-btn` visual pattern at a smaller size) between "کاربران" (one
+  `.admin-user-card` per non-admin user in `USER_NAMES` — profile fields, login count, last
+  login, 5 most recent login times) and "پیام‌ها و تیکت‌ها" (every ticket newest-first, an
+  unread-count badge on the tab itself, a "دیده شد" button per unread ticket).
+
+The non-admin user list for the admin panel comes from `Object.keys(USER_NAMES)` filtered to
+exclude `"amir"` — **not** `GATE_USERS`, because `GATE_USERS` lives in a different IIFE
+closure (the login-gate IIFE, which also now holds the header-collapse-toggle logic per the
+section above) than `USER_NAMES`/`myBucket`/`renderUserPanel` (the main app IIFE) and isn't
+reachable from there. `USER_NAMES` already has exactly the right data (id → display name)
+for this, so no cross-IIFE plumbing was needed — if a future session ever needs the actual
+`GATE_USERS` array (e.g. to add a 4th person) from inside the main app IIFE, it isn't
+currently exposed there and would need to be either duplicated or lifted to a shared scope.
+
+All user-controlled free text (profile fields, ticket messages) goes through a new
+`escapeHtml()` helper before being placed into `innerHTML` anywhere (admin panel, ticket
+history) — this app had no HTML-escaping helper before this feature, since nothing
+previously rendered free-text user input back as HTML (notes/highlights use `.textContent`
+or are rendered via the DOM API, not string-concatenated `innerHTML`). Don't skip this
+helper when adding future features that render user-entered text.
+
+### Testing
+Verified via an **instrumented scratch copy** (per the established pattern in the multi-user
+testing-note section above — `window.__test` exposing `STATE`/`myBucket`/`renderUserPanel`/
+`connectGithub`/`CURRENT_USER_ID`/`USER_NAMES`, never added to the real committed file): the
+full flow without needing a live PAT round-trip, since `scheduleFlush()`/`doFlush()` already
+no-op when `getPat()` is falsy, so UI interactions could be tested purely against in-memory
+`STATE` — (1) logged in as `arash`, confirmed the profile card shows and the admin card is
+hidden, filled and saved profile fields, confirmed they landed in `myBucket().profile`
+correctly shaped; (2) submitted a ticket, confirmed it appended to `STATE.tickets` and
+rendered in the sender's own ticket history; (3) captured that session's `STATE` as JSON,
+reloaded fresh as `amir`, confirmed the admin card shows and the profile card is hidden,
+injected the captured state and re-ran `renderUserPanel()`, confirmed the admin "کاربران" tab
+correctly rendered `arash`'s filled-in data alongside `alisalehi`'s untouched placeholders
+("—" / "هنوز وارد نشده") without crashing on missing data; (4) switched to the tickets tab,
+confirmed the message rendered with the correct sender name and an unread badge, clicked
+"دیده شد", confirmed the badge cleared. Screenshots reviewed for layout at each step.
