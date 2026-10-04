@@ -217,6 +217,26 @@
     transition:border-color var(--dur) var(--ease);
   }
   .profile-field input:focus{border-color:var(--accent)}
+  .profile-field-value{
+    padding:9px 11px;border:1px solid transparent;border-radius:var(--radius-sm);
+    background:var(--surface-2);color:var(--ink-dim);font-family:inherit;font-size:.85rem;min-height:40px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .profile-field-value .lock-ic{flex-shrink:0;opacity:.55;font-size:.78rem}
+  .admin-user-edit-box{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .admin-user-edit-box .profile-grid{margin-bottom:8px}
+  .admin-user-edit-box .profile-field label{font-size:.7rem}
+  .admin-user-edit-box .profile-field input{min-height:36px;font-size:.8rem;padding:7px 9px}
+  .admin-user-save-note{font-size:.74rem;color:var(--success);font-weight:600;margin-inline-start:8px}
+  .admin-user-msg-box{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .admin-user-msg-box label{display:block;font-size:.72rem;color:var(--ink-faint);margin-bottom:5px;font-weight:600}
+  .admin-user-msg-box textarea{
+    width:100%;min-height:52px;resize:vertical;border:1px solid var(--border);border-radius:var(--radius-sm);
+    background:var(--surface-solid);color:var(--ink);font-family:inherit;font-size:.8rem;padding:7px 9px;
+    margin-bottom:6px;
+  }
+  .admin-user-msg-send{font-size:.72rem;border:none;border-radius:var(--radius-pill);background:var(--primary);color:#fff;padding:5px 13px;cursor:pointer;font-weight:700}
+  .admin-user-msg-note{margin-inline-start:9px;font-size:.74rem;color:var(--success);font-weight:600}
   .profile-save-btn{
     border:none;border-radius:var(--radius-sm);padding:9px 18px;font-family:inherit;font-weight:700;
     font-size:.82rem;cursor:pointer;min-height:40px;
@@ -280,6 +300,7 @@
   .admin-user-recent b{font-weight:500;font-size:.74rem;color:var(--ink-dim)}
   .admin-ticket-item{border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;margin-bottom:9px;background:var(--surface-2);border-inline-start:4px solid var(--accent)}
   .admin-ticket-item.unread{border-inline-start-color:var(--danger)}
+  .admin-ticket-item.sent{border-inline-start-color:var(--primary);background:color-mix(in srgb, var(--primary) 6%, var(--surface-2))}
   .admin-ticket-from{font-weight:700;font-size:.82rem;margin-bottom:4px}
   .admin-ticket-msg{font-size:.84rem;color:var(--ink);line-height:1.8;white-space:pre-wrap;margin-bottom:6px}
   .admin-ticket-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;font-size:.72rem;color:var(--ink-faint)}
@@ -448,7 +469,7 @@
   .topic-list-title{flex:1;min-width:100px;font-size:.85rem;font-weight:700;color:var(--ink);transition:color var(--dur) var(--ease)}
   .topic-item .chev{flex-shrink:0;transition:transform var(--dur) var(--ease);color:var(--ink-faint);font-size:.75rem}
   .topic-item.open .chev{transform:rotate(180deg)}
-  .topic-item.open .topic-list-title{color:var(--success)}
+  .topic-item.open .topic-list-title{color:var(--cat-color,var(--accent))}
   .topic-detail{display:none;padding:0 2px 16px}
   .topic-item.open .topic-detail{display:block}
   .topic-pill{
@@ -918,28 +939,8 @@
     <section class="callout" id="userProfileCard" style="display:none">
       <h2>پروفایل من</h2>
       <p style="margin:0 0 12px">این اطلاعات فقط برای مدیر سایت قابل مشاهده می‌باشد.</p>
-      <div class="profile-grid">
-        <div class="profile-field">
-          <label for="profileFullName">نام و نام خانوادگی</label>
-          <input type="text" id="profileFullName" placeholder="مثلاً: علی رضایی">
-        </div>
-        <div class="profile-field">
-          <label for="profileDegree">آخرین مدرک تحصیلی</label>
-          <input type="text" id="profileDegree" placeholder="مثلاً: دستیار داخلی سال ۲">
-        </div>
-        <div class="profile-field">
-          <label for="profileIdNumber">شماره نظام پزشکی / شماره دانشجویی</label>
-          <input type="text" id="profileIdNumber" placeholder="مثلاً: ۱۲۳۴۵۶">
-        </div>
-        <div class="profile-field">
-          <label for="profilePhone">شماره موبایل</label>
-          <input type="tel" id="profilePhone" placeholder="مثلاً: ۰۹۱۲۱۲۳۴۵۶۷">
-        </div>
-        <div class="profile-field">
-          <label for="profileEmail">ایمیل</label>
-          <input type="email" id="profileEmail" placeholder="مثلاً: name@example.com">
-        </div>
-      </div>
+      <p style="margin:0 0 12px;font-size:.76rem">فیلدهایی که قبلاً پر شده قابل ویرایش نیستند (فقط مدیر می‌تواند آن‌ها را تغییر بدهد) — فقط جاهای خالی را می‌توانید کامل کنید.</p>
+      <div class="profile-grid" id="myProfileGrid"></div>
       <button type="button" class="profile-save-btn" id="profileSaveBtn">ذخیره اطلاعات</button>
       <span class="profile-saved-note" id="profileSavedNote"></span>
       <div class="ticket-box">
@@ -1366,7 +1367,7 @@
   // CONTENT — knowledge map, grouped by Harrison's table of contents
   // ---------------------------------------------------------------
   var TOPICS = [
-    { id:"general", color:"#5b6472", label:"جنرال", subs:[
+    { id:"general", color:"#b8962e", label:"جنرال", subs:[
       {id:"general-fluid-electrolyte", label:"اختلالات مایعات، الکترولیت و اسید-باز"},
       {id:"general-csf", label:"اختلالات مایع مغزی-نخاعی (CSF)"},
       {id:"general-pocus", label:"سونوگرافی نقطه‌محور (POCUS)"}
@@ -1478,7 +1479,7 @@
       {id:"neuro-dementia", label:"دمانس"},
       {id:"neuro-neuropathy", label:"نوروپاتی‌های محیطی"}
     ]},
-    { id:"crit", color:"#586170", label:"مراقبت ویژه و اورژانس داخلی", subs:[
+    { id:"crit", color:"#17a2b8", label:"مراقبت ویژه و اورژانس داخلی", subs:[
       {id:"crit-shock", label:"انواع شوک"},
       {id:"crit-abg", label:"تفسیر ABG و اسید-باز پیشرفته"},
       {id:"crit-vent", label:"اصول اولیهٔ ونتیلاتور"}
@@ -2209,11 +2210,37 @@
     }catch(e){ return ""; }
   }
 
-  var profileFullNameEl = document.getElementById("profileFullName");
-  var profileDegreeEl = document.getElementById("profileDegree");
-  var profileIdNumberEl = document.getElementById("profileIdNumber");
-  var profilePhoneEl = document.getElementById("profilePhone");
-  var profileEmailEl = document.getElementById("profileEmail");
+  // The 5 profile fields, shared by the non-admin profile card (locked once
+  // filled) and the admin's per-user edit box (always editable) below.
+  var PROFILE_FIELDS = [
+    {key:"fullName", label:"نام و نام خانوادگی", type:"text", placeholder:"مثلاً: علی رضایی"},
+    {key:"degree", label:"آخرین مدرک تحصیلی", type:"text", placeholder:"مثلاً: دستیار داخلی سال ۲"},
+    {key:"idNumber", label:"شماره نظام پزشکی / شماره دانشجویی", type:"text", placeholder:"مثلاً: ۱۲۳۴۵۶"},
+    {key:"phone", label:"شماره موبایل", type:"tel", placeholder:"مثلاً: ۰۹۱۲۱۲۳۴۵۶۷"},
+    {key:"email", label:"ایمیل", type:"email", placeholder:"مثلاً: name@example.com"}
+  ];
+  var myProfileGridEl = document.getElementById("myProfileGrid");
+  // Renders the non-admin user's own profile grid: a field that already has
+  // a value becomes locked, plain-text display (per the user's explicit
+  // request — only the admin can correct an already-filled field); an empty
+  // field stays an editable input so the user can complete it themselves.
+  function renderMyProfileFields(){
+    if(!myProfileGridEl) return;
+    var p = myBucket().profile || {};
+    myProfileGridEl.innerHTML = PROFILE_FIELDS.map(function(f){
+      var val = (p[f.key] || "").trim();
+      if(val){
+        return '<div class="profile-field">' +
+          '<label>' + f.label + '</label>' +
+          '<div class="profile-field-value"><span class="lock-ic">🔒</span>' + escapeHtml(val) + '</div>' +
+          '</div>';
+      }
+      return '<div class="profile-field">' +
+        '<label for="profileInput-' + f.key + '">' + f.label + '</label>' +
+        '<input type="' + f.type + '" id="profileInput-' + f.key + '" data-profile-field="' + f.key + '" placeholder="' + f.placeholder + '">' +
+        '</div>';
+    }).join("");
+  }
   var profileSaveBtn = document.getElementById("profileSaveBtn");
   var profileSavedNote = document.getElementById("profileSavedNote");
   var ticketMessageEl = document.getElementById("ticketMessage");
@@ -2257,17 +2284,25 @@
 
   if(profileSaveBtn){
     profileSaveBtn.addEventListener("click", function(){
-      var profile = {
-        fullName: profileFullNameEl.value.trim(),
-        degree: profileDegreeEl ? profileDegreeEl.value.trim() : "",
-        idNumber: profileIdNumberEl.value.trim(),
-        phone: profilePhoneEl.value.trim(),
-        email: profileEmailEl ? profileEmailEl.value.trim() : "",
-        updatedAt: new Date().toISOString()
-      };
-      myBucket().profile = profile;
+      var bucket = myBucket();
+      var p = bucket.profile || {};
+      var changed = false;
+      PROFILE_FIELDS.forEach(function(f){
+        var input = document.getElementById("profileInput-" + f.key);
+        if(!input) return; // already locked/filled — this user can't touch it
+        var v = input.value.trim();
+        if(v){ p[f.key] = v; changed = true; }
+      });
+      if(!changed){
+        profileSavedNote.textContent = "چیزی برای ذخیره نبود.";
+        setTimeout(function(){ profileSavedNote.textContent = ""; }, 2000);
+        return;
+      }
+      p.updatedAt = new Date().toISOString();
+      bucket.profile = p;
       scheduleFlush(300);
-      syncProfileToSheet(CURRENT_USER_ID, profile);
+      syncProfileToSheet(CURRENT_USER_ID, p);
+      renderMyProfileFields();
       profileSavedNote.textContent = "ذخیره شد ✓";
       setTimeout(function(){ profileSavedNote.textContent = ""; }, 2500);
     });
@@ -2311,6 +2346,14 @@
     var mine = (STATE.tickets || []).filter(function(t){ return t.userId === CURRENT_USER_ID; }).slice().reverse();
     if(!mine.length){ root.innerHTML = ""; return; }
     root.innerHTML = '<div class="ticket-history-label">پیام‌های قبلی شما</div>' + mine.map(function(t){
+      // An admin-initiated message has no message from the user at all —
+      // show it as a standalone message FROM the admin, not as "your own
+      // message" with a reply nested under it.
+      if(t.fromAdmin){
+        return '<div class="ticket-history-item">' +
+          '<div class="ticket-history-reply"><b>پیام از مدیر — ' + formatFaDateTime(t.createdAt) + '</b>' + escapeHtml(t.message) + '</div>' +
+          '</div>';
+      }
       return '<div class="ticket-history-item"><div class="ticket-history-msg">' + escapeHtml(t.message) + '</div>' +
         '<div class="ticket-history-meta">' + formatFaDateTime(t.createdAt) + (t.read ? " · دیده‌شده توسط مدیر" : "") + '</div>' +
         (t.reply ? '<div class="ticket-history-reply"><b>پاسخ مدیر' + (t.replyAt ? " — " + formatFaDateTime(t.replyAt) : "") + '</b>' + escapeHtml(t.reply) + '</div>' : "") +
@@ -2359,14 +2402,24 @@
         '</div>' +
         '<div class="admin-user-body"><div class="admin-user-body-inner">' +
           '<div class="admin-user-row"><span>نام کاربری:</span><b>' + escapeHtml(r.id) + '</b></div>' +
-          '<div class="admin-user-row"><span>نام و نام خانوادگی:</span><b>' + (escapeHtml(r.p.fullName) || "—") + '</b></div>' +
-          '<div class="admin-user-row"><span>آخرین مدرک تحصیلی:</span><b>' + (escapeHtml(r.p.degree) || "—") + '</b></div>' +
-          '<div class="admin-user-row"><span>شماره نظام/دانشجویی:</span><b>' + (escapeHtml(r.p.idNumber) || "—") + '</b></div>' +
-          '<div class="admin-user-row"><span>شماره موبایل:</span><b>' + (escapeHtml(r.p.phone) || "—") + '</b></div>' +
-          '<div class="admin-user-row"><span>ایمیل:</span><b>' + (escapeHtml(r.p.email) || "—") + '</b></div>' +
           '<div class="admin-user-row"><span>تعداد ورود:</span><b>' + faDigits(count) + '</b></div>' +
           '<div class="admin-user-row"><span>آخرین ورود:</span><b>' + last + '</b></div>' +
           '<div class="admin-user-row admin-user-recent"><span>۵ ورود اخیر:</span><b>' + recent + '</b></div>' +
+          '<div class="admin-user-edit-box">' +
+            '<div class="profile-grid">' + PROFILE_FIELDS.map(function(f){
+              return '<div class="profile-field"><label for="adminEdit-' + r.id + '-' + f.key + '">' + f.label + '</label>' +
+                '<input type="' + f.type + '" id="adminEdit-' + r.id + '-' + f.key + '" value="' + escapeHtml(r.p[f.key] || "") + '"></div>';
+            }).join("") +
+            '</div>' +
+            '<button type="button" class="profile-save-btn admin-user-save-btn" data-save-profile="' + escapeHtml(r.id) + '">ذخیره تغییرات پروفایل</button>' +
+            '<span class="admin-user-save-note" id="saveNote-' + escapeHtml(r.id) + '"></span>' +
+          '</div>' +
+          '<div class="admin-user-msg-box">' +
+            '<label for="msgBox-' + escapeHtml(r.id) + '">ارسال پیام به ' + escapeHtml(r.displayName) + ':</label>' +
+            '<textarea id="msgBox-' + escapeHtml(r.id) + '" placeholder="پیامت رو اینجا بنویس..."></textarea>' +
+            '<button type="button" class="admin-user-msg-send" data-send-msg="' + escapeHtml(r.id) + '" data-send-msg-name="' + escapeHtml(r.displayName) + '">ارسال پیام</button>' +
+            '<span class="admin-user-msg-note" id="msgNote-' + escapeHtml(r.id) + '"></span>' +
+          '</div>' +
         '</div></div>' +
       '</div>';
     }).join("");
@@ -2378,6 +2431,52 @@
         var nowOpen = !card.classList.contains("open");
         adminUsersOpenIds[id] = nowOpen;
         card.classList.toggle("open", nowOpen);
+      });
+    });
+    // Admin editing a user's profile bypasses the user's own lock (the
+    // user asked for this explicitly: locked fields are only correctable
+    // by the admin). Always writes all 5 fields as typed, then mirrors
+    // to the Sheet the same way the user's own save does.
+    adminUsersPanel.querySelectorAll("[data-save-profile]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var id = btn.getAttribute("data-save-profile");
+        if(!STATE.users[id]) STATE.users[id] = emptyBucket();
+        var p = STATE.users[id].profile || {};
+        PROFILE_FIELDS.forEach(function(f){
+          var input = document.getElementById("adminEdit-" + id + "-" + f.key);
+          if(input) p[f.key] = input.value.trim();
+        });
+        p.updatedAt = new Date().toISOString();
+        STATE.users[id].profile = p;
+        scheduleFlush(200);
+        syncProfileToSheet(id, p);
+        var note = document.getElementById("saveNote-" + id);
+        if(note) note.textContent = "ذخیره شد ✓";
+        adminUsersOpenIds[id] = true; // keep this card open through the re-render
+        setTimeout(renderAdminUsers, 900);
+      });
+    });
+    adminUsersPanel.querySelectorAll("[data-send-msg]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var id = btn.getAttribute("data-send-msg");
+        var name = btn.getAttribute("data-send-msg-name");
+        var textarea = document.getElementById("msgBox-" + id);
+        var note = document.getElementById("msgNote-" + id);
+        var msg = textarea ? textarea.value.trim() : "";
+        if(!msg){
+          if(note) note.textContent = "اول پیام رو بنویس.";
+          return;
+        }
+        if(!STATE.tickets) STATE.tickets = [];
+        STATE.tickets.push({
+          id: "t" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+          userId: id, userName: name, message: msg, fromAdmin: true,
+          createdAt: new Date().toISOString(), read: true
+        });
+        scheduleFlush(200);
+        if(textarea) textarea.value = "";
+        if(note) note.textContent = "ارسال شد ✓ — در تب «پیام‌ها و تیکت‌ها» هم ثبت شد.";
+        renderAdminTickets();
       });
     });
   }
@@ -2395,6 +2494,16 @@
     }
     if(!list.length){ adminTicketsPanel.innerHTML = '<p class="learn-empty">پیامی ثبت نشده.</p>'; return; }
     adminTicketsPanel.innerHTML = list.map(function(t){
+      // Admin-initiated outbound messages (sent from the per-user "ارسال
+      // پیام" box) are a read-only record here — there's nothing to mark
+      // read or reply to, it's just proof the send actually went through.
+      if(t.fromAdmin){
+        return '<div class="admin-ticket-item sent" data-ticket-id="' + escapeHtml(t.id) + '">' +
+          '<div class="admin-ticket-from">شما → ' + escapeHtml(t.userName || t.userId) + '</div>' +
+          '<div class="admin-ticket-msg">' + escapeHtml(t.message) + '</div>' +
+          '<div class="admin-ticket-meta"><span>' + formatFaDateTime(t.createdAt) + '</span></div>' +
+          '</div>';
+      }
       return '<div class="admin-ticket-item' + (t.read ? "" : " unread") + '" data-ticket-id="' + escapeHtml(t.id) + '">' +
         '<div class="admin-ticket-from">' + escapeHtml(t.userName || t.userId) + '</div>' +
         '<div class="admin-ticket-msg">' + escapeHtml(t.message) + '</div>' +
@@ -2570,12 +2679,7 @@
       renderAdminUsers();
       renderAdminTickets();
     } else {
-      var p = myBucket().profile || {};
-      if(profileFullNameEl) profileFullNameEl.value = p.fullName || "";
-      if(profileDegreeEl) profileDegreeEl.value = p.degree || "";
-      if(profileIdNumberEl) profileIdNumberEl.value = p.idNumber || "";
-      if(profilePhoneEl) profilePhoneEl.value = p.phone || "";
-      if(profileEmailEl) profileEmailEl.value = p.email || "";
+      renderMyProfileFields();
       renderTicketHistory();
     }
   }

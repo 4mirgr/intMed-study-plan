@@ -1517,3 +1517,96 @@ causes, both now fixed in `renderAdminTickets()`'s reply-send handler:
 Verified both paths via Playwright: empty-send shows the warning note and doesn't crash;
 a real send shows "ارسال شد ✓" within 150ms (well before the 900ms re-render) and the ticket
 object correctly ends up with `reply`/`replyAt`/`read:true` after the re-render completes.
+
+## Two gray category colors, open-title color reverted, admin→user messaging, locked profile fields (2026-10-04)
+
+### Two near-identical gray category colors
+`general` (جنرال) and `crit` (مراقبت ویژه و اورژانس داخلی) had `#5b6472`/`#586170` —
+essentially the same muted slate gray, which is what the user was seeing as "دو تا از
+عناوین درسی طوسی". Changed to `#b8962e` (gold/mustard — the open hue gap in the existing
+palette, nothing else here reads as yellow) and `#17a2b8` (a brighter, more saturated cyan
+than `nephro`'s darker teal `#0f9285`). Checked against all 10 other category colors already
+in use (`cardio` red, `pulm` blue, `nephro` teal, `gi` brown, `endo` purple, `heme` magenta,
+`rheum` orange, `id` green, `neuro` indigo, `poison` dark brown) for hue separation before
+picking these two. Ported identically to the live artifact's own `TOPICS` array (confirmed
+via diff that only those two color values changed, nothing else in the 2200+-line file) and
+republished (version 37).
+
+### Open-topic-title color reverted from green back to the category's own color
+The "turns green while open" change from earlier the same day was explicitly reversed by the
+user a few messages later: "رنگ عنوان سبز میشه همونطور که خواستم اما الان میخوام بجای سبز...
+رنگ همون مبحث مادر باشه" — they'd asked for green, saw it live, and changed their mind in
+favor of each topic inheriting its own category's accent color instead (so `general` topics
+open in gold, `cardio` topics open in red, etc.) rather than one flat color for every
+category. `.topic-item.open .topic-list-title` is back to `color:var(--cat-color,var(--accent))`
+— exactly what it was before that day's first change. The `--success` token itself is
+untouched (still used by the signup-success box and the ticket-reply green boxes elsewhere).
+
+### Admin can now message a user directly, and sees the conversation recorded
+Previously the only way a message/reply existed was user-initiated (a ticket) with an
+optional admin reply nested under it — there was no way for the admin to start a
+conversation, and (the bug the user actually reported) sending a reply gave the admin no
+persuasive confirmation it had gone anywhere. Added, per the user's explicit ask:
+- A "ارسال پیام" compose box (textarea + button) inside each user's accordion card in the
+  admin "کاربران" panel. Sending pushes a new `STATE.tickets` entry shaped exactly like a
+  normal ticket but with `fromAdmin: true` and no `message`-from-user — `message` here *is*
+  the admin's own text, `read` defaults `true` (nothing to mark read), no `reply`/`replyAt`
+  fields are used for this direction.
+- `renderAdminTickets()` now renders `fromAdmin` entries as a distinct, read-only "شما → 
+  <name>" card (new `.admin-ticket-item.sent` style — `--primary`-colored left border instead
+  of `--accent`/`--danger`) in the same combined, newest-first list as regular tickets — this
+  is literally the "به من هم نشان دهد" ask: opening "پیام‌ها و تیکت‌ها" now shows every
+  conversation with every user, not just the ones users themselves initiated.
+- `renderTicketHistory()` (the user's own dashboard) renders a `fromAdmin` entry as a
+  standalone message FROM the admin (reusing the existing green `.ticket-history-reply` box,
+  labeled "پیام از مدیر" instead of "پاسخ مدیر") rather than as "your own message" with
+  nothing above it.
+
+### Non-admin profile fields lock once filled; admin edits bypass the lock
+Per the user's explicit ask: "فقط فیلدهایی که پر نشده قابلیت پر کردن داشته باشه... اطلاعاتی
+که موقع ثبت‌نام ثبت شده... فقط به‌صورت متن (غیرقابل تغییر) نمایش داده بشه." `#userProfileCard`
+no longer has 5 static `<input>`s — `renderMyProfileFields()` renders each of the 5
+`PROFILE_FIELDS` (shared array, also used by the admin edit box below) as a locked
+`.profile-field-value` (plain text + a 🔒 marker) if `profile[key]` already has a value, or as
+an editable `<input data-profile-field>` if it's still empty. The save handler
+(`profileSaveBtn`) only ever reads from inputs that still exist in the DOM — a locked field
+has no input to read from, so there's no way for the user to overwrite it even by forging a
+request; the lock is enforced by what gets rendered, not just visually suggested.
+
+The admin's per-user accordion card gained a matching `.admin-user-edit-box`: the same 5
+fields, **always** editable regardless of lock state (the user's own explicit carve-out:
+"اگر من به‌عنوان مدیر هم تغییری در اطلاعات یک کاربر ایجاد کردم..."), pre-filled with current
+values, with its own "ذخیره تغییرات پروفایل" button that writes directly into
+`STATE.users[id].profile` and calls `syncProfileToSheet(id, profile)` the same way the user's
+own save does.
+
+### Google Sheet as "canonical source" — pushed back on the literal ask, here's why
+The user's exact wording: "تمامی اطلاعات کاربران از هرجا و هرمقداری که خواست استخراج و
+بازخوانی بشه باید الگوش گوگل شیت باشه" (the Sheet should be the template everything gets
+read back from). **Did not build the app itself reading from the Sheet at runtime** — that
+would mean every profile render depends on a live fetch to Google's infrastructure (slower,
+adds a new failure mode, and the Apps Script Web App fetch has none of the reliability
+guarantees `state.json`'s GitHub Contents API already has for this app). `state.json` on the
+`study-state` branch already **is** the complete, authoritative, fast-reading live data store
+that drives every render in this app (locked/unlocked fields, admin accordion contents,
+ticket threads — all of it). Reading the same data a second way from the Sheet on top of that
+would be pure added latency and fragility for zero functional gain, since GitHub already has
+the current value the instant it's saved.
+
+What **was** built to honor the spirit of the ask: **every** profile write — the user's own
+save, the admin's edit-box save, and the admin-approve-signup prefill — now calls
+`syncProfileToSheet(userId, profile)` (same function from the earlier Google-Sheet section
+above), so the Sheet genuinely reflects the latest value for every field, from every source,
+not just the user's own saves. The Sheet's role is a **human-readable mirror for browsing/
+exporting in Google Sheets' own UI**, not a second live data path the app itself depends on —
+this is the one piece of the literal request not implemented as asked, flagged directly
+rather than silently built around. (Also still blocked on the same one-time Apps Script
+deployment noted earlier — `GOOGLE_SHEET_WEBHOOK_URL` is still empty, so none of these three
+write paths actually reach the Sheet yet until that's done.)
+
+Verified the full flow via Playwright: arash fills 2 of 5 fields (both lock, remaining 3 stay
+editable) → admin opens arash's card, sees all 5 as editable inputs pre-filled with current
+values (including the 2 arash already locked), corrects one and fills a previously-empty one,
+saves → admin sends a direct message → admin's own ticket list shows the sent record →
+arash's own dashboard shows the admin's message as a green "پیام از مدیر" box and the
+corrected/filled fields now locked with the admin's values.
