@@ -259,6 +259,26 @@
   .admin-ticket-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;font-size:.72rem;color:var(--ink-faint)}
   .admin-ticket-mark-btn{font-size:.7rem;border:1px solid var(--border);background:var(--surface-solid);color:var(--ink-dim);padding:4px 9px;border-radius:var(--radius-pill);cursor:pointer}
 
+  .connect-reminder{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:var(--warn-soft);border:1px solid rgba(227,171,95,.35);border-radius:var(--radius-lg);
+    padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow-sm);
+  }
+  .connect-reminder-icon{
+    flex-shrink:0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;font-weight:800;color:var(--warn);background:var(--surface-solid);
+    box-shadow:0 0 0 2px rgba(227,171,95,.4), 0 0 14px 2px rgba(227,171,95,.55);
+  }
+  .connect-reminder-text{flex:1;min-width:180px;font-size:.82rem;line-height:1.85;color:var(--ink-dim)}
+  .connect-reminder-text b{color:var(--warn);display:block;margin-bottom:2px;font-size:.86rem}
+  .connect-reminder-btn{
+    flex-shrink:0;border:none;border-radius:var(--radius-sm);padding:9px 16px;font-family:inherit;font-weight:700;
+    font-size:.82rem;cursor:pointer;min-height:38px;color:#fff;
+    background:linear-gradient(135deg,var(--primary-light),var(--accent));
+    box-shadow:var(--shadow-sm);transition:transform var(--dur) var(--ease);
+  }
+  .connect-reminder-btn:hover{transform:translateY(-1px)}
+
   .removed{
     background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;font-size:.8rem;
     color:var(--ink-dim);line-height:1.85;margin-bottom:18px;
@@ -688,7 +708,7 @@
 
 <div class="gh-modal" id="ghModal">
   <div class="gh-modal-card">
-    <h3>اتصال به GitHub برای ذخیره‌سازی</h3>
+    <h3>تنظیمات همگام‌سازی</h3>
     <p class="gh-modal-desc">
       پیشرفت، یادداشت‌ها و هایلایت‌هات روی یک ریپوی GitHub ذخیره می‌شن تا بین دستگاه‌ها همگام بمونن. هر دستگاه باید یک‌بار جدا وصل بشه:<br>
       ۱. به <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> برو (باید وارد حساب گیت‌هابت باشی).<br>
@@ -722,7 +742,7 @@
           <span class="conn num" id="userLabel"></span>
           <span class="conn num" id="connStatus">در حال اتصال...</span>
           <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="تغییر حالت تاریک/روشن" title="تغییر حالت تاریک/روشن">🌙</button>
-          <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال به GitHub</button>
+          <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال برای ذخیره‌سازی</button>
           <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
         </span>
         <button type="button" class="header-collapse-btn" id="headerCollapseBtn" aria-expanded="true" aria-label="جمع‌کردن نوار بالا" title="جمع‌کردن/بازکردن نوار بالا"><span class="chev-ic">⌄</span></button>
@@ -734,13 +754,22 @@
         <div class="progress-pct num" id="barPct">۰٪</div>
       </div>
       <div class="tabbar">
-        <button type="button" class="tab-btn active" id="tabBtnDashboard">داشبورد</button>
-        <button type="button" class="tab-btn" id="tabBtnEducation">بخش آموزشی</button>
+        <button type="button" class="tab-btn" id="tabBtnDashboard">داشبورد</button>
+        <button type="button" class="tab-btn active" id="tabBtnEducation">بخش آموزشی</button>
       </div>
     </div>
   </header>
 
-  <div class="tab-panel active" id="tabPanelDashboard">
+  <div class="tab-panel" id="tabPanelDashboard">
+    <div class="connect-reminder" id="connectReminderBox" style="display:none">
+      <div class="connect-reminder-icon">⚠</div>
+      <div class="connect-reminder-text">
+        <b>هنوز وصل نیستی.</b>
+        بدون اتصال، پروفایل و پیام‌هات ذخیره نمی‌شن. کد اتصال رو از دکتر گرامی بگیر، روی دکمهٔ زیر بزن و کد رو پیست کن.
+      </div>
+      <button type="button" class="connect-reminder-btn" id="connectReminderBtn">اتصال الان</button>
+    </div>
+
     <section class="callout" id="userProfileCard" style="display:none">
       <h2>پروفایل من</h2>
       <p style="margin:0 0 12px">این اطلاعات فقط برای دکتر گرامی (مدیر) قابل مشاهده است.</p>
@@ -778,42 +807,48 @@
       <div id="adminTicketsPanel" style="display:none"></div>
     </section>
 
-    <section class="callout danger">
-      <h2>ارزیابی وضعیت، قبل از هر برنامه‌ای</h2>
-      <p><span class="tag certain">قطعی</span>فاز پایانی نقشهٔ اصلی روی «شهریور ۱۴۰۵» تنظیم شده بود — یعنی همین هفته، نه سال بعد. زمان‌بندی زیر از صفر و بر اساس فاصلهٔ واقعی تا آزمون بعدی بازسازی شده.</p>
-      <p><span class="tag likely">محتمل</span>تصمیم‌گیری بالینی خوب + نمرهٔ ۶۸ در ارتقا یعنی مشکل اصلی «ندانستن» نیست. نیاز اصلی‌تان تمرین closed-book و تایم‌دار است، نه مرور دوبارهٔ کتاب از اول.</p>
-      <p><span class="tag guess">حدسی</span>فرض شده امتحان ارتقا و بورد کشوری از نظر فرمت و منبع به‌قدر کافی شبیه‌اند که نمرهٔ ۶۸ سیگنال معتبری برای آمادگی بورد باشد. اگر ساختار این دو امتحان در دانشگاهتان فرق زیادی دارد، فاز صفر را جدی‌تر بگیرید.</p>
-    </section>
+    <!-- Old dashboard content (status callout, removed-items note, "here" card,
+         phase checklist) — hidden for now per user request, kept in the DOM so
+         it can come back later by just dropping the display:none, not by
+         re-adding deleted markup. See CLAUDE.md. -->
+    <div id="dashboardLegacyContent" style="display:none">
+      <section class="callout danger">
+        <h2>ارزیابی وضعیت، قبل از هر برنامه‌ای</h2>
+        <p><span class="tag certain">قطعی</span>فاز پایانی نقشهٔ اصلی روی «شهریور ۱۴۰۵» تنظیم شده بود — یعنی همین هفته، نه سال بعد. زمان‌بندی زیر از صفر و بر اساس فاصلهٔ واقعی تا آزمون بعدی بازسازی شده.</p>
+        <p><span class="tag likely">محتمل</span>تصمیم‌گیری بالینی خوب + نمرهٔ ۶۸ در ارتقا یعنی مشکل اصلی «ندانستن» نیست. نیاز اصلی‌تان تمرین closed-book و تایم‌دار است، نه مرور دوبارهٔ کتاب از اول.</p>
+        <p><span class="tag guess">حدسی</span>فرض شده امتحان ارتقا و بورد کشوری از نظر فرمت و منبع به‌قدر کافی شبیه‌اند که نمرهٔ ۶۸ سیگنال معتبری برای آمادگی بورد باشد. اگر ساختار این دو امتحان در دانشگاهتان فرق زیادی دارد، فاز صفر را جدی‌تر بگیرید.</p>
+      </section>
 
-    <div class="removed">
-      <b>چه چیزی از نقشهٔ اصلی حذف شد و چرا:</b>
-      معرفی کامل ساختار آزمون به یک خط تقلیل یافت. «تماشای کامل ویدیوها از پایه» فقط برای مباحث واقعاً ناآشنا نگه داشته شده. تست‌زنی از «فاز آخر» به «از هفتهٔ اول» منتقل شد، چون مشکل شما بر اساس داده‌ای که دادید تکنیک آزمون است نه محتوا.
-    </div>
-
-    <div class="here-card">
-      <div class="here-eyebrow">الان اینجام</div>
-      <h2 class="here-title" id="hereTitle">—</h2>
-      <p class="here-sub" id="hereSub"></p>
-      <div class="here-next" id="hereNext"></div>
-      <div class="here-override">
-        <label for="hereSelect">تغییر دستی مرحلهٔ فعلی:</label>
-        <select id="hereSelect"></select>
+      <div class="removed">
+        <b>چه چیزی از نقشهٔ اصلی حذف شد و چرا:</b>
+        معرفی کامل ساختار آزمون به یک خط تقلیل یافت. «تماشای کامل ویدیوها از پایه» فقط برای مباحث واقعاً ناآشنا نگه داشته شده. تست‌زنی از «فاز آخر» به «از هفتهٔ اول» منتقل شد، چون مشکل شما بر اساس داده‌ای که دادید تکنیک آزمون است نه محتوا.
       </div>
-    </div>
 
-    <h2 class="section-title">مسیر مطالعه (فازها)</h2>
-    <p class="section-desc">هر آیتم یک چک‌باکس است؛ زیرش جا برای یادداشت کوتاه هست — همون‌جایی که گیر کردی یا اشتباه فهمیدی. همه‌چیز آنلاین ذخیره می‌شه و بین موبایل و مک همگام می‌مونه.</p>
-    <div id="phasesRoot"></div>
+      <div class="here-card">
+        <div class="here-eyebrow">الان اینجام</div>
+        <h2 class="here-title" id="hereTitle">—</h2>
+        <p class="here-sub" id="hereSub"></p>
+        <div class="here-next" id="hereNext"></div>
+        <div class="here-override">
+          <label for="hereSelect">تغییر دستی مرحلهٔ فعلی:</label>
+          <select id="hereSelect"></select>
+        </div>
+      </div>
+
+      <h2 class="section-title">مسیر مطالعه (فازها)</h2>
+      <p class="section-desc">هر آیتم یک چک‌باکس است؛ زیرش جا برای یادداشت کوتاه هست — همون‌جایی که گیر کردی یا اشتباه فهمیدی. همه‌چیز آنلاین ذخیره می‌شه و بین موبایل و مک همگام می‌مونه.</p>
+      <div id="phasesRoot"></div>
+    </div>
   </div>
 
-  <div class="tab-panel" id="tabPanelEducation">
+  <div class="tab-panel active" id="tabPanelEducation">
     <h2 class="section-title">بخش آموزشی</h2>
     <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، پشت فلش‌کارت‌ها و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در گفتگو بگو.</p>
     <div id="topicsRoot"></div>
   </div>
 
   <footer class="bottom">
-    <span>تیک فازها، وضعیت مباحث، یادداشت‌ها و هایلایت‌ها روی GitHub ذخیره می‌شن (دکمهٔ «اتصال به GitHub» بالای صفحه) — هر دستگاه باید یک‌بار جدا وصل بشه؛ بدون اتصال یا بدون اینترنت، تغییرات ذخیره نمی‌شن.</span>
+    <span>تیک فازها، وضعیت مباحث، یادداشت‌ها و هایلایت‌ها ذخیره می‌شن (دکمهٔ «اتصال برای ذخیره‌سازی» بالای صفحه) — هر دستگاه باید یک‌بار جدا وصل بشه؛ بدون اتصال یا بدون اینترنت، تغییرات ذخیره نمی‌شن.</span>
     <button class="reset-btn" id="resetBtn">ریست کامل (روی همهٔ دستگاه‌ها)</button>
   </footer>
 </div>
@@ -1586,11 +1621,13 @@
 
   function setConn(kind){
     var el = document.getElementById("connStatus");
-    if(kind === "online"){ el.textContent = "آنلاین ✓ (GitHub)"; el.className = "conn num ok"; }
+    if(kind === "online"){ el.textContent = "آنلاین ✓"; el.className = "conn num ok"; }
     else if(kind === "connecting"){ el.textContent = "در حال اتصال..."; el.className = "conn num"; }
     else if(kind === "nopat"){ el.textContent = "برای ذخیره‌سازی وصل نیست"; el.className = "conn num bad"; }
-    else if(kind === "error"){ el.textContent = "خطا در همگام‌سازی گیت‌هاب"; el.className = "conn num bad"; }
+    else if(kind === "error"){ el.textContent = "خطا در همگام‌سازی"; el.className = "conn num bad"; }
     else if(kind === "auth"){ el.textContent = "توکن نامعتبر — دوباره وصل شو"; el.className = "conn num bad"; }
+    var reminder = document.getElementById("connectReminderBox");
+    if(reminder) reminder.style.display = (kind === "nopat" || kind === "error" || kind === "auth") ? "" : "none";
   }
 
   var flushTimer = null, flushing = false, flushQueued = false, dirty = false;
@@ -1908,7 +1945,7 @@
   var ghPatDisconnectBtn = document.getElementById("ghPatDisconnect");
 
   function updateGhBtn(){
-    ghConnectBtn.textContent = getPat() ? "⚙ تنظیمات همگام‌سازی" : "اتصال به GitHub";
+    ghConnectBtn.textContent = getPat() ? "⚙ تنظیمات همگام‌سازی" : "اتصال برای ذخیره‌سازی";
   }
   ghConnectBtn.addEventListener("click", function(){
     ghModalErr.textContent = "";
@@ -1916,6 +1953,8 @@
     ghPatDisconnectBtn.style.display = getPat() ? "" : "none";
     ghModal.style.display = "flex";
   });
+  var connectReminderBtn = document.getElementById("connectReminderBtn");
+  if(connectReminderBtn) connectReminderBtn.addEventListener("click", function(){ ghConnectBtn.click(); });
   document.getElementById("ghPatCancel").addEventListener("click", function(){ ghModal.style.display = "none"; });
   document.getElementById("ghPatSave").addEventListener("click", function(){
     var v = ghPatInput.value.trim();
@@ -1926,7 +1965,7 @@
     connectGithub();
   });
   ghPatDisconnectBtn.addEventListener("click", function(){
-    if(!confirm("اتصال گیت‌هاب از این دستگاه قطع بشه؟ (داده‌ها روی گیت‌هاب می‌مونن، فقط این دستگاه دیگه باهاشون همگام نمی‌شه)")) return;
+    if(!confirm("اتصال این دستگاه قطع بشه؟ (داده‌ها ذخیره‌شده می‌مونن، فقط این دستگاه دیگه باهاشون همگام نمی‌شه)")) return;
     setPat("");
     ghModal.style.display = "none";
     setConn("nopat");
@@ -2566,7 +2605,7 @@
 
   document.getElementById("resetBtn").addEventListener("click", function(){
     if(!confirm("همهٔ تیک‌ها، وضعیت‌های دانش و یادداشت‌های فاز/مبحث خودِ تو (" + (USER_NAMES[CURRENT_USER_ID]||CURRENT_USER_ID) + ") روی همهٔ دستگاه‌ها پاک بشه؟ (هایلایت‌ها و یادداشت‌های درسنامه/فلش‌کارت/جدول، و داده‌های کاربر دیگر دست نمی‌خورن)")) return;
-    if(!getPat()){ alert("اول باید به GitHub وصل بشی."); return; }
+    if(!getPat()){ alert("اول باید وصل بشی."); return; }
     var bucket = myBucket();
     allItemIds.forEach(function(id){ bucket.itemState[id] = {checked:false, note:""}; });
     allTopicIds.forEach(function(id){ bucket.itemState[id] = {status:"نامشخص", note:""}; });
