@@ -702,6 +702,31 @@ first — `mix-blend-mode:overlay`/`soft-light`/etc. against a near-black backdr
 same washed-out problem by construction, not just for this particular white color choice.
 Republished as version 29.
 
+**Third follow-up, same day**: the solid white disc from the previous pass then drew the
+opposite complaint — "این بخش سفید رنگ خیلی توی ذوق میزنه" (the white part is too jarring/
+blocky), plus "خود آیکون png را بزرگتر کن نه solid رنگ زیر آن را" (enlarge the icon itself,
+not the solid-color backdrop), and an explicit pointer back to the very first version's shape:
+"مثل حالت اول که آبی ساختی اما سفید باشه" (like the first [accent-colored] version, but
+white). **Went back to the original radial-gradient structure** (the one before any of these
+three follow-ups — see the "green halo" paragraph above): both `.logo-badge`'s own background
+and its `::before` are `radial-gradient(circle, ...)` fading to transparent, no flat/solid
+fill anywhere, no `mix-blend-mode`, no `backdrop-filter`/border/box-shadow glass trick — same
+shape as the first version, just `rgba(255,255,255,...)` in place of
+`color-mix(in srgb, var(--accent) ...)`. This reads fine in dark mode too (confirmed via
+screenshot) since a translucent white gradient against near-black is visible on its own,
+without needing a blend mode or a solid disc to force contrast — the earlier two follow-ups'
+problems were specific to *those* techniques (overlay blend, opaque disc), not to white itself.
+Icon fill bumped 78%→90% of the badge (the actual ask: make the icon bigger, not just the
+badge); badge 58px→64px (header) / 96px→108px (login-lg). **If the halo needs further tuning,
+start from this radial-gradient version, not from the disc or overlay-blend ones** — both were
+explicitly rejected by the user. Republished as version 30.
+
+Also confirmed while handling this (no code change needed): the per-user display name in the
+header, `#userLabel`, already shows whichever of the three accounts (`amir`/`arash`/
+`alisalehi`) is currently logged in via `USER_NAMES[CURRENT_USER_ID]` — this was built during
+multi-user support (see that section above) and the user's "نام کاربری... نشون داده بشه" ask
+was already satisfied; verified by logging in as `arash` locally and confirming "آرش" renders.
+
 **Site rename**: "مسیر بورد" → **IntMed**, per explicit user instruction, wherever it serves
 as the app's own name (`<title>`, header `<h1>`, the login card's "ورود به ..." heading) —
 left alone everywhere else (GitHub modal copy, footer text, etc., which were never the site
