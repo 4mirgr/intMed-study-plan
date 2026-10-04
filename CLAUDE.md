@@ -888,7 +888,37 @@ the artifact db in one batch and the bundle regenerated to 45 topics:
 Integration note: `isolation:"worktree"` was used for one agent in this batch and left a
 leftover `.claude/worktrees/` directory as untracked state in the main checkout — fixed via
 the new root `.gitignore` (`.claude/`). Subsequent agents in the batch ran without isolation
-(shared checkout) to avoid repeating it. Separately, `poison-beta-blocker` (two-PDF build,
-English toxicology source + a 63-page Persian MOH protocol) was requested the same session but
-is tracked as its own follow-up batch, not folded into this one, since it was a later,
-separately-timed request.
+(shared checkout) to avoid repeating it.
+
+## `poison-beta-blocker` (2026-10-04)
+
+Separate, later-timed background-agent build (not folded into the batch above) from two PDFs:
+`Beta_blocker_poisoning.pdf` — an English UpToDate chapter (receptor pharmacology, MSA/
+lipophilicity/ISA framework, drug-specific toxicity for sotalol/acebutolol/carvedilol,
+4-way differential diagnosis, stepwise escalating treatment algorithm: glucagon → calcium →
+vasopressor → HIET → methylene blue → lipid emulsion → bicarbonate/magnesium/pacing/IABP/
+ECMO, 66 citations) — and a 63-slide Persian clinical-teaching deck by Dr. Behrouz Hashemi
+(not a formal MOH protocol despite its filename implying one; independently confirmed by the
+agent's own source check). 98 flashcards, 16 mcq, 3 kfPmp, 5 tables, 16 lesson sections.
+
+The Persian deck contributed genuinely new content absent from the English chapter: an
+Iran-specific drug formulary table (brand names/strengths per drug), a vagal-stimulation
+caution for NG-tube placement, a lidocaine fallback step after failed bicarbonate,
+aminophylline as a last-resort option (narrow therapeutic index flagged as its real
+limitation), a distinct 10%-concentration lipid-emulsion protocol, and — the standout,
+board-relevant point the English source doesn't cover at all — systemic beta-blocker toxicity
+(bradycardia/AV block/bronchospasm) from topical timolol eye drops via nasolacrimal
+absorption. Where the two sources gave differing numeric protocols for the same intervention
+(methylene blue, lipid emulsion), both were kept and flagged as distinct rather than merged
+into one number — same pattern as `poison-aluminum-phosphide`'s dual lactate-cutoff handling.
+
+Flashcard count (98) is well above this repo's usual 40-60 target; independently re-verified
+(not just trusted from the agent's report) that this reflects genuine source breadth — no
+duplicate ids, no duplicate facts on manual sampling — rather than padding, so it was left
+as-is. Independently validated: schema passes, 0 جگر occurrences, flashcard front→back
+direction consistent across a random sample, no rule-3 sentence-grammar breaks (a broad
+Latin/Persian-character-adjacency scan only turned up normal abbreviation-next-to-punctuation
+patterns, e.g. "ISA)"، "AV؛", never an actual grammar break). `TOPICS` entry for this topic
+was already added in a prior step this session (commit `5c62a85`), so no taxonomy/artifact-
+HTML edit was needed here. Synced to the artifact db as a new doc (version 1). Bundle
+regenerated to 46 topics.
