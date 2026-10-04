@@ -922,3 +922,79 @@ patterns, e.g. "ISA)"، "AV؛", never an actual grammar break). `TOPICS` entry f
 was already added in a prior step this session (commit `5c62a85`), so no taxonomy/artifact-
 HTML edit was needed here. Synced to the artifact db as a new doc (version 1). Bundle
 regenerated to 46 topics.
+
+## Second nephro content batch: AKI, CKD-MBD, candiduria, catheter infection (2026-10-04)
+
+Four more nephro topics, all from the user's own handwritten notes (two PDFs the user had
+assumed were printed chapters turned out to be handwritten scans too, same as everything else
+this session) plus two standalone handwritten images sent in a later message. Taxonomy entries
+for `nephro-aki` and `nephro-ckd` had already been added to `TOPICS` in both `docs/index.html`
+and the artifact HTML in an earlier, unlogged step this session — found already present when
+starting this work, so their `topicId`s were picked to match what was already there rather than
+invented fresh.
+
+- **`nephro-aki`** (new, background agent, independently re-verified): contrast-associated
+  AKI definition, the Mehran score (= CIN risk score) with full point table and the CIN-score→
+  AKI-risk/dialysis-risk table — hand-checked byte-for-byte against my own transcription of the
+  source handwritten image, matched exactly. Supplemented with KDIGO AKI staging, the AEIOU
+  dialysis-indication mnemonic, CIN prevention strategies (N-acetylcysteine explicitly framed
+  as evidence-uncertain, not proven), capillary leak syndrome (OHSS/sepsis as causes), and
+  analgesic nephropathy (explicitly framed as primarily a CKD etiology despite being filed
+  under this AKI topic in the source notes — the lesson prose says so directly rather than
+  misrepresenting it as a typical acute cause). Rhabdomyolysis kept to a 1-2 sentence
+  cross-reference to the existing `rhabdo-myopathy` topic rather than duplicating it. 47
+  flashcards, 14 mcq, 3 kfPmp, 4 tables, 10 lesson sections. The agent caught and fixed two of
+  its own internal-consistency bugs during self-review (a Mehran-score arithmetic mismatch in
+  one MCQ, a self-contradicting KF/PMP answer) before handing back — reported transparently
+  rather than silently, which is exactly the kind of thing to check for when re-verifying
+  agent output generally.
+- **`nephro-ckd`** (new, background agent): CKD-MBD (PTH/Ca/P targets and the calcitriol vs.
+  cinacalcet directionality — vitamin D analogs raise Ca and suppress PTH for high-PTH states,
+  cinacalcet lowers PTH without raising Ca, preferred when Ca is already high — this exact
+  distinction was flagged in the build brief as the most likely place to get backwards),
+  anemia/iron/ESA targets, diuretic-resistant edema management, the ACEI/ARB-in-CKD nuance
+  (renoprotective in earlier stages, held during AKI/hyperkalemia, permanent discontinuation
+  in very advanced CKD is individualized/controversial — not a flat rule), secondary/tertiary
+  hyperparathyroidism progression (brown tumors, salt-and-pepper skull, adynamic bone disease),
+  AF/anticoagulation and calciphylaxis in ESRD, PD peritonitis/exit-site/tunnel infection, UF
+  rate limits, dialysis adequacy (URR/Kt-V), and dialysis disequilibrium syndrome.
+- **`nephro-lytes`** (supplemented directly, not via agent — small bounded addition): the
+  renin/aldosterone-based differential for hypertension with hypokalemia, from a standalone
+  handwritten image — primary hyperaldosteronism, renovascular disease/fibromuscular dysplasia
+  (the "string of beads" sign), Liddle syndrome, apparent mineralocorticoid excess (added as a
+  close differential to Liddle even though not in the source, since the two are a classic
+  paired board distinction — both have low renin/low aldosterone, but AME responds to
+  spironolactone and Liddle doesn't), Cushing syndrome, and Bartter vs. Gitelman. 68→80
+  flashcards, 48→50 mcq, 6→7 tables, 16→17 lesson.
+- **`nephro-candiduria`** (new, built directly, not via agent): from a second standalone
+  handwritten image whose placement was NOT obvious — it wasn't named with `@` in the user's
+  message text alongside the two PDFs, and its content (catheter-associated candiduria,
+  fluconazole dosing, IDSA high-risk treatment criteria) is arguably more ID/urology than core
+  nephro. Asked the user directly via `AskUserQuestion` rather than guessing; they chose "new
+  dedicated chapter in nephrology." Built from the handwritten skeleton + IDSA 2016 candidiasis
+  guideline supplementation (when to treat asymptomatic candiduria, fluconazole regimen,
+  catheter-removal nuance, resistant-organism alternatives, candidemia contrast). 9 flashcards,
+  2 mcq, 1 kfPmp, 1 table, 3 lesson sections — intentionally smaller than other topics since the
+  source and the standard-knowledge scope here are both genuinely narrower.
+- **`nephro-catheter-infection`** (new, built directly, not via agent, same session later
+  request from two more standalone handwritten images): covers CAPD/PD peritonitis (diagnosis
+  threshold WBC>100+PMN>50%, empiric IP antibiotics with the vancomycin-overuse caveat,
+  48-96h catheter-removal rule, and the fungal-peritonitis exception where catheter removal is
+  immediate rather than contingent on treatment response) and hemodialysis catheter
+  types/complications (tunneled vs. non-tunneled, the infection/thrombosis/stenosis triad, SVC
+  syndrome from chronic central-line thrombosis/stenosis — including why subclavian catheters
+  are avoided over internal jugular in future-fistula candidates). **Known overlap to watch**:
+  `nephro-ckd` (built in the same batch, from an earlier, terser PD-peritonitis mention in its
+  own source) also has a PD-peritonitis section — not reconciled against each other yet since
+  `nephro-ckd` was still mid-build when this topic was written; a future session should compare
+  the two once both are stable and either cross-reference or trim the thinner one, same pattern
+  as the rhabdomyolysis cross-references elsewhere in this file.
+
+All four independently re-verified (schema validation, جگر grep, duplicate-id check,
+flashcard-direction spot-check) before committing — agent reports trusted as a starting point,
+never as the final word. Taxonomy entries added for `nephro-candiduria` and
+`nephro-catheter-infection` in both `docs/index.html` and the artifact HTML (republished
+version 34, then 35); `nephro-aki`/`nephro-ckd` entries were already present. Synced to the
+artifact db (`nephro-candiduria` as its own batch write, `nephro-aki`+`nephro-catheter-
+infection` as a second batch write once `nephro-aki` was verified). Bundle regenerated to 49
+topics after this round (nephro-ckd not yet included — still building as of this entry).
