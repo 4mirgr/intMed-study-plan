@@ -3236,7 +3236,8 @@
         var stem = document.createElement("div");
         stem.className = "mcq-stem";
         var stemLocKey = "mcq:" + qKey + ":stem";
-        stem.dataset.hlRawText = q.stem;
+        var numberedStem = "سوال " + faDigits(qIdx + 1) + ": " + q.stem;
+        stem.dataset.hlRawText = numberedStem;
         stem.dataset.hlLoc = stemLocKey;
         stem.dataset.hlTopic = topicId;
         applyHighlightsToContainer(stem, topicId, stemLocKey);
