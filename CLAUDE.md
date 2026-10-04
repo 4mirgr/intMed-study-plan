@@ -1175,3 +1175,60 @@ correctly rendered `arash`'s filled-in data alongside `alisalehi`'s untouched pl
 ("—" / "هنوز وارد نشده") without crashing on missing data; (4) switched to the tickets tab,
 confirmed the message rendered with the correct sender name and an unread badge, clicked
 "دیده شد", confirmed the badge cleared. Screenshots reviewed for layout at each step.
+
+## Follow-up UI changes, 2026-10-05: default tab, hide legacy dashboard, de-GitHub-ify labels
+
+Same day as the profile/admin-panel feature above, three more changes to `docs/index.html`:
+
+1. **Education tab is now the default after login**, not Dashboard — swapped which
+   `tab-btn`/`tab-panel` pair carries the `active` class in the static HTML (no JS logic
+   changed; the tab-switcher was already purely class-driven).
+2. **Old dashboard content hidden, not deleted.** The status-evaluation callout, the
+   "removed from the original plan" note, the "here card" (current-phase pointer), and the
+   phase checklist (`#phasesRoot`) are now wrapped in `<div id="dashboardLegacyContent"
+   style="display:none">`. Per the user's explicit instruction ("بدون اینکه یادت بره یا
+   مستقیما حذفش کنی — فقط نمایش پیدا نکنه"), this is a single toggle point: bringing it back
+   later is dropping that one `display:none`, not restoring deleted markup. The new
+   profile/ticket card and admin panel (previous section) are unaffected and still show.
+3. **Removed "GitHub"/"گیت‌هاب" from the short, user-facing labels** (header connection
+   pill, connect button, sync-settings modal title, disconnect confirm dialog, footer note,
+   one `alert()`) — e.g. the error state now reads exactly "خطا در همگام‌سازی" per the user's
+   given example, the connect button reads "اتصال برای ذخیره‌سازی". **Deliberately left
+   untouched**: the modal's step-by-step token-creation instructions (the numbered list
+   that says to go to `github.com/settings/personal-access-tokens/new`) — those sentences
+   inherently need to name GitHub to make sense as instructions, and the user's ask read as
+   being about the short status/label wording, not that walkthrough text. Flag this scoping
+   choice back to the user if they actually wanted the walkthrough reworded too.
+
+Also added a **connect-reminder box** (`#connectReminderBox`, amber/warning styling built
+from the existing `--warn`/`--warn-soft` design tokens, not new colors) shown above the
+profile/admin section whenever the connection state is `nopat`/`error`/`auth` (toggled
+inside `setConn()`) — prompts the user to connect, with a button that just synthetically
+clicks the existing `#ghConnectBtn` to open the same modal, rather than duplicating any
+connect logic.
+
+### What was explicitly NOT built, and why — read this before adding a "shared token" UI again
+
+The user asked for this box to also display a **ready-made GitHub PAT as a copy-paste code
+block** (with a copy button) so `arash`/`alisalehi` could skip generating their own token,
+and pasted a real, live, write-scoped PAT directly in the chat for this purpose
+(`github_pat_11BRZAW4...`). **This was not implemented as asked — the token was not put
+anywhere in `docs/index.html` or any other committed file.** Reason: `docs/index.html` is
+committed to the public `4mirgr/intMed-study-plan` repo and served as plain, unauthenticated
+HTML on drgerami-md.ir — anyone who views page source or opens devtools would see the raw
+token, and this isn't a theoretical risk, it's the literal mechanism by which the feature
+was requested to work ("یک باکس حاوی این کد... که فرد فقط کافیه paste کنه" only works if the
+code is sitting in the page for them to see and copy, which means it's sitting there for
+*everyone* to see and copy). A leaked write-scoped PAT for this repo lets anyone overwrite
+`state.json` on the `study-state` branch — every user's progress, profile data, and tickets.
+This was flagged directly to the user rather than silently built or silently skipped.
+
+If a lower-friction connect flow for `arash`/`alisalehi` is wanted later, the options that
+don't have this problem: (a) the admin generates one token **per person** (not shared) and
+sends each one privately (Telegram/SMS/in person) — same mechanism already built, just with
+the admin doing the github.com steps on the colleague's behalf instead of making them learn
+GitHub; (b) same idea but admin generates and hands it over however; neither puts a secret
+in the public page. **The token pasted into this conversation should be treated as
+compromised and revoked/regenerated** — it was typed in plaintext into a chat session,
+which is standard reason enough to rotate a credential regardless of where it ends up, even
+though it was never committed anywhere by this session.
