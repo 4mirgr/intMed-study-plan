@@ -1610,3 +1610,93 @@ values (including the 2 arash already locked), corrects one and fills a previous
 saves → admin sends a direct message → admin's own ticket list shows the sent record →
 arash's own dashboard shows the admin's message as a green "پیام از مدیر" box and the
 corrected/filled fields now locked with the admin's values.
+
+## Highlighting in MCQ/flashcard fronts, intro-text wording, admin password changes, forgot-login (2026-10-04)
+
+### Highlighting extended to flashcard fronts and MCQ stem/explanation
+Scope before this: lesson prose, flashcard **backs**, and table cells (explicitly NOT
+MCQ/KF-PMP/images, per the original 2026-10-01 scope decision). The user asked to extend it
+to "تست‌ها و فلش‌کارت‌ها" — read as: flashcard **fronts** (backs were already covered) and
+MCQ. The existing highlight machinery is fully generic — any element that gets
+`dataset.hlRawText`/`dataset.hlLoc`/`dataset.hlTopic` set and a call to
+`applyHighlightsToContainer()` becomes annotatable automatically, since the selection
+listener just walks up to the nearest `[data-hl-loc]` ancestor — so this was wiring, not new
+infrastructure:
+- Flashcard front: new `loc` format `fc-front:<id>` (distinct from the existing `fc:<id>`
+  for the back, so old back-highlights keep their anchoring unchanged).
+- MCQ: `mcq:<id>:stem` and `mcq:<id>:explain`. **Deliberately did not wire the options**
+  (the `.mcq-opt` buttons) — they're interactive click targets for picking an answer, and
+  making running text inside a button selectable is an unusual interaction that would also
+  complicate the existing correct/incorrect-styling click handler; stem + explanation cover
+  the actual prose worth highlighting. KF&PMP was not touched either — the user said "تست‌ها"
+  which in this app's own vocabulary is the MCQ tab (آزمون ۴ گزینه‌ای), not KF&PMP.
+- The هایلایت‌های من list's source label (`لیگsc` → "درسنامه"/"فلش‌کارت"/"جدول") extended
+  with a "تست" branch for the two new `mcq:` prefixes.
+- Verified via Playwright: rendered a real topic's flashcard/MCQ panels directly (bypassing
+  UI navigation, via an exposed `renderLearnPanel`), confirmed the new `data-hl-loc` values
+  on the front/stem/explain elements, then actually committed a highlight and confirmed a
+  `<mark>` rendered on the flashcard front after a re-render.
+
+### Education-tab intro text — last sentence changed, flashcard/MCQ wording updated
+Exact wording swap per request: "...در گفتگو بگو" → "...در پنل کاربری خود نظرتان را ارسال
+بفرمایید." Also updated the sentence listing what's highlightable ("پشت فلش‌کارت‌ها و
+سلول‌های جدول" → "فلش‌کارت‌ها، تست‌ها و سلول‌های جدول") to match the scope change above —
+would've been actively wrong to leave the old wording once fronts/MCQ became highlightable
+too.
+
+### Admin can change (not view) a user's password
+The user's literal ask had two halves: "پسوردی که انتخاب کرده را نیز نشان بده" (show the
+password they chose) **and** "قابلیت تغییر پسورد... را نیز در اختیار مدیر... قرار بده" (give
+the admin the ability to change it). **Only built the second half.** The first half was
+declined on the same grounds as the earlier refused shared-GitHub-token request: this repo
+is public, `state.json` is readable unauthenticated by anyone, and the app's own comment
+already states the invariant this would break — "plaintext password never stored anywhere."
+Storing a plaintext password anywhere reachable from a public repo is a materially worse
+exposure than the existing FNV-1a hash (which at least requires effort to reverse, however
+weak), and for actual people's actual login credentials rather than contact-info PII, that
+tradeoff isn't the same category as the profile-PII one the user already explicitly accepted
+— so this wasn't silently built, and wasn't silently dropped either.
+
+What **was** built, fully respecting that invariant (never reads or stores the old plaintext,
+only ever writes a new hash):
+- `STATE.users[id].passwordHash` — a new, live, per-user field. Set at signup-approval time
+  (copied from the signup's own `hash`), and from then on the **authoritative** credential
+  for that account, overridable any time via the admin's new "تنظیم رمز عبور جدید" box in
+  that user's accordion card (one text input + a button — admin types the new password,
+  which gets hashed with `fnv1aHex(originalSignupUsername + ":" + newPassword)` and written
+  directly, never touching or reading whatever hash was there before).
+- The dynamic login-check (the one that fetches `state.json` for a non-GATE_USERS login
+  attempt) now checks `users[uid].passwordHash` **first**, falling back to the legacy
+  `signups[].hash` match only if no bucket has a `passwordHash` yet (covers, in theory, an
+  approved signup from before this field existed — though realistically none exist in
+  production yet, since the Sheet webhook this whole signup pipeline still waits on has
+  never been deployed).
+- **Bug caught by testing, fixed before shipping**: the first version of the password-change
+  handler only updated `passwordHash` and left the original signup record's `hash` field
+  stale — since the login check's fallback path still matched that stale hash, the OLD
+  password kept working indefinitely alongside the new one. Fixed by also updating the
+  matching `STATE.signups[].hash` record in the same click handler. Caught via an actual
+  Playwright run (change password → try logging in with the old one → it should fail and
+  didn't on the first pass) rather than by inspection — reinforces why every write path that
+  touches auth gets an actual negative-case test, not just a positive one.
+- **Static accounts (amir/arash/alisalehi) are explicitly excluded from this UI** — their
+  password hashes are hardcoded in `GATE_USERS` in this file's own source, not in `STATE`, so
+  nothing in the running app can change them. Their accordion card shows an informational
+  note ("رمز این حساب ایستا و داخل کد سایت است — تغییرش یک ویرایش کد لازم دارد، در گفتگو با
+  کلود بخواه") instead of a form. If arash/alisalehi's passwords need changing, that's still
+  a code edit + redeploy via a Claude Code session, same as always.
+
+### "فراموشی اطلاعات ورود؟" link — same human-relay pattern as signup, not an automated reset
+A real automated password-reset flow (reset email/SMS link) isn't buildable here for the
+exact same reason already established repeatedly in this file: no backend, can't send email/
+SMS from a static page. Added a `#forgotForm` panel (reached via a new link next to عضویت
+under the login form) that collects just a username + mobile number and relays it to the
+admin over WhatsApp (same `wa.me` deep-link pattern as the signup success box, same admin
+number constant) — the admin verifies it's really that person and sets a new password via
+the admin panel's new "تنظیم رمز عبور جدید" action above. No new write path, no new data
+model — purely a second doorway into the capability that already existed.
+
+Verified the whole chain via Playwright: forgot-link toggles the panel correctly and builds
+the right WhatsApp URL; separately, created+approved a fresh signup, set a password for it,
+confirmed the OLD password now fails to log in and the NEW one succeeds; confirmed the
+static-account note renders instead of a form for `arash`.

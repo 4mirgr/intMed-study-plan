@@ -237,6 +237,16 @@
   }
   .admin-user-msg-send{font-size:.72rem;border:none;border-radius:var(--radius-pill);background:var(--primary);color:#fff;padding:5px 13px;cursor:pointer;font-weight:700}
   .admin-user-msg-note{margin-inline-start:9px;font-size:.74rem;color:var(--success);font-weight:600}
+  .admin-user-pass-box{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .admin-user-pass-box label{display:block;font-size:.72rem;color:var(--ink-faint);margin-bottom:5px;font-weight:600}
+  .admin-user-pass-box input{
+    width:100%;padding:8px 10px;margin-bottom:7px;border:1px solid var(--border);border-radius:var(--radius-sm);
+    background:var(--surface-solid);color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:.8rem;min-height:38px;
+  }
+  .admin-user-pass-send{font-size:.72rem;border:none;border-radius:var(--radius-pill);background:var(--warn);color:#fff;padding:5px 13px;cursor:pointer;font-weight:700}
+  .admin-user-pass-note{margin-inline-start:9px;font-size:.74rem;color:var(--success);font-weight:600}
+  .admin-user-pass-hint{margin:7px 0 0;font-size:.7rem;color:var(--ink-faint);line-height:1.7}
+  .admin-user-pass-static{margin:0;font-size:.78rem;color:var(--ink-faint);line-height:1.8}
   .profile-save-btn{
     border:none;border-radius:var(--radius-sm);padding:9px 18px;font-family:inherit;font-weight:700;
     font-size:.82rem;cursor:pointer;min-height:40px;
@@ -834,7 +844,19 @@
     <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     <button type="submit">ورود</button>
     <div class="login-err" id="loginErr">نام کاربری یا رمز عبور اشتباه است.</div>
-    <div class="login-switch"><a href="#" id="showSignupLink">عضویت</a></div>
+    <div class="login-switch"><a href="#" id="showSignupLink">عضویت</a> · <a href="#" id="showForgotLink">فراموشی اطلاعات ورود؟</a></div>
+  </form>
+
+  <form class="login-card" id="forgotForm" style="display:none">
+    <span class="brand">
+      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="108" height="108"></span>
+      <h2>بازیابی دسترسی</h2>
+    </span>
+    <p style="margin:0 0 14px;font-size:.78rem;line-height:1.9;color:var(--ink-dim)">این سایت بک‌اند و ایمیل/پیامک خودکار نداره، پس بازیابی رمز خودکار نیست. نام کاربری و شماره موبایلت رو بنویس و پیام رو برای مدیر بفرست؛ مدیر هویتت رو تأیید می‌کنه و رمز جدید برات تنظیم می‌کنه.</p>
+    <input type="text" id="forgotUser" placeholder="نام کاربری">
+    <input type="tel" id="forgotMobile" placeholder="شماره موبایلی که با آن ثبت‌نام کردی">
+    <button type="button" id="forgotSendWhatsapp">ارسال درخواست به مدیر (واتساپ)</button>
+    <div class="login-switch"><a href="#" id="showLoginFromForgot">بازگشت به ورود</a></div>
   </form>
 
   <form class="login-card" id="signupForm" style="display:none">
@@ -1014,7 +1036,7 @@
 
   <div class="tab-panel active" id="tabPanelEducation">
     <h2 class="section-title">بخش آموزشی</h2>
-    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، پشت فلش‌کارت‌ها و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در گفتگو بگو.</p>
+    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، فلش‌کارت‌ها، تست‌ها و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در پنل کاربری خود نظرتان را ارسال بفرمایید.</p>
     <div id="topicsRoot"></div>
   </div>
 
@@ -1150,13 +1172,24 @@
     var loginBtn = loginForm.querySelector("button[type=submit]");
     if(loginBtn){ loginBtn.disabled = true; loginBtn.textContent = "در حال بررسی..."; }
     fetchPublicState().then(function(remote){
-      var signups = (remote && remote.signups) || [];
-      var found = null;
-      for(var j=0;j<signups.length;j++){
-        if(signups[j].hash === h && signups[j].status === "approved" && signups[j].userId){ found = signups[j]; break; }
+      // Preferred: the live passwordHash on the user's own bucket — this is
+      // what a password change from the admin panel updates, so a changed
+      // password takes effect immediately. Falls back to the original
+      // approved-signup hash for an approved user who's never had their
+      // password changed since (that field didn't exist before this).
+      var foundUserId = null;
+      var users = (remote && remote.users) || {};
+      for(var uid in users){
+        if(users.hasOwnProperty(uid) && users[uid].passwordHash === h){ foundUserId = uid; break; }
+      }
+      if(!foundUserId){
+        var signups = (remote && remote.signups) || [];
+        for(var j=0;j<signups.length;j++){
+          if(signups[j].hash === h && signups[j].status === "approved" && signups[j].userId){ foundUserId = signups[j].userId; break; }
+        }
       }
       if(loginBtn){ loginBtn.disabled = false; loginBtn.textContent = "ورود"; }
-      if(found){ doLogin(found.userId); return; }
+      if(foundUserId){ doLogin(foundUserId); return; }
       loginErr.textContent = "نام کاربری یا رمز عبور اشتباه است.";
       loginErr.classList.add("show");
     }).catch(function(){
@@ -1185,11 +1218,13 @@
   var signupSuccessBox = document.getElementById("signupSuccessBox");
   var lastSignupInfo = null;
 
+  var forgotForm = document.getElementById("forgotForm");
   document.getElementById("showSignupLink").addEventListener("click", function(ev){
     ev.preventDefault();
     loginForm.style.display = "none";
     signupForm.style.display = "";
     signupSuccessBox.style.display = "none";
+    forgotForm.style.display = "none";
   });
   document.getElementById("showLoginLink").addEventListener("click", function(ev){
     ev.preventDefault();
@@ -1200,6 +1235,30 @@
     ev.preventDefault();
     signupSuccessBox.style.display = "none";
     loginForm.style.display = "";
+  });
+  document.getElementById("showForgotLink").addEventListener("click", function(ev){
+    ev.preventDefault();
+    loginForm.style.display = "none";
+    forgotForm.style.display = "";
+  });
+  document.getElementById("showLoginFromForgot").addEventListener("click", function(ev){
+    ev.preventDefault();
+    forgotForm.style.display = "none";
+    loginForm.style.display = "";
+  });
+  // Same human-relay pattern as signup — this page has no backend to send a
+  // reset email/SMS from, so "forgot password" is: tell the admin who you
+  // are over WhatsApp, the admin verifies it's really you and sets a new
+  // password from the admin panel's "تنظیم رمز عبور جدید" action.
+  document.getElementById("forgotSendWhatsapp").addEventListener("click", function(){
+    var user = normalizeDigits(document.getElementById("forgotUser").value).trim();
+    var mobile = normalizeDigits(document.getElementById("forgotMobile").value).trim();
+    if(!user){ document.getElementById("forgotUser").focus(); return; }
+    var text = "درخواست بازیابی دسترسی IntMed:\n" +
+      "نام کاربری: " + user + "\n" +
+      "شماره موبایل: " + (mobile || "-");
+    var adminMobile = "989125448285";
+    window.open("https://wa.me/" + adminMobile + "?text=" + encodeURIComponent(text), "_blank");
   });
 
   signupForm.addEventListener("submit", function(ev){
@@ -2381,7 +2440,18 @@
       var p = bucket.profile || {};
       var log = bucket.loginLog || [];
       var displayName = USER_NAMES[id] || p.fullName || (approvedSignupById[id] && approvedSignupById[id].fullName) || id;
-      return {id:id, p:p, log:log, displayName:displayName};
+      // Static accounts (amir/arash/alisalehi) have their password hash
+      // hardcoded in GATE_USERS in this file's own source — nothing in
+      // STATE can change how they log in, so the password-change action
+      // only makes sense for accounts that came through the signup/approve
+      // flow, whose live passwordHash lives in STATE.users[id].
+      var isStatic = USER_NAMES.hasOwnProperty(id);
+      // The login hash is keyed by whatever username the person actually
+      // typed at signup (s.username), not the derived/slugified userId —
+      // need this exact string to compute a matching hash for a password
+      // change.
+      var loginUsername = (approvedSignupById[id] && approvedSignupById[id].username) || id;
+      return {id:id, p:p, log:log, displayName:displayName, isStatic:isStatic, loginUsername:loginUsername};
     });
     if(query){
       rows = rows.filter(function(r){
@@ -2413,6 +2483,15 @@
             '</div>' +
             '<button type="button" class="profile-save-btn admin-user-save-btn" data-save-profile="' + escapeHtml(r.id) + '">ذخیره تغییرات پروفایل</button>' +
             '<span class="admin-user-save-note" id="saveNote-' + escapeHtml(r.id) + '"></span>' +
+          '</div>' +
+          '<div class="admin-user-pass-box">' +
+            (r.isStatic
+              ? '<p class="admin-user-pass-static">رمز این حساب ایستا و داخل کد سایت است — تغییرش یک ویرایش کد لازم دارد، در گفتگو با کلود بخواه.</p>'
+              : ('<label for="passBox-' + escapeHtml(r.id) + '">تنظیم رمز عبور جدید برای این کاربر:</label>' +
+                 '<input type="text" id="passBox-' + escapeHtml(r.id) + '" placeholder="رمز جدید را بنویس...">' +
+                 '<button type="button" class="admin-user-pass-send" data-set-pass="' + escapeHtml(r.id) + '" data-set-pass-username="' + escapeHtml(r.loginUsername) + '">ثبت رمز جدید</button>' +
+                 '<span class="admin-user-pass-note" id="passNote-' + escapeHtml(r.id) + '"></span>' +
+                 '<p class="admin-user-pass-hint">رمز فعلی هیچ‌جا ذخیره نمی‌شه (حتی برای خودِ مدیر) — فقط می‌تونی رمز جدید تنظیم کنی، نه رمز قبلی رو ببینی.</p>')) +
           '</div>' +
           '<div class="admin-user-msg-box">' +
             '<label for="msgBox-' + escapeHtml(r.id) + '">ارسال پیام به ' + escapeHtml(r.displayName) + ':</label>' +
@@ -2454,6 +2533,36 @@
         if(note) note.textContent = "ذخیره شد ✓";
         adminUsersOpenIds[id] = true; // keep this card open through the re-render
         setTimeout(renderAdminUsers, 900);
+      });
+    });
+    // Sets a brand-new password hash — never reads or stores the old
+    // plaintext password anywhere, including here. The hash is keyed by the
+    // same (username, password) pair the login form hashes, so it has to
+    // use the original signup username (data-set-pass-username), not the
+    // derived userId.
+    adminUsersPanel.querySelectorAll("[data-set-pass]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var id = btn.getAttribute("data-set-pass");
+        var username = btn.getAttribute("data-set-pass-username");
+        var input = document.getElementById("passBox-" + id);
+        var note = document.getElementById("passNote-" + id);
+        var newPass = input ? normalizeDigits(input.value) : "";
+        if(!newPass){
+          if(note) note.textContent = "اول رمز جدید رو بنویس.";
+          return;
+        }
+        if(!STATE.users[id]) STATE.users[id] = emptyBucket();
+        var newHash = fnv1aHex(username + ":" + newPass);
+        STATE.users[id].passwordHash = newHash;
+        // Also update the original signup record's hash — the dynamic
+        // login check falls back to it for approved signups predating this
+        // field, and leaving it stale would let the OLD password keep
+        // working forever alongside the new one. Caught via testing.
+        var signupRecord = (STATE.signups || []).find(function(s){ return s.userId === id; });
+        if(signupRecord) signupRecord.hash = newHash;
+        scheduleFlush(200);
+        if(input) input.value = "";
+        if(note) note.textContent = "رمز جدید ثبت شد ✓";
       });
     });
     adminUsersPanel.querySelectorAll("[data-send-msg]").forEach(function(btn){
@@ -2612,6 +2721,10 @@
           phone: s.mobile || "", email: s.email || "",
           updatedAt: new Date().toISOString()
         };
+        // Live, changeable copy of the login hash — see the "تغییر رمز
+        // عبور" admin action below, and the dynamic-login-check in the
+        // login-gate IIFE which checks this field first.
+        STATE.users[userId].passwordHash = s.hash;
         scheduleFlush(200);
         renderAdminSignups();
         renderAdminUsers();
@@ -3013,7 +3126,10 @@
       data.slice().reverse().forEach(function(h){
         var row = document.createElement("div");
         row.className = "hl-list-item hl-list-" + (h.color || "yellow");
-        var src = h.loc.indexOf("lesson:") === 0 ? "درسنامه" : (h.loc.indexOf("fc:") === 0 ? "فلش‌کارت" : "جدول");
+        var src = h.loc.indexOf("lesson:") === 0 ? "درسنامه"
+          : (h.loc.indexOf("fc:") === 0 || h.loc.indexOf("fc-front:") === 0) ? "فلش‌کارت"
+          : h.loc.indexOf("mcq:") === 0 ? "تست"
+          : "جدول";
         var quote = document.createElement("div");
         quote.className = "hl-list-quote";
         quote.textContent = "«" + h.quote + "»";
@@ -3085,7 +3201,11 @@
         card.className = "fc-card";
         var front = document.createElement("div");
         front.className = "fc-front";
-        front.textContent = fc.front;
+        var fcFrontLocKey = "fc-front:" + (fc.id || fcIdx);
+        front.dataset.hlRawText = fc.front;
+        front.dataset.hlLoc = fcFrontLocKey;
+        front.dataset.hlTopic = topicId;
+        applyHighlightsToContainer(front, topicId, fcFrontLocKey);
         var backWrap = document.createElement("div");
         backWrap.className = "fc-back";
         backWrap.style.display = "none";
@@ -3109,14 +3229,25 @@
 
     if(type === "mcq"){
       panel.innerHTML = "";
-      data.forEach(function(q){
+      data.forEach(function(q, qIdx){
         var block = document.createElement("div");
         block.className = "mcq-block";
+        var qKey = q.id || qIdx;
         var stem = document.createElement("div");
-        stem.className = "mcq-stem"; stem.textContent = q.stem;
+        stem.className = "mcq-stem";
+        var stemLocKey = "mcq:" + qKey + ":stem";
+        stem.dataset.hlRawText = q.stem;
+        stem.dataset.hlLoc = stemLocKey;
+        stem.dataset.hlTopic = topicId;
+        applyHighlightsToContainer(stem, topicId, stemLocKey);
         block.appendChild(stem);
         var explain = document.createElement("div");
-        explain.className = "mcq-explain"; explain.textContent = q.explanation || "";
+        explain.className = "mcq-explain";
+        var explainLocKey = "mcq:" + qKey + ":explain";
+        explain.dataset.hlRawText = q.explanation || "";
+        explain.dataset.hlLoc = explainLocKey;
+        explain.dataset.hlTopic = topicId;
+        if(q.explanation) applyHighlightsToContainer(explain, topicId, explainLocKey);
         (q.options||[]).forEach(function(opt, idx){
           var ob = document.createElement("button");
           ob.type = "button"; ob.className = "mcq-opt"; ob.textContent = opt;
