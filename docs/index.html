@@ -237,6 +237,13 @@
   .ticket-history-item{border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:7px;background:var(--surface-2)}
   .ticket-history-msg{font-size:.82rem;color:var(--ink);line-height:1.7;white-space:pre-wrap}
   .ticket-history-meta{font-size:.7rem;color:var(--ink-faint);margin-top:5px}
+  .ticket-history-reply{
+    margin-top:8px;padding:9px 11px;border-radius:var(--radius-sm);white-space:pre-wrap;
+    background:var(--success-soft);border:1px solid color-mix(in srgb, var(--success) 45%, transparent);
+    color:var(--success);font-size:.82rem;line-height:1.75;
+    box-shadow:0 0 12px 1px color-mix(in srgb, var(--success) 40%, transparent);
+  }
+  .ticket-history-reply b{display:block;font-size:.68rem;margin-bottom:4px;font-weight:800;color:var(--success)}
 
   .admin-tabs{display:flex;gap:4px;margin:4px 0 14px;background:var(--surface-2);padding:4px;border-radius:var(--radius-pill);border:1px solid var(--border)}
   .admin-tab-btn{
@@ -249,8 +256,22 @@
     display:inline-block;margin-inline-start:5px;font-size:.66rem;font-weight:700;
     background:var(--danger);color:#fff;border-radius:999px;padding:1px 6px;vertical-align:middle;
   }
-  .admin-user-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:10px;background:var(--surface-2)}
-  .admin-user-name{font-weight:800;font-size:.9rem;color:var(--primary);margin-bottom:8px}
+  .admin-user-search{
+    width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);
+    background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:.84rem;min-height:40px;
+    margin-bottom:10px;transition:border-color var(--dur) var(--ease);
+  }
+  .admin-user-search:focus{border-color:var(--accent)}
+  .admin-user-card{border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:9px;background:var(--surface-2);overflow:hidden}
+  .admin-user-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;cursor:pointer;-webkit-user-select:none;user-select:none}
+  .admin-user-head-left{display:flex;align-items:center;gap:9px;min-width:0}
+  .admin-user-name{font-weight:800;font-size:.88rem;color:var(--primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .admin-user-head-meta{font-size:.7rem;color:var(--ink-faint);white-space:nowrap}
+  .admin-user-chev{flex-shrink:0;transition:transform var(--dur) var(--ease);color:var(--ink-faint)}
+  .admin-user-card.open .admin-user-chev{transform:rotate(180deg)}
+  .admin-user-body{max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
+  .admin-user-card.open .admin-user-body{max-height:900px}
+  .admin-user-body-inner{padding:0 14px 12px}
   .admin-user-row{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;padding:4px 0;border-top:1px dashed var(--border)}
   .admin-user-row:first-of-type{border-top:none}
   .admin-user-row span{color:var(--ink-faint)}
@@ -262,6 +283,14 @@
   .admin-ticket-msg{font-size:.84rem;color:var(--ink);line-height:1.8;white-space:pre-wrap;margin-bottom:6px}
   .admin-ticket-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;font-size:.72rem;color:var(--ink-faint)}
   .admin-ticket-mark-btn{font-size:.7rem;border:1px solid var(--border);background:var(--surface-solid);color:var(--ink-dim);padding:4px 9px;border-radius:var(--radius-pill);cursor:pointer}
+  .admin-ticket-reply-box{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .admin-ticket-reply-box label{display:block;font-size:.7rem;color:var(--ink-faint);margin-bottom:5px;font-weight:600}
+  .admin-ticket-reply-box textarea{
+    width:100%;min-height:52px;resize:vertical;border:1px solid var(--border);border-radius:var(--radius-sm);
+    background:var(--surface-solid);color:var(--ink);font-family:inherit;font-size:.8rem;padding:7px 9px;
+    margin-bottom:6px;
+  }
+  .admin-ticket-reply-send{font-size:.72rem;border:none;border-radius:var(--radius-pill);background:var(--success);color:#fff;padding:5px 13px;cursor:pointer;font-weight:700}
 
   .connect-reminder{
     display:flex;align-items:center;gap:12px;flex-wrap:wrap;
@@ -416,7 +445,7 @@
   .topic-list-title{flex:1;min-width:100px;font-size:.85rem;font-weight:700;color:var(--ink);transition:color var(--dur) var(--ease)}
   .topic-item .chev{flex-shrink:0;transition:transform var(--dur) var(--ease);color:var(--ink-faint);font-size:.75rem}
   .topic-item.open .chev{transform:rotate(180deg)}
-  .topic-item.open .topic-list-title{color:var(--cat-color,var(--accent))}
+  .topic-item.open .topic-list-title{color:var(--success)}
   .topic-detail{display:none;padding:0 2px 16px}
   .topic-item.open .topic-detail{display:block}
   .topic-pill{
@@ -872,19 +901,27 @@
 
     <section class="callout" id="userProfileCard" style="display:none">
       <h2>پروفایل من</h2>
-      <p style="margin:0 0 12px">این اطلاعات فقط برای دکتر گرامی (مدیر) قابل مشاهده است.</p>
+      <p style="margin:0 0 12px">این اطلاعات فقط برای مدیر سایت قابل مشاهده می‌باشد.</p>
       <div class="profile-grid">
         <div class="profile-field">
           <label for="profileFullName">نام و نام خانوادگی</label>
           <input type="text" id="profileFullName" placeholder="مثلاً: علی رضایی">
         </div>
         <div class="profile-field">
+          <label for="profileDegree">آخرین مدرک تحصیلی</label>
+          <input type="text" id="profileDegree" placeholder="مثلاً: دستیار داخلی سال ۲">
+        </div>
+        <div class="profile-field">
           <label for="profileIdNumber">شماره نظام پزشکی / شماره دانشجویی</label>
           <input type="text" id="profileIdNumber" placeholder="مثلاً: ۱۲۳۴۵۶">
         </div>
         <div class="profile-field">
-          <label for="profilePhone">شماره تماس</label>
+          <label for="profilePhone">شماره موبایل</label>
           <input type="tel" id="profilePhone" placeholder="مثلاً: ۰۹۱۲۱۲۳۴۵۶۷">
+        </div>
+        <div class="profile-field">
+          <label for="profileEmail">ایمیل</label>
+          <input type="email" id="profileEmail" placeholder="مثلاً: name@example.com">
         </div>
       </div>
       <button type="button" class="profile-save-btn" id="profileSaveBtn">ذخیره اطلاعات</button>
@@ -919,6 +956,7 @@
         <button type="button" class="admin-tab-btn active" id="adminTabUsers">کاربران</button>
         <button type="button" class="admin-tab-btn" id="adminTabTickets">پیام‌ها و تیکت‌ها<span class="admin-badge" id="adminTicketBadge" style="display:none"></span></button>
       </div>
+      <input type="text" class="admin-user-search" id="adminUserSearch" placeholder="جستجو در میان کاربران (نام، نام کاربری، شماره نظام/دانشجویی، موبایل...)">
       <div id="adminUsersPanel"></div>
       <div id="adminTicketsPanel" style="display:none"></div>
     </section>
@@ -2156,8 +2194,10 @@
   }
 
   var profileFullNameEl = document.getElementById("profileFullName");
+  var profileDegreeEl = document.getElementById("profileDegree");
   var profileIdNumberEl = document.getElementById("profileIdNumber");
   var profilePhoneEl = document.getElementById("profilePhone");
+  var profileEmailEl = document.getElementById("profileEmail");
   var profileSaveBtn = document.getElementById("profileSaveBtn");
   var profileSavedNote = document.getElementById("profileSavedNote");
   var ticketMessageEl = document.getElementById("ticketMessage");
@@ -2165,18 +2205,53 @@
   var adminTabUsers = document.getElementById("adminTabUsers");
   var adminTabTickets = document.getElementById("adminTabTickets");
   var adminUsersPanel = document.getElementById("adminUsersPanel");
+  var adminUserSearchEl = document.getElementById("adminUserSearch");
   var adminTicketsPanel = document.getElementById("adminTicketsPanel");
   var adminTicketBadge = document.getElementById("adminTicketBadge");
 
+  // Best-effort mirror of a saved profile into the "IntMed - کاربران و
+  // ثبت‌نام‌ها" Google Sheet, via a Google Apps Script Web App bound to that
+  // sheet (the only way a static page with no backend can append/update a
+  // sheet row live — the Drive/Sheets tools available when this was built
+  // only support whole-file create, not a values-append call, so there is
+  // no way to do this from a Claude Code session on every save; the Apps
+  // Script runs on Google's own infrastructure instead). No-ops silently
+  // until GOOGLE_SHEET_WEBHOOK_URL is filled in with a deployed Web App
+  // URL — see CLAUDE.md for the exact script + deployment steps.
+  var GOOGLE_SHEET_WEBHOOK_URL = "";
+  function syncProfileToSheet(userId, profile){
+    if(!GOOGLE_SHEET_WEBHOOK_URL) return;
+    try{
+      fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+        method: "POST",
+        headers: {"Content-Type": "text/plain;charset=utf-8"},
+        body: JSON.stringify({
+          userId: userId,
+          username: userId,
+          fullName: profile.fullName || "",
+          degree: profile.degree || "",
+          idNumber: profile.idNumber || "",
+          phone: profile.phone || "",
+          email: profile.email || "",
+          updatedAt: profile.updatedAt || ""
+        })
+      }).catch(function(){});
+    }catch(e){}
+  }
+
   if(profileSaveBtn){
     profileSaveBtn.addEventListener("click", function(){
-      myBucket().profile = {
+      var profile = {
         fullName: profileFullNameEl.value.trim(),
+        degree: profileDegreeEl ? profileDegreeEl.value.trim() : "",
         idNumber: profileIdNumberEl.value.trim(),
         phone: profilePhoneEl.value.trim(),
+        email: profileEmailEl ? profileEmailEl.value.trim() : "",
         updatedAt: new Date().toISOString()
       };
+      myBucket().profile = profile;
       scheduleFlush(300);
+      syncProfileToSheet(CURRENT_USER_ID, profile);
       profileSavedNote.textContent = "ذخیره شد ✓";
       setTimeout(function(){ profileSavedNote.textContent = ""; }, 2500);
     });
@@ -2221,10 +2296,16 @@
     if(!mine.length){ root.innerHTML = ""; return; }
     root.innerHTML = '<div class="ticket-history-label">پیام‌های قبلی شما</div>' + mine.map(function(t){
       return '<div class="ticket-history-item"><div class="ticket-history-msg">' + escapeHtml(t.message) + '</div>' +
-        '<div class="ticket-history-meta">' + formatFaDateTime(t.createdAt) + (t.read ? " · دیده‌شده توسط مدیر" : "") + '</div></div>';
+        '<div class="ticket-history-meta">' + formatFaDateTime(t.createdAt) + (t.read ? " · دیده‌شده توسط مدیر" : "") + '</div>' +
+        (t.reply ? '<div class="ticket-history-reply"><b>پاسخ مدیر' + (t.replyAt ? " — " + formatFaDateTime(t.replyAt) : "") + '</b>' + escapeHtml(t.reply) + '</div>' : "") +
+        '</div>';
     }).join("");
   }
 
+  // Which admin-user accordion rows are currently expanded, keyed by userId —
+  // kept outside renderAdminUsers() so re-rendering on every search keystroke
+  // doesn't collapse a card the admin just opened.
+  var adminUsersOpenIds = {};
   function renderAdminUsers(){
     if(!adminUsersPanel) return;
     var ids = Object.keys(USER_NAMES).filter(function(id){ return id !== "amir"; });
@@ -2235,25 +2316,57 @@
         if(ids.indexOf(s.userId) === -1) ids.push(s.userId);
       }
     });
-    var html = ids.map(function(id){
+    var query = normalizeDigits((adminUserSearchEl && adminUserSearchEl.value) || "").toLowerCase().trim();
+    var rows = ids.map(function(id){
       var bucket = STATE.users[id] || {};
       var p = bucket.profile || {};
       var log = bucket.loginLog || [];
-      var count = log.length;
-      var last = count ? formatFaDateTime(log[log.length - 1].at) : "هنوز وارد نشده";
-      var recent = log.slice(-5).reverse().map(function(l){ return formatFaDateTime(l.at); }).join("، ") || "—";
-      var displayName = USER_NAMES[id] || (approvedSignupById[id] && approvedSignupById[id].fullName) || id;
-      return '<div class="admin-user-card">' +
-        '<div class="admin-user-name">' + escapeHtml(displayName) + '</div>' +
-        '<div class="admin-user-row"><span>نام ثبت‌شده:</span><b>' + (escapeHtml(p.fullName) || "—") + '</b></div>' +
-        '<div class="admin-user-row"><span>شماره نظام/دانشجویی:</span><b>' + (escapeHtml(p.idNumber) || "—") + '</b></div>' +
-        '<div class="admin-user-row"><span>شماره تماس:</span><b>' + (escapeHtml(p.phone) || "—") + '</b></div>' +
-        '<div class="admin-user-row"><span>تعداد ورود:</span><b>' + faDigits(count) + '</b></div>' +
-        '<div class="admin-user-row"><span>آخرین ورود:</span><b>' + last + '</b></div>' +
-        '<div class="admin-user-row admin-user-recent"><span>۵ ورود اخیر:</span><b>' + recent + '</b></div>' +
+      var displayName = USER_NAMES[id] || p.fullName || (approvedSignupById[id] && approvedSignupById[id].fullName) || id;
+      return {id:id, p:p, log:log, displayName:displayName};
+    });
+    if(query){
+      rows = rows.filter(function(r){
+        var haystack = [r.displayName, r.id, r.p.idNumber, r.p.phone, r.p.email, r.p.degree]
+          .map(function(v){ return normalizeDigits(v || "").toLowerCase(); }).join(" ");
+        return haystack.indexOf(query) !== -1;
+      });
+    }
+    var html = rows.map(function(r){
+      var count = r.log.length;
+      var last = count ? formatFaDateTime(r.log[r.log.length - 1].at) : "هنوز وارد نشده";
+      var recent = r.log.slice(-5).reverse().map(function(l){ return formatFaDateTime(l.at); }).join("، ") || "—";
+      var isOpen = !!adminUsersOpenIds[r.id];
+      return '<div class="admin-user-card' + (isOpen ? " open" : "") + '" data-user-row="' + escapeHtml(r.id) + '">' +
+        '<div class="admin-user-head" data-user-toggle="' + escapeHtml(r.id) + '">' +
+          '<div class="admin-user-head-left"><span class="admin-user-name">' + escapeHtml(r.displayName) + '</span></div>' +
+          '<div class="admin-user-head-right"><span>' + faDigits(count) + ' ورود</span><span class="admin-user-chev">▾</span></div>' +
+        '</div>' +
+        '<div class="admin-user-body"><div class="admin-user-body-inner">' +
+          '<div class="admin-user-row"><span>نام کاربری:</span><b>' + escapeHtml(r.id) + '</b></div>' +
+          '<div class="admin-user-row"><span>نام و نام خانوادگی:</span><b>' + (escapeHtml(r.p.fullName) || "—") + '</b></div>' +
+          '<div class="admin-user-row"><span>آخرین مدرک تحصیلی:</span><b>' + (escapeHtml(r.p.degree) || "—") + '</b></div>' +
+          '<div class="admin-user-row"><span>شماره نظام/دانشجویی:</span><b>' + (escapeHtml(r.p.idNumber) || "—") + '</b></div>' +
+          '<div class="admin-user-row"><span>شماره موبایل:</span><b>' + (escapeHtml(r.p.phone) || "—") + '</b></div>' +
+          '<div class="admin-user-row"><span>ایمیل:</span><b>' + (escapeHtml(r.p.email) || "—") + '</b></div>' +
+          '<div class="admin-user-row"><span>تعداد ورود:</span><b>' + faDigits(count) + '</b></div>' +
+          '<div class="admin-user-row"><span>آخرین ورود:</span><b>' + last + '</b></div>' +
+          '<div class="admin-user-row admin-user-recent"><span>۵ ورود اخیر:</span><b>' + recent + '</b></div>' +
+        '</div></div>' +
       '</div>';
     }).join("");
-    adminUsersPanel.innerHTML = html || '<p class="learn-empty">هنوز کاربری ثبت نشده.</p>';
+    adminUsersPanel.innerHTML = html || '<p class="learn-empty">' + (query ? "کاربری با این مشخصات پیدا نشد." : "هنوز کاربری ثبت نشده.") + '</p>';
+    adminUsersPanel.querySelectorAll("[data-user-toggle]").forEach(function(head){
+      head.addEventListener("click", function(){
+        var id = head.getAttribute("data-user-toggle");
+        var card = head.closest(".admin-user-card");
+        var nowOpen = !card.classList.contains("open");
+        adminUsersOpenIds[id] = nowOpen;
+        card.classList.toggle("open", nowOpen);
+      });
+    });
+  }
+  if(adminUserSearchEl){
+    adminUserSearchEl.addEventListener("input", function(){ renderAdminUsers(); });
   }
 
   function renderAdminTickets(){
@@ -2271,13 +2384,34 @@
         '<div class="admin-ticket-msg">' + escapeHtml(t.message) + '</div>' +
         '<div class="admin-ticket-meta"><span>' + formatFaDateTime(t.createdAt) + '</span>' +
         (t.read ? "" : '<button type="button" class="admin-ticket-mark-btn" data-mark-read="' + escapeHtml(t.id) + '">دیده شد</button>') +
-        '</div></div>';
+        '</div>' +
+        '<div class="admin-ticket-reply-box">' +
+          '<label for="replyBox-' + escapeHtml(t.id) + '">' + (t.reply ? "ویرایش پاسخ:" : "پاسخ به این پیام:") + '</label>' +
+          '<textarea id="replyBox-' + escapeHtml(t.id) + '" placeholder="پاسخت رو اینجا بنویس...">' + escapeHtml(t.reply || "") + '</textarea>' +
+          '<button type="button" class="admin-ticket-reply-send" data-reply-ticket="' + escapeHtml(t.id) + '">ارسال پاسخ</button>' +
+        '</div>' +
+        '</div>';
     }).join("");
     adminTicketsPanel.querySelectorAll("[data-mark-read]").forEach(function(btn){
       btn.addEventListener("click", function(){
         var id = btn.getAttribute("data-mark-read");
         var t = (STATE.tickets || []).find(function(x){ return x.id === id; });
         if(t){ t.read = true; scheduleFlush(200); renderAdminTickets(); }
+      });
+    });
+    adminTicketsPanel.querySelectorAll("[data-reply-ticket]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var id = btn.getAttribute("data-reply-ticket");
+        var t = (STATE.tickets || []).find(function(x){ return x.id === id; });
+        if(!t) return;
+        var textarea = document.getElementById("replyBox-" + id);
+        var reply = textarea ? textarea.value.trim() : "";
+        if(!reply) return;
+        t.reply = reply;
+        t.replyAt = new Date().toISOString();
+        t.read = true;
+        scheduleFlush(200);
+        renderAdminTickets();
       });
     });
   }
@@ -2332,7 +2466,8 @@
         s.decidedAt = new Date().toISOString();
         STATE.users[userId] = emptyBucket();
         STATE.users[userId].profile = {
-          fullName: s.fullName || "", idNumber: s.idNumber || "", phone: s.mobile || "",
+          fullName: s.fullName || "", degree: s.degree || "", idNumber: s.idNumber || "",
+          phone: s.mobile || "", email: s.email || "",
           updatedAt: new Date().toISOString()
         };
         scheduleFlush(200);
@@ -2404,8 +2539,10 @@
     } else {
       var p = myBucket().profile || {};
       if(profileFullNameEl) profileFullNameEl.value = p.fullName || "";
+      if(profileDegreeEl) profileDegreeEl.value = p.degree || "";
       if(profileIdNumberEl) profileIdNumberEl.value = p.idNumber || "";
       if(profilePhoneEl) profilePhoneEl.value = p.phone || "";
+      if(profileEmailEl) profileEmailEl.value = p.email || "";
       renderTicketHistory();
     }
   }

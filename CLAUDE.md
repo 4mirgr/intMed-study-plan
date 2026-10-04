@@ -1387,4 +1387,79 @@ multi-user login gate the artifact doesn't have (see the "User profile/ticket se
 above), so none of this was ported. The `connectGithub()` merge-bug fix specifically: the
 artifact's own equivalent sync function (hardcoded to `ARTIFACT_USER_ID = "amir"`, no
 tickets/profile/signups concept) was **not checked or patched** in this pass — if the same
+
+## Green topic titles, expanded profile fields, ticket replies, admin accordion (2026-10-04)
+
+Four changes to `docs/index.html`, `docs/index.html`-only (same reason as the signup/profile
+batch above — all depend on the multi-user login gate the artifact doesn't have).
+
+### 1. Topic title turns green while its detail is open
+`.topic-item.open .topic-list-title` already existed (set when the topic row's detail panel
+is expanded, cleared when closed — `item.classList.toggle("open", willOpen)` in the topic-
+list click handler) but colored the title with `var(--cat-color,var(--accent))` (the per-
+category accent, which varies by category and isn't green). Changed the one rule to
+`color:var(--success)` — no JS change needed, the open/close toggle was already correct, this
+was purely which CSS variable the open state painted.
+
+### 2. Non-admin profile card now mirrors the full signup form
+`#userProfileCard`'s `.profile-grid` went from 3 fields (fullName/idNumber/phone) to 5,
+matching every signup-form field that isn't a login credential (username/password stay
+login-only, not profile fields): added **آخرین مدرک تحصیلی** (`#profileDegree`) and
+**ایمیل** (`#profileEmail`). `myBucket().profile` shape is now `{fullName, degree, idNumber,
+phone, email, updatedAt}`. Updated every place that reads/writes this shape: the save
+handler, the `renderUserPanel()` prefill, and the admin approve-signup handler (now also
+copies `s.degree`/`s.email` into the new user's profile, not just fullName/idNumber/phone).
+Caption above the card changed to the user's exact requested wording: "این اطلاعات فقط برای
+مدیر سایت قابل مشاهده می‌باشد." (was: "...برای دکتر گرامی (مدیر)...").
+
+A pre-approved static user (`arash`/`alisalehi`) who never went through the signup form just
+sees these 5 fields empty and fills them in themselves from the profile card — same UI,
+whether the data arrived via signup-approval or manual entry.
+
+### 3. Admin reply to tickets — shown in green under the user's own message
+`renderAdminTickets()` now renders a `.admin-ticket-reply-box` (textarea + "ارسال پاسخ" button)
+under every ticket, pre-filled with any existing reply (so re-opening it is an edit, not a
+blank box). Sending sets `t.reply`/`t.replyAt`/`t.read=true` on the ticket object directly —
+no schema change needed since `cleanedStateForSave()` already round-trips whole ticket
+objects, not a field whitelist. `renderTicketHistory()` (the user's own view) now renders
+`.ticket-history-reply` under that ticket's own entry when `t.reply` is set — a
+`--success`-colored box with a `box-shadow` glow (same `color-mix(in srgb, var(--success)
+N%, transparent)` halo pattern used elsewhere in this file) for the "نئونی" look asked for.
+
+### 4. Admin "کاربران" (users) panel: accordion + search, fields matching the signup form
+Was a flat list of always-expanded cards showing only 3 fields. Rewrote `renderAdminUsers()`
+as a search-filtered accordion: a `#adminUserSearch` input above the list (matches against
+display name, userId, idNumber, phone, email, degree — case-insensitive, Persian-digit-
+normalized via the existing `normalizeDigits()`), each user is a collapsed `.admin-user-card`
+by default (one-line header: name + login count + chevron) that expands on click to show the
+full detail — now the same 5 signup-form fields (username, fullName, degree, idNumber,
+phone, email) instead of the old 3-field subset, plus the existing login-count/last-login/
+recent-logins rows. Open/closed state is tracked in a module-level `adminUsersOpenIds` map
+so re-rendering on every search keystroke doesn't collapse a card the admin just opened.
+
+### Google Sheet live-sync — needs a one-time manual step from the user, not buildable blind
+The user asked that a profile save also update the "IntMed - کاربران و ثبت‌نام‌ها" Google
+Sheet (see the earlier Google-Sheet entry above — it was a one-time static snapshot before
+this). **This cannot be wired up by a Claude Code session alone**, for the same root reason
+noted earlier: the available Drive/Sheets tools only support whole-file `create`, not a
+per-cell/per-row values write, and `docs/index.html` is a static page with no backend of its
+own to call the real Google Sheets API (which needs OAuth, not a fit for a public static
+page either — same class of problem as embedding a GitHub PAT in page source).
+
+The buildable fix: a **Google Apps Script Web App**, which runs on Google's own
+infrastructure and can be deployed with "Anyone" access without exposing any credential that
+can do more than append/update one row. `docs/index.html` now has a
+`syncProfileToSheet(userId, profile)` function (called from the profile-save handler,
+fire-and-forget, never blocking the existing GitHub-backed save) that POSTs the profile JSON
+to `GOOGLE_SHEET_WEBHOOK_URL` — **currently empty, so it no-ops silently** until that constant
+is filled in with a real deployed Web App URL. The exact script (reads `e.postData.contents`,
+finds the row by username in column A, updates columns C–G, or appends a new row if the
+username isn't in the sheet yet) is saved for the user at
+`scripts/sheet_sync_apps_script.gs` in this repo. **One-time setup the user has to do** (no
+tool in this session can do it for them — Apps Script deployment has no API surface reachable
+here): open the sheet → Extensions → Apps Script → paste the script → Deploy → New deployment
+→ type "Web app", execute as "Me", access "Anyone" → copy the resulting `/exec` URL → give it
+to a future session (or ask directly) to drop into `GOOGLE_SHEET_WEBHOOK_URL`. Until that
+happens, profile saves keep working exactly as before (GitHub `state.json` + admin panel),
+just without the Sheet mirror.
 blind-overwrite pattern exists there for highlights, it would need its own look.
