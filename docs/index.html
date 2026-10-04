@@ -292,6 +292,8 @@
     margin-bottom:6px;
   }
   .admin-ticket-reply-send{font-size:.72rem;border:none;border-radius:var(--radius-pill);background:var(--success);color:#fff;padding:5px 13px;cursor:pointer;font-weight:700}
+  .admin-ticket-reply-note{margin-inline-start:9px;font-size:.74rem;color:var(--success);font-weight:600}
+  .admin-ticket-reply-note.warn{color:var(--warn)}
 
   .connect-reminder{
     display:flex;align-items:center;gap:12px;flex-wrap:wrap;
@@ -599,6 +601,19 @@
   table.md-table th{background:var(--surface-2);font-weight:700}
   @media (max-width:600px){
     table.md-table{display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+  }
+
+  /* On a real phone width (now that the viewport meta tag actually lets the
+     page render at that width — see CLAUDE.md), the padding stacked up at
+     every nesting level (.app > .topic-cat > .cat-inner > .learn-panel) ate
+     a large chunk of the ~390px screen before any text started, so lines
+     wrapped much sooner than they needed to. Reclaim that width specifically
+     for the content containers that hold readable prose. */
+  @media (max-width:480px){
+    .app{padding-inline:10px}
+    .cat-inner{padding:2px 8px 12px}
+    .learn-panel{padding:14px 11px}
+    section.callout{padding:14px 13px}
   }
 
   footer.bottom{
@@ -2390,6 +2405,7 @@
           '<label for="replyBox-' + escapeHtml(t.id) + '">' + (t.reply ? "ویرایش پاسخ:" : "پاسخ به این پیام:") + '</label>' +
           '<textarea id="replyBox-' + escapeHtml(t.id) + '" placeholder="پاسخت رو اینجا بنویس...">' + escapeHtml(t.reply || "") + '</textarea>' +
           '<button type="button" class="admin-ticket-reply-send" data-reply-ticket="' + escapeHtml(t.id) + '">ارسال پاسخ</button>' +
+          '<span class="admin-ticket-reply-note" id="replyNote-' + escapeHtml(t.id) + '"></span>' +
         '</div>' +
         '</div>';
     }).join("");
@@ -2400,19 +2416,35 @@
         if(t){ t.read = true; scheduleFlush(200); renderAdminTickets(); }
       });
     });
+    // Sending a reply used to just silently re-render — if the typed text
+    // matched what was already there (e.g. re-sending, or the admin can't
+    // tell at a glance that the textarea's content is now "saved" rather
+    // than "still just typed"), it could look exactly like nothing
+    // happened. Same for an empty textarea, which used to no-op with zero
+    // feedback. Both now show a note next to the button either way.
     adminTicketsPanel.querySelectorAll("[data-reply-ticket]").forEach(function(btn){
       btn.addEventListener("click", function(){
         var id = btn.getAttribute("data-reply-ticket");
         var t = (STATE.tickets || []).find(function(x){ return x.id === id; });
         if(!t) return;
         var textarea = document.getElementById("replyBox-" + id);
+        var note = document.getElementById("replyNote-" + id);
         var reply = textarea ? textarea.value.trim() : "";
-        if(!reply) return;
+        if(!reply){
+          if(note){ note.textContent = "اول پاسخ رو بنویس."; note.classList.add("warn"); }
+          return;
+        }
         t.reply = reply;
         t.replyAt = new Date().toISOString();
         t.read = true;
         scheduleFlush(200);
-        renderAdminTickets();
+        if(note){ note.classList.remove("warn"); note.textContent = "ارسال شد ✓"; }
+        // Delay the re-render so the "ارسال شد ✓" note is actually visible
+        // for a moment — renderAdminTickets() replaces this whole box's
+        // markup (including this note), so firing it immediately would
+        // wipe the confirmation in the same tick, which is exactly the
+        // "I clicked and nothing seemed to happen" symptom this is fixing.
+        setTimeout(renderAdminTickets, 900);
       });
     });
   }
