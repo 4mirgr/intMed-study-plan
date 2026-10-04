@@ -1757,3 +1757,34 @@ a Latin abbreviation, e.g. "PiZها", "Z-scoreهای", which is standard Persian
 grammar break). `pulm-copd` already existed in `TOPICS` in both `docs/index.html` and the
 artifact (added in an earlier, unlogged step this session) — no taxonomy edit needed. Synced
 to the artifact db as a new doc (version 1, ~97 KiB). Bundle regenerated to 51 topics.
+
+## `pulm-sleep` built from Harrison's Chapter 308 (2026-10-04)
+
+Same day, same pattern: built from the user-uploaded PDF (Harrison's 22nd ed., Ch. 308 —
+Sleep Apnea) plus 2 image attachments, again asking the images section be completed. Both
+images (a flow-limitation waveform plot, and a 4-panel polysomnography tracing figure) carry
+the same McGraw Hill copyright line as the COPD chapter's figures — same rule 6 call, flagged
+up front again, none embedded. A third figure referenced in the chapter's own text (308-1,
+pharyngeal-collapse anatomy) is also McGraw Hill's artwork, not embedded either. Handling:
+- **Tables 308-1** (respiratory event definitions: apnea/hypopnea/RERA/flow-limited breath)
+  and **308-2** (AHI/RDI definitions + OSAHS severity scale) and **308-3** (CPAP side effects
+  and their management): all three are plain definitional/factual data tables in the source
+  (not artwork) — reproduced verbatim as markdown tables.
+- **Figure 308-1** (pharyngeal collapse sites: palate, tongue base, lateral walls, epiglottis)
+  and **Figure 308-3** (normal vs. flow-limited inspiratory waveform shape): anatomical
+  illustration and a waveform plot respectively, neither tabulatable → described in the
+  "پاتوفیزیولوژی فروپاشی راه هوایی در OSA" and the PSG lesson sections' prose instead.
+- **Figure 308-2** (the 4-panel PSG signal tracings: obstructive apnea, central apnea,
+  hypopnea, RERA): raw physiological signal tracings — not tabulatable or usefully
+  describable beyond what Table 308-1's own definitions already state, so no separate
+  prose reconstruction was attempted beyond those definitions (would have been redundant
+  restatement, not new teaching content).
+- `images: []` stays empty, same reasoning as `pulm-copd`.
+
+Content: 55 flashcards, 12 MCQ, 2 KF/PMP cases (OSA diagnosis/severity/CPAP-troubleshooting
+in an obese patient with resistant hypertension; CSA/Cheyne-Stokes in heart failure with the
+ASV-contraindication-by-ejection-fraction teaching point), 3 tables, 10 lesson sections.
+Condensed per rule 4 while building. Validated: schema-valid, 0 جگر occurrences, no duplicate
+ids, mcq correctIndex bounds checked programmatically. `pulm-sleep` already existed in
+`TOPICS` in both files — no taxonomy edit needed. Synced to the artifact db as a new doc
+(version 1, ~90 KiB). Bundle regenerated to 52 topics.
