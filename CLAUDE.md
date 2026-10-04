@@ -849,3 +849,46 @@ Content built the same way as the first 4 (own Python build script in scratchpad
 shape per the schema, جگر-checked, schema-validated). Bundle regenerated, `crit-vent` db doc
 re-synced in full via `action:"set"` (not `update`, same reason as above) — version 3→4 — and
 the artifact republished (version 31).
+
+## Nephro/cardio/GI content batch (2026-10-04)
+
+Four parallel background-agent builds from user-uploaded PDFs/handwritten notes, each
+independently re-verified (schema, جگر grep, field counts) before committing, then synced to
+the artifact db in one batch and the bundle regenerated to 45 topics:
+
+- **`nephro-gn`** (new topic): glomerulonephritis, built from a 5-page handwritten outline.
+  57 flashcards, 17 mcq, 4 kfPmp, 6 tables, 12 lesson sections. Covers the nephrotic/nephritic
+  split, MCD/FSGS/membranous, IgA/PSGN/RPGN (3 mechanisms)/MPGN/lupus nephritis. Synced as a
+  new db doc (version 1).
+- **`nephro-lytes`** (supplemented): added hyponatremia content from 4 pages of handwritten
+  Persian lecture notes — hypovolemic/hypervolemic/euvolemic classification, cerebral salt
+  wasting, 4 Robertson SIADH subtypes, osmotic demyelination syndrome. 42→68 flashcards,
+  34→48 mcq, 2→4 kfPmp, 4→6 tables, 11→16 lesson. Pre-existing content confirmed
+  byte-identical before the add. Synced version 1→2.
+- **`cardio-cardiomyopathy`** (supplemented): added DCM genetics, ARVC, HOCM/SAM mechanism +
+  athlete's-heart differential, Fabry/Danon as HCM mimics, from handwritten Persian lecture
+  notes (not English-sourced, so rule 4 condensation didn't apply). 15→37 flashcards, 10→16
+  mcq, 2→3 kfPmp, 2→4 tables, 5→10 lesson. Pre-existing HCM sudden-death-criteria content left
+  as-is. Synced version 1→2.
+- **`gi-pancreatitis-acute`** / **`gi-pancreatitis-chronic`** (both new, split from the single
+  `gi-pancreatitis` taxonomy placeholder per the user's explicit "دو فص جدا" request — taxonomy
+  edit done as its own prior step in both `docs/index.html` and the artifact HTML before any
+  content existed, matching the pattern used for `nephro-gn`/`poison-beta-blocker`). Acute: 36
+  flashcards, 14 mcq, 3 kfPmp, 5 tables, 8 lesson — Ranson (11 criteria)/BISAP (5 items)/
+  Balthazar-CTSI (grades A–E + necrosis, max 10) tables personally re-verified byte-for-byte
+  against the user's handwritten scoring-criteria image, plus standard Atlanta-criteria/
+  etiology/management content. Chronic: 36 flashcards, 12 mcq, 3 tables, 4 tables, 8 lesson —
+  **caveat**: the source PDF turned out to be only 3 pages of sparse handwritten telegraphic
+  notes, not a full chapter as assumed when scoping the build, so this topic leans much more
+  heavily on supplemented standard board-level knowledge (TIGAR-O classification, autoimmune
+  pancreatitis types 1/2, Cambridge imaging classification, fecal elastase, PERT dosing, pain
+  ladder) than the other three builds in this batch, which stayed closer to their source
+  material. Both synced as new db docs (version 1).
+
+Integration note: `isolation:"worktree"` was used for one agent in this batch and left a
+leftover `.claude/worktrees/` directory as untracked state in the main checkout — fixed via
+the new root `.gitignore` (`.claude/`). Subsequent agents in the batch ran without isolation
+(shared checkout) to avoid repeating it. Separately, `poison-beta-blocker` (two-PDF build,
+English toxicology source + a 63-page Persian MOH protocol) was requested the same session but
+is tracked as its own follow-up batch, not folded into this one, since it was a later,
+separately-timed request.
