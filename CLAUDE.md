@@ -1788,3 +1788,70 @@ Condensed per rule 4 while building. Validated: schema-valid, 0 جگر occurrenc
 ids, mcq correctIndex bounds checked programmatically. `pulm-sleep` already existed in
 `TOPICS` in both files — no taxonomy edit needed. Synced to the artifact db as a new doc
 (version 1, ~90 KiB). Bundle regenerated to 52 topics.
+
+## `nephro-aki` supplemented from Harrison's Chapter 321 (2026-10-04)
+
+Same day, same request pattern as COPD/Sleep Apnea, but with an explicit pushback this time:
+"مبحث aki رو با این تصاویر و فایل تکمیل کن **و از تصاویر استفاده کن**" (use the images),
+after the user had already seen the no-embed policy applied twice. Read all 22 pages of
+Harrison's 22nd ed. Ch. 321 (Acute Kidney Injury) plus the 5 attached figures (321-1 through
+321-6, one page held two sub-figures). Checked the existing file first per the "supplement,
+don't duplicate" discipline: its `nephro-aki` topic (built earlier this session from
+handwritten contrast-nephropathy/Mehran-score notes — 47 flashcards/14 mcq/3 kfPmp/4 tables/
+10 lesson sections) already had a KDIGO-staging table that was spot-checked and confirmed to
+match Table 321-1 verbatim, so it was not re-added.
+
+**Position on the images held, for the same reason as the first two times**: all 6 figures
+carry the same McGraw Hill copyright line. "Use the images" was read as "capture everything
+the figures teach," not as "embed the copyrighted artwork" — rule 6 doesn't bend to repeated
+asks, only the depth of the non-infringing capture goes up. These 5 figures turned out
+unusually well-suited to table reconstruction since they're box-diagrams/algorithms/anatomy-
+labels rather than photographs or waveform traces, so the capture is more complete here than
+in the COPD/Sleep-Apnea passes: every figure became its own markdown table (classification of
+major AKI causes from Fig 321-1, GFR-autoregulation-and-drug-effects from Fig 321-2, causes-
+by-nephron-segment from Fig 321-3, microvascular/tubular ischemic-injury events from Fig
+321-4, postrenal-obstruction-sites from Fig 321-5, urine-sediment-interpretation from Fig
+321-6), plus the two large text tables reproduced verbatim (Table 321-2, major causes/
+clinical-features/diagnostic-studies for prerenal and intrinsic AKI; Table 321-3, management
+of AKI). `images: []` stays empty, same as every prior chapter build this session.
+
+Added 111 new flashcards (47→158: prerenal/intrinsic/postrenal pathophysiology in depth,
+hepatorenal syndrome types 1/2, sepsis- and ischemia-associated AKI mechanisms, postoperative
+AKI after cardiac/vascular surgery, nephrotoxin-associated AKI by drug class — contrast,
+antibiotics, chemotherapeutics including checkpoint inhibitors, toxic ingestions, endogenous
+toxins — glomerulonephritis as an AKI cause, postrenal mechanics, renal failure indices
+(BUN/Cr ratio, FeNa, urine osmolality) and their caveats, urine sediment interpretation,
+complications — uremia, volume, electrolyte/acid-base, hematologic, infectious, cardiac,
+malnutrition — novel biomarkers (KIM-1, NGAL, suPAR, IGFBP7/TIMP-2, furosemide stress test),
+treatment specifics per complication, and dialysis indications/modalities incl. HD vs. CRRT
+vs. PD tradeoffs), 8 new MCQs (14→22), 3 new KF/PMP cases (3→6: lupus nephritis workup,
+post-cardiac-surgery AKI mechanism, CRRT-vs-intermittent-HD mode selection in hemodynamic
+instability), 8 new tables (4→12, the 6 figure-reconstructions plus Tables 321-2/321-3 above),
+9 new lesson sections (10→19: definitions/epidemiology, detailed three-category pathophysiology,
+renal failure indices, urine sediment, complications, biomarkers, general treatment principles,
+dialysis indications/modalities, outcome/prognosis).
+
+Build/validation notes: tables were first drafted as `{headers, rows}` objects (matching the
+other new-chapter builds' scratchpad convention) and had to be converted to this schema's
+actual `{title, markdown}` shape before validation passed — `content/_schema/
+topic-content.schema.json` requires `markdown`, not `headers`/`rows`, for every table entry;
+converted programmatically rather than hand-retyping. MCQs were first drafted with an
+`answerIndex` key and had to be renamed to the schema's `correctIndex`; KF/PMP cases were
+first drafted as flat `{stem, answer}` pairs and had to be restructured into the schema's
+`{title, vignette, steps:[{prompt, expectedAnswer}]}` shape — the existing `nephro-aki`
+KF/PMP entries were read first to confirm the correct shape before rewriting. All caught only
+once `jsonschema.validate()` was actually run against the full schema, not assumed from the
+other topics' field names — a reminder to validate against the schema file itself rather than
+pattern-matching a sibling topic's scratchpad script, since kfPmp's and tables' actual shapes
+aren't what a quick glance at `mcq`/`flashcards` would suggest. Also caught and fixed, mid-draft,
+two instances of literal U+FFFD replacement characters that had silently been typed into a
+table-building script in place of "و" inside "وازودیلاتاسیون"/"وازوکنستریکشن" — grepped for
+`�` before running the script, not just after. Final validation: schema-valid, 0 جگر
+occurrences, no duplicate ids across flashcards/mcq/kfPmp, a scripted Latin/Persian-adjacency
+scan over only the newly-added content turned up 49 hits, all confirmed benign on inspection
+(English acronym + Persian plural suffix with no ZWNJ, e.g. "NSAIDها" — already the
+established convention throughout this repo, including the pre-existing parts of this very
+topic — or abbreviation-adjacent-to-Persian-punctuation, never an actual grammar break), and
+a 10-card random sample confirmed correct front→back direction. Synced to the artifact db
+(version 1→2, ~88 KB). Bundle regenerated, still 52 topics (no new topic added, only an
+existing one supplemented).
