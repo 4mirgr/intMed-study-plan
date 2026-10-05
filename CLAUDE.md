@@ -2410,3 +2410,73 @@ committing/publishing). Synced to the artifact db as a new document, `topic_cont
 cardio-svt` (version 1, no `if_version` needed — fresh doc). Artifact republished (version
 42) to carry both the new TOPICS entry and (once synced) the new content. Bundle
 regenerated to 53 topics.
+
+## `cardio-svt` supplemented from Harrison's Chapter 256 — AVNRT, junctional tachycardia, WPW/accessory pathways, AVRT (2026-10-05)
+
+Immediate same-day follow-up: Harrison Ch256 (Paroxysmal Supraventricular Tachycardia) plus
+6 images, same "در ادامه تکمیل آریتمی از اینها استفاده کن" instruction — exactly the chapter
+the new `cardio-svt` topic (created this session for this purpose, see the entry above) was
+meant to receive. No `AskUserQuestion` needed this time; the destination and scope were
+already settled.
+
+**Overlap check before building**: re-read Module 3 ("تاکی‌کاردی با کمپلکس باریک",
+`cardio-arrhythmia`'s ECG-recognition module) in full. It covers AVNRT only at a brief acute
+ECG-recognition/treatment level (rate, P-wave timing, adenosine dose, cardioversion) and
+mentions WPW/delta wave only in passing as an AFib danger warning. Ch256 goes far deeper —
+AVNRT reentry-circuit mechanism, junctional tachycardia/JET, full AP anatomy and WPW ECG
+morphology by location, orthodromic vs. antidromic AVRT, PJRT, preexcited AF risk
+stratification, EP-study/ablation decision-making — none of which Module 3 touches. Built in
+full; no cross-reference-and-skip was needed except for acute adenosine dosing mechanics,
+which stays in Module 3's own text (one line in the new lesson section points there instead
+of re-stating the dose).
+
+**Images**: all 6 attachments matched to Fig 256-1 through 256-6. Bucket (a) — not embedded,
+captured as tables: Fig 256-6 (PSVT acute-treatment algorithm → table) and Fig 256-4 (AP
+location → delta-wave/QRS pattern mapping → table). Bucket (b) candidates — real ECG
+tracings: Fig 256-1 (AV node reentry: lead II/V1 pseudo-S/pseudo-r′ plus the slow/fast
+pathway schematic — the single most board-tested AVNRT ECG sign), Fig 256-2 (AVNRT
+before/after adenosine termination), Fig 256-3 (WPW composite: real 12-lead sinus-rhythm
+delta wave, real orthodromic-AVRT tracing, plus a 3-rhythm schematic), Fig 256-5 (preexcited
+AFib).
+
+**Budget discipline — only 1 of 4 bucket-(b) candidates embedded, and this is the one to
+read before touching this topic again.** `cardio-svt` started this build at 66.7 KiB/256 KiB
+(26.1%, just the Ch255 content). Fig 256-1 processed cheaply (JPEG q85, 37.4 KB raw) and
+merged in at 60.7% — healthy. Fig 256-3 was also processed (JPEG q40, the lowest quality
+that stayed visually legible — delta wave and P-wave arrows both still clear, verified by
+eye before accepting) at 65.5 KB raw, but adding it pushed the merged doc to **94.5%/256
+KiB**. Given this topic is the explicitly-designated destination for Ch257/258 still to
+come (atrial flutter, AFib per Ch253's own chapter references), leaving only ~14 KiB of
+headroom after just 2 of the anticipated 4 chapters would recreate the exact wall
+`cardio-arrhythmia` hit. **Dropped Fig 256-3 rather than accept that margin** — not a quality
+problem (it looked fine at q40), a budget-for-the-whole-topic's-future call. Fig 256-2 and
+Fig 256-5 were not even processed to compressed size, for the same reason. The compressed,
+SHA-256-unverified Fig 256-3 JPEG is kept in scratchpad
+(`fig256_3_wpw_q40.jpg`) in case a future session is asked to add it once the budget
+picture is clearer (e.g., if Ch257/258 turn out light on content, or if the topic is ever
+split). Final state: 2 images total (Fig 255-2 from the Ch255 build, Fig 256-1 from this
+one).
+
+**Content added**: 35 flashcards (25→60), 11 MCQs (9→20), 2 KF/PMP cases (0→2: preexcited
+AFib drug contraindications, AVNRT-vs-AVRT differentiation by P-wave timing after adenosine
+response), 3 tables (3→6: AVNRT/AVRT/AT differentiation by RP interval, AP location→ECG
+pattern, PSVT acute-treatment algorithm), 1 image (1→2), 4 lesson sections (4→10: AVNRT
+mechanism/ECG, junctional tachycardia, WPW/AP anatomy, AVRT orthodromic/antidromic +
+preexcited tachycardias, AP risk-stratification/management, acute PSVT treatment). Final doc
+size: **159,224 bytes = 155.5 KiB / 256 KiB (60.7%)** — confirmed via compact-JSON
+recompute on the merged document before syncing, not estimated.
+
+Validated the same way as every build this session: schema-valid (this topic's lesson
+entries are plain `{heading,body}`, so no exception needed, unlike `cardio-arrhythmia`), 0
+جگر occurrences, 0 duplicate ids across 82 flashcard/mcq/kfPmp ids, correctIndex bounds
+checked, 8-card random-sample front→back direction check, and a Latin/Persian-adjacency
+grammar scan (40 hits on the new content, all the established benign pattern — abbreviation
++ Persian punctuation/plural suffix, e.g. "APها", digit+unit adjacency like "۲۵۰ms") — no
+actual grammar breaks. SHA-256 roundtrip verified for the one embedded image before syncing.
+
+Synced to the artifact db as `topic_content/cardio-svt` (version 1→2, `set` pinned against a
+freshly-read version, verified via a second fresh `out_dir` read immediately after — field
+counts matched exactly). No `docs/index.html`/artifact-HTML change needed (TOPICS entry
+already added in the prior `cardio-svt` creation step; no new rendering pattern this time, so
+no artifact republish either). Bundle regenerated, still 53 topics (no new topic, only an
+existing one supplemented).
