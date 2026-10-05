@@ -87,6 +87,31 @@ when a single turn can't fit all of them.
      silently blocked by mobile browsers' anti-phishing top-navigation rules, which is what
      caused the 2026-10-05 "blank white page" bug. See that session's CLAUDE.md entry below
      for the full story; don't reintroduce the link-based pattern for new images.
+   - **Scope amendment, 2026-10-05 (same day, later): this applies to images embedded INSIDE
+     a source file too, not only to images attached alongside it as separate files.** The
+     user's explicit instruction: "اینکه از تصاویر هر فایل و pdf هم برای بخش تصاویر استفاده
+     کنی به عنوان قانون و قرارداد مد نظر داشته باش ازین به بعد" — standing rule from now on,
+     check every source PDF/PPTX/etc. for embedded figures (clinical photos inside a board-
+     question-bank PDF, images inside a slide deck, not just Harrison chapter figures sent as
+     separate attachments) and run them through the same bucket (a)/(b) sort. **Extraction
+     method for a PDF's embedded images — use this, don't screenshot pages**: `pymupdf` is
+     installed in this environment (`import pymupdf`; install via `pip install pymupdf` if a
+     fresh environment doesn't have it). Pattern:
+     ```python
+     import pymupdf
+     doc = pymupdf.open(path_to_pdf)
+     for pno in range(len(doc)):
+         for img in doc[pno].get_images(full=True):
+             xref = img[0]
+             base = doc.extract_image(xref)  # base["image"] raw bytes, base["ext"] e.g. "jpeg"
+     ```
+     This pulls the actual embedded image bytes directly (verified against a real clinical
+     photo in the 2026-10-05 AKI-board-bank build — exact pixel match to what the page
+     visually showed), which is both more reliable and cheaper than rendering/screenshotting
+     a page and cropping. Many question-bank-style PDFs reuse the same figure across several
+     pages/questions (e.g. the same Harrison algorithm shown 2-3 times) — extract and
+     classify each **distinct** figure once, not once per appearance. A thin decorative strip
+     image (a colored divider, a few pixels tall) is not a figure — skip it.
 
 ## Workflow for building/updating a topic from a PDF
 
