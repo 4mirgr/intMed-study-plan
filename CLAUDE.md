@@ -2779,3 +2779,77 @@ freshly-read version, verified via a fresh `out_dir` read immediately after — 
 matched exactly: 115/34/2/2/11/20). No taxonomy or rendering change needed, so no artifact
 republish. Bundle regenerated, still 55 topics (no new topic, only an existing one
 supplemented).
+
+## New topic `cardio-vt-sustained` built from Harrison's Chapter 261 (2026-10-05)
+
+Same-day follow-up to the Ch260 build above. The user asked to complete the next cardio
+chapter; Harrison Ch261 (Sustained Monomorphic Ventricular Tachycardia, 9 pages) plus 4
+images arrived. Before building anything, checked `cardio-vt`'s size: it was at 93.8%/256
+KiB (text-only) after Ch260. Flagged this to the user in the prior reply; when they
+confirmed intent to continue with Ch261, which is substantially larger than Ch260 (VT-vs-SVT
+differentiation algorithm, acute treatment, then 6 disease-specific sections — CAD with a
+9-trial ablation-evidence table, NICM, ARVC, repaired TOF/ACHD, bundle branch reentry,
+idiopathic monomorphic VT with fascicular/outflow-tract/papillary-muscle detail), asked via
+`AskUserQuestion` whether to force-trim `cardio-vt` again (the same emergency the
+`cardio-arrhythmia` split was meant to avoid repeating) or start a new topic. **User chose
+new topic, explicitly flagged as recommended.**
+
+Created `content/cardio/cardio-vt-sustained/data.json` (`topicId:"cardio-vt-sustained"`,
+`category:"cardio"`). No overlap check needed against `cardio-vt`'s existing content beyond
+what the chapter itself states — Ch259 (approach to VA, in `cardio-vt`) and Module 2 (WCT ED
+recognition, also in `cardio-vt`) stay at a general/acute level; Ch261's per-disease substrate
+depth (CAD ablation trials, NICM/ARVC/TOF genetics and ICD criteria, fascicular/outflow-tract
+VT morphology detail) is new material not covered elsewhere.
+
+**Images**: of the 4 attachments, matched to the chapter's 5 named figures by content
+comparison: Fig 261-1 (VT-vs-SVT differentiation algorithm/flowchart) — bucket (a), rebuilt
+as a stepwise table rather than embedded, matching the established pattern for decision
+algorithms; Fig 261-2 (monomorphic VT with fusion beats proving AV dissociation — the
+single clearest bedside teaching image for the chapter's own diagnostic algorithm), Fig 261-3
+(cardiac MRI showing a midmyocardial fibrosis stripe in NICM — the only non-ECG imaging
+modality image across this whole VT image set so far), and Fig 261-4 (onset of idiopathic
+outflow-tract VT, LBBB-like config) — all three bucket (b), real patient tracings/imaging.
+**Fig 261-5 (SBRT planning CT scan, Future Directions section) was not among the 4
+attachments** — same attachment-gap pattern seen repeatedly this session.
+
+**Budget**: this being a fresh topic, text-only content (61 flashcards, 14 MCQs, 2 KF/PMP
+cases, 5 tables, 9 lesson sections) came to only 69.6 KiB/256 KiB (27.2%) — much more headroom
+than any supplement-to-an-existing-topic pass this session, confirming the earlier chapters'
+tightness was a function of `cardio-vt`'s accumulated prior content, not Ch261 itself being
+unusually large. All 3 bucket-(b) images were processed (JPEG q78/q85/q78) and SHA-256-
+roundtrip-verified, but embedding all 3 pushed the doc to 267.5 KiB (104.5% — over cap).
+Checked pairwise combinations and **kept Fig 261-2 (fusion beats/AV dissociation) and Fig
+261-3 (cardiac MRI fibrosis)** — the clearest single diagnostic-algorithm illustration plus
+the only distinct imaging modality in the set — and **dropped Fig 261-4** (idiopathic VT
+onset; judged the most conceptually redundant with the ECG-morphology-by-site table/lesson
+text already covering outflow-tract criteria in detail). Final: **206.3 KiB/256 KiB (80.6%)**
+— deliberately left real headroom rather than maximizing to the cap, since no further
+Harrison VT chapter is known to be coming yet and a repeat of the near-100% walls hit earlier
+this session was worth avoiding on a topic just created.
+
+**Content**: 61 flashcards, 14 MCQs, 2 KF/PMP cases (recurrent VT with ICD shocks in CAD —
+VANISH-trial-informed ablation decision; outflow-tract vs. fascicular idiopathic VT
+differential with verapamil responsiveness), 5 tables (sustained-VA classification verbatim
+from Table 261-1, VT-vs-SVT differentiation algorithm as a stepwise table, a condensed summary
+of the 9-trial catheter-ablation-evidence table from Table 261-2, an ICD-indication-by-
+clinical-context summary table, and an idiopathic-VT-morphology-by-site quick-reference
+table), 2 images, 9 lesson sections (diagnosis/VT-vs-SVT algorithm, acute treatment/prognosis,
+CAD, NICM, ARVC, TOF/ACHD, bundle branch reentry, idiopathic monomorphic VT, treatment of
+idiopathic VT + future directions). Condensed per rule 4 (English-sourced chapter) while
+building.
+
+Validated: full schema validation passed cleanly **including `lesson`** (this topic's lesson
+entries are plain `{heading,body}`, no `embedPath`/`groupHeader` exception needed, unlike
+`cardio-arrhythmia`/`cardio-vt`), 0 جگر occurrences, 0 duplicate ids across 77 flashcard/
+mcq/kfPmp ids, all `mcq[].correctIndex` in bounds, 8-card random-sample front→back direction
+check, 0 U+FFFD characters, and a Latin/Persian-adjacency grammar scan (46 hits, all the
+established benign pattern — abbreviation + Persian punctuation/plural suffix, e.g. "VTها",
+"II،III،aVF") — no actual grammar breaks.
+
+Added `{id:"cardio-vt-sustained", label:"VT مونومورفیک پایدار و بیماری ساختاری قلب"}` to
+`TOPICS` in both `docs/index.html` and the artifact HTML, positioned between `cardio-vt` and
+`cardio-svt` (verified via `node --check` on both extracted `<script>` blocks). Synced to the
+artifact db as a new document, `topic_content/cardio-vt-sustained` (version 1, no
+`if_version` needed), verified via a fresh `out_dir` read immediately after (field counts
+matched exactly: 61/14/2/2/5/9). Artifact republished (version 45) to carry the new TOPICS
+entry. Bundle regenerated to 56 topics.
