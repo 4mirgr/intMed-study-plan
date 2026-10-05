@@ -535,6 +535,10 @@
   .lesson-body p:last-child{margin-bottom:0}
   .lesson-embed-note{font-size:.78rem;color:var(--ink-faint);margin-bottom:8px;line-height:1.7}
   .lesson-embed-frame{width:100%;height:min(80vh,900px);border:1px solid var(--border);border-radius:var(--radius-md);background:#fff;display:block}
+  .lesson-group-header{margin:22px 0 14px;padding-top:14px;border-top:2px solid var(--cat-color,var(--accent))}
+  .lesson-group-header:first-child{margin-top:0;padding-top:0;border-top:none}
+  .lesson-group-heading{font-weight:900;font-size:1rem;color:var(--cat-color,var(--accent));letter-spacing:.01em}
+  .lesson-group-note{font-size:.78rem;color:var(--ink-faint);margin-top:4px;line-height:1.7}
   .fc-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;margin-bottom:10px;background:var(--surface-2)}
   .fc-card:last-child{margin-bottom:0}
   .fc-front{font-weight:700;margin-bottom:7px}
@@ -3158,6 +3162,22 @@
     if(type === "lesson"){
       panel.innerHTML = "";
       data.forEach(function(sec, secIdx){
+        if(sec.groupHeader){
+          var gwrap = document.createElement("div");
+          gwrap.className = "lesson-group-header";
+          var gh = document.createElement("div");
+          gh.className = "lesson-group-heading";
+          gh.textContent = sec.heading;
+          gwrap.appendChild(gh);
+          if(sec.embedNote){
+            var gnote = document.createElement("div");
+            gnote.className = "lesson-group-note";
+            gnote.textContent = sec.embedNote;
+            gwrap.appendChild(gnote);
+          }
+          panel.appendChild(gwrap);
+          return;
+        }
         var wrap = document.createElement("div");
         wrap.className = "lesson-section";
         var h = document.createElement("div");

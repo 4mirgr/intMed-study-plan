@@ -2118,3 +2118,76 @@ established benign pattern (Latin abbreviation + Persian punctuation or plural s
 Synced to the artifact db as `topic_content/cardio-ecg` (version 1→2, via `set` pinned to the
 pre-existing version — only the `lesson` field had any content before). Bundle regenerated,
 still 52 topics (no new topic, only an existing one supplemented).
+
+## `cardio-arrhythmia` supplemented from Harrison's Chapter 251 + new `lesson[].groupHeader` pattern (2026-10-05)
+
+Built from the user-uploaded 10-page PDF (Harrison's 22nd ed., Ch. 251, The Bradyarrhythmias:
+Disorders of the Sinoatrial Node) plus 6 attached images, same existing-content-first workflow
+as the `cardio-ecg` build earlier the same day. `cardio-arrhythmia` already held 3 interactive
+HTML modules (Module 2 — wide-complex tachycardia, Module 3 — narrow-complex tachycardia,
+Module 4 — bradyarrhythmias/AV blocks) and nothing else. Read Module 4's actual text (not just
+its title) before building anything: it's entirely acute/ED-focused ECG-pattern recognition and
+emergency management of **AV conduction block** (sinus brady basic recognition, 1st/2nd Mobitz
+I/II/3rd-degree AV block, atropine/transcutaneous/transvenous pacing) — zero overlap with
+Chapter 251, which is entirely about **SA nodal dysfunction** (sick sinus syndrome): SA-node
+cellular physiology, diagnosis of SND, sinus exit block types I/II, tachy-brady syndrome,
+chronotropic incompetence, sinus node fibrosis, SA nodal ischemia, carotid sinus hypersensitivity,
+and permanent-pacemaker indications/nomenclature/complications. No cross-reference-and-skip
+discipline was needed this time (unlike the ECG build) — the two sources simply don't touch the
+same material.
+
+**New request, new rendering feature — `lesson[].groupHeader`**: the user explicitly asked that
+the 3 existing interactive modules be moved under one new named heading ("ماژول تشخیص آریتمی")
+as a visually distinct subgroup, separate from the new standard prose content, since the modules
+are acute ECG-recognition drills while the new content is didactic/clinical-management chapter
+material. The schema/renderer had no grouping concept before this. Added a minimal generic
+mechanism: a `lesson[]` entry with `groupHeader: true` (plus `heading` and optional `embedNote`)
+renders as a bold section-divider instead of the normal heading+body/embed layout — implemented
+identically in both `docs/index.html` and the artifact (`renderLearnPanel`'s lesson branch, new
+`.lesson-group-header`/`.lesson-group-heading`/`.lesson-group-note` CSS keyed off
+`var(--cat-color,var(--accent))`, same token pattern as everything else). Final lesson array
+order: the 5 new prose sections first, then the `groupHeader` entry, then the 3 modules
+unchanged — read top-to-bottom as "learn the material, then drill ECG recognition." This is
+the same kind of schema/data divergence already accepted and documented for `embedPath` lesson
+items (see the `cardio-ecg` entry above) — `groupHeader` entries have neither `body` nor
+`embedPath`+`embedNote`-as-content, so they fail the schema's strict `required: [heading, body]`
+the same known, pre-existing way; validated everything else against the schema with `lesson`
+excluded, same as the ECG build.
+
+**Images**: all 6 attachments matched cleanly to Fig 251-1 through 251-6 (complete set, no
+gaps, no ambiguous ones this time). Bucket (a) — not embedded, captured as lesson prose/tables:
+Fig 251-1 (SA-node pacemaker action-potential schematic — an illustrative curve, not a real
+patient tracing, same treatment as the conceptual diagrams in the ECG build), Fig 251-3 and
+Fig 251-6 (evaluation/management algorithm flowcharts — captured as the pacing-indications
+table and the surrounding lesson prose, consistent with how decision algorithms were handled in
+the AKI/CKD passes). Bucket (b) — embedded, real patient ECG tracings a table can't substitute
+for: Fig 251-2 (sinus pause/SA exit block strip), Fig 251-4 (two-panel SA-node-electrogram
+demonstration of type I vs. type II exit block), Fig 251-5 (AFib termination with offset pause —
+tachy-brady syndrome). **Processing note — JPEG beat PNG quantization here, unlike prior ECG
+builds**: these 3 images have a fine pink ECG-grid background (near-continuous-tone dithering),
+so PNG palette quantization only got them to 123/58/101 KB (283 KB total, unworkable); JPEG
+quality 85 got the same 3 images to 47.8/29/38.5 KB (115.4 KB total) with no visible loss of
+trace detail (checked both at full resolution before choosing) — flagging this as a case where
+the rule 6 process note ("photographic → JPEG, flat/line-art → PNG quantize") needs judgment:
+an ECG strip with a fine colored grid behaves more like a photograph than flat line art for
+compression purposes, despite being a medical waveform tracing. Each `note` cites Harrison's
+22nd ed./McGraw Hill verbatim. SHA-256 of each JPEG verified byte-for-byte against the re-decoded
+data URI — all 3 matched.
+
+**Content added**: 48 flashcards, 9 MCQs, 3 KF/PMP cases (tachy-brady syndrome in AFib needing
+permanent pacing to keep rate-control drugs safe; chronotropic incompetence missed by a normal
+standard-exercise-test ceiling; asymptomatic nocturnal sinus bradycardia in an athlete — why it
+does *not* need pacing), 4 tables (Table 251-1 reversible causes of SND verbatim, Table 251-2
+pacing indications by class verbatim, the NASPE/BPEG 4-letter pacing-mode code, SA exit block
+type I vs. II ECG differential), 5 lesson sections, 3 images. Doc size: 202.7 KiB / 256 KiB
+(79.2%) — comfortable but the tightest of this session's builds; a future supplement to this
+topic should check the budget first. Validated: schema-valid (excluding the known lesson
+exception), 0 جگر occurrences, 0 duplicate ids across 60 flashcard/mcq/kfPmp ids, all
+`mcq[].correctIndex` in bounds, 8-card random sample confirmed correct front→back direction,
+and the Latin/Persian-adjacency grammar scan's 10 hits were all the established benign pattern
+(abbreviation + Persian punctuation/plural suffix, e.g. "SSRIها") — no actual grammar breaks.
+
+Synced to the artifact db as `topic_content/cardio-arrhythmia` (version 1→2, `set` pinned to
+the pre-existing version). Artifact republished (version 41) with both the new
+`groupHeader` rendering/CSS and the new content data. Bundle regenerated, still 52 topics (no
+new topic, only an existing one supplemented).
