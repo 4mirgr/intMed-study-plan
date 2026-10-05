@@ -2710,3 +2710,72 @@ regenerated to 55 topics.
 
 Ch253 was the chapter explicitly flagged as "completely dropped" earlier this session for
 overlapping Module 3 — it is no longer dropped; it now exists in `cardio-vt`.
+
+## `cardio-vt` supplemented from Harrison's Chapter 260 — PVC, NSVT, AIVR (2026-10-05)
+
+Same-day follow-up to the `cardio-arrhythmia`/`cardio-vt` split above: Harrison Ch260
+(Premature Ventricular Contractions, Nonsustained Ventricular Tachycardia, and Accelerated
+Idioventricular Rhythms, 5 pages) plus 3 images, "فصل بعدی را برای قلب کامل کن" — the next
+chapter in the VA sequence after Ch259 (Approach to Ventricular Arrhythmias), so it went into
+`cardio-vt` (the topic created for tachyarrhythmia/VA depth in the split).
+
+**Overlap check**: Ch259's own "انواع آریتمی‌های بطنی" lesson section already defines
+PVC/unifocal/multifocal/couplet in ~2 sentences — left as-is, not re-taught; Ch260 goes far
+deeper (ECG morphology→site-of-origin/structural-disease correlation, idiopathic vs.
+acute-illness vs. genetic-syndrome differential, context-specific treatment ladders,
+PVC-induced cardiomyopathy, AIVR specifics) and was built in full. Module 2 (WCT, embedded in
+this topic from the split) was checked for PVC/NSVT/AIVR keyword overlap — none found, it's
+scoped entirely to sustained wide-complex-tachycardia ED recognition.
+
+**Images**: of the 3 attachments, matched by content comparison against the chapter's 4 named
+figures (260-1 through 260-4) rather than assumed from upload order — all 3 are real ECG-grid
+patient tracings (Fig 260-1 ARVC/Brugada precordial V1-V3 panels — confirmed by exact caption
+match: T-inversion/epsilon-wave arrows for ARVC, ST-elevation V1/V2 for Brugada; Fig 260-2 a
+12-lead PVC example; Fig 260-4 an AIVR wide-complex rhythm strip); **Fig 260-3 (electroanatomic
+ablation map, a colored 3D-map image distinct in kind from the other 3) was not among the
+attachments** — same attachment-gap pattern seen repeatedly this session (Ch257's missing Fig
+257-3, Ch258's missing Fig 258-4). All 3 bucket-(b) by content (real tracings, not
+diagrams/algorithms) — none are bucket-(a) material.
+
+**Budget wall — zero images fit, for the first time this session.** `cardio-vt` was already
+at 205.8 KiB/256 KiB (80.3%) after the Ch253+Ch259 build. Ch260's text content alone (42
+flashcards, 10 MCQs, 1 KF/PMP case, 3 tables, 6 lesson sections) merged to **240.2 KiB
+(93.8%)** — confirmed via compact-JSON recompute, not estimated. All 3 candidate images were
+processed (JPEG q85, 46.1/45.4/52.1 KB raw) and SHA-256-roundtrip-verified, but merging even
+the single smallest one pushed the doc to 300.9 KiB (117.6% — over cap). **None were embedded
+— this is the first chapter build this session where the budget allowed zero images**,
+confirming the standing rule that budget caps the count, including down to zero, not just a
+trim from some higher number. The 3 processed JPEGs are not kept in scratchpad past this
+session (no clear future use without either trimming this topic or starting a third split).
+
+**Content added**: 42 flashcards (73→115), 10 MCQs (24→34), 1 KF/PMP case (1→2: idiopathic
+outflow-tract PVC with 8% burden — below the 10-20% cardiomyopathy threshold — worked through
+diagnosis, reassurance, and the escalating treatment ladder if symptoms worsen), 3 tables
+(8→11: ECG-morphology→site-of-origin/structural-disease clues, treatment-by-clinical-context
+ladder, post-MI ICD-indication criteria verbatim), 0 images (2→2, unchanged — budget-capped,
+see above), 6 lesson sections (14→20: classification/mechanism/ECG clues, acute-illness vs.
+idiopathic vs. genetic-syndrome evaluation, idiopathic-arrhythmia treatment, PVC/NSVT in
+ACS/HF/other cardiac disease, PVC-induced cardiomyopathy, AIVR). Condensed per rule 4
+(English-sourced chapter) while building. Final doc size: **240.2 KiB / 256 KiB (93.8%)** —
+confirmed via live post-sync `out_dir` read, matching the local compact-JSON recompute
+exactly.
+
+**This topic now has very little headroom left (~16 KiB).** Any further supplement to
+`cardio-vt` (the next natural chapter in sequence would be Ch261, Sustained Monomorphic
+Ventricular Tachycardia) will need the budget checked first — likely another forced-trim
+situation like `cardio-arrhythmia` hit before its split, or a case for a third topic in this
+same VA/tachyarrhythmia family, should be decided with the user rather than assumed.
+
+Validated the same way as every build this session: schema-valid (excluding the known
+`lesson`/`embedPath`/`groupHeader` exception, same as before), 0 جگر occurrences, 0 duplicate
+ids across 151 flashcard/mcq/kfPmp ids (113 pre-existing + 42+10+1 new accounted for with none
+dropped or duplicated), all `mcq[].correctIndex` in bounds, 8-card random-sample front→back
+direction check, 0 U+FFFD replacement characters, and a Latin/Persian-adjacency grammar scan
+on the new content (31 hits, all the established benign pattern — abbreviation + Persian
+punctuation/plural suffix, e.g. "PVCها", "II،III،aVF") — no actual grammar breaks.
+
+Synced to the artifact db as `topic_content/cardio-vt` (version 1→2, `set` pinned against a
+freshly-read version, verified via a fresh `out_dir` read immediately after — field counts
+matched exactly: 115/34/2/2/11/20). No taxonomy or rendering change needed, so no artifact
+republish. Bundle regenerated, still 55 topics (no new topic, only an existing one
+supplemented).
