@@ -44,26 +44,49 @@ when a single turn can't fit all of them.
    AGMA, ORL1), keep it in English. Common, well-established Persian medical vocabulary
    (فشار خون, نارسایی کلیه, etc.) stays Persian as normal.
 
-6. **Copyrighted figures: embed sparingly, with explicit source citation — reversed
-   2026-10-04.** Originally this rule banned embedding publisher figures outright (diagrams/
-   algorithms went into markdown tables, photos/plots into lesson prose). The user explicitly
-   reversed this, pointing to a pre-existing precedent they'd already approved in
-   `cardio-hf`'s `images[]` (a Harrison figure embedded with a citation note) and asking for
-   the same treatment, with source citation, for the images they'd attached for other
-   topics. Current rule: a Harrison (or other publisher) figure CAN be embedded in a topic's
-   `images[]` when the user has supplied that figure as an attachment for that topic,
-   **always** with a `note` field citing the source verbatim (e.g. "تصویر هاریسون؛ منبع:
-   Harrison's Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill.")
-   — never silently, never without attribution. This is the user's own call to make for
-   their own content/copyright exposure, not something to keep refusing. Still apply
-   judgment on **how many** to embed per topic, not whether: the 256 KiB per-db-doc limit
-   (see the infographic section below) and the content-bundle weight tradeoff (every
-   embedded image adds to every visitor's page load) still bound this — pick the figures
-   with the most standalone visual teaching value (clinical photos a table can't replace,
-   the single most load-bearing diagram) rather than embedding every attached figure for a
-   chapter; plain factual data tables and algorithms that are equally well captured as
-   markdown tables don't need the image too. Document which figures were embedded vs. left
-   as table/prose reconstructions, and why, same as every other content-build entry below.
+6. **Copyrighted figures: embed the ones worth embedding, with explicit source citation —
+   standing protocol since 2026-10-05.** This rule originally banned embedding publisher
+   figures outright. The user reversed it 2026-10-04 (pointing to the pre-existing
+   `cardio-hf` precedent) and then, 2026-10-05, made it explicit standing protocol for
+   **every future topic build**, not a case-by-case ask: "از این به بعد برای تصاویر فصول به
+   همین شکل عمل کن و این رو جزو پروتکل ساخت مباحث بخاطر بسپار." Do this automatically
+   whenever a PDF build comes with attached figures — don't wait to be asked per topic.
+   **The method, every time:**
+   - Look at every attached figure. Sort into two buckets: (a) a diagram/algorithm/decision
+     table whose actual informational content is equally or better captured as a markdown
+     table or lesson-prose description — these do **not** need embedding, build them as
+     tables/prose as usual; (b) a clinical photograph, population plot/histogram, natural-
+     history curve, or raw signal tracing (PSG, waveform, etc.) that a table genuinely
+     cannot substitute for — **these get embedded**, every time, not left out by default.
+   - Process: photographic content (clinical photos) → JPEG, quality ~85, re-lower to 75/65
+     if still too large. Flat-color/line-art content (plots, curves, diagrams) → PNG palette
+     quantize (`im.quantize(colors=256, method=Image.MEDIANCUT, dither=Image.NONE)`), same
+     method as the infographic section below. Check the compressed output visually before
+     using it.
+   - Embed as `data:<mime>;base64,...` directly in that topic's `images[].sourceUrl` (see
+     the infographic section below for the full mechanics) — **never** pass raw base64
+     through a tool-call parameter by hand.
+   - `note` field **always** cites the source verbatim, e.g. "تصویر هاریسون؛ منبع:
+     Harrison's Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill."
+     plus a plain-language description of what the figure shows, and a pointer to the
+     table/lesson section covering the same ground in text where one exists. Never embed
+     without this citation.
+   - Verify integrity every time: SHA-256 of the source file vs. SHA-256 of the re-decoded
+     data URI read back from the saved JSON, both before syncing to the artifact db.
+   - Check the resulting doc size against the 256 KiB per-db-doc cap (see the infographic
+     section below) **before** committing to embedding every bucket-(b) figure for a
+     chapter — if a topic's text content is already heavy, that budget, not a reluctance to
+     embed, is what should cap the count. State the resulting doc size (and % of budget)
+     in the session's CLAUDE.md entry every time, same as the infographic/AKI/CKD passes.
+   - This is the user's own call on their own content/copyright exposure — not something to
+     second-guess per topic. The only judgment left to exercise is bucket (a) vs (b) and
+     the size budget, not whether to embed at all.
+   - **Rendering requirement, already fixed but worth knowing if it ever regresses**: the
+     images tab in both `docs/index.html` and the artifact renders any `data:`-URI image
+     **inline** (`<img>`), never as a `target="_blank"` link — linking to a `data:` URI gets
+     silently blocked by mobile browsers' anti-phishing top-navigation rules, which is what
+     caused the 2026-10-05 "blank white page" bug. See that session's CLAUDE.md entry below
+     for the full story; don't reintroduce the link-based pattern for new images.
 
 ## Workflow for building/updating a topic from a PDF
 
@@ -71,10 +94,16 @@ when a single turn can't fit all of them.
 2. Draft `content/<category>/<topicId>/data.json` matching
    `content/_schema/topic-content.schema.json` via a scratchpad Python build script
    (pattern: `flashcards`, `mcq`, `kfPmp`, `images: []`, `tables`, `lesson`).
+2a. **If any figures were attached with the PDF**, sort and embed per rule 6 above —
+    automatically, not just when asked. Diagrams/algorithms → markdown tables (as part of
+    step 2). Photos/plots/tracings → embedded in `images[]` with source citation, per the
+    process in rule 6. Do this in the same build pass, not a separate follow-up.
 3. Validate: run the script, then grep the output for `جگر` (must be 0 unless a proper
    noun), sanity-check field counts, and actively check rules 2 and 3 above (flashcard
    front→back direction; no English-word breaking a Persian sentence's grammar) on every
    card/section produced — not just جگر — so new content doesn't join the QA backlog below.
+   If images were embedded, also verify SHA-256 integrity and check the doc size against
+   the 256 KiB cap (rule 6).
 4. Regenerate the bundle: `python3 scripts/build_content_bundle.py` (writes
    `docs/content-bundle.json`).
 5. Sync the topic(s) to the live artifact db via `ArtifactData` batch `set` on
