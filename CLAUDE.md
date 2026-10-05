@@ -1974,3 +1974,53 @@ identical — before republishing (version 39).
 Both files' extracted `<script>` blocks passed `node --check` after editing. `docs/
 index.html` changes, the two content-file image/text additions, and the regenerated bundle
 were committed together; the artifact was republished independently per its own versioning.
+
+## Images tab blank-page bug, and COPD/Sleep Apnea images embedded (2026-10-05)
+
+Immediate user follow-up, same day: "وقتی روی تصاویر مثلا ckd کلیک میکنم فقط صفحه سفید blank
+میاد. ضمنا در copd and sleep apnea از تصاویر استفاده نکردی" (clicking an image in e.g. CKD
+shows only a blank white page; also you didn't use images in COPD/Sleep Apnea).
+
+**Root cause of the blank page**: the images-tab render code did `a.href = img.sourceUrl;
+a.target = "_blank"` — a plain link meant to open the image in a new tab. That's fine for a
+real URL, but every embedded image in this app is a `data:image/...;base64,...` URI, and
+modern mobile browsers (Chrome Android, in-app webviews) **block top-level navigation to a
+`data:` URL** as an anti-phishing measure — the new tab opens to a blank/`about:blank#blocked`
+page instead of showing the image. This bug existed from the very first embedded image
+(`endo-wilson`'s infographic) onward; it just hadn't been exercised on a phone until now.
+**Fix**: for any `images[].sourceUrl` starting with `data:`, render an `<img>` element
+inline in the panel instead of a link (caption above, image below, note below that) — never
+navigate to a `data:` URI at all. Non-`data:` URLs (if any are ever used) still render as the
+old link-in-new-tab. Applied identically to `docs/index.html` and the artifact; both
+`<script>` blocks passed `node --check`. This also means every topic with an embedded image
+now actually displays it in-panel rather than requiring a (broken) tap-through — a strict
+improvement for `cardio-hf`, `endo-wilson`, `nephro-aki`, and `nephro-ckd` too, not just the
+two topics added in this entry.
+
+**COPD and Sleep Apnea now have embedded images too** — the earlier passes for these two
+topics (see their own sections above) deliberately embedded zero images, reasonably at the
+time since rule 6 still banned embedding outright; now that it's reversed, the user pointed
+out the gap directly rather than letting it stand. Picked, per the same "visual teaching
+value a table can't replace" judgment as the AKI/CKD pass — not every attached figure, just
+the ones that are genuinely plots/photos/tracings rather than box-diagrams or decision rules
+already captured losslessly as markdown tables (COPD's Fig 303-1/303-2/303-5/303-6 and
+Sleep Apnea's Fig 308-1 stayed as tables/prose, unchanged):
+- **`pulm-copd`**: Fig 303-3 (FEV1-by-pack-years population histogram) and Fig 303-4 (the
+  classic A/B/C/D natural-history decline curves — the specific finding already in this
+  topic's lesson prose, that most patients follow curve C not D, is now also visible in the
+  actual plot). 64KB/57KB originals → 24.5KB/21.9KB via PNG quantization. Doc size 99.3KB →
+  162.7KB / 256 KiB (62.1%).
+- **`pulm-sleep`**: Fig 308-3 (normal vs. flow-limited inspiratory waveform, small/simple)
+  and Fig 308-2 (the 4-panel real PSG tracing for obstructive apnea/central apnea/hypopnea/
+  RERA — genuinely the single most exam-relevant image in this chapter, since recognizing
+  these waveform patterns by eye is the actual tested skill, not just knowing the
+  definitions already in Table 308-1). 18.5KB/157KB originals → 9KB/81.5KB. Doc size 90.4KB
+  → 212.8KB / 256 KiB (81.2%) — healthy margin still, but if this topic needs a third image
+  later, check the budget first.
+- Same citation/verification discipline as the AKI/CKD pass: every `note` field cites
+  Harrison's 22nd ed./McGraw Hill verbatim; SHA-256 of each source file matched the
+  re-decoded data URI after writing, for all 4 images.
+
+Synced to the artifact db (`pulm-copd` version 1→2, `pulm-sleep` version 1→2). Bundle
+regenerated, still 52 topics. Artifact republished with both the images-tab fix and the new
+image data (version 40).

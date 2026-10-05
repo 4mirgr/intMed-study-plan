@@ -620,11 +620,13 @@
   .vent-pitfall-list{margin:0;padding-inline-start:18px;font-size:.8rem;color:var(--danger);line-height:1.9}
   .vent-pitfall-list li{margin-bottom:2px}
 
-  .img-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--border)}
+  .img-row{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:10px 0;border-top:1px dashed var(--border)}
   .img-row:first-child{border-top:none}
   .img-row a{color:var(--accent-ink);font-weight:600;text-decoration:none;font-size:.82rem}
   .img-row a:hover{text-decoration:underline}
-  .img-row .cap-note{display:block;color:var(--ink-faint);font-size:.74rem;margin-top:2px}
+  .img-row .img-cap{color:var(--ink);font-weight:700;font-size:.82rem}
+  .img-row .img-inline{max-width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);display:block}
+  .img-row .cap-note{display:block;color:var(--ink-faint);font-size:.74rem;line-height:1.7}
   .tbl-title{font-weight:700;margin-bottom:7px}
   table.md-table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:.78rem;border-radius:var(--radius-sm);overflow:hidden}
   table.md-table:last-child{margin-bottom:0}
@@ -3457,10 +3459,25 @@
       data.forEach(function(img){
         var row = document.createElement("div");
         row.className = "img-row";
-        var a = document.createElement("a");
-        a.href = img.sourceUrl || "#"; a.target = "_blank"; a.rel = "noopener";
-        a.textContent = "🖼 " + img.caption;
-        row.appendChild(a);
+        var isDataUri = (img.sourceUrl || "").indexOf("data:") === 0;
+        if(isDataUri){
+          // data: URIs render fine inline, but mobile browsers (Chrome Android,
+          // in-app webviews) block top-level navigation to a data: URL as a
+          // security measure — a target="_blank" link to one opens a blank tab.
+          // Render the image inline instead of linking to it.
+          var cap = document.createElement("div");
+          cap.className = "img-cap"; cap.textContent = "🖼 " + img.caption;
+          row.appendChild(cap);
+          var imgEl = document.createElement("img");
+          imgEl.className = "img-inline"; imgEl.src = img.sourceUrl; imgEl.alt = img.caption;
+          imgEl.loading = "lazy";
+          row.appendChild(imgEl);
+        } else {
+          var a = document.createElement("a");
+          a.href = img.sourceUrl || "#"; a.target = "_blank"; a.rel = "noopener";
+          a.textContent = "🖼 " + img.caption;
+          row.appendChild(a);
+        }
         if(img.note){
           var note = document.createElement("span");
           note.className = "cap-note"; note.textContent = img.note;
