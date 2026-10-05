@@ -2053,3 +2053,68 @@ Sleep Apnea's Fig 308-1 stayed as tables/prose, unchanged):
 Synced to the artifact db (`pulm-copd` version 1→2, `pulm-sleep` version 1→2). Bundle
 regenerated, still 52 topics. Artifact republished with both the images-tab fix and the new
 image data (version 40).
+
+## `cardio-ecg` supplemented from Harrison's Chapter 247 (2026-10-05)
+
+Built from the user-uploaded 14-page PDF (Harrison's 22nd ed., Ch. 247, Electrocardiography)
+plus 11 attached images, under the now-standing image-embedding protocol (rule 6) — applied
+automatically per the user's explicit "از این به بعد... بدون اینکه ازت بخوام" instruction,
+not asked about per-image this time.
+
+**Scope discipline — this topic already had real content, not an empty shell.** Before
+writing anything, read the existing `content/cardio/cardio-ecg/data.json`: it holds 3 complete
+interactive HTML modules embedded via `lesson[].embedPath` (Module 1 — systematic approach/red
+flags; Module 5 — STEMI and equivalents: de Winter, Wellens, Sgarbossa, posterior MI; Module 6 —
+electrolyte ECG changes: hyper/hypokalemia, hyper/hypocalcemia), confirmed deliberate and
+complete by checking `content/cardio/cardio-arrhythmia/modules/` for modules 2–4 (wide-complex
+tachycardia, narrow-complex tachycardia, bradyarrhythmias/AV block) — the 6-module course is
+split across two topics by design, nothing missing. The 3 existing `lesson` entries were kept
+byte-for-byte unchanged; only `flashcards`/`mcq`/`kfPmp`/`tables`/`images` were added. New
+standard content covers everything the 3 modules don't (electrophysiologic basics, waveforms/
+intervals/QTc formulas, lead placement, axis, chamber enlargement/hypertrophy, bundle branch
+blocks, general ischemia/infarction principles, metabolic/drug effects beyond K+/Ca2+ — i.e.
+hypothermia/Osborn wave, TCA overdose, digitalis effect, low voltage, electrical alternans/
+tamponade, the 14-parameter clinical-interpretation framework) and stays brief with an explicit
+cross-reference (e.g. "جزئیات کامل در ماژول ۵") wherever a new card would otherwise re-teach
+something the modules already own in depth (Wellens sign, hyperkalemia/hypokalemia T-wave and
+QRS changes, hypercalcemia/hypocalcemia QT changes).
+
+**Images**: each of the 11 attachments was individually matched to its Harrison figure number
+by direct visual comparison against the PDF pages (not assumed from upload order). Bucket (a)
+— not embedded, fully captured as text/tables already in the new content: Fig 247-1 (conduction-
+system anatomy), Fig 247-4 (hexaxial axis wheel), Fig 247-11 (current-of-injury schematic).
+Bucket (b) — embedded, real ECG tracings a table can't replace: Fig 247-8 (P-wave chamber
+enlargement), Fig 247-9 (QRS hypertrophy patterns), Fig 247-10 (RBBB/LBBB V1/V6 morphology),
+Fig 247-13 (anterior/inferior infarct evolution), a precordial ST-elevation strip (exact figure
+number not confidently matchable to a named callout in the chapter text — captioned generically
+rather than guessing wrong), Fig 247-12 (Wellens T-wave sign), Fig 247-16 (QT changes in
+hypo/hypercalcemia), Fig 247-15 (6-panel: hypokalemia/hypothermia/amiodarone/TCA overdose/SAH).
+All 8 processed via PNG palette quantization (flat ECG-tracing line art, same method as the
+AKI/CKD diagrams) — 170.2KB total originals → 85.9KB quantized (~114.9KB as base64). SHA-256 of
+each quantized file verified byte-for-byte against the re-decoded data URI read back from the
+saved JSON — all 8 matched. Every `note` cites Harrison's 22nd ed./McGraw Hill verbatim plus a
+plain-language description and, where applicable, a pointer to the matching table or module.
+
+**Content added**: 100 flashcards, 16 MCQs, 3 KF/PMP cases (WPW-complicated AFib with wide
+irregular QRS — why AV-nodal blockers are dangerous; RBBB/bifascicular block presenting as
+syncope; inferior STEMI — right-sided/posterior lead workup before nitroglycerin), 6 tables
+(QTc formulas, axis-deviation causes, chamber-enlargement/hypertrophy criteria, ST-elevation
+differential diagnosis, bundle-branch-block V1/V6 patterns, infarct-evolution timeline), 8
+images. Doc size (flashcards+mcq+kfPmp+images+tables+lesson) = 164.0 KiB / 256 KiB (64.1%) —
+comfortable headroom since this topic's standard content started from zero.
+
+**Validation note — pre-existing schema/data mismatch, not introduced here**: this topic's 3
+`lesson` entries use `{heading, embedPath, embedNote}` (the interactive-module pattern), but
+`content/_schema/topic-content.schema.json`'s `lesson` items require `{heading, body}` — the
+committed file already failed strict schema validation on `lesson` *before* this session's
+edit (confirmed by validating the pre-edit file). Validated everything else (flashcards/mcq/
+kfPmp/images/tables, plus `topicId`/`category`) against the schema with `lesson` excluded from
+that one check — all passed. 0 جگر occurrences, 0 duplicate ids across flashcards/mcq/kfPmp,
+all `mcq[].correctIndex` in bounds, 10-card random sample confirmed correct front→back
+direction, and the Latin/Persian-adjacency grammar scan's 60 hits were all the already-
+established benign pattern (Latin abbreviation + Persian punctuation or plural suffix, e.g.
+"ECGهای", "۴۶۰ms،") — no actual rule-3 grammar breaks.
+
+Synced to the artifact db as `topic_content/cardio-ecg` (version 1→2, via `set` pinned to the
+pre-existing version — only the `lesson` field had any content before). Bundle regenerated,
+still 52 topics (no new topic, only an existing one supplemented).
