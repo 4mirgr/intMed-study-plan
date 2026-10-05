@@ -3142,3 +3142,70 @@ glomerular-diseases PDF plus the AL-amyloidosis/MGRS case as a new KF/PMP entry)
 running as of this entry; once it lands, still need to add the matching cross-reference
 pointer from `nephro-gn` back to `heme-mm` (the `heme-mm` side was already done, see the
 entry above).
+
+## `nephro-gn` supplemented from the 67-page glomerular-diseases board MCQ bank + the AL amyloidosis/MGRS case (2026-10-05)
+
+Third and largest of the three parallel background-agent builds from the same 4-file upload
+batch (see the two entries above). This agent read all 67 pages of "بیماری های گلومرولی.pdf"
+and added real depth to every existing GN entity (lupus nephritis's full ISN/RPS six-class
+table with IV-S/IV-G subclassification and 2025 additions voclosporin/belimumab; IgA
+nephropathy's MEST-C scoring and new drugs; membranous GN's full primary-antigen list
+PLA2R/NELL1/THSD7A/Sema3B/PCDH7/HTRA1/EXT1/EXT2/NCAM1 and secondary-causes table; FSGS's 5
+histologic variants and full primary-vs-secondary causes table incl. familial podocytopathy
+genes; RPGN's existing 3-subtype table kept as-is but with substantial new anti-GBM and ANCA-
+vasculitis depth including 2025 avacopan/complement-inhibitor updates), plus **9 genuinely new
+disease entities**: renal amyloidosis (AL/AA/ALECT2), cryoglobulinemic GN, SBE-associated GN,
+C3 glomerulopathies (DDD vs. C3GN), infection-associated GN (chronic, distinct from acute
+PSGN), Fabry's disease, MGRS + light chain deposition disease, sickle cell nephropathy
+(including the sickle-trait-vs-SCD distinction), and cholesterol emboli.
+
+**Images**: extracted via pymupdf (per the newly-documented standing rule above) — embedded 2
+real clinical photos (nail dystrophy in AL amyloidosis, 8,406 bytes; purpuric/petechial rash
+in IgA vasculitis/HSP, 15,497 bytes, cropped from a 2-panel composite — SHA-256 roundtrip
+verified for both, independently re-confirmed by the parent session, both images visually
+reviewed and legible though the purpura crop came out somewhat dark/oversaturated, still
+diagnostic). Correctly skipped as bucket (a): Table 326-5 (membranous causes), Table 326-4
+(FSGS causes), and a newly-found Table 326-3 (lupus ISN/RPS classification) — all transcribed
+as markdown tables instead. Also skipped a restrictive-cardiomyopathy CT (judged low unique
+teaching value), an anti-GBM crescentic-glomerulus histology slide (generic-looking, budget
+conserved for the two clearer photos), and one unidentifiable low-quality image — reasonable
+judgment calls, not budget-forced since this topic had ample headroom.
+
+**Part 2 — new KF/PMP case** (`gn-kf-5`): built from the user's 11-slide PPTX case (94-year-old
+man, severe nephrotic syndrome, PLA2R-negative, weight loss, 7% marrow plasma cells) per rule
+4 (English-sourced, condensed into dense prompt/answer pairs rather than slide-by-slide
+restatement) — covers syndrome recognition despite normal creatinine, the 3 red flags, what
+PLA2R-negativity does/doesn't establish, the ranked differential, and the low-risk-first
+diagnostic strategy appropriate to a 94-year-old.
+
+**Cross-reference completed** (per the user's explicit request after this build, see the
+entry above for the `heme-mm` side already done): added a cross-reference sentence to the end
+of the new "MGRS و بیماری رسوب زنجیرهٔ سبک" lesson paragraph, pointing to `heme-mm` for the
+full MGUS/smoldering-myeloma/CRAB staging framework and explicitly stating MGRS is an axis
+orthogonal to that spectrum, not a point on it — the parent session added this directly
+(small, targeted edit) rather than re-dispatching the agent.
+
+**Content added**: 105 new flashcards (57→162), 8 new MCQs (17→25), 1 new KF/PMP case
+(4→5), 9 new tables (6→15), 14 new lesson sections (12→26), 2 new images (0→2). Final doc
+size: **194.5 KiB / 256 KiB (76.0%)** — confirmed via live post-sync `out_dir` read (212,143
+bytes server-side vs. 199,144 bytes local compact-recompute; same expected JSON-formatting-
+overhead gap as the `nephro-azotemia` entry above, not a data mismatch — field counts matched
+exactly: 162/25/5/2/15/26).
+
+Validated independently by the parent session, not just trusting the agent report: schema-
+valid, 0 جگر, all explicit ids unique (192, pre-existing + new combined), all `mcq[].
+correctIndex` in bounds, 8-card independent random-sample front→back direction re-check (all
+correct, including spot-checks on new amyloidosis/MGRS/MEST-C/PSGN-complement cards), both
+embedded images independently re-viewed and confirmed legible. Synced to the artifact db as
+`topic_content/nephro-gn` (version 1→2, verified via fresh `out_dir` read: field counts
+matched exactly). Bundle regenerated, still 57 topics (supplement to an existing topic, no
+new topic). No taxonomy/docs change needed.
+
+**This closes out the 4-file upload batch** (PPTX case + 3 board-exam PDFs → `nephro-aki`,
+`nephro-azotemia`, `nephro-gn` all supplemented; `heme-mm` cross-referenced on both sides).
+All three nephro builds used three parallel background agents, each independently re-verified
+by the parent session before syncing — none of the three agent reports were trusted blindly;
+every schema/جگر/duplicate-id/correctIndex/front-back/image-SHA256 check was re-run
+independently against the actual files, and in `nephro-azotemia`'s case a pre-existing (not
+agent-introduced) missing-`id` quirk was investigated and confirmed harmless rather than
+assumed benign from the report alone.
