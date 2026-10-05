@@ -2480,3 +2480,63 @@ counts matched exactly). No `docs/index.html`/artifact-HTML change needed (TOPIC
 already added in the prior `cardio-svt` creation step; no new rendering pattern this time, so
 no artifact republish either). Bundle regenerated, still 53 topics (no new topic, only an
 existing one supplemented).
+
+## `cardio-svt` supplemented from Harrison's Chapter 257 — common/atypical atrial flutter, MAT (2026-10-05)
+
+Immediate same-day follow-up: Harrison Ch257 (Common Atrial Flutter and Macroreentrant
+Atrial Tachycardia) with 10 attached images.
+
+**Image mismatch caught before building — worth flagging if it ever recurs.** The chapter's
+own text only references 5 figures (257-1 through 257-5), but 10 images arrived. Checked
+each against the chapter text rather than assuming all 10 were new: 4 matched real new
+figures (257-1 ECG+electroanatomic map, 257-2 flutter/MRT circuit-type diagrams, 257-4
+management algorithm, 257-5 MAT strip); **the other 6 were duplicate re-attachments of
+Ch256's own images** (the PSVT algorithm, preexcited-AF ECG, AP-location diagram, WPW
+composite, AVNRT-adenosine strip, AV-node-reentry figure — confirmed by opening one directly
+and comparing against the chapter text, which has no such content). Treated as an upload
+artifact, not new content — none of the 6 were processed or used. Fig 257-3 (electroanatomic
+mapping detail — electrograms/activation map/CTI-ablation termination) was referenced in the
+chapter text but **not actually among the 10 attachments** — covered in lesson prose only
+(the chapter's own description, including the 260 ms cycle-length example), no image.
+
+**Overlap check**: re-confirmed Module 3's atrial-flutter coverage (fixed-2:1-block
+recognition, adenosine response, acute rate/rhythm treatment) and MAT coverage (≥3 P-wave
+morphologies, treatment) — both already built in `cardio-arrhythmia`. Ch257's MAT section is
+almost entirely the same material Module 3 already owns, so it was kept to one condensed
+lesson paragraph plus a handful of flashcards on the few points Module 3's ED-level text
+doesn't carry (MAT's unclear thromboembolic-risk status, amiodarone's pulmonary-fibrosis
+caveat as a reason to avoid chronic use) — not a full re-build. Everything else in Ch257
+(CTI anatomy/mechanism, counterclockwise-vs-reverse-typical, AFib↔flutter interplay
+including drug-induced flutter from flecainide/propafenone/amiodarone, atypical/scar/LA-MRT
+flutter types, and the full anticoagulation→rate→rhythm→ablation management ladder) is
+genuinely new and was built in full — Module 3 never went past acute ED recognition.
+
+**Budget forced dropping the one new image — read this before touching `cardio-svt`
+again.** The topic was at 155.5 KiB/256 KiB (60.7%) after Ch256. Merging Ch257's text content
+plus the one embedded image (Fig 257-1, JPEG q75, 47.7 KB, SHA-256 roundtrip verified) landed
+at **247.0 KiB (96.5%)** — confirmed, not estimated. With Ch258 (atrial fibrillation) still
+the explicitly-anticipated next chapter for this topic, and AFib being likely the single
+densest topic in this whole chapter sequence (anticoagulation scoring, rate-vs-rhythm
+control, ablation, left atrial appendage closure, etc.), landing at 96.5% after only 3 of 4
+anticipated chapters would recreate `cardio-arrhythmia`'s wall one chapter early. **Dropped
+Fig 257-1 entirely** (not a compression-quality problem — it looked clean at q75) to bring
+the doc back to **188,412 bytes = 184.0 KiB / 256 KiB (71.9%)**, a healthier margin for
+Ch258. The compressed JPEG is kept in scratchpad if a future session is asked to add it once
+Ch258's own footprint is known.
+
+**Content added**: 25 flashcards (60→85), 9 MCQs (20→29), 1 KF/PMP case (2→3: typical
+flutter from presentation through CTI ablation and post-ablation AFib-risk follow-up), 2
+tables (6→8: flutter/MRT circuit-type classification, flutter management ladder), 0 images
+(processed but dropped, see above), 5 lesson sections (10→15: CTI-dependent mechanism/ECG,
+atypical/non-CTI flutters, long-term management ladder, electroanatomic mapping description,
+condensed MAT cross-reference). Final doc size: **184.0 KiB / 256 KiB (71.9%)**.
+
+Validated the same way as every build this session: schema-valid, 0 جگر occurrences, 0
+duplicate ids across 117 flashcard/mcq/kfPmp ids, correctIndex bounds checked, 6-card
+random-sample front→back direction check, and a Latin/Persian-adjacency grammar scan (17
+hits on the new content, all the established benign pattern) — no actual grammar breaks.
+
+Synced to the artifact db as `topic_content/cardio-svt` (version 2→3, `set` pinned against a
+freshly-read version, verified via a fresh `out_dir` read immediately after — field counts
+matched: 85/29/3/8/15/2). No taxonomy or rendering change needed, so no artifact republish.
+Bundle regenerated, still 53 topics.
