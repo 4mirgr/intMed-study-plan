@@ -2540,3 +2540,79 @@ Synced to the artifact db as `topic_content/cardio-svt` (version 2→3, `set` pi
 freshly-read version, verified via a fresh `out_dir` read immediately after — field counts
 matched: 85/29/3/8/15/2). No taxonomy or rendering change needed, so no artifact republish.
 Bundle regenerated, still 53 topics.
+
+## New topic `cardio-afib` created for Harrison's Chapter 258 — Atrial Fibrillation (2026-10-05)
+
+Immediate same-day follow-up to the `cardio-svt`/Ch257 entry above: Harrison Ch258 (Atrial
+Fibrillation, 12 pages) plus 4 images, same "در ادامه تکمیل آریتمی از اینها استفاده کن"
+instruction. Per the explicit warning flagged in the previous turn's reply (before this
+session even read the chapter), AFib was expected to be the densest chapter in the sequence
+and a real candidate for its own topic rather than another `cardio-svt` supplement.
+
+**Read the first 6 of 12 pages before deciding, then asked via `AskUserQuestion` rather than
+assuming** — by page 6 the chapter had already covered pathophysiology/epidemiology,
+clinical categorization, acute/chronic rate control, cardioversion-anticoagulation timing
+rules, and CHA2DS2-VASc/HAS-BLED/DOAC-vs-warfarin, with rhythm control (drugs + ablation) and
+LAA closure still to come — confirming the chapter really was that dense before committing
+to either path. `cardio-svt` was at 71.9%/256 KiB at the time. **User chose: new standalone
+topic (`cardio-afib`)** — their own stated reasoning: AFib is a complete subject in its own
+right by both Harrison's own chapter weight and content volume, and deserves headroom for
+anticoagulation/ablation/LAA-closure/special-populations material without being constrained
+by `cardio-svt`'s remaining budget. Read the remaining 6 pages (rhythm control strategy,
+pharmacologic/ablation rhythm control incl. pulsed-field ablation, ablation complications
+incl. atrioesophageal fistula, surgical/hybrid ablation, modifiable risk factors, the newer
+4-stage AF classification) before building.
+
+**Overlap check**: re-confirmed Module 3's AFib coverage — acute ED-level recognition (rate
+range, irregularly-irregular pattern), acute rate control drugs, CHA2DS2-VASc mention, and
+the WPW+AFib AV-nodal-blocker danger warning. All genuinely brief/acute-only. Everything in
+this topic beyond that (pathophysiology/mechanism, classification, chronic rate-control
+targets and the ablate-and-pace strategy, cardioversion/anticoagulation timing rules in
+depth, stroke/bleeding risk scoring and anticoagulant selection incl. DOAC dosing and
+reversal agents, LAA closure devices, rhythm-control strategy decision-making, pharmacologic
+options by class, catheter/surgical ablation mechanics and complications, modifiable risk
+factors) is genuinely new; only a one-line cross-reference to Module 3 was added for acute
+recognition/treatment, matching the discipline used throughout this chapter sequence.
+
+**Images**: of the 4 attachments, 2 were real ECG tracings — Fig 258-1 (classic
+irregularly-irregular AFib ECG, no P waves) and Fig 258-2 (a PAC initiating AF, showing the
+blocked-PAC-then-triggering-PAC mechanism) — embedded as bucket (b), JPEG q85 (56.2 KB and
+21.6 KB raw respectively), SHA-256 roundtrip verified for both. The other 2 — the
+CHA2DS2-VASc/HAS-BLED scoring table + bar chart (Fig 258-3) and the pulsed-field-ablation
+technical infographic (electroporation thresholds by tissue type, waveform/catheter
+variables, Fig 258-5) — were bucket (a): genuinely tabular/categorical data, reconstructed
+as a markdown table and lesson prose respectively rather than embedded. Fig 258-4
+(electroanatomic ablation map) was referenced in the chapter text but not among the 4
+attachments, so it was not covered by an image — same gap pattern as Ch257's missing Fig
+257-3, not pursued further since the chapter's own prose around it was fully captured in
+lesson text.
+
+**Content**: 55 flashcards, 13 MCQs, 2 KF/PMP cases (AFib of unknown duration — the
+cardioversion/anticoagulation decision tree; inadequate rate control progressing to
+tachycardia-induced cardiomyopathy — ablate-and-pace decision), 4 tables (AF
+classification by duration verbatim from Table 258-1, DOAC dosing verbatim from Table 258-2,
+CHA2DS2-VASc/HAS-BLED scoring reconstructed from Fig 258-3, catheter-ablation
+class/evidence-level recommendations verbatim from Table 258-3), 2 images, 9 lesson sections
+(pathophysiology/epidemiology/classification, mechanism, clinical presentation/
+hemodynamic-thromboembolic consequences, cardioversion/anticoagulation timing, acute/chronic
+rate control + ablate-and-pace, stroke prevention/anticoagulant selection, rhythm-control
+strategy + pharmacologic therapy, catheter/surgical ablation + complications, modifiable
+risk factors/4-stage classification). Condensed per rule 4 (English-sourced chapter) while
+building. Doc size: **185.6 KiB / 256 KiB (72.5%)** — confirmed via compact-JSON recompute,
+comfortable headroom for this topic's own future supplementation (e.g., if a later chapter
+on special populations/newer anticoagulants arrives).
+
+Validated the same way as every build this session: schema-valid, 0 جگر occurrences, 0
+duplicate ids across 70 flashcard/mcq/kfPmp ids, correctIndex bounds checked, 8-card
+random-sample front→back direction check, and a Latin/Persian-adjacency grammar scan (62
+raw hits, the large majority confirmed as `\n`-escape-sequence false positives from the scan
+method itself once spot-checked against actual table/lesson text — no real grammar breaks
+found on inspection).
+
+Added `{id:"cardio-afib", label:"فیبریلاسیون دهلیزی (AFib)"}` to `TOPICS` in both
+`docs/index.html` and the artifact HTML, positioned between `cardio-svt` and `cardio-ecg`
+(verified via `node --check` on both extracted `<script>` blocks). Synced to the artifact db
+as a new document, `topic_content/cardio-afib` (version 1, no `if_version` needed — fresh
+doc), verified via a fresh `out_dir` read immediately after (field counts matched exactly).
+Artifact republished (version 43) to carry the new TOPICS entry. Bundle regenerated to 54
+topics.
