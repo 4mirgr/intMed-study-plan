@@ -2853,3 +2853,82 @@ artifact db as a new document, `topic_content/cardio-vt-sustained` (version 1, n
 `if_version` needed), verified via a fresh `out_dir` read immediately after (field counts
 matched exactly: 61/14/2/2/5/9). Artifact republished (version 45) to carry the new TOPICS
 entry. Bundle regenerated to 56 topics.
+
+## New topic `cardio-vt-polymorphic` built from Harrison's Chapter 262 (2026-10-05)
+
+Same-day continuation of the Ch260/Ch261 VT sequence: Harrison Ch262 (Polymorphic Ventricular
+Tachycardia and Ventricular Fibrillation, 6 pages) plus 2 images. Before building, checked
+whether this chapter should go into `cardio-vt-sustained` (its natural sibling — Ch261 was
+monomorphic VT, Ch262 is polymorphic VT/VF, literally Harrison's own adjacent chapter pair).
+It does not fit: `cardio-vt-sustained` was already at 80.6%/256 KiB carrying its own 2 Ch261
+images; merging Ch262's text alone (no new images) already overflows to 102.1%, and with
+both new images to 138.0%. Per the standing discipline against trimming already-synced
+content without asking, put this to the user via `AskUserQuestion`: new topic, or drop
+`cardio-vt-sustained`'s existing 2 images to make room. **User chose new topic, also noting
+Ch262 is thematically distinct from Ch261** — Ch261 is scar-based structural-disease VT
+substrate (CAD, NICM, ARVC, TOF, bundle branch reentry, idiopathic focal/reentrant VT);
+Ch262 is genetic channelopathy/repolarization syndromes (congenital/acquired LQTS, short QT,
+Brugada, early repolarization, CPVT) plus acute-MI-associated and HCM/genetic-DCM polymorphic
+VT — a real content distinction, not just a budget-driven split.
+
+Created `content/cardio/cardio-vt-polymorphic/data.json` (`topicId:"cardio-vt-polymorphic"`,
+`category:"cardio"`). No meaningful overlap with existing content: `cardio-vt-sustained`'s
+Table 261-1 classification table only lists these syndromes in one line each ("QT طولانی→
+torsades؛ بروگادا→VF اغلب شبانه؛ CPVT→پلی‌مورفیک یا bidirectional VT"); Ch262 is the actual
+depth build for each (genetics, triggers, risk stratification, treatment). HCM and genetic
+DCM are also new depth here — Ch261's Table 261-1 had only brief classification entries for
+these, and Ch261's own lesson prose never covered them.
+
+**Images**: both attachments matched to the chapter's 2 named figures — Fig 262-1 (torsades
+des pointes in a patient with bradycardia/QT prolongation — the chapter's own signature
+teaching image, 12-lead showing the long-short pause-dependent initiation plus a telemetry
+strip) and Fig 262-2 (fascicular ectopy triggering VF after MI/revascularization — surviving
+but poorly-coupled Purkinje fibers as a PVC/VF trigger). Both real patient tracings, bucket
+(b), no bucket-(a) diagrams this chapter. Both embedded (JPEG q72) and SHA-256-roundtrip-
+verified — this being a fresh topic, text-only content (56 flashcards, 10 MCQs, 2 KF/PMP
+cases, 4 tables, 8 lesson sections) was only 55.1 KiB/256 KiB (21.5%), so both images fit
+comfortably at 57.4% total, no dropping needed.
+
+**Content**: 56 flashcards, 10 MCQs, 2 KF/PMP cases (hospitalized patient on azithromycin
+with hypokalemia-induced torsades — acute Mg management plus the crediblemeds.org/drug-
+avoidance counseling point; two adolescents with exertional syncope differentiating LQTS-1
+from CPVT by resting ECG and exercise-test findings), 4 tables (QT-prolongation/torsades
+causes condensed from Table 262-1, LQTS-1/2/3 gene/trigger comparison, ST-elevation V1-V3
+differential diagnosis — Brugada vs. LVH/pericarditis/ischemia/hyperK/hypothermia/RBBB/ARVC,
+and a channelopathy summary table across LQTS/short-QT/Brugada/early-repol/CPVT), 2 images,
+8 lesson sections (general polymorphic VT mechanism, acute-MI-associated polymorphic VT,
+acquired LQTS/torsades, congenital LQTS, short QT/Brugada/early repolarization, CPVT,
+HCM/genetic DCM, VF + future directions). Condensed per rule 4 (English-sourced chapter)
+while building.
+
+**Caught and fixed before syncing**: a flashcard drafted asking for "four" sodium-channel-
+blocking drugs used to unmask Brugada ST elevation but whose answer listed only three
+(flecainide, ajmaline, procainamide) — the lesson text itself only ever named three. Fixed
+the flashcard's question wording ("چهار"→"سه") before validation finished; this is exactly
+the kind of self-contradiction the standing per-build QA pass is meant to catch, and it did.
+
+Validated: full schema validation passed cleanly including `lesson` (plain `{heading,body}`
+entries), 0 جگر occurrences, 0 duplicate ids across 68 flashcard/mcq/kfPmp ids, all
+`mcq[].correctIndex` in bounds, 0 U+FFFD characters, 8-card random-sample front→back
+direction check (plus the one flashcard fix caught during that same pass), and a Latin/
+Persian-adjacency grammar scan (38 hits, all the established benign pattern — abbreviation +
+Persian punctuation, e.g. "SCN5A، SCN1B، و SCN10A") — no actual grammar breaks.
+
+Added `{id:"cardio-vt-polymorphic", label:"VT پلی‌مورفیک، VF، و سندرم‌های کانالوپاتی
+ژنتیک"}` to `TOPICS` in both `docs/index.html` and the artifact HTML, positioned between
+`cardio-vt-sustained` and `cardio-svt` (verified via `node --check` on both extracted
+`<script>` blocks). Synced to the artifact db as a new document, `topic_content/
+cardio-vt-polymorphic` (version 1, no `if_version` needed), verified via a fresh `out_dir`
+read immediately after (field counts matched exactly: 56/10/2/2/4/8, including the flashcard
+fix). Artifact republished (version 46) to carry the new TOPICS entry. Bundle regenerated to
+57 topics.
+
+**Running tally for this session's VT/arrhythmia chapter sequence** (for context if more
+Harrison chapters in this family arrive): `cardio-arrhythmia` (brady, Ch251/252, 96.0%),
+`cardio-vt` (tachy general + Ch253/259/260, 93.8%), `cardio-vt-sustained` (Ch261, 80.6%),
+`cardio-vt-polymorphic` (Ch262, 57.4%), `cardio-svt` (AVNRT/AVRT/flutter/MAT, Ch255-258,
+71.9%), `cardio-afib` (Ch258-AFib-specific, 72.5%). Five of six are now topics created or
+split specifically to accommodate this one Harrison chapter sequence (251-262) — if further
+chapters are still coming, worth asking the user whether to keep splitting per-chapter or
+consider a different organizing scheme, rather than assuming another split is always the
+right default.
