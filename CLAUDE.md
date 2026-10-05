@@ -3065,3 +3065,55 @@ to `heme-mm`, once the `nephro-gn` build agent finishes; and the `nephro-azotemi
 agents as of this entry. Bundle regenerated to 57 topics (no new topic yet — `nephro-aki` and
 `heme-mm` were both supplements to existing topics, so taxonomy is unchanged); `docs/
 index.html`/artifact HTML not touched this pass (no rendering or taxonomy change needed).
+
+## `nephro-azotemia` supplemented from the 17-page azotemia/urinary-disorders board MCQ bank (2026-10-05)
+
+Second of the three parallel background-agent builds from the same 4-file upload batch (see
+the entry above for full context — AKI/azotemia/glomerular PDFs + a case PPTX). This agent
+supplemented `content/nephro/nephro-azotemia/data.json` from `ازوتمی و اختلالات ادراری.pdf`
+(~39 Iranian board-exam MCQs across 17 pages). Correctly avoided re-adding Table 55-2, FeNa,
+BUN/Cr ratio, and basic oliguria/anuria content already well-covered from an earlier build.
+
+**Images**: every embedded figure in this PDF (hematuria workup flowchart, polyuria/DI
+flowchart, proteinuria quantification flowchart, Table 55-2, Cockcroft-Gault/MDRD formula
+image — several reused 2-3 times across different questions) was bucket (a) — a decision
+algorithm or reference table, transcribed as markdown tables instead of embedded, each
+distinct one captured only once despite repeated appearances. **Zero images embedded** —
+no genuine bucket-(b) clinical photo/tracing found in this PDF, correctly reported as such
+rather than forcing one in.
+
+**Content added**: 33 flashcards, 8 MCQs, 2 new KF/PMP cases, 4 new tables, 3 new lesson
+sections (90→... wait, 57→90 flashcards, 21→29 mcq, 2→4 kfPmp, 4→8 tables, 15→18 lesson).
+New: the full hematuria workup algorithm as a structured table (serologic/hematologic panel
+→ biopsy branch; pyuria/WBC-cast branch; metabolic/family-history branch), isolated hematuria
+in children (hypercalciuria/hyperuricosuria, IgA vasculitis/HSP, thin basement membrane
+disease vs. Alport's), gross-hematuria-with-clots as a postrenal-source teaching point, SBE-
+associated GN (flea-bitten kidney, antibiotic-first treatment — new disease entity), the full
+polyuria/DI algorithm as a table (with several central-DI causes — Guillain-Barré, fat
+embolism, empty sella — not previously in the paraphrased prose), the full proteinuria-
+quantification algorithm as a table, a hydronephrosis/unexplained-renal-failure workup
+algorithm table, ATN oliguric-vs-non-oliguric mortality nuance, CMML lysozyme-nephropathy EM
+finding, and the exact verbatim MDRD formula plus the Cockcroft-Gault Lean Body Weight (not
+total body weight) nuance appended to the existing eGFR-formulas section.
+
+Final doc size: **117,578 bytes = 114.8 KiB / 256 KiB (45.0%)** — confirmed via live post-sync
+`out_dir` read (the agent's own pre-sync estimate was 106.3 KiB; the small difference is
+expected JSON-formatting overhead between the agent's local compact-size check and the
+server's stored representation, not a data mismatch — field counts matched exactly: 90/29/4/
+0/8/18). Validated independently by the parent session (not just trusting the agent report):
+schema-valid, 0 جگر, 0 U+FFFD, all `mcq[].correctIndex` in bounds, 6-card independent random-
+sample front→back direction re-check — all correct. Note: roughly half this file's flashcard/
+mcq entries (including most pre-existing ones, not anything from this build) lack an explicit
+`id` field — a pre-existing quirk of how this file was originally built, confirmed harmless
+(schema doesn't require `id`, and duplicate-id checking only applies to entries that have
+one) — not something this pass introduced or needs to fix unless asked.
+
+Synced to the artifact db (`topic_content/nephro-azotemia`, version 4→5, verified via a fresh
+`out_dir` read immediately after — field counts matched exactly). Bundle regenerated, still
+57 topics (supplement to an existing topic, no new topic). No taxonomy/docs change needed.
+
+Still pending from this same batch: the `nephro-gn` build (agent 3, the largest — 67-page
+glomerular-diseases PDF plus the AL-amyloidosis/MGRS case as a new KF/PMP entry) is still
+running as of this entry; once it lands, still need to add the matching cross-reference
+pointer from `nephro-gn` back to `heme-mm` (the `heme-mm` side was already done, see the
+entry above).
