@@ -3321,3 +3321,58 @@ rather than assuming.
 Applied identically to `docs/index.html` and the live artifact HTML (read fresh via
 `Artifact action:"read"` first, `node --check` passed on both extracted `<script>` blocks).
 Artifact republished (version 49). No content/taxonomy change, so no bundle regen needed.
+
+## Real bug fixed: sync status flapped between "خطا در همگام‌سازی" and green without user action (2026-10-05)
+
+User reported the connection status keeps dropping to "خطا در همگام‌سازی" (sync error) and
+sometimes flips back to green/"متصله" on its own, with no obvious pattern. Read `doFlush()`,
+`scheduleFlush()`, `ghSaveState()`, and `connectGithub()` in `docs/index.html` before touching
+anything — found two real, confirmed bugs, not a network/token problem on the user's end.
+
+**Bug 1 (the main one): a failed save was never retried automatically.** `doFlush()` set
+`dirty = false` unconditionally *before* attempting the save, including on the path where the
+save then fails. The 20s fallback interval only retries `if(dirty && !flushing && !flushTimer)`
+— so once `dirty` was cleared, a failed flush just sat on "خطا" forever, with literally nothing
+in the code that would ever retry it. The only way the UI ever went back to green was the user
+making some *unrelated* new edit (a checkbox, a note, a highlight), which calls
+`scheduleFlush()` again, re-sets `dirty = true`, and the *next* successful save happens to
+also clear the stale error — which is exactly the "گاهی خودبخود سبز میشه" the user described:
+not actually automatic, just coincidentally triggered by their own next action elsewhere in
+the app.
+
+**Bug 2 (the actual trigger, now that 3 real people share one `state.json`): `ghSaveState()`
+never distinguished a 409/422 SHA conflict from any other failure.** The whole sync design is
+documented as "GET-sha-then-PUT... last-write-wins at the document level... two tabs saving at
+literally the same moment can clobber each other" (see the GitHub-backed-sync section above) —
+that was written when this was effectively a single-user system. With `amir`/`arash`/
+`alisalehi` (and now signup-approved users) all actively using the app, their individual
+400ms–900ms debounced flushes plus the 20s fallback interval mean two people's saves landing
+within the same couple of seconds is routine, not an edge case — and every single one of those
+collisions threw a generic `"http 409"`, indistinguishable in the UI from a real outage or a
+dead token, and (per Bug 1) never retried.
+
+**Fix, both bugs, in both `docs/index.html` and the artifact's own highlight-sync module**
+(the artifact has its own independent copy of this exact code, hardcoded to `ARTIFACT_USER_ID
+= "amir"` — same bug existed there too, same fix applied):
+- `ghSaveState()` now throws a distinct `Error("conflict")` for HTTP 409/422, separate from
+  `Error("auth")` (401/403) and the generic `Error("http " + status)` catch-all.
+- `doFlush()`'s catch block: an `"auth"` failure still just shows the red "توکن نامعتبر" state
+  and waits for the user to reconnect (correct — no token-less retry can succeed). Anything
+  else now calls `scheduleFlush(isConflict ? 2500 : 8000)` — a conflict retries almost
+  immediately (the next GET picks up the fresh sha and just works), a generic/network failure
+  retries after 8s. No more indefinite "stuck on error until the user happens to type
+  something else" state.
+- `connectGithub()` (the one-time fetch on page load) got the same treatment for symmetry: a
+  non-auth failure now retries automatically up to 3 times, 4s apart, via a new
+  `connectRetryCount` counter reset to 0 on success — previously a transient network blip on
+  initial load left the header stuck on "error" until the user manually reopened the connect
+  modal and resubmitted the same token.
+
+This is a genuine correctness fix, not a workaround — the user will still occasionally see a
+brief red flash during a real write collision between two people, but it should now clear
+itself within ~2.5s instead of sitting there until an unrelated edit happens to fix it, and
+network hiccups now self-heal instead of requiring a manual reconnect. Verified via `node
+--check` on both extracted `<script>` blocks (no live-PAT round-trip test — same credential-
+exploration boundary noted elsewhere in this file; only the user can confirm the real-world
+retry timing on an actual device). Artifact republished (version 50). No content/taxonomy
+change, so no bundle regen needed.

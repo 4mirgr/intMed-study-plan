@@ -2003,6 +2003,12 @@
       })
       .then(function(r){
         if(r.status === 401 || r.status === 403) throw new Error("auth");
+        // 409/422 = the PUT's sha no longer matches the branch's HEAD — another
+        // device/user saved first (expected now that several real people share
+        // this one state.json). Not an auth problem, and not a dead end: the
+        // next GET-sha-then-PUT attempt picks up the fresh sha and just works,
+        // so doFlush() retries this quickly instead of leaving it stuck on error.
+        if(r.status === 409 || r.status === 422) throw new Error("conflict");
         if(!r.ok) throw new Error("http " + r.status);
       });
   }
@@ -2064,7 +2070,17 @@
       if(flushQueued){ flushQueued = false; scheduleFlush(200); }
     }).catch(function(err){
       flushing = false;
-      setConn(err && err.message === "auth" ? "auth" : "error");
+      var isAuth = err && err.message === "auth";
+      var isConflict = err && err.message === "conflict";
+      setConn(isAuth ? "auth" : "error");
+      // Bug fixed 2026-10-05: this used to just set the red "error" status and
+      // stop — dirty was already cleared above, so nothing retried it until the
+      // user happened to make an unrelated new edit. A real token problem (auth)
+      // still needs the user to reconnect, but a conflict (another device/user
+      // saved first) or a plain network hiccup should retry on their own —
+      // scheduleFlush() re-marks dirty and requeues, quickly for a conflict
+      // (the next attempt's fresh sha just works), a bit slower for anything else.
+      if(!isAuth) scheduleFlush(isConflict ? 2500 : 8000);
     });
   }
   function scheduleFlush(delay){
@@ -2236,10 +2252,12 @@
     return mergedAnything;
   }
 
+  var connectRetryCount = 0;
   function connectGithub(){
     setConn("connecting");
     var localSnapshot = STATE;
     return ghFetchState().then(function(remote){
+      connectRetryCount = 0;
       var migrated = migrateStateShape(remote);
       if(!migrated.users) migrated.users = {};
       if(!migrated.tickets) migrated.tickets = [];
@@ -2267,8 +2285,17 @@
       // debounced flush would have fired.
       if(mergedAnything) scheduleFlush(200);
     }).catch(function(err){
-      setConn(err && err.message === "auth" ? "auth" : "error");
+      var isAuth = err && err.message === "auth";
+      setConn(isAuth ? "auth" : "error");
       updateGhBtn();
+      // Same spirit as doFlush()'s retry below: a plain network hiccup on the
+      // very first connect shouldn't leave the header permanently stuck on
+      // "error" — retry a few times on its own. An auth failure needs a real
+      // token from the user, so that one still stops here and waits for them.
+      if(!isAuth && connectRetryCount < 3){
+        connectRetryCount++;
+        setTimeout(connectGithub, 4000);
+      }
     });
   }
 
