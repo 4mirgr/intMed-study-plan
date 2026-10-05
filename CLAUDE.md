@@ -3251,3 +3251,43 @@ as the pre-existing `gi-ibd`/`gi-cirrhosis` precedent.
 workflow (read PDF → draft → validate → sync → bundle → commit → CLAUDE.md entry → notify).
 No chapter from this list has been built yet — this step was taxonomy-only, by explicit
 user instruction ("به مرور... پر کنیم" = fill in gradually, not now).
+
+## 9 new nephrology taxonomy placeholders registered — no content yet (2026-10-05)
+
+Same-day follow-up to the GI taxonomy batch above, same pattern: the user sent a screenshot
+listing Harrison chapter numbers/titles (chapters 54–58 and 319–331) for the `nephro`
+category, with the same explicit "به مرور هرکدام را پر کنیم" instruction — taxonomy-only,
+no content built this step.
+
+Mapped all 17 listed chapters against this category's existing topicIds first:
+- Already existed, kept as-is: `nephro-azotemia` (Ch55), `nephro-aki` (Ch321), `nephro-ckd`
+  (Ch322), `nephro-gn` (Ch326), `nephro-stone` (Ch330). `nephro-lytes` was also kept as the
+  existing match for **three** of the listed chapters at once (Ch56 اختلالات آب و الکترولیت,
+  Ch57 هایپرکلسمی و هایپوکلسمی, Ch58 اسیدوز و آلکالوز) — confirmed via this session's own
+  build history (`nephro-lytes` was built from "calcium + acid-base question banks", i.e.
+  already covers exactly this content) rather than creating three redundant new ids for
+  material already housed in one topic.
+- 9 new placeholder ids added: `nephro-approach` (Ch319, اپروچ به بیماری‌های کلیه و مجاری
+  ادراری), `nephro-dialysis` (Ch323), `nephro-interventional` (Ch324, نفرولوژی مداخله‌ای),
+  `nephro-transplant` (Ch325, پیوند کلیه), `nephro-pkd` (Ch327, بیماری کلیه پلی‌کیستیک و
+  سایر بیماری‌های مادرزادی رشد و تکامل), `nephro-tin` (Ch328, بیماری‌های توبولواینترستیشیال
+  کلیه), `nephro-vascular` (Ch329, اختلالات ترومبوتیک عروق کلیه), `nephro-obstruction`
+  (Ch331, انسداد مجرای ادراری), `nephro-bladder-pain` (Ch54, سندرم درد مثانه / سیستیت
+  بینابینی).
+- Pre-existing placeholders not in the user's list (`nephro-candiduria`,
+  `nephro-catheter-infection`, `rhabdo-myopathy`) were left in place, unrelated to this
+  specific chapter list.
+
+Final `nephro` category order (18 entries) follows clinical sequence rather than the
+screenshot's chapter-number order: approach → azotemia → AKI → CKD → dialysis →
+interventional nephrology → transplant → GN → PKD/congenital → TIN → vascular → stone →
+obstruction → bladder pain/IC → electrolytes/acid-base → candiduria → catheter infection →
+rhabdomyolysis.
+
+Applied identically to `docs/index.html` and the live artifact HTML (read fresh via
+`Artifact action:"read"` first, `node --check` passed on both extracted `<script>` blocks
+before and after). Artifact republished (version 48). Bundle regenerated — still 57 topics,
+same empty-placeholder-doesn't-populate-the-bundle confirmation as the GI batch above.
+
+**Next step, when the user asks for a specific one**: same standard per-chapter workflow as
+every other topic this session. No chapter from this list has been built yet.
