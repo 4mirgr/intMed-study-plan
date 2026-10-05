@@ -2191,3 +2191,80 @@ Synced to the artifact db as `topic_content/cardio-arrhythmia` (version 1→2, `
 the pre-existing version). Artifact republished (version 41) with both the new
 `groupHeader` rendering/CSS and the new content data. Bundle regenerated, still 52 topics (no
 new topic, only an existing one supplemented).
+
+## `cardio-arrhythmia` supplemented again from Harrison's Chapter 252 — AV node/AV block (2026-10-05)
+
+Same day, immediate follow-up: "در ادامه تکمیل آریتمی از اینها استفاده کن" with a second
+10-page PDF (Harrison's 22nd ed., Ch. 252, The Bradyarrhythmias: Disorders of the
+Atrioventricular Node) plus 7 images. Unlike Ch251 (zero overlap with the existing modules),
+Ch252 is specifically about **AV block** — the same ECG category Module 4 already teaches at
+the bedside-recognition level (1st/2nd Mobitz I & II/3rd-degree block patterns, atropine/
+pacing). Re-read Module 4's actual text (already extracted earlier this session) to confirm
+scope before writing anything: Module 4 stays strictly acute/ED — ECG pattern recognition and
+emergency management only, no AV-node cellular physiology, no etiology beyond a short
+reversible-causes list, no permanent-pacing decision framework. Ch252 covers exactly those
+gaps (AV node structure/physiology, the full ECG classification with mechanism-level detail,
+an extensive etiology list, AV block by MI location with prognosis, diagnostic testing
+including His-bundle electrogram AH/HV intervals, acute treatment, and — the biggest gap
+Module 4 doesn't touch at all — permanent pacemaker indications/mode selection/leadless
+pacing). New flashcards on the basic ECG classification (1st/Mobitz I/Mobitz II/3rd-degree)
+stayed to 1-2 cross-referencing cards pointing to Module 4 rather than re-teaching it; full
+depth was given to AV-node physiology, etiology, MI-location prognosis, diagnostic testing,
+and pacemaker decision-making, none of which Module 4 covers.
+
+**Images**: all 7 attachments matched cleanly to Fig 252-1 through 252-7 (complete set).
+Bucket (a) — not embedded, captured as table/lesson prose: Fig 252-3 and Fig 252-5
+(evaluation/pacing-indication decision algorithms, same treatment as Ch251's analogous
+figures). Bucket (b) candidates — real tracings/photos: Fig 252-1 (4-panel ECG comparison of
+all AV block grades), Fig 252-2 (AV block during sleep tracing), Fig 252-4 (His-bundle
+electrogram), Fig 252-6 (CXR + ECG, left bundle branch area pacing), Fig 252-7 (CXR,
+transvenous vs. leadless pacemaker comparison).
+
+**Budget forced a hard cut this time — read this before supplementing this topic further.**
+The topic's doc was already at 202.7 KiB/256 KiB (79.2%) after the Ch251 build (3 embedded
+images already there). Processing all 5 bucket-(b) Ch252 images (JPEG q75, same
+pink-ECG-grid lesson as the Ch251 build) still totaled too much: embedding even just the
+single highest-yield one (Fig 252-1, the 4-panel AV-block comparison, 31.2 KB raw) pushed the
+doc to **294.0 KiB — over the 256 KiB cap**. Per the standing rule ("if a topic's text
+content is already heavy, that budget — not a reluctance to embed — is what should cap the
+count"), the image was dropped entirely rather than trimming existing content to make room;
+without it the doc lands at 258,627 bytes = **252.6 KiB / 256 KiB (98.7%)** — confirmed via
+`out_dir` save and a compact (non-pretty-printed) size recompute, not trusted from the
+inline dump. This is the tightest margin of any topic built this session; **any further
+addition to `cardio-arrhythmia` must check the budget first** — there is essentially no
+headroom left (under 4 KiB), and a second image is not realistic without trimming existing
+flashcards/lesson text or moving to a different hosting approach.
+
+**Content added**: 45 flashcards, 10 MCQs, 2 KF/PMP cases (young patient with isolated
+narrow-QRS complete heart block and exercise-responsive rate — congenital vs. acquired block
+differential; inferior-MI Mobitz I managed conservatively vs. the same picture in anterior MI
+with new bundle branch block needing temporary pacing), 3 tables (causes of AV block
+verbatim, inferior-vs-anterior-MI AV-block comparison, permanent-pacing indications by
+clinical scenario verbatim), 0 new images (budget-capped, see above). Topic totals after this
+build: 93 flashcards, 20 MCQs, 5 KF/PMP cases, 7 tables, 3 images, 15 lesson entries (10
+prose sections + 1 group header + 3 interactive modules). Validated the same way as every
+other build this session: schema-valid excluding the known lesson exception, 0 جگر
+occurrences, 0 duplicate ids across 118 flashcard/mcq/kfPmp ids, all `mcq[].correctIndex` in
+bounds, random-sample front→back direction check, and a Latin/Persian-adjacency grammar scan
+(33 hits, all the established benign pattern) — no actual grammar breaks.
+
+**Sync bug caught and fixed in the same pass — worth flagging for future multi-stage builds
+on one topic.** After building the Ch252 content and regenerating `cardio_arrhythmia_db_doc.
+json` from the local file, a first `set` call accidentally reused a **stale copy of that same
+scratchpad file** left over from the earlier Ch251 sync (48 flashcards, not the new 93) —
+pinned correctly against the live version, so it committed cleanly as a *valid but wrong*
+write (the doc briefly held Ch251-only content at version 3, having dropped the Ch252 work
+that had just been built locally). Caught immediately by re-reading the just-written doc back
+via `out_dir` and checking field counts against what the build script had just reported,
+rather than assuming the `set` call's success message meant the content was right. Fixed by
+regenerating the scratchpad JSON fresh from `content/cardio/cardio-arrhythmia/data.json`
+(the correct, already-written local file) and re-`set`ting at `if_version: 3` → version 4,
+re-verified via `out_dir` a second time. Lesson: when a topic gets synced more than once in
+one session, regenerate the scratchpad sync file from the local `data.json` immediately
+before each `set` call — never reuse a scratchpad JSON written for an earlier sync, even if
+it looks like it should still be current.
+
+No `docs/index.html` or artifact-HTML change was needed this time (the `groupHeader`
+rendering already shipped with the Ch251 build earlier today) — only the db doc changed, so
+no republish was needed. Bundle regenerated, still 52 topics (no new topic, only an existing
+one supplemented a second time).
