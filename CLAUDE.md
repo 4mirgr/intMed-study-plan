@@ -3291,3 +3291,33 @@ same empty-placeholder-doesn't-populate-the-bundle confirmation as the GI batch 
 
 **Next step, when the user asks for a specific one**: same standard per-chapter workflow as
 every other topic this session. No chapter from this list has been built yet.
+
+## Highlight toolbar shrunk further + 2 new colors added (2026-10-05)
+
+User ask: make the floating selection toolbar (the one that appears on text-select to pick a
+highlight color / add a note) a bit smaller, and add 2 more highlight colors. Per the earlier
+"26px is the current baseline" note in the logo/swatch-sizing section above, this shrinks the
+swatches again — 26px→20px, border 1.5px→1.2px — plus tighter toolbar padding/gap (7px/6px →
+5px/4px) and a smaller note button (`.hl-note-btn` font .72rem→.67rem, padding 6px 11px→4px
+8px, min-height 28→24).
+
+**New colors: purple and orange**, added as `--hl-purple`/`--hl-orange` design tokens in all
+three `:root` blocks (light, `prefers-color-scheme:dark` media query, `:root[data-theme=
+"dark"]`) — light `#ddd6fe`/`#fed7aa`, dark `#4c3a7a`/`#6b3410` — same token pattern as the 4
+existing `--hl-*` colors, chosen for hue separation from yellow/green/pink/blue.
+
+**Why this was a small, safe change**: the whole highlight-color system was already fully
+generic by color *name*, not a hardcoded 4-way switch — `mark.className = "hl hl-" +
+(h.color || "yellow")` and `row.className = "hl-list-item hl-list-" + (h.color || "yellow")`
+both just string-concatenate whatever `data-color` value the clicked swatch carried. So adding
+a color only needed: the 2 new CSS custom properties, `mark.hl-purple`/`mark.hl-orange`,
+`.hl-swatch.hl-purple`/`.hl-swatch.hl-orange`, `.hl-list-item.hl-list-purple`/`.hl-list-item.
+hl-list-orange` CSS rules, and 2 new `<button class="hl-swatch hl-purple" data-color="purple">`
+buttons in the toolbar's `innerHTML` string — no JS logic changes anywhere (not in
+`commitHighlight`, not in the popover, not in the هایلایت‌های من list renderer). Verified this
+by grep before editing (`"hl hl-" + (r.h.color...)"`/`"hl-list-item hl-list-" + (h.color...)`)
+rather than assuming.
+
+Applied identically to `docs/index.html` and the live artifact HTML (read fresh via
+`Artifact action:"read"` first, `node --check` passed on both extracted `<script>` blocks).
+Artifact republished (version 49). No content/taxonomy change, so no bundle regen needed.
