@@ -2932,3 +2932,62 @@ split specifically to accommodate this one Harrison chapter sequence (251-262) �
 chapters are still coming, worth asking the user whether to keep splitting per-chapter or
 consider a different organizing scheme, rather than assuming another split is always the
 right default.
+
+## `cardio-vt-polymorphic` supplemented from Harrison's Chapter 263 (2026-10-05)
+
+Same-day continuation of the VT sequence: Harrison Ch263 (Electrical Storm and Incessant
+Ventricular Tachycardia, 5 pages) plus 5 images. This chapter is the acute-crisis-management
+capstone that sits on top of both monomorphic (`cardio-vt-sustained`) and polymorphic/
+channelopathy (`cardio-vt-polymorphic`) VT — it covers electrical storm definition, incessant
+VT, ICD shock management, and storm stabilization by substrate (ischemic/PVC-initiated, LQTS,
+Brugada, inflammatory), rather than introducing a new disease category of its own.
+
+**Placement**: rather than defaulting to another new topic — flagged as a real risk in the
+prior turn's reply (5 of 6 arrhythmia-family topics already exist because of this one chapter
+sequence) — checked both existing candidates' remaining budget first. `cardio-vt-sustained`
+(80.6% after Ch261) could not fit Ch263's text alone (95.3%, and any image pushed it over
+100%). `cardio-vt-polymorphic` (57.4% after Ch262) had real room (72.2% text-only). Went into
+`cardio-vt-polymorphic` as a supplement — no new topic, no `AskUserQuestion` needed this time
+since an existing topic genuinely fit.
+
+**Images**: all 5 attachments matched cleanly to the chapter's 5 named figures by content
+comparison (complete set, no gaps, unlike most prior chapters this session). Fig 263-3
+(global strategy table: stabilize rhythm / relieve triggers / reduce sympathetic drive by
+speed of deployment) and Fig 263-4 (substrate-based management algorithm — MMVT vs. PMVT/VF
+with LQT/ischemic/PVC-initiated/Brugada/inflammatory branches) are both bucket (a) —
+categorical/decision content — rebuilt as markdown tables. Fig 263-1 (incessant monomorphic
+VT with ATP termination and spontaneous recurrence), Fig 263-2 (subcutaneous ICD shock
+tracing, recurrent VF), and Fig 263-5 (PVC-triggered VF with hemodynamic collapse on the BP
+tracing) are bucket (b), real patient tracings. All 3 processed (JPEG) and SHA-256-roundtrip-
+verified, but **only Fig 263-1 was embedded**: Fig 263-2 alone was 122 KB raw (an unusually
+large multi-row tracing) — far too large for this topic's remaining budget regardless of
+anything else; Fig 263-5 was dropped as a budget/judgment tradeoff, reasoned as the most
+conceptually redundant of the three since this exact visual pattern (a PVC triggering
+malignant ventricular arrhythmia) was already shown twice earlier in this same topic family
+(Ch260's papillary-muscle PVC tracing, Ch262's fascicular-ectopy-triggering-VF tracing) —
+Fig 263-1's incessant-VT-with-ATP pattern is genuinely new to this topic set and was kept.
+
+**Content added**: 39 flashcards (56→95), 9 MCQs (10→19), 1 KF/PMP case (2→3: a patient with
+5 ICD shocks in 18 hours, walking through electrical-storm recognition, device interrogation,
+general stabilization, and the ablation decision for monomorphic VT), 3 tables (4→7: the
+global-strategy table from Fig 263-3, the substrate-based algorithm from Fig 263-4, and a
+drug/intervention quick-reference table), 1 image (2→3), 8 lesson sections (8→16: electrical
+storm definition/epidemiology, incessant VT, ICD shock management, reducing shocks/treating
+recurrent episodes, general electrical-storm stabilization, ischemia/PVC-initiated storm,
+acquired-congenital-LQTS/Brugada storm management, inflammatory cardiomyopathy as a cause).
+Condensed per rule 4 (English-sourced chapter) while building.
+
+Final doc size: **200.9 KiB / 256 KiB (78.5%)** — confirmed via live post-sync `out_dir`
+read, matching the local compact-JSON recompute. Validated the same way as every build this
+session: schema-valid (full schema, including `lesson` — plain `{heading,body}` entries), 0
+جگر occurrences, 0 duplicate ids across 117 flashcard/mcq/kfPmp ids, all `mcq[].correctIndex`
+in bounds, 0 U+FFFD characters, 8-card random-sample front→back direction check, and a Latin/
+Persian-adjacency grammar scan on the new content (20 hits, all the established benign
+pattern — abbreviation + Persian punctuation/plural suffix, e.g. "PVCهای") — no actual
+grammar breaks.
+
+Synced to the artifact db as `topic_content/cardio-vt-polymorphic` (version 1→2, `set`
+pinned against a freshly-read version, verified via a fresh `out_dir` read immediately after
+— field counts matched exactly: 95/19/3/3/7/16). No taxonomy or rendering change needed, so
+no artifact republish. Bundle regenerated, still 57 topics (no new topic, only an existing
+one supplemented).
