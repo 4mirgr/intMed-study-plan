@@ -2344,3 +2344,69 @@ to the artifact db as `topic_content/cardio-arrhythmia` (version 4→5, `set` pi
 this time, verified via fresh `out_dir` read immediately after — no repeat of the stale-file
 bug from the Ch252 pass). No `docs/index.html`/artifact-HTML change needed (no new rendering
 pattern this time). Bundle regenerated, still 52 topics.
+
+## New topic `cardio-svt` created for the Harrison SVT chapter sequence — Ch255 (focal atrial tachycardia) built first (2026-10-05)
+
+Immediately after the Ch254 remediation above, the user sent Chapter 255 (Focal Atrial
+Tachycardia) with the same "در ادامه تکمیل آریتمی از اینها استفاده کن" instruction.
+`cardio-arrhythmia` was already at 99.6% of its 256 KiB cap with "essentially zero headroom
+left" (per the entry above), so this could not go into that topic without another forced
+trim pass. Asked via `AskUserQuestion` whether to (a) keep cramming into
+`cardio-arrhythmia` via further trims, or (b) start a dedicated new topic for this chapter
+and the SVT chapters that will keep arriving (Ch253's own text references 256/257/258 as
+covering AVNRT/AVRT, atrial flutter, and AFib next). **User chose (b), explicitly flagged as
+recommended**: "یک مبحث جدید بسازم برای این و فصل‌های بعدی (توصیه می‌شود)". This is now the
+standing destination for Harrison chapters 255 onward on supraventricular tachycardia —
+future SVT-chapter uploads should go into `cardio-svt`, not `cardio-arrhythmia`, unless the
+user says otherwise.
+
+**Chapter 253 (Approach to SVT) stays skipped**, per the user's earlier explicit choice
+("فقط فصل ۲۵۴ را بساز، فعلاً تصمیم ساختاری نگیر") — it substantially overlaps the
+pre-existing Module 3 (narrow-complex tachycardia) already embedded in `cardio-arrhythmia`,
+confirmed by direct comparison against Module 3's extracted text. Not revisited by the
+new-topic decision; if it's ever wanted, it would need its own non-overlapping-content check
+first, same discipline as every other chapter in this sequence.
+
+Created `content/cardio/cardio-svt/data.json` (`topicId:"cardio-svt"`, `category:"cardio"`)
+from the Ch255 PDF (3 pages) plus 3 attached images, Harrison's 22nd ed. Content: mechanism
+(abnormal automaticity/triggered automaticity/small reentry), ~10% of PSVT ablation
+referrals, AT-with-AV-block as a digoxin-toxicity sign, AT's independence from AV-nodal
+conduction (doesn't terminate with AV block — the key differentiator from AVNRT/AVRT),
+warm-up/cool-down phases, P-wave morphology localization (septal=narrower P; left
+atrial=monophasic positive V1/negative I,aVL; superior sources=positive inferior leads;
+inferior/CS-os sources=negative inferior leads; near-SA-node=resembles sinus P),
+incessant-AT→tachycardia-induced cardiomyopathy, unclear stroke-risk/anticoagulation status
+(AT is a precursor to but not equivalent to AFib/flutter for anticoagulation purposes),
+acute/chronic drug therapy, and >80%-effective catheter ablation.
+
+**Images**: all 3 attachments matched to their Harrison figures. Bucket (a) — not embedded,
+captured as tables: Fig 255-3 (acute-treatment-by-drug-response algorithm → table "درمان
+حاد AT فوکال بر اساس پاسخ دارویی") and Fig 255-1 (AVNRT/AT/AVRT mechanism + R-P relationship
+schematic → table "افتراق AT از SVT وابسته به گره AV (AVNRT/AVRT) و از تاکی‌کاردی سینوسی").
+Bucket (b) — embedded: Fig 255-2 (electroanatomic map + real 12-lead ECG, a genuine patient
+tracing a table can't substitute for). Processed as JPEG q85 (31,881 bytes) rather than PNG
+quantization (which gave 59,843 bytes for the same image) — same lesson re-confirmed as the
+`cardio-arrhythmia` Ch251/252 builds: real ECG/electroanatomic tracings with fine colored
+detail compress better as JPEG than via palette quantization. Visually verified clean before
+embedding (map and ECG trace both legible). `note` cites Harrison's 22nd ed./McGraw Hill
+verbatim plus a plain-language description. SHA-256 of the source PNG verified byte-for-byte
+against the re-decoded data URI after writing (`roundtrip_ok: True`).
+
+Content: 25 flashcards, 9 MCQs, 0 KF/PMP cases, 3 tables, 4 lesson sections, 1 image. Doc
+size (compact `{flashcards,mcq,kfPmp,images,tables,lesson}`) = 68,299 bytes = 66.7 KiB / 256
+KiB (26.1%) — a fresh topic with ample headroom for Ch256/257/258 to follow, unlike
+`cardio-arrhythmia`. Validated: full schema validation passes cleanly including `lesson`
+(this topic's lesson entries are plain `{heading,body}`, not the `embedPath`/`groupHeader`
+pattern, so none of `cardio-arrhythmia`'s known schema exceptions apply here), 0 جگر
+occurrences, 0 duplicate ids across flashcards/mcq, all `mcq[].correctIndex` in bounds, an
+8-card random sample confirmed correct front→back direction, and a Latin/Persian-adjacency
+grammar scan's 24 hits were all the established benign pattern (Latin abbreviation + Persian
+punctuation/plural suffix, e.g. "SVTها", "II،") — no actual grammar breaks.
+
+Added `{id:"cardio-svt", label:"تاکی‌کاردی‌های فوق‌بطنی (SVT)"}` to `TOPICS` in both
+`docs/index.html` and the artifact HTML, positioned between `cardio-arrhythmia` and
+`cardio-ecg` (verified via `node --check` on both extracted `<script>` blocks before
+committing/publishing). Synced to the artifact db as a new document, `topic_content/
+cardio-svt` (version 1, no `if_version` needed — fresh doc). Artifact republished (version
+42) to carry both the new TOPICS entry and (once synced) the new content. Bundle
+regenerated to 53 topics.
