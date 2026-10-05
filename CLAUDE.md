@@ -3209,3 +3209,45 @@ every schema/جگر/duplicate-id/correctIndex/front-back/image-SHA256 check was 
 independently against the actual files, and in `nephro-azotemia`'s case a pre-existing (not
 agent-introduced) missing-`id` quirk was investigated and confirmed harmless rather than
 assumed benign from the report alone.
+
+## 16 new GI taxonomy placeholders registered — no content yet (2026-10-05)
+
+The user sent a screenshot listing 19 Harrison chapter numbers with Persian titles for the
+`gi` category, with the explicit instruction to register these as topics now, to be filled
+in gradually over future sessions ("این فصول رو با این عناوین برای گوارش در نظر بگیر که به
+مرور هرکدام را پر کنیم") — a taxonomy-only request, not a content-build request. **No
+content files were created or touched in this step** — every new id below is a pure nav
+placeholder (same pattern as the pre-existing `gi-ibd`/`gi-cirrhosis`/`gi-hepatitis`/
+`gi-bleed` entries before this edit), renders as an empty topic until a future session
+builds its `content/gi/<id>/data.json`.
+
+Mapped the user's 19 chapters against this category's existing topicIds first, to avoid
+creating a duplicate/conflicting id for a chapter that already had one:
+- Already existed, kept as-is: `gi-bleed` (GI bleeding chapter), `gi-lft` (LFTs chapter),
+  `gi-hepatitis` (assumed = the acute viral hepatitis chapter from the list).
+- 16 new placeholder ids added: `gi-dysphagia`, `gi-weight-loss`, `gi-jaundice`,
+  `gi-approach`, `gi-esophagus`, `gi-ibs`, `gi-diverticular-anorectal`,
+  `gi-mesenteric-ischemia`, `gi-bowel-obstruction`, `gi-appendicitis`, `gi-liver-approach`,
+  `gi-hyperbilirubinemia`, `gi-hepatitis-toxic`, `gi-hepatitis-chronic`,
+  `gi-liver-alcoholic`, `gi-mafld`.
+- Pre-existing placeholders not in the user's list (`gi-ibd`, `gi-cirrhosis`,
+  `gi-pancreatitis-acute`, `gi-pancreatitis-chronic`) were deliberately left in place, not
+  removed — they're already-registered topics from earlier sessions, unrelated to this
+  specific chapter list.
+
+Final `gi` category order (23 entries) groups related chapters together (GI-symptom
+chapters first, then esophagus/motility/functional/structural GI, then hepatobiliary in
+clinical sequence from LFTs→jaundice→hepatitis types→chronic liver disease→cirrhosis, then
+pancreatitis) rather than preserving the screenshot's original chapter-number order, since
+chapter number alone isn't a useful nav grouping for the user.
+
+Applied identically to `docs/index.html` and the live artifact HTML (read fresh via
+`Artifact action:"read"` first, `node --check` passed on both extracted `<script>` blocks
+before and after). Artifact republished (version 47). Bundle regenerated — still 57 topics,
+confirming empty-placeholder ids don't get included until their content file exists, same
+as the pre-existing `gi-ibd`/`gi-cirrhosis` precedent.
+
+**Next step, when the user asks for a specific one**: follow the standard per-chapter
+workflow (read PDF → draft → validate → sync → bundle → commit → CLAUDE.md entry → notify).
+No chapter from this list has been built yet — this step was taxonomy-only, by explicit
+user instruction ("به مرور... پر کنیم" = fill in gradually, not now).
