@@ -2991,3 +2991,77 @@ pinned against a freshly-read version, verified via a fresh `out_dir` read immed
 — field counts matched exactly: 95/19/3/3/7/16). No taxonomy or rendering change needed, so
 no artifact republish. Bundle regenerated, still 57 topics (no new topic, only an existing
 one supplemented).
+
+## `nephro-aki` supplemented from a 23-page board MCQ bank; cross-reference added between `nephro-gn` (in progress) and `heme-mm` for AL amyloidosis/MGRS (2026-10-05)
+
+User uploaded 4 files in one message: a case-presentation PPTX (94-year-old man with severe
+nephrotic syndrome, PLA2R-negative, weight loss, 7% marrow plasma cells — differential of AL
+amyloidosis/MGRS vs. secondary/primary membranous nephropathy vs. podocytopathy) and 3 Persian
+board-exam question-bank PDFs: `Aki.pdf` (23 pages), an azotemia/urinary-disorders PDF (17
+pages), and a glomerular-diseases PDF (67 pages) — asking that the relevant chapters be
+completed from these files, with images/tables inside the PDFs used in the images section.
+
+**Approach**: given the volume (107+ pages across 3 PDFs plus an 11-slide case deck), launched
+3 parallel background agents, one per PDF/target topic (`nephro-aki`, `nephro-azotemia`,
+`nephro-gn` — the last also handling the PPTX case as a KF/PMP addition, since it's thematically
+tied to the AL amyloidosis/MGRS content that PDF was expected to cover). Each agent was briefed
+with: the existing target file's current lesson/table/kfPmp headings (to avoid duplicating
+content already covered from earlier Harrison-chapter builds), the **pymupdf embedded-image-
+extraction method** (`doc.extract_image(xref)` per page via `page.get_images(full=True)` — far
+more reliable than screenshotting, confirmed by testing it myself on the AKI PDF's livedo-
+reticularis photo before handing off), rule 6 bucket (a)/(b) sorting, the budget-check method,
+and the full validation checklist. Agents write their local file only — no bundle regen, no
+ArtifactData sync, no commit — the parent session re-verifies and syncs centrally, per the
+standing lesson from earlier in this session about not trusting agent reports blindly and not
+regenerating the bundle while another agent might still be mid-write on a different file.
+
+### `nephro-aki` (agent 1, complete, independently re-verified)
+The agent read the existing file first and found most of the PDF's content (hepatorenal
+syndrome mentions, atheroembolic disease, postoperative AKI risk, AKD terminology, NGAL/
+biomarkers, furosemide stress test) was **already covered** from an earlier Harrison Ch321
+supplement pass — correctly added only what was genuinely new rather than re-adding
+duplicates: **renal functional reserve** (a wholly new concept — age/CKD/sepsis/nephrotoxic-
+drug-combo depletion, why cystatin-C-based eGFR is preferred when muscle mass is abnormal),
+atheroembolic disease's specific lab triad (hypocomplementemia, variable eosinophiluria,
+biopsy as definitive), hepatorenal-syndrome SBP-specific AKI prophylaxis (albumin+antibiotics
+together, not antibiotics alone), TLS rasburicase-vs-allopurinol distinction, and the
+postoperative-AKI ~1%-dialysis-need statistic. 10 new flashcards, 2 MCQs, 1 table, 1 image
+(livedo reticularis clinical photo, JPEG, 11,136 bytes, SHA-256-verified roundtrip — the PDF's
+other 2 embedded images were Harrison reference tables already fully captured as existing
+markdown tables/flashcards, correctly skipped as bucket (a)), 3 lesson sections. **158→168
+flashcards, 22→24 mcq, 6 kfPmp (unchanged), 12→13 tables, 19→22 lesson, 1→2 images.** Final
+size: **209.0 KiB / 256 KiB (81.6%)** — independently re-confirmed by the parent session
+(schema-valid, 0 جگر, 0 duplicate ids across 198 flashcard/mcq/kfPmp ids, correctIndex bounds,
+0 U+FFFD, image SHA-256 roundtrip all matched exactly as reported). Synced to the artifact db
+(version 3→4, verified via fresh `out_dir` read — field counts matched exactly: 168/24/6/2/13/22).
+
+### Cross-reference: AL amyloidosis/MGRS between `nephro-gn` and `heme-mm` (`heme/heme-mm`)
+While the `nephro-gn` agent was still building the AL-amyloidosis/MGRS depth from the PPTX
+case (part of agent 2's task, not yet landed as of this entry), the user explicitly asked for
+a matching cross-reference on the hematology-oncology side. Checked `content/heme/heme-mm/
+data.json` first: it already had an **incomplete, explicitly-flagged placeholder flashcard**
+(`mm-fc-17`, tagged `"incomplete"`, reading literally "[نیاز به تأیید] رابطهٔ AL Amyloidosis
+با MM چیست؟" with a note saying the original handwritten source was too terse to trust
+without cross-checking against Harrison) — resolved this flag properly rather than adding a
+redundant new card: rewrote `mm-fc-17` with the correct AL-amyloidosis/MM relationship (same
+clonal light chain, can present with nephrotic proteinuria at normal creatinine) and a pointer
+to `nephro-gn` for full renal workup depth. Added a new flashcard `mm-fc-18` defining **MGRS
+(Monoclonal Gammopathy of Renal Significance)** as its own concept — not previously named
+anywhere in `heme-mm` — emphasizing the "is the protein causing organ damage, not how big is
+the clone" principle that was the central teaching point of the user's case. Added a matching
+MGRS paragraph to the existing "طیف بیماری‌های پلاسماسل" lesson section (MGRS as a axis
+orthogonal to the MGUS/smoldering/MM spectrum, not a point on it) and a cross-reference note
+on the "رسوب آمیلوئید در توبول" row of the existing "۸ علت نارسایی کلیه در MM" table, both
+pointing to `nephro-gn`. 16→18 flashcards, tables/lesson otherwise structurally unchanged
+(one row/paragraph extended each). Doc size: 25.7 KiB/256 KiB (10.0%) — ample headroom.
+Validated: schema-valid excluding the pre-existing known `embedPath` lesson-item exception
+(the interactive React module, untouched), 0 جگر, 0 duplicate ids, 0 U+FFFD. Synced to the
+artifact db (version 3→4, verified via fresh `out_dir` read: 18/6/3/0/4/9 matched exactly).
+
+**Still pending** (tracked so this doesn't get lost if the session ends before they land):
+the matching cross-reference pointer from `nephro-gn`'s own AL-amyloidosis/MGRS section back
+to `heme-mm`, once the `nephro-gn` build agent finishes; and the `nephro-azotemia` supplement
+(agent 3, from the 17-page azotemia/urinary-disorders PDF) — both still running as background
+agents as of this entry. Bundle regenerated to 57 topics (no new topic yet — `nephro-aki` and
+`heme-mm` were both supplements to existing topics, so taxonomy is unchanged); `docs/
+index.html`/artifact HTML not touched this pass (no rendering or taxonomy change needed).
