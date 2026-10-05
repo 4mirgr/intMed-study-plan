@@ -2268,3 +2268,79 @@ No `docs/index.html` or artifact-HTML change was needed this time (the `groupHea
 rendering already shipped with the Ch251 build earlier today) — only the db doc changed, so
 no republish was needed. Bundle regenerated, still 52 topics (no new topic, only an existing
 one supplemented a second time).
+
+## `cardio-arrhythmia` hit its hard budget wall — Ch253 skipped, Ch254 built only after trimming existing content (2026-10-05)
+
+Same day, a third follow-up: "در ادامه تکمیل آریتمی از اینها استفاده کن" with Harrison Ch253
+(Approach to Supraventricular Arrhythmias) and 3 images. Checked overlap before building
+anything: Ch253 is a short (5-page) classification/overview chapter, and its core content
+(SVT taxonomy, vagal-maneuver/adenosine diagnostic-therapeutic table, regular-vs-irregular
+NCT framework) substantially duplicates what Module 3 ("ماژول تشخیص آریتمی" → NCT) already
+teaches in more clinical depth (AVNRT/flutter/AFib/MAT with full ECG recognition and acute
+treatment). Combined with the topic's doc already sitting at 98.7%/256 KiB after the Ch252
+pass, this was a genuine architectural fork — not a per-image or per-fact judgment call — so
+it was put to the user directly via `AskUserQuestion` rather than guessed: split
+`cardio-arrhythmia` into more topics now, keep cramming everything into one topic and trim
+as needed, or build only the next chapter (Ch254) and defer the structural call. **User chose
+the third option explicitly** — build Ch254 only, no structural decision yet. Ch253 was not
+built at all this pass; if a future session is asked to pick it up, re-read this entry and
+Module 3's actual text (already extracted earlier this session) before deciding what, if
+anything, from Ch253 is worth adding non-redundantly.
+
+**Ch254** (Physiologic and Nonphysiologic Sinus Rhythm — 4 pages) covers sinus-node anatomy/
+P-wave morphology, the three sinus-arrhythmia subtypes (respirophasic/ventriculophasic/
+nonphasic, all benign), physiologic sinus tachycardia (mechanism, causes table), and —
+the chapter's real teaching payload — inappropriate sinus tachycardia (IST) and POTS,
+including the clinically load-bearing point that **their treatments are opposite**: sinus-
+node modulation (ablation, rate-slowing drugs) treats IST but is ineffective or harmful in
+POTS, while pressor/volume strategies (midodrine, fludrocortisone) treat POTS but don't
+address IST. None of this is covered by Module 3 or either earlier Harrison supplement, so
+it was built in full rather than cross-referenced away.
+
+**The budget wall was real, not theoretical this time.** The topic was already at 252.6 KiB
+before this build (98.7%, see the Ch252 entry above). Building Ch254's content at normal
+depth (27 flashcards, 8 MCQs, 2 tables, 2 lesson sections, no images — all 3 attached figures
+were algorithm/telemetry/anatomy images that would have gone over budget regardless of
+bucket, so none were even attempted) pushed the doc to **282,190 bytes (107.6% — a hard,
+confirmed-over-cap failure, not a near-miss)**. Per the standing rule that budget caps
+content (previously only ever applied to images), this time it had to cap **text**: the
+only way to fit Ch254's content was to reclaim space from the *already-committed, already-
+validated* Ch251/Ch252 lesson prose — legitimate under rule 4 (English-sourced lesson
+condensation), but a new situation: condensing content that had already shipped and been
+synced, not just a fresh draft.
+
+**What was actually cut, in order, to get from 107.6% down to 99.6%:**
+1. Re-condensed all 10 existing Ch251/Ch252 lesson prose sections by roughly another 35-45%
+   each (e.g., "زیرگروه‌های اختلال عملکرد گره SA" 4874→2527 bytes, "پیسمیکر دائم..."
+   4124→2330 bytes) — verified every fact still traceable in the already-existing flashcards/
+   mcq/tables for those sections before cutting the sentence carrying it, same discipline
+   rule 4 already requires for a fresh build, just applied retroactively.
+2. Condensed the two new Ch254 lesson sections themselves by ~35% in a second pass.
+3. Shortened the 8 new MCQs' `explain` fields (originally restating more than the stem
+   needed).
+4. Dropped 13 of the originally-drafted ~27 new Ch254 flashcards — specifically the ones
+   whose fact was already fully covered by a table, an MCQ explain, or another surviving
+   flashcard (e.g., a card asking "why are pressor strategies wrong for IST" when the new
+   IST-vs-POTS comparison table already states this directly) — not a random cut, each
+   removal checked against rule 4's coverage requirement (the fact must stay traceable
+   *somewhere*, not necessarily as its own flashcard).
+
+Final state after all cuts: 107 flashcards (+14 net), 28 MCQs (+8), 5 kfPmp (unchanged), 3
+images (unchanged), 9 tables (+2), 17 lesson entries (10 re-condensed prose + 2 new prose +
+groupHeader + 3 modules). Doc size: **261,208 bytes = 255.1 KiB / 256 KiB (99.6%)** — thinner
+margin than Ch252's 98.7%, but a real, confirmed-under-cap number, not an estimate (verified
+via `out_dir` + compact-JSON recompute both before and after the live sync, same discipline
+as every prior sync this session). **This topic now has essentially zero headroom left —
+under 1 KiB.** Any future addition to `cardio-arrhythmia` (Ch253 if the deferred structural
+question ever gets resolved in its favor, or anything else) will need either further
+trimming of existing content or the structural split the user explicitly deferred — don't
+attempt another same-topic supplement without resolving one of those first.
+
+Validated the same way as every build this session: schema-valid excluding the known lesson
+exception, 0 جگر, 0 duplicate ids across 140 flashcard/mcq/kfPmp ids, correctIndex bounds,
+random-sample front→back direction check, and a Latin/Persian-adjacency grammar scan (7 hits
+on the new content, all the established benign pattern) — no actual grammar breaks. Synced
+to the artifact db as `topic_content/cardio-arrhythmia` (version 4→5, `set` pinned correctly
+this time, verified via fresh `out_dir` read immediately after — no repeat of the stale-file
+bug from the Ch252 pass). No `docs/index.html`/artifact-HTML change needed (no new rendering
+pattern this time). Bundle regenerated, still 52 topics.
