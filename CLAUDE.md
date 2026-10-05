@@ -2616,3 +2616,97 @@ as a new document, `topic_content/cardio-afib` (version 1, no `if_version` neede
 doc), verified via a fresh `out_dir` read immediately after (field counts matched exactly).
 Artifact republished (version 43) to carry the new TOPICS entry. Bundle regenerated to 54
 topics.
+
+## Admin manual signup now creates a directly-loggable-in account; new topic `cardio-vt` split out of `cardio-arrhythmia`; Ch253/Ch259 built (2026-10-05)
+
+### Signup bug report — not a code defect, but the admin-entry flow was changed anyway
+User reported a colleague signed up but the admin couldn't see their info and they couldn't
+log in. Checked the live `state.json` directly via unauthenticated `curl` first —
+`signups: []` was genuinely empty, confirming this wasn't a rendering/read bug: the admin's
+manual "+ افزودن درخواست ثبت‌نام" intake form had never actually been submitted for that
+person. Asked the user to confirm via `AskUserQuestion`; they confirmed no manual entry had
+happened, and asked for a related but distinct change instead: when the admin *does* use that
+manual-entry form, skip the separate "تایید" (approve) step entirely — the account should be
+created and immediately loggable-in on first submission, not left `status:"pending"` waiting
+for a second admin action.
+
+**Fix, `docs/index.html` only** (`adminSignupSubmit` click handler): now pushes the new
+`STATE.signups[]` record with `status:"approved"` from the start (instead of `"pending"`),
+and in the same click handler immediately creates `STATE.users[userId]` via `emptyBucket()`,
+pre-fills its `profile` from the form fields, and sets `passwordHash =
+fnv1aHex(username + ":" + password)` — exactly the same three steps the existing
+approve-a-pending-signup button already did, just run inline instead of deferred. The
+self-serve public signup form (`#signupForm`, reached via "عضویت") is untouched — it still
+creates a `status:"pending"` record that requires the existing approve button, since that
+path's whole design point is admin review before granting access; today's change only
+applies to the admin's own direct-entry form, where the admin typing the person's info in
+themselves already *is* the review step, so a second "approve" click was pure redundant
+friction. Verified via `node --check` on the extracted `<script>` block.
+
+### `cardio-arrhythmia` split into `cardio-arrhythmia` (brady) + `cardio-vt` (tachy/VT), plus the two previously-pending chapters
+Separately, the user asked to split `cardio-arrhythmia` (sitting at 99.6%/256 KiB with
+"essentially zero headroom left," per the entry two sections above) "if it's gotten too big,"
+explicitly asking to minimize deletion, and asked for Harrison Ch253 ("Approach to SVT" —
+skipped earlier this session as overlapping Module 3) to be added back in.
+
+**Split, not trim.** The topic's flashcard/mcq/kfPmp ids already carried clean per-source-
+chapter prefixes from how it was built incrementally this session (`arr-*`=Ch251 SA node,
+`arr2-*`=Ch252 AV node, `arr3-*`=Ch254 sinus tach/IST/POTS), which made a mechanical,
+zero-data-loss split possible: wrote a script matching ids by prefix, tables/lesson sections
+by index slice plus `embedPath` substring filtering for the 3 interactive modules
+(`module-2`/`module-3`/`module-4`), with `assert` statements confirming every item landed in
+exactly one half. Grouped by clinical theme, not just by which half happened to be smaller:
+- **`cardio-arrhythmia`** (kept) — now **bradyarrhythmia only**: Ch251 (SA node) + Ch252 (AV
+  node) prose, Module 4 (AV-block ED recognition). Relabeled in `TOPICS`:
+  "برادی‌آریتمی و اختلالات گره سینوسی/دهلیزی‌بطنی".
+- **`cardio-vt`** (new) — **tachyarrhythmias + ventricular arrhythmias**: Ch254 (sinus
+  tach/IST/POTS) prose + Module 2 (WCT) + Module 3 (NCT) from the split, plus two newly-built
+  chapters (below). Label: "تاکی‌آریتمی‌ها و آریتمی‌های بطنی", positioned in `TOPICS`
+  between `cardio-arrhythmia` and `cardio-svt`.
+
+**Ch253 (Approach to SVT, 5 pages, re-read from its earlier upload — no images attached this
+pass) built into `cardio-vt`**, not back into the old single topic — it pairs thematically
+with Module 3 (NCT) which moved there. 20 flashcards (`svt253-fc-*`), 7 MCQs (`svt253-mcq-*`),
+3 tables (SVT mechanism taxonomy, vagal maneuvers, AV-block diagnostic-response table), 3
+lesson sections. No new overlap with Module 3 beyond what was already known and deliberately
+left brief (acute adenosine dosing mechanics stay in Module 3's own text, cross-referenced
+rather than restated).
+
+**Ch259 (Approach to Ventricular Arrhythmias, 9 pages, 6 images) also built into
+`cardio-vt`** — pairs with Module 2 (WCT). Covers VA mechanism/types, clinical
+presentation, evaluation of documented/suspected VA, ICD indications/mechanics, catheter/
+surgical VT ablation. 39 flashcards (`vt259-fc-*`), 9 MCQs, 1 KF/PMP case (monomorphic VT
+post-MI), 3 tables (site-of-origin by QRS morphology, VT/VF morphology-spectrum
+differential, antiarrhythmic drug summary). Images: Fig259-4 (site-of-origin diagram) → table
+(bucket a); Fig259-3 (morphology spectrum) and Fig259-1 (PVC with arterial-pressure tracing)
+→ embedded (bucket b, JPEG q85, SHA-256 roundtrip verified); Fig259-2/Fig259-5 → not used
+(redundant with text already captured); **Fig259-6 (ICD ATP/shock tracings) was built,
+embedded, then dropped** before syncing — merging all 3 images pushed `cardio-vt` to
+96.7%/256 KiB, and with this being a fresh topic meant to hold more content long-term,
+headroom was prioritized over the least-uniquely-valuable of the three images (same
+self-correcting judgment call pattern as dropping Fig256-3/Fig257-1 from `cardio-svt`
+earlier this session). Final `cardio-vt` size: **210,698 bytes = 205.8 KiB / 256 KiB
+(80.3%)** — healthy margin, confirmed via live `out_dir` read after syncing, not estimated.
+
+**Final split sizes, confirmed via live post-sync `out_dir` reads**:
+- `cardio-arrhythmia`: 93 flashcards, 20 mcq, 5 kfPmp, 3 images, 7 tables, 13 lesson — **251,752
+  bytes = 245.8 KiB / 256 KiB (96.0%)** (version 6). Still tight — this is the same
+  near-the-cap situation as before the split for the brady half alone, since no content was
+  actually deleted, only redistributed; any further addition to this topic needs the budget
+  checked first, same standing caution as before the split.
+- `cardio-vt`: 73 flashcards, 24 mcq, 1 kfPmp, 2 images, 8 tables, 14 lesson — **210,698 bytes
+  = 205.8 KiB / 256 KiB (80.3%)** (version 1, new doc).
+
+Validated both topics the same way as every build this session: schema-valid (excluding the
+known `lesson`/`embedPath`/`groupHeader` exception, same as before the split), 0 جگر
+occurrences, 0 duplicate ids (checked within each split half and across both, 93+73=166
+flashcards/mcq/kfPmp accounted for with none dropped or duplicated), correctIndex bounds,
+front→back direction spot-checked. `TOPICS` edited identically in both `docs/index.html` and
+the artifact HTML (`node --check` passed on both); artifact republished as **version 44**
+carrying the taxonomy change. Synced both db docs (`cardio-arrhythmia` version 5→6 via `set`
+pinned to a freshly-read version; `cardio-vt` as a brand-new doc, version 1) — both verified
+via live `out_dir` re-reads immediately after, field counts matching exactly. Bundle
+regenerated to 55 topics.
+
+Ch253 was the chapter explicitly flagged as "completely dropped" earlier this session for
+overlapping Module 3 — it is no longer dropped; it now exists in `cardio-vt`.
