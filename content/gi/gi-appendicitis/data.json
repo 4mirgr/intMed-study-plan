@@ -1,0 +1,697 @@
+{
+  "topicId": "gi-appendicitis",
+  "category": "gi",
+  "sourceNote": "بر اساس فصل ۳۴۲ هریسون ویرایش ۲۲ (Acute Appendicitis and Peritonitis) — جزوه فارسی نگارش‌شده توسط دکتر سید جواد میری و دکتر محمدرضا گودرزی، نه ترجمه تحت‌اللفظی. جداول ۳۴۲-۱ تا ۳۴۲-۵ و توزیع آناتومیک شکل ۳۴۲-۱ به‌صورت جدول متنی بازتولید شده‌اند؛ دو تصویر سی‌تی‌اسکن واقعی (Figure 342-3 و 342-4) طبق پروتکل استاندارد تصاویر این پروژه با ذکر منبع embed شده‌اند.",
+  "flashcards": [
+    {
+      "id": "app-fc-1",
+      "front": "بروز سالانه آپاندیسیت حاد چقدر است و در چه گروه سنی بیشترین بروز را دارد؟",
+      "back": "تقریباً ۱۰ تا ۱۱ مورد در هر ۱۰۰۰۰۰ نفر در سال، تقریباً به‌طور مساوی در زنان و مردان؛ بیشترین بروز در سنین ۱۰ تا ۱۹ سالگی است."
+    },
+    {
+      "id": "app-fc-2",
+      "front": "روند جهانی بروز/مرگ‌ومیر آپاندیسیت و روند تفاوت‌های جغرافیایی ریسک در ایالات متحده چگونه است؟",
+      "back": "بروز و مرگ‌ومیر جهانی به‌تدریج در حال افزایش است، درحالی‌که در ایالات متحده تفاوت‌های جغرافیایی قابل‌توجه در خطر بروز بیماری رو به کاهش است."
+    },
+    {
+      "id": "app-fc-3",
+      "front": "ریسک پرفوراسیون آپاندیس چقدر است و در چه بیمارانی بیشتر است؟",
+      "back": "ریسک پرفوراسیون ۱۰ تا ۲۰ درصد است و مهم‌ترین علت افزایش موربیدیتی در همه بیماران محسوب می‌شود؛ این خطر در بیماران زیر ۵ سال یا بالای ۶۵ سال به‌طور قابل‌توجهی بالاتر است."
+    },
+    {
+      "id": "app-fc-4",
+      "front": "رابطه وضعیت اجتماعی-اقتصادی با خطر ابتلا به آپاندیسیت و پرفوراسیون آن چگونه است؟",
+      "back": "بیماران با وضعیت اجتماعی-اقتصادی پایین‌تر خطر کمتری برای ابتلا به آپاندیسیت دارند، چه همراه با پرفوراسیون و چه بدون آن. بروز تومورهای آپاندیس نیز در حال افزایش است."
+    },
+    {
+      "id": "app-fc-5",
+      "front": "مکانیسم اصلی مطرح‌شده در پاتوژنز آپاندیسیت حاد چیست؟",
+      "back": "انسداد لومن آپاندیس (به‌علت فکالیت، بقایای غذای هضم‌نشده، هایپرپلازی لنفوئیدی یا بافت اسکار) که در اکثر موارد نقش مهمی در ایجاد آپاندیسیت دارد."
+    },
+    {
+      "id": "app-fc-6",
+      "front": "پس از انسداد لومن آپاندیس، چه زنجیره رویدادهایی به سمت پرفوراسیون پیش می‌رود؟",
+      "back": "افزایش فشار داخل‌لومنی ناشی از تجمع باکتری و ترشحات → اختلال جریان لنف و خون → احتمال ترومبوز شریانی/وریدی و نکروز ایسکمیک در قسمت دیستال آپاندیس → پرفوراسیون معمولاً نزدیک قاعده آپاندیس."
+    },
+    {
+      "id": "app-fc-7",
+      "front": "چرا پرفوراسیون نزدیک قاعده آپاندیس اغلب به پریتونیت منجر می‌شود؟",
+      "back": "چون این ناحیه معمولاً توسط بافت‌های اطراف محصور نمی‌شود؛ بنابراین بیشتر بیمارانی که دچار پرفوراسیون می‌شوند به سمت پریتونیت پیش می‌روند."
+    },
+    {
+      "id": "app-fc-8",
+      "front": "فکالیت (آپاندیکولیت) در چه درصدی از بیماران مبتلا به آپاندیسیت یافت می‌شود؟",
+      "back": "در حدود ۵۰٪ موارد؛ در آپاندیسیت‌های خفیف‌تر کمتر دیده می‌شود، که نشان‌دهنده پاتوفیزیولوژی متفاوت در دو گروه بیماری است."
+    },
+    {
+      "id": "app-fc-9",
+      "front": "آیا همه موارد آپاندیسیت بدون عارضه به سمت پرفوراسیون پیشرفت می‌کنند؟",
+      "back": "خیر؛ آپاندیسیت بدون عارضه (بدون نکروز گانگرنی، آپاندیکولیت، پرفوراسیون یا تومور) همیشه به سمت پرفوراسیون پیشرفت نمی‌کند."
+    },
+    {
+      "id": "app-fc-10",
+      "front": "آیا درمان آنتی‌بیوتیکی به‌تنهایی می‌تواند جایگزین آپاندکتومی شود؟",
+      "back": "برخی موارد آپاندیسیت حاد ساده ممکن است با آنتی‌بیوتیک به‌طور موقت بهبود یابند یا کنترل شوند، اما حداقل یک‌سوم این بیماران نهایتاً نیاز به آپاندکتومی پیدا می‌کنند؛ نقش درمان غیرجراحی همچنان در حال بررسی است."
+    },
+    {
+      "id": "app-fc-11",
+      "front": "اگر پرفوراسیون آپاندیس محدود نشود چه رخ می‌دهد و چه عارضه نادر و بدپیش‌آگهی ممکن است ایجاد شود؟",
+      "back": "پریتونیت شدید ایجاد می‌شود؛ در موارد نادر، ترومبوز عفونی چرکی ورید پورت و شاخه‌های آن همراه با آبسه‌های داخل‌کبدی ایجاد می‌شود که پیش‌آگهی بسیار ضعیفی دارد."
+    },
+    {
+      "id": "app-fc-12",
+      "front": "شایع‌ترین موقعیت آناتومیک آپاندیس کدام است و چند درصد موارد را شامل می‌شود؟",
+      "back": "موقعیت رتروسکال، حدود ۶۴٪ موارد؛ پس از آن موقعیت لگنی با حدود ۳۲٪."
+    },
+    {
+      "id": "app-fc-13",
+      "front": "غیر از RLQ، آپاندیس ممکن است در چه مکان‌های دیگری قرار گیرد؟",
+      "back": "لگن، پهلوی راست، RUQ (به‌ویژه در بارداری)، و حتی سمت چپ شکم در بیماران دچار mal-rotation یا با کولون طویل و بسیار متحرک."
+    },
+    {
+      "id": "app-fc-14",
+      "front": "توالی کلاسیک شرح حال در آپاندیسیت حاد چگونه است؟",
+      "back": "درد مبهم اپی‌گاستر یا اطراف ناف (گاهی منتشر و کرامپی)، که طی ۱۲ تا ۲۴ ساعت به RLQ مهاجرت می‌کند و به‌دلیل تحریک صفاق جداری توسط آپاندیس ملتهب، تیزتر و موضعی‌تر می‌شود."
+    },
+    {
+      "id": "app-fc-15",
+      "front": "چرا زمان‌بندی شروع تهوع نسبت به درد شکم در افتراق آپاندیسیت از گاستروانتریت کمک‌کننده است؟",
+      "back": "در آپاندیسیت، تهوع معمولاً پس از شروع درد شکم ایجاد می‌شود؛ در گاستروانتریت، تهوع معمولاً قبل از شروع درد شکم آغاز می‌شود."
+    },
+    {
+      "id": "app-fc-16",
+      "front": "بی‌اشتهایی در آپاندیسیت چه اهمیتی دارد؟",
+      "back": "به قدری شایع است که اگر وجود نداشته باشد، تشخیص آپاندیسیت باید مورد تردید قرار گیرد."
+    },
+    {
+      "id": "app-fc-17",
+      "front": "در چه چهار گروه بیمار، رسیدن به تشخیص درست آپاندیسیت دشوارتر است؟",
+      "back": "۱) آپاندیس خارج از RLQ ۲) زنان در سن باروری ۳) کودکان خردسال ۴) سالمندان."
+    },
+    {
+      "id": "app-fc-18",
+      "front": "چرا انجام معاینه رکتال در تمام بیماران مشکوک به آپاندیسیت لازم است؟",
+      "back": "چون آپاندیسی که پشت سکوم یا زیر لبه لگن قرار گرفته ممکن است تنها حساسیت کمی در دیواره قدامی شکم ایجاد کند؛ آپاندیسیت لگنی می‌تواند با دیزوری، تکرر ادرار، اسهال یا تنسموس همراه باشد که فقط حین لمس سوپراپوبیک یا معاینه رکتال/لگنی احساس می‌شود."
+    },
+    {
+      "id": "app-fc-19",
+      "front": "چرا در زنان انجام معاینه لگنی الزامی است؟",
+      "back": "برای رد بیماری‌های دستگاه ادراری-تناسلی که می‌توانند درد شکمی مشابه آپاندیسیت ایجاد کنند یا با آن اشتباه گرفته شوند، مثل حاملگی خارج رحمی (EP) و بیماری التهابی لگن (PID)."
+    },
+    {
+      "id": "app-fc-20",
+      "front": "در آپاندیسیت ساده بدون عارضه، وضعیت علائم حیاتی معمولاً چگونه است؟",
+      "back": "بیماران معمولاً کمی بدحال به‌نظر می‌رسند؛ نبض و دمای بدن آن‌ها معمولاً فقط کمی بالاتر از حد طبیعی است."
+    },
+    {
+      "id": "app-fc-21",
+      "front": "تب بالای ۳۸.۳ درجه سانتی‌گراد همراه با لرز در بیمار مشکوک به آپاندیسیت چه معنایی دارد؟",
+      "back": "باید به بیماری غیر از آپاندیسیت ساده، یا به عوارضی مثل پرفوراسیون، فلگمون یا تشکیل آبسه مشکوک شد."
+    },
+    {
+      "id": "app-fc-22",
+      "front": "بیماران مبتلا به آپاندیسیت معمولاً در چه وضعیتی دراز می‌کشند و چرا؟",
+      "back": "به حالت طاقباز با خم بودن خفیف لگن، تا از تحریک بیشتر صفاق جلوگیری کنند."
+    },
+    {
+      "id": "app-fc-23",
+      "front": "بیشترین حساسیت شکمی در آپاندیسیت کلاسیک کجاست؟",
+      "back": "در نزدیکی نقطه مک‌برنی در RLQ."
+    },
+    {
+      "id": "app-fc-24",
+      "front": "علامت Rovsing چیست و چه معنایی دارد؟",
+      "back": "فشار ملایم بر LLQ موجب درد در RLQ می‌شود (در صورتی که آپاندیسیت در RLQ باشد)؛ نشانه تحریک صفاق جداری است."
+    },
+    {
+      "id": "app-fc-25",
+      "front": "علامت Obturator چیست و چه چیزی را مطرح می‌کند؟",
+      "back": "چرخش داخلی ران (هیپ) باعث درد می‌شود؛ احتمال آپاندیس ملتهب واقع در لگن را مطرح می‌کند."
+    },
+    {
+      "id": "app-fc-26",
+      "front": "علامت Iliopsoas چیست و چه چیزی را مطرح می‌کند؟",
+      "back": "اکستانسیون ران راست باعث درد در ناحیه خلفی-جانبی پشت و لگن می‌شود؛ مطرح‌کننده آپاندیسیت رتروسکال است."
+    },
+    {
+      "id": "app-fc-27",
+      "front": "راه‌های دیگر برای یافتن شواهد تحریک جداری صفاق، غیر از لمس عمیق، چیست؟",
+      "back": "پرکاشن ملایم شکم، ضربه آرام، یا ضربه خفیف به پاها."
+    },
+    {
+      "id": "app-fc-28",
+      "front": "چرا پرفوراسیون آپاندیس در کودکان خردسال کمتر به‌صورت موضعی (آبسه محدود) باقی می‌ماند؟",
+      "back": "امنتوم در کودکان کوتاه‌تر است و در صورت پرفوراسیون، ممکن است نتواند قسمت پرفوره را به‌خوبی محصور و محدود کند."
+    },
+    {
+      "id": "app-fc-29",
+      "front": "چرا تظاهرات آپاندیسیت در سالمندان می‌تواند خفیف و غیرمعمول باشد؟",
+      "back": "چون واکنش ایمنی آن‌ها به شدت افراد جوان نیست؛ درد ممکن است غیرمهاجر باشد یا فقط با لمس عمیق آشکار شود، و تهوع، بی‌اشتهایی یا یبوست ممکن است علائم غالب باشند."
+    },
+    {
+      "id": "app-fc-30",
+      "front": "سالمندان مبتلا به آپاندیسیت پرفوره با فلگمون/آبسه گاهی چگونه دیر مراجعه می‌کنند؟",
+      "back": "با علائم و نشانه‌های انسداد روده دیستال ناشی از التهاب آپاندیس و تشکیل فلگمون یا آبسه."
+    },
+    {
+      "id": "app-fc-31",
+      "front": "لکوسیتوز در آپاندیسیت ساده چه الگویی دارد؟",
+      "back": "در حدود ۷۰٪ بیماران افزایش می‌یابد، اما معمولاً فقط به‌صورت خفیف تا متوسط (محدوده ۱۰۰۰۰ تا ۱۸۰۰۰)؛ در بیش از ۹۵٪ موارد Shift to the left به سمت نوتروفیل‌های نابالغ دیده می‌شود."
+    },
+    {
+      "id": "app-fc-32",
+      "front": "تست Sickle Cell در کدام بیماران مشکوک به آپاندیسیت باید انجام شود؟",
+      "back": "در بیماران با تبار آفریقایی، اسپانیایی، مدیترانه‌ای یا هندی."
+    },
+    {
+      "id": "app-fc-33",
+      "front": "چرا آنالیز ادرار در ارزیابی آپاندیسیت حاد مفید است و چه محدودیتی دارد؟",
+      "back": "برای کمک به رد بیماری‌های مجاری ادراری-تناسلی ضروری است، اما ممکن است چند گلبول سفید یا قرمز نیز دیده شود، چون آپاندیسی که در مجاورت مثانه یا حالب ملتهب شده باشد می‌تواند باعث پیوری استریل شود."
+    },
+    {
+      "id": "app-fc-34",
+      "front": "چرا در تمام زنان در سن باروری با شک به آپاندیسیت باید تست بارداری انجام شود؟",
+      "back": "برای رد حاملگی (از جمله حاملگی خارج رحمی) به‌عنوان بخشی ضروری از ارزیابی افتراقی درد شکمی."
+    },
+    {
+      "id": "app-fc-35",
+      "front": "رادیوگرافی ساده شکم در آپاندیسیت حاد چه نقشی دارد؟",
+      "back": "به‌ندرت مفید است و به‌صورت روتین انجام نمی‌شود مگر به بیماری دیگری مثل انسداد روده، پرفوراسیون احشا یا سنگ مشکوک باشیم؛ در کمتر از ۵٪ بیماران یافته تشخیصی اختصاصی دیده می‌شود."
+    },
+    {
+      "id": "app-fc-36",
+      "front": "حساسیت و اختصاصیت سونوگرافی در تشخیص آپاندیسیت حاد چقدر است و به چه عاملی وابسته است؟",
+      "back": "حساسیت حدود ۰.۸۶ و اختصاصیت حدود ۰.۸۱؛ به‌شدت به مهارت و تجربه اپراتور وابسته است، حتی در دست افراد ماهر ممکن است آپاندیس دیده نشود."
+    },
+    {
+      "id": "app-fc-37",
+      "front": "سه یافته سونوگرافیک مطرح‌کننده آپاندیسیت کدامند؟",
+      "back": "۱) ضخیم شدن دیواره ۲) افزایش قطر آپاندیس ۳) وجود مایع آزاد."
+    },
+    {
+      "id": "app-fc-38",
+      "front": "سونوگرافی ترانس‌واژینال (TVS) در چه بیمارانی فایده بیشتری دارد؟",
+      "back": "در زنان جوان‌تر، برای شناسایی پاتولوژی‌های لگنی."
+    },
+    {
+      "id": "app-fc-39",
+      "front": "روش متداول در ترتیب انجام تصویربرداری در آپاندیسیت حاد چیست؟",
+      "back": "ابتدا سونوگرافی انجام می‌شود و فقط در صورتی‌که یافته‌ها مبهم باشند یا شک به عوارض وجود داشته باشد، از سایر روش‌های تصویربرداری استفاده می‌شود."
+    },
+    {
+      "id": "app-fc-40",
+      "front": "حساسیت و اختصاصیت سی‌تی‌اسکن در تشخیص آپاندیسیت حاد چقدر است؟",
+      "back": "حساسیت حداقل ۰.۹۴ و اختصاصیت حدود ۰.۹۵."
+    },
+    {
+      "id": "app-fc-41",
+      "front": "سه یافته مشکوک به آپاندیسیت در سی‌تی‌اسکن کدامند؟",
+      "back": "۱) گشادشدن بیش از ۶ میلی‌متر همراه با ضخیم شدن دیواره ۲) پر نشدن لومن با ماده حاجب خوراکی ۳) وجود fat stranding یا هوا در اطراف آپاندیس که نشانگر التهاب است."
+    },
+    {
+      "id": "app-fc-42",
+      "front": "آیا تأخیر در عمل جراحی برای انجام سی‌تی‌اسکن، خطر پرفوراسیون را افزایش می‌دهد؟",
+      "back": "به‌طور کلی خیر؛ در بیمارانی که تشخیص قطعی نیست، این تأخیر خطر پرفوراسیون را افزایش نمی‌دهد."
+    },
+    {
+      "id": "app-fc-43",
+      "front": "عدم دیدن آپاندیس در تصاویر سی‌تی به‌تنهایی چه ارزش تشخیصی دارد؟",
+      "back": "غیراختصاصی است و نباید به‌تنهایی و بدون در نظر گرفتن التهاب بافت‌های اطراف، دلیلی برای رد آپاندیسیت باشد."
+    },
+    {
+      "id": "app-fc-44",
+      "front": "وجود فکالیت در تصاویر سی‌تی چه اهمیت بالینی دارد؟",
+      "back": "برای تشخیص ضروری نیست، اما احتمال آپاندیسیت و همچنین احتمال بروز عوارض را افزایش می‌دهد."
+    },
+    {
+      "id": "app-fc-45",
+      "front": "چرا تشخیص آپاندیسیت در بارداری دشوار است؟",
+      "back": "علائم اولیه مثل تهوع و بی‌اشتهایی ممکن است نادیده گرفته شوند، و با بزرگ‌شدن رحم، آپاندیس ممکن است به سمت بالا و حتی تا RUQ یا پهلوی راست جابه‌جا شود؛ بنابراین یافته‌های فیزیکی کلاسیک وجود ندارد."
+    },
+    {
+      "id": "app-fc-46",
+      "front": "ریسک پرفوراسیون آپاندیس در بارداری چه تأثیری بر مرگ‌ومیر جنینی دارد؟",
+      "back": "مرگ‌ومیر جنینی در بیماران دچار پرفوراسیون حدود چهار برابر (از ۵٪ به ۲۰٪) افزایش می‌یابد."
+    },
+    {
+      "id": "app-fc-47",
+      "front": "در بیماران با نقص ایمنی مشکوک به آپاندیسیت، چه تفاوت‌هایی در ارزیابی وجود دارد؟",
+      "back": "ممکن است تنها حساسیت خفیف شکمی داشته باشند و تشخیص افتراقی باید شامل عفونت‌های غیرمعمول (مایکوباکتری‌های آتیپیک، سیتومگالوویروس، قارچ‌ها) نیز باشد."
+    },
+    {
+      "id": "app-fc-48",
+      "front": "آنتروکولیت نوتروپنیک در چه بیمارانی باید مدنظر باشد و چه روش تصویربرداری مفید است؟",
+      "back": "در بیمارانی که به‌دلیل شیمی‌درمانی دچار درد شکم، تب و نوتروپنی هستند؛ سی‌تی‌اسکن می‌تواند برای تشخیص مفید باشد."
+    },
+    {
+      "id": "app-fc-49",
+      "front": "درمان اصلی آپاندیسیت حاد در بیمار بدون کنترااندیکاسیون چیست؟",
+      "back": "آپاندکتومی."
+    },
+    {
+      "id": "app-fc-50",
+      "front": "رویکرد مناسب در بیماران با یافته‌های بالینی مشکوک اما غیرقطعی چیست؟",
+      "back": "Close Observe و انجام تصویربرداری تکراری؛ معاینه شکمی باید هر ۶ تا ۸ ساعت تکرار شود."
+    },
+    {
+      "id": "app-fc-51",
+      "front": "در آپاندیسیت بدون عارضه، آپاندکتومی لاپاروسکوپیک و باز چگونه مقایسه می‌شوند؟",
+      "back": "هر دو روش انتخاب‌های قابل قبولی هستند؛ امروزه اکثر اعمال جراحی به‌صورت کم‌تهاجمی انجام می‌شوند که با گذشت زمان خطر کلی عوارض را کاهش می‌دهد."
+    },
+    {
+      "id": "app-fc-52",
+      "front": "در بیماری که با فلگمون یا آبسه پری‌آپاندیکولار مراجعه می‌کند، درمان اولیه شامل چه مواردی است؟",
+      "back": "آنتی‌بیوتیک وسیع‌الطیف، درناژ از راه پوست (مخصوصاً اگر قطر آبسه بیش از ۳ سانتی‌متر باشد)، مایعات تزریقی، و استراحت روده."
+    },
+    {
+      "id": "app-fc-53",
+      "front": "اگر بیمار با فلگمون/آبسه به درمان محافظه‌کارانه پاسخ دهد، چه زمانی آپاندکتومی با تأخیر انجام می‌شود؟",
+      "back": "۶ تا ۱۲ هفته بعد، زمانی که التهاب کاهش یافته باشد، با ایمنی بیشتر (interval appendectomy)."
+    },
+    {
+      "id": "app-fc-54",
+      "front": "شایع‌ترین عارضه پس از آپاندکتومی چیست؟",
+      "back": "تب و لکوسیتوز."
+    },
+    {
+      "id": "app-fc-55",
+      "front": "اگر تب و لکوسیتوز بیش از ۵ روز پس از آپاندکتومی ادامه یابد، به چه چیزی باید مشکوک شد؟",
+      "back": "وجود آبسه داخل‌شکمی، بدون عارضه شکمی آشکار دیگر."
+    },
+    {
+      "id": "app-fc-56",
+      "front": "مرگ‌ومیر در آپاندیسیت بدون عارضه و غیرپرفوره چقدر است و چگونه با پرفوراسیون مقایسه می‌شود؟",
+      "back": "حدود ۰.۰۱ تا ۰.۰۵٪ (تقریباً معادل خطر کلی بیهوشی عمومی)؛ در آپاندیسیت پرفوره به‌طور قابل‌توجهی بالاتر است (حدود ۳٪ تا مجموعاً ۱۵٪، و متغیرتر در سالمندان)."
+    },
+    {
+      "id": "app-fc-57",
+      "front": "پریتونیت حاد چیست و معمولاً چه منشایی دارد؟",
+      "back": "التهاب صفاق احشایی و جداری که در اغلب موارد منشا عفونی دارد، هرچند همیشه این‌طور نیست؛ معمولاً در اثر سوراخ‌شدن یکی از احشای توخالی ایجاد می‌شود."
+    },
+    {
+      "id": "app-fc-58",
+      "front": "تفاوت پریتونیت ثانویه و پریتونیت اولیه (خودبه‌خودی) چیست؟",
+      "back": "پریتونیت ثانویه منشا مشخص داخل‌شکمی قابل‌شناسایی دارد (مثل پرفوراسیون احشا)؛ پریتونیت اولیه یا خودبه‌خودی منشا مشخص داخل‌شکمی قابل‌شناسایی ندارد."
+    },
+    {
+      "id": "app-fc-59",
+      "front": "شایع‌ترین علل پریتونیت باکتریایی ثانویه کدامند؟",
+      "back": "پرفوراسیون آپاندیس، دیورتیکولیت کولون، و پرفوراسیون معده یا دوازدهه؛ همچنین انفارکتوس روده، اینکارسراسیون، ولوولوس یا اینتوساسپشن روده."
+    },
+    {
+      "id": "app-fc-60",
+      "front": "بیش از ۹۰٪ موارد پریتونیت باکتریایی اولیه (خودبه‌خودی) در چه بیمارانی رخ می‌دهد؟",
+      "back": "بیمارانی با سیروز یا هیپوپروتئینمی زمینه‌ای (پروتئین مایع آسیت پایین)."
+    },
+    {
+      "id": "app-fc-61",
+      "front": "پریتونیت آسپتیک معمولاً در اثر حضور چه موادی در حفره صفاقی ایجاد می‌شود؟",
+      "back": "مایعات فیزیولوژیک غیرطبیعی مانند شیره معده، صفرا، آنزیم‌های پانکراسی، خون یا ادرار؛ همچنین می‌تواند ناشی از اجسام خارجی استریل مثل اسفنج یا ابزار جراحی باشد."
+    },
+    {
+      "id": "app-fc-62",
+      "front": "پریتونیت آسپتیک در چه بیماری‌های سیستمیک نادر می‌تواند دیده شود؟",
+      "back": "لوپوس سیستمیک، تب مدیترانه‌ای فامیلیال (FMF)، و پورفیری."
+    },
+    {
+      "id": "app-fc-63",
+      "front": "تحریک شیمیایی ناشی از چه موادی در تب مدیترانه‌ای فامیلیال می‌تواند منجر به پریتونیت شدید و عفونت باکتریایی ثانویه شود؟",
+      "back": "اسید معده و آنزیم‌های فعال پانکراسی."
+    },
+    {
+      "id": "app-fc-64",
+      "front": "علامت و نشانه اصلی پریتونیت چیست؟",
+      "back": "درد شکمی حاد (معمولاً شدید) همراه با حساسیت و تب."
+    },
+    {
+      "id": "app-fc-65",
+      "front": "چرا در بیماران سالمند یا دارای نقص ایمنی، واکنش تحریک صفاق در پریتونیت منتشر ممکن است خفیف‌تر دیده شود؟",
+      "back": "چون این بیماران واکنش ایمنی و التهابی ضعیف‌تری دارند و ممکن است شدت تحریک صفاقی منتشر را به‌وضوح نشان ندهند."
+    },
+    {
+      "id": "app-fc-66",
+      "front": "در پریتونیت موضعی (مثلاً آپاندیسیت یا دیورتیکولیت محصورشده)، صداهای روده معمولاً چگونه‌اند؟",
+      "back": "معمولاً طبیعی هستند، هرچند گاهی به‌علت ایلئوس کاهش می‌یابند؛ کاهش صدا یافته معاینه‌ای قابل‌اعتمادی محسوب نمی‌شود."
+    },
+    {
+      "id": "app-fc-67",
+      "front": "در ارزیابی آزمایشگاهی پریتونیت، لکوسیتوز و اسیدوز چه اهمیتی دارند؟",
+      "back": "لکوسیتوز معمولاً کمک‌کننده قابل‌توجهی نیست؛ بیماران مبتلا به پریتونیت ممکن است دچار اسیدوز شدید شوند."
+    },
+    {
+      "id": "app-fc-68",
+      "front": "در بیماران دچار آسیت پایدار و شک به پریتونیت، چه اقدام تشخیصی توصیه می‌شود و چه مواردی بررسی می‌شود؟",
+      "back": "پاراسنتز تشخیصی؛ ارزیابی پروتئین و LDH مایع آسیت و شمارش سلولی آن."
+    },
+    {
+      "id": "app-fc-69",
+      "front": "مرگ‌ومیر در پریتونیت موضعی و ثانویه نسبتاً سالم (بدون عارضه) چقدر است، و در بیماران سپتیک یا ناپایدار همودینامیک چقدر می‌تواند برسد؟",
+      "back": "در حالت نسبتاً سالم و موضعی، کمتر از ۱۰٪؛ در بیماران سپتیک یا ناپایدار همودینامیک، تا بیش از ۴۰٪ هم گزارش شده است."
+    },
+    {
+      "id": "app-fc-70",
+      "front": "چهار اصل موفقیت درمان پریتونیت کدامند؟",
+      "back": "۱) اصلاح هرگونه اختلال الکترولیتی ۲) جایگزینی مایعات و پایدارسازی سیستم قلبی-عروقی ۳) تجویز آنتی‌بیوتیک مناسب ۴) اصلاح جراحی علت زمینه‌ای در صورت وجود."
+    }
+  ],
+  "mcq": [
+    {
+      "id": "app-mcq-1",
+      "stem": "شایع‌ترین علت نیاز به جراحی اورژانس شکمی چیست؟",
+      "options": [
+        "آپاندیسیت حاد",
+        "کوله‌سیستیت حاد",
+        "پانکراتیت حاد",
+        "دیورتیکولیت"
+      ],
+      "correctIndex": 0,
+      "explanation": "آپاندیسیت حاد شایع‌ترین اورژانس جراحی شکم است."
+    },
+    {
+      "id": "app-mcq-2",
+      "stem": "مکانیسم اصلی مطرح در پاتوژنز آپاندیسیت حاد چیست؟",
+      "options": [
+        "انسداد لومن آپاندیس و افزایش فشار داخل‌لومنی",
+        "عفونت ویروسی اولیه مخاط آپاندیس",
+        "ایسکمی اولیه ناشی از آترواسکلروز شریان آپاندیس",
+        "واکنش خودایمنی علیه بافت لنفوئید آپاندیس"
+      ],
+      "correctIndex": 0,
+      "explanation": "انسداد لومن (فکالیت، هایپرپلازی لنفوئیدی، بقایای غذا یا اسکار) و افزایش فشار داخل‌لومنی ناشی از آن، مکانیسم اصلی مطرح‌شده است."
+    },
+    {
+      "id": "app-mcq-3",
+      "stem": "خطر پرفوراسیون آپاندیس در کدام بیمار بیشتر است؟",
+      "options": [
+        "کودک ۳ ساله",
+        "مرد ۳۰ ساله",
+        "زن ۴۵ ساله",
+        "مرد ۲۰ ساله"
+      ],
+      "correctIndex": 0,
+      "explanation": "خطر پرفوراسیون در بیماران زیر ۵ سال یا بالای ۶۵ سال به‌طور قابل‌توجهی بالاتر است."
+    },
+    {
+      "id": "app-mcq-4",
+      "stem": "ترتیب کلاسیک علائم در شرح‌حال آپاندیسیت حاد کدام است؟",
+      "options": [
+        "درد مبهم اطراف ناف → بی‌اشتهایی → مهاجرت درد به RLQ → تهوع/استفراغ",
+        "تهوع/استفراغ → درد RLQ → بی‌اشتهایی → درد اطراف ناف",
+        "اسهال → درد RLQ → تب → بی‌اشتهایی",
+        "درد RLQ از ابتدا → تب → لکوسیتوز → تهوع"
+      ],
+      "correctIndex": 0,
+      "explanation": "توالی کلاسیک: درد مبهم اپی‌گاستر/اطراف ناف، بی‌اشتهایی، مهاجرت درد به RLQ طی ۱۲ تا ۲۴ ساعت، سپس تهوع/استفراغ."
+    },
+    {
+      "id": "app-mcq-5",
+      "stem": "علامت Rovsing چیست؟",
+      "options": [
+        "فشار بر LLQ باعث درد در RLQ می‌شود",
+        "چرخش داخلی ران باعث درد لگنی می‌شود",
+        "اکستانسیون ران راست باعث درد پشت می‌شود",
+        "پرکاشن شکم باعث سفتی عضلانی می‌شود"
+      ],
+      "correctIndex": 0,
+      "explanation": "علامت Rovsing: فشار ملایم بر LLQ موجب درد در RLQ می‌شود."
+    },
+    {
+      "id": "app-mcq-6",
+      "stem": "علامت Iliopsoas مطرح‌کننده کدام موقعیت آناتومیک آپاندیس است؟",
+      "options": [
+        "لگنی",
+        "رتروسکال",
+        "پیش‌ایلئال",
+        "زیرسکالی"
+      ],
+      "correctIndex": 1,
+      "explanation": "اکستانسیون ران راست که باعث درد خلفی-جانبی پشت/لگن می‌شود، مطرح‌کننده آپاندیسیت رتروسکال است."
+    },
+    {
+      "id": "app-mcq-7",
+      "stem": "حساسیت و اختصاصیت سی‌تی‌اسکن در تشخیص آپاندیسیت حاد به‌ترتیب تقریباً چقدر است؟",
+      "options": [
+        "۰.۹۴ و ۰.۹۵",
+        "۰.۵۰ و ۰.۶۰",
+        "۰.۷۰ و ۰.۷۵",
+        "۰.۸۰ و ۰.۶۰"
+      ],
+      "correctIndex": 0,
+      "explanation": "حساسیت سی‌تی حداقل ۰.۹۴ و اختصاصیت آن حدود ۰.۹۵ است."
+    },
+    {
+      "id": "app-mcq-8",
+      "stem": "کدام یافته سونوگرافیک مطرح‌کننده آپاندیسیت است؟",
+      "options": [
+        "ضخیم شدن دیواره و افزایش قطر آپاندیس همراه مایع آزاد",
+        "نازک شدن دیواره آپاندیس",
+        "کاهش منتشر اکوژنیسیته کبد",
+        "کلاپس کامل لومن بدون ضخامت دیواره"
+      ],
+      "correctIndex": 0,
+      "explanation": "سه یافته سونوگرافیک مطرح‌کننده آپاندیسیت: ضخیم شدن دیواره، افزایش قطر آپاندیس، و وجود مایع آزاد."
+    },
+    {
+      "id": "app-mcq-9",
+      "stem": "در زن باردار مبتلا به آپاندیسیت حاد در سه‌ماهه سوم، آپاندیس ملتهب معمولاً به کدام سمت جابه‌جا می‌شود؟",
+      "options": [
+        "به سمت بالا، گاهی تا RUQ",
+        "به سمت پایین لگن",
+        "بدون تغییر محل",
+        "به سمت چپ شکم"
+      ],
+      "correctIndex": 0,
+      "explanation": "با بزرگ‌شدن رحم، آپاندیس ممکن است به سمت بالا و حتی تا RUQ یا پهلوی راست جابه‌جا شود."
+    },
+    {
+      "id": "app-mcq-10",
+      "stem": "در بیمار با پریتونیت ثانویه ناپایدار همودینامیک و سپسیس، مرگ‌ومیر می‌تواند تا چه حد بالا برود؟",
+      "options": [
+        "بیش از ۴۰٪",
+        "کمتر از ۱٪",
+        "حدود ۵٪",
+        "حدود ۱۰٪"
+      ],
+      "correctIndex": 0,
+      "explanation": "در بیماران سپتیک یا ناپایدار همودینامیک، مرگ‌ومیر پریتونیت تا بیش از ۴۰٪ هم گزارش شده است."
+    },
+    {
+      "id": "app-mcq-11",
+      "stem": "بیش از ۹۰٪ موارد پریتونیت باکتریایی اولیه (خودبه‌خودی) در کدام زمینه رخ می‌دهد؟",
+      "options": [
+        "سیروز یا هیپوپروتئینمی",
+        "دیابت کنترل‌نشده",
+        "نارسایی مزمن کلیه",
+        "هیپرتیروئیدی"
+      ],
+      "correctIndex": 0,
+      "explanation": "بیش از ۹۰٪ موارد پریتونیت اولیه در بیماران دچار سیروز یا هیپوپروتئینمی زمینه‌ای (پروتئین آسیت پایین) رخ می‌دهد."
+    },
+    {
+      "id": "app-mcq-12",
+      "stem": "کدام مورد از علل پریتونیت آسپتیک محسوب می‌شود؟",
+      "options": [
+        "تب مدیترانه‌ای فامیلیال",
+        "پرفوراسیون آپاندیس",
+        "دیورتیکولیت پرفوره",
+        "پرفوراسیون زخم پپتیک"
+      ],
+      "correctIndex": 0,
+      "explanation": "سه گزینه دیگر از علل پریتونیت باکتریایی ثانویه هستند؛ تب مدیترانه‌ای فامیلیال از علل نادر پریتونیت آسپتیک است."
+    },
+    {
+      "id": "app-mcq-13",
+      "stem": "مدیریت اولیه بیمار با فلگمون یا آبسه پری‌آپاندیکولار معمولاً شامل چه رویکردی است؟",
+      "options": [
+        "آنتی‌بیوتیک وسیع‌الطیف، درناژ پوستی، مایعات تزریقی و استراحت روده",
+        "آپاندکتومی اورژانسی فوری بدون آنتی‌بیوتیک",
+        "فقط مشاهده بدون هیچ مداخله‌ای",
+        "پرتودرمانی موضعی"
+      ],
+      "correctIndex": 0,
+      "explanation": "درمان اولیه فلگمون/آبسه پری‌آپاندیکولار شامل آنتی‌بیوتیک وسیع‌الطیف، درناژ از راه پوست (مخصوصاً آبسه بیش از ۳ سانتی‌متر)، مایعات تزریقی و استراحت روده است."
+    },
+    {
+      "id": "app-mcq-14",
+      "stem": "در بیمار با آپاندیسیت حاد که تشخیص قطعی نیست اما یافته‌ها مشکوک است، رویکرد مناسب چیست؟",
+      "options": [
+        "Close Observe و معاینه مکرر هر ۶ تا ۸ ساعت همراه تصویربرداری تکراری",
+        "آپاندکتومی فوری بدون هیچ ارزیابی بیشتر",
+        "ترخیص بیمار و پیگیری سرپایی",
+        "شروع شیمی‌درمانی تجربی"
+      ],
+      "correctIndex": 0,
+      "explanation": "در این بیماران Close Observe و تصویربرداری تکراری همراه با معاینه شکمی مکرر هر ۶ تا ۸ ساعت روش مناسب است."
+    }
+  ],
+  "kfPmp": [
+    {
+      "id": "app-kf-1",
+      "title": "مرد جوان با درد مهاجرت‌یابنده شکم — تظاهر کلاسیک",
+      "vignette": "مرد ۲۲ ساله با درد مبهم اطراف ناف از ۱۸ ساعت قبل مراجعه کرده که طی چند ساعت گذشته به RLQ مهاجرت کرده و تیزتر شده است. بی‌اشتهایی و یک بار استفراغ پس از شروع درد داشته. دمای بدن ۳۷.۸ درجه، نبض ۹۵. در معاینه حساسیت موضعی در نزدیکی نقطه مک‌برنی و علامت Rovsing مثبت است.",
+      "steps": [
+        {
+          "prompt": "تشخیص افتراقی اولیه و اقدام تشخیصی بعدی چیست؟",
+          "expectedAnswer": "آپاندیسیت حاد تشخیص اصلی مطرح است؛ شروع با آزمایش‌های پایه (CBC، آنالیز ادرار، در زنان تست بارداری) و در صورت نیاز سونوگرافی به‌عنوان روش اولیه تصویربرداری."
+        },
+        {
+          "prompt": "اگر یافته‌های بالینی به‌تنهایی برای تصمیم‌گیری کافی باشد، گام بعدی چیست؟",
+          "expectedAnswer": "ارجاع مستقیم برای آپاندکتومی، بدون نیاز الزامی به تصویربرداری."
+        },
+        {
+          "prompt": "اگر این بیمار ۴۸ ساعت علائم مداوم داشته باشد بدون بهبود، چه خطری مطرح است؟",
+          "expectedAnswer": "افزایش خطر پرفوراسیون یا سایر عوارض."
+        }
+      ]
+    },
+    {
+      "id": "app-kf-2",
+      "title": "زن باردار با درد پهلوی راست — چالش تشخیصی",
+      "vignette": "خانم ۲۸ ساله در هفته ۲۸ بارداری با درد مبهم در ناحیه پهلوی راست و RUQ، تهوع خفیف و بی‌اشتهایی مراجعه کرده. معاینه شکم به‌علت بزرگی رحم دشوار است و حساسیت موضعی واضح کلاسیک RLQ دیده نمی‌شود.",
+      "steps": [
+        {
+          "prompt": "چرا تشخیص آپاندیسیت در این بیمار دشوار است؟",
+          "expectedAnswer": "علائم اولیه (تهوع، بی‌اشتهایی) ممکن است نادیده گرفته شوند و رحم بزرگ‌شده آپاندیس را به بالا و سمت RUQ/پهلوی راست جابه‌جا کرده، بنابراین یافته‌های فیزیکی کلاسیک RLQ وجود ندارد."
+        },
+        {
+          "prompt": "روش تصویربرداری اولیه ترجیحی در این بیمار چیست؟",
+          "expectedAnswer": "سونوگرافی، برای تشخیص زودهنگام با کمترین خطر برای جنین."
+        },
+        {
+          "prompt": "اگر تشخیص به تأخیر بیفتد و پرفوراسیون رخ دهد، چه خطری برای جنین وجود دارد؟",
+          "expectedAnswer": "مرگ‌ومیر جنینی حدود چهار برابر افزایش می‌یابد (از حدود ۵٪ به ۲۰٪)."
+        }
+      ]
+    },
+    {
+      "id": "app-kf-3",
+      "title": "مرد میانسال با پرفوراسیون آپاندیس و پریتونیت منتشر",
+      "vignette": "مرد ۴۵ ساله با درد شدید و منتشر شکم، سفتی دیواره شکم، تب ۳۹ درجه و تاکی‌کاردی مراجعه کرده. سه روز علائم خفیف‌تر RLQ داشته که امروز به‌طور ناگهانی تشدید و منتشر شده است.",
+      "steps": [
+        {
+          "prompt": "تشخیص محتمل چیست و چه مکانیسمی آن را توضیح می‌دهد؟",
+          "expectedAnswer": "پرفوراسیون آپاندیس با پریتونیت ثانویه منتشر؛ محتمل است پرفوراسیون در ناحیه قاعده آپاندیس رخ داده و توسط امنتوم یا بافت اطراف محصور نشده باشد."
+        },
+        {
+          "prompt": "یافته‌های آزمایشگاهی و تصویربرداری مورد انتظار چیست؟",
+          "expectedAnswer": "لکوسیتوز (که ممکن است چندان کمک‌کننده نباشد)، احتمال اسیدوز شدید؛ در تصویربرداری احتمال هوای آزاد، اتساع و ادم دیواره روده و مایع آزاد."
+        },
+        {
+          "prompt": "اصول درمانی فوری این بیمار کدامند؟",
+          "expectedAnswer": "اصلاح اختلال الکترولیتی، جایگزینی مایعات و پایدارسازی همودینامیک، تجویز آنتی‌بیوتیک وسیع‌الطیف مناسب، و اصلاح جراحی علت زمینه‌ای (آپاندکتومی با کنترل منبع عفونت)."
+        },
+        {
+          "prompt": "مرگ‌ومیر مورد انتظار در این بیمار نسبت به آپاندیسیت بدون عارضه چگونه است؟",
+          "expectedAnswer": "به‌طور قابل‌توجهی بالاتر است (در آپاندیسیت پرفوره حدود ۳٪ تا مجموعاً ۱۵٪ و در ناپایداری همودینامیک/سپسیس حتی بیشتر، در مقابل ۰.۰۱ تا ۰.۰۵٪ در آپاندیسیت بدون عارضه)."
+        }
+      ]
+    },
+    {
+      "id": "app-kf-4",
+      "title": "زن سالمند با تظاهر آتیپیک",
+      "vignette": "خانم ۷۸ ساله با بی‌اشتهایی، یبوست خفیف و تهوع از چند روز قبل، بدون درد مهاجرت‌یابنده کلاسیک، مراجعه کرده. در معاینه فقط با لمس عمیق شکم درد خفیفی احساس می‌کند.",
+      "steps": [
+        {
+          "prompt": "چرا تظاهر این بیمار با الگوی کلاسیک آپاندیسیت متفاوت است؟",
+          "expectedAnswer": "در سالمندان واکنش ایمنی ضعیف‌تر است و درد ممکن است غیرمهاجر یا فقط با لمس عمیق قابل‌کشف باشد؛ تهوع، بی‌اشتهایی یا یبوست ممکن است علائم غالب باشند."
+        },
+        {
+          "prompt": "اگر این بیمار دیرتر مراجعه کرده و علائم انسداد روده دیستال داشته باشد، چه چیزی باید مدنظر باشد؟",
+          "expectedAnswer": "احتمال آپاندیسیت ملتهب همراه با تشکیل فلگمون یا آبسه که باعث انسداد نسبی روده شده است."
+        },
+        {
+          "prompt": "ریسک کلی عوارض در این گروه سنی نسبت به بیماران جوان‌تر چگونه است؟",
+          "expectedAnswer": "بالاتر است؛ خطر پرفوراسیون در سن بالای ۶۵ سال افزایش یافته و مرگ‌ومیر پریتونیت/آپاندیسیت پرفوره در سالمندان متغیرتر و بالاتر گزارش شده است."
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "caption": "سی‌تی‌اسکن آپاندیسیت حاد با ماده حاجب خوراکی و وریدی",
+      "sourceUrl": "data:image/jpeg;base64,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",
+      "note": "منبع: دکتر سید جواد میری و دکتر محمدرضا گودرزی، بر اساس هاریسون ویرایش ۲۲ (فصل ۳۴۲: آپاندیسیت حاد) — Figure 342-3. تصویر ضخیم‌شدن دیواره آپاندیس و fat stranding پری‌آپاندیکولار (پیکان) را نشان می‌دهد؛ این معیارها در بخش «تصویربرداری: رادیوگرافی، سونوگرافی و سی‌تی‌اسکن» درسنامه نیز توضیح داده شده‌اند."
+    },
+    {
+      "caption": "فکالیت آپاندیسی در سی‌تی‌اسکن",
+      "sourceUrl": "data:image/jpeg;base64,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",
+      "note": "منبع: دکتر سید جواد میری و دکتر محمدرضا گودرزی، بر اساس هاریسون ویرایش ۲۲ (فصل ۳۴۲: آپاندیسیت حاد) — Figure 342-4. پیکان، فکالیت (آپاندیکولیت) کلسیفیه داخل لومن آپاندیس را نشان می‌دهد؛ نقش فکالیت در پاتوژنز آپاندیسیت در بخش «پاتوژنز آپاندیسیت و پرفوراسیون» درسنامه توضیح داده شده است."
+    }
+  ],
+  "tables": [
+    {
+      "title": "توزیع آناتومیک موقعیت‌های آپاندیس (Figure 342-1)",
+      "markdown": "| موقعیت آناتومیک | فراوانی تقریبی |\n|---|---|\n| رتروسکال (Retrocecal) | ۶۴٪ |\n| لگنی (Pelvic) | ۳۲٪ |\n| پس‌ایلئال (Postileal) | ۲٪ |\n| زیرسکالی (Subcecal) | ۱٪ |\n| پیش‌ایلئال (Preileal) | ۰.۵٪ |"
+    },
+    {
+      "title": "برخی شرایطی که می‌توانند مشابه آپاندیسیت تظاهر کنند (Table 342-1)",
+      "markdown": "| گروه اول | گروه دوم |\n|---|---|\n| بیماری کرون | دیورتیکول مکل |\n| کوله‌سیستیت یا سایر بیماری‌های کیسه صفرا | Mittelschmerz |\n| عفونت COVID-19 (گاهی هم‌زمان) | آدنیت مزانتریک |\n| دیورتیکولیت | چرخش امنتوم (Omental torsion) |\n| حاملگی خارج رحمی | پانکراتیت |\n| اندومتریوز | پنومونی لوب تحتانی |\n| گاستروانتریت یا کولیت | بیماری التهابی لگن |\n| زخم معده یا دوازدهه | پارگی کیست تخمدان یا سایر بیماری‌های کیستیک تخمدان |\n| هپاتیت | انسداد روده باریک |\n| بیماری کلیوی، از جمله سنگ کلیه | عفونت ادراری |\n| آبسه کبدی | |"
+    },
+    {
+      "title": "فراوانی نسبی علائم و نشانه‌های شایع آپاندیسیت (Table 342-2 و 342-3)",
+      "markdown": "| یافته | نوع | فراوانی |\n|---|---|---|\n| درد شکمی | علامت | بیش از ۹۵٪ |\n| بی‌اشتهایی | علامت | بیش از ۷۰٪ |\n| یبوست | علامت | ۴ تا ۱۶٪ |\n| اسهال | علامت | ۴ تا ۱۶٪ |\n| تب | علامت | ۱۰ تا ۲۰٪ |\n| مهاجرت درد به RLQ | علامت | ۵۰ تا ۶۰٪ |\n| تهوع | علامت | بیش از ۶۵٪ |\n| استفراغ | علامت | ۵۰ تا ۷۵٪ |\n| حساسیت شکمی | نشانه | بیش از ۹۵٪ |\n| حساسیت RLQ | نشانه | بیش از ۹۰٪ |\n| حساسیت ریباند | نشانه | ۳۰ تا ۷۰٪ |\n| حساسیت رکتال | نشانه | ۳۰ تا ۴۰٪ |\n| حساسیت حرکت سرویکس | نشانه | ۳۰٪ |\n| سفتی (Rigidity) | نشانه | حدود ۱۰٪ |\n| علامت Psoas | نشانه | ۳ تا ۵٪ |\n| علامت Obturator | نشانه | ۵ تا ۱۰٪ |\n| علامت Rovsing | نشانه | ۵٪ |\n| توده قابل‌لمس | نشانه | کمتر از ۵٪ |"
+    },
+    {
+      "title": "مانورهای کلاسیک تشخیصی در آپاندیسیت (Table 342-4)",
+      "markdown": "| مانور | یافته و معنای آن |\n|---|---|\n| علامت Rovsing | لمس LLQ باعث درد در RLQ می‌شود |\n| علامت Obturator | چرخش داخلی ران باعث درد می‌شود؛ مطرح‌کننده آپاندیس ملتهب لگنی |\n| علامت Iliopsoas | اکستانسیون ران راست باعث درد خلفی-جانبی پشت/لگن می‌شود؛ مطرح‌کننده آپاندیسیت رتروسکال |"
+    },
+    {
+      "title": "علل زمینه‌ساز پریتونیت باکتریایی ثانویه (Table 342-5)",
+      "markdown": "| پرفوراسیون روده | پرفوراسیون یا نشت سایر ارگان‌ها | از دست‌رفتن یکپارچگی صفاق |\n|---|---|---|\n| آپاندیسیت | نشت صفراوی (مثلاً پس از بیوپسی کبد) | شیمی‌درمانی داخل‌صفاقی |\n| نشت آناستوموز | کوله‌سیستیت | اجسام خارجی ایاتروژنیک (مثلاً پس از عمل) |\n| چسبندگی | خونریزی داخل‌صفاقی | آبسه پری‌نفریک |\n| دیورتیکولیت | پانکراتیت | دیالیز صفاقی یا سایر وسایل داخلی |\n| ایاتروژنیک (شامل پرفوراسیون آندوسکوپیک) | سالپنژیت | تروما |\n| بلع جسم خارجی | مثانه ادراری | |\n| التهاب | | |\n| اینتوساسپشن | | |\n| نئوپلاسم | | |\n| انسداد | | |\n| بیماری زخم پپتیک | | |\n| فتق خفه‌شده (Strangulated hernia) | | |\n| عروقی (شامل ایسکمی یا آمبولی) | | |\n| تروما (بلانت یا نافذ) | | |"
+    }
+  ],
+  "lesson": [
+    {
+      "heading": "بروز و اپیدمیولوژی",
+      "body": "آپاندیسیت حاد شایع‌ترین اورژانس جراحی شکم است، با بروز سالانه تقریبی ۱۰ تا ۱۱ مورد در هر ۱۰۰۰۰۰ نفر طی چند دهه گذشته که تقریباً به‌طور مساوی در مردان و زنان دیده می‌شود. بیشترین بروز در سنین ۱۰ تا ۱۹ سالگی است و میانگین سنی تشخیص به‌تدریج در حال افزایش است.\n\nبروز و مرگ‌ومیر جهانی این بیماری به‌تدریج رو به افزایش است، درحالی‌که در ایالات متحده تفاوت‌های جغرافیایی قابل‌توجه در خطر بروز بیماری در حال کاهش است. این بیماری در سراسر ایالات متحده و جهان دیده می‌شود.\n\nخطر پرفوراسیون حدود ۱۰ تا ۲۰ درصد است و مهم‌ترین علت افزایش موربیدیتی در همه بیماران محسوب می‌شود؛ این خطر در بیماران زیر ۵ سال یا بالای ۶۵ سال به‌طور قابل‌توجهی بالاتر است. بیماران با وضعیت اجتماعی-اقتصادی پایین‌تر خطر کمتری برای ابتلا به آپاندیسیت دارند، چه همراه با پرفوراسیون و چه بدون آن. بروز تومورهای آپاندیس نیز در حال افزایش است."
+    },
+    {
+      "heading": "پاتوژنز آپاندیسیت و پرفوراسیون",
+      "body": "اتیولوژی دقیق آپاندیسیت هنوز به‌طور کامل شناخته نشده است. انسداد لومن آپاندیس — ناشی از فکالیت، بقایای غذای هضم‌نشده، هایپرپلازی لنفوئیدی یا بافت اسکار — نقش مهمی در ایجاد آپاندیسیت در اکثر موارد دارد. افزایش فشار داخل‌لومنی ناشی از تجمع باکتری و ترشحات داخل‌لومنی می‌تواند جریان لنفاوی و خونی را مختل کند. در ادامه ممکن است ترومبوز شریانی یا وریدی و نکروز ایسکمیک در قسمت دیستال آپاندیس رخ دهد؛ به همین دلیل پرفوراسیون اغلب نزدیک قاعده آپاندیس اتفاق می‌افتد، که چون معمولاً توسط بافت‌های اطراف محصور نمی‌شود، بیشتر بیمارانی که دچار پرفوراسیون می‌شوند به سمت پریتونیت پیش می‌روند.\n\nفکالیت (آپاندیکولیت) در حدود ۵۰٪ بیماران مبتلا به آپاندیسیت یافت می‌شود، اما در موارد خفیف‌تر آپاندیسیت کمتر دیده می‌شود — این یافته نشان‌دهنده فرایندهای پاتوفیزیولوژیک زمینه‌ای متفاوت در دو گروه بیماری با و بدون عارضه است. آپاندیسیت بدون عارضه (بدون نکروز گانگرنی، آپاندیکولیت، پرفوراسیون یا تومور) همیشه به سمت پرفوراسیون پیشرفت نمی‌کند.\n\nحداقل برخی موارد آپاندیسیت حاد ساده ممکن است با درمان آنتی‌بیوتیکی به‌طور موقت بهبود یابند یا کنترل شوند، هرچند حداقل یک‌سوم این بیماران در نهایت نیاز به آپاندکتومی پیدا خواهند کرد. نقش درمان‌های غیرجراحی در آپاندیسیت بدون عارضه همچنان به‌طور گسترده در حال بررسی است.\n\nهنگامی که پرفوراسیون رخ می‌دهد، نشت حاصل ممکن است توسط امنتوم یا سایر بافت‌های اطراف محدود شده و آبسه‌ای تشکیل دهد. اگر پرفوراسیون توسط چیزی محدود نشود، معمولاً پریتونیت شدید ایجاد می‌شود. در موارد نادر، ممکن است ترومبوز عفونی چرکی ورید پورت و شاخه‌های آن همراه با آبسه‌های داخل‌کبدی ایجاد شود؛ پیش‌آگهی بیمارانی که دچار این عارضه نادر می‌شوند بسیار ضعیف است."
+    },
+    {
+      "heading": "آناتومی و موقعیت‌های آناتومیک آپاندیس",
+      "body": "موقعیت آناتومیک آپاندیس می‌تواند مستقیماً بر نحوه تظاهر بالینی بیمار تأثیر بگذارد، چون محل قرارگیری تنه و نوک آپاندیس نسبت به محل اتصال آن به سکوم متغیر است. شایع‌ترین موقعیت، رتروسکال است (حدود ۶۴٪ موارد)، پس از آن موقعیت لگنی (حدود ۳۲٪)، و به‌مراتب نادرتر موقعیت‌های پس‌ایلئال، زیرسکالی و پیش‌ایلئال.\n\nمحل معمول آپاندیس در ربع تحتانی راست (RLQ) است، اما ممکن است در لگن، پهلوی راست، یا ربع فوقانی راست (RUQ) — که به‌ویژه ممکن است در دوران بارداری دیده شود — قرار گیرد. در بیمارانی که دچار mal-rotation یا کولون‌های طویل و بسیار متحرک هستند، آپاندیس حتی می‌تواند در سمت چپ شکم قرار داشته باشد. بیشترین حساسیت شکمی در آپاندیسیت کلاسیک در نزدیکی نقطه مک‌برنی، در RLQ، قرار دارد."
+    },
+    {
+      "heading": "تظاهرات بالینی: شرح حال کلاسیک",
+      "body": "شکایت‌های اولیه ممکن است غیراختصاصی باشند؛ بیماران ممکن است متوجه تغییر در عادات دفعی شوند یا احساس ضعف کنند. درد در ابتدا در ناحیه اپی‌گاستر یا اطراف ناف، مبهم، گاهی منتشر و کرامپی است. این درد سپس طی ۱۲ تا ۲۴ ساعت به RLQ مهاجرت می‌کند، جایی که می‌توان آن را تیزتر و موضعی‌تر یافت، چون در اثر تحریک صفاق جداری توسط آپاندیس ملتهب ایجاد می‌شود. تحریک صفاق جداری ممکن است با سفتی و انقباض موضعی عضلات همراه باشد.\n\nاگر تهوع وجود داشته باشد، معمولاً پس از شروع درد شکم ایجاد می‌شود؛ این موضوع می‌تواند در افتراق آپاندیسیت از گاستروانتریت کمک‌کننده باشد (که در آن تهوع معمولاً قبل از بروز درد شکم شروع می‌شود). استفراغ پس از شروع درد رخ می‌دهد و معمولاً کم‌مقدار است. بی‌اشتهایی به قدری شایع است که اگر وجود نداشته باشد، تشخیص آپاندیسیت باید مورد تردید قرار گیرد."
+    },
+    {
+      "heading": "معاینه بالینی و چالش‌های تشخیصی",
+      "body": "از آنجا که تشخیص افتراقی آپاندیسیت بسیار گسترده است، تعیین اینکه آیا بیمار واقعاً مبتلا به آپاندیسیت است یا نه می‌تواند دشوار باشد. بسیاری از بیماران با شرح حال یا یافته‌های فیزیکی کلاسیک توصیف‌شده مراجعه نمی‌کنند، و برخی ممکن است در مراحل اولیه هیچ‌گونه ناراحتی شکمی نداشته باشند. رسیدن به تشخیص درست در چهار گروه بیمار به‌طور ویژه دشوارتر است: آپاندیس خارج از RLQ، زنان در سن باروری، کودکان خردسال، و سالمندان.\n\nمعاینه باید به‌صورت سیستماتیک و از ناحیه‌ای دور از محل آغاز درد بیمار شروع شود. تمام بیماران باید تحت معاینه رکتال قرار گیرند، چون آپاندیسی که در پشت سکوم یا زیر لبه لگن قرار گرفته ممکن است تنها حساسیت کمی در دیواره قدامی شکم ایجاد کند. علائم آپاندیسیت لگنی شامل دیزوری، تکرر ادرار، اسهال یا تنسموس است؛ این بیماران ممکن است فقط هنگام لمس ناحیه سوپراپوبیک یا طی معاینه رکتال یا لگنی احساس درد کنند. در زنان، انجام معاینه لگنی الزامی است تا بیماری‌های دستگاه ادراری-تناسلی که می‌توانند درد شکمی مشابه ایجاد کنند یا با آپاندیسیت اشتباه گرفته شوند (مثل حاملگی خارج رحمی و بیماری التهابی لگن) رد شوند. تاکنون هیچ‌چیز جایگزین قضاوت بالینی پزشک نشده است."
+    },
+    {
+      "heading": "یافته‌های معاینه فیزیکی و مانورهای کلاسیک",
+      "body": "بیماران مبتلا به آپاندیسیت ساده معمولاً کمی بدحال به‌نظر می‌رسند؛ نبض و دمای بدن آن‌ها معمولاً فقط کمی بالاتر از حد طبیعی است. اگر دمای بدن بیش از ۳۸.۳ درجه سانتی‌گراد (حدود ۱۰۱ درجه فارنهایت) باشد و بیمار دچار لرز شود، باید به بیماری غیر از آپاندیسیت ساده یا عوارضی مثل پرفوراسیون، فلگمون یا تشکیل آبسه مشکوک شد.\n\nبیماران معمولاً به‌صورت طاقباز با خم بودن خفیف لگن دراز می‌کشند تا از تحریک بیشتر صفاق جلوگیری کنند. برخی هنگام عبور از جاده‌های ناهموار در مسیر بیمارستان، یا هنگام سرفه، عطسه، یا سایر مانورهای مشابه والسالوا دچار تشدید درد می‌شوند. معاینه شکم باید به‌صورت سیستماتیک و از ناحیه‌ای دور از محل آغاز درد شروع شود.\n\nبه‌طور کلاسیک، بیشترین حساسیت در نزدیکی نقطه مک‌برنی در RLQ وجود دارد. علامت Rovsing عبارت است از ایجاد درد در RLQ با فشار ملایم بر LLQ (در صورتی که آپاندیسیت در RLQ قرار داشته باشد). شواهد تحریک جداری صفاق را می‌توان با پرکاشن ملایم شکم، ضربه آرام، یا ضربه خفیف به پاها نیز آشکار کرد. علامت Obturator (چرخش داخلی ران که باعث درد می‌شود) احتمال آپاندیس ملتهب واقع در لگن را مطرح می‌کند، و علامت Iliopsoas (اکستانسیون ران راست که باعث درد خلفی-جانبی پشت و لگن می‌شود) مطرح‌کننده آپاندیسیت رتروسکال است. تظاهرات و الگوهای درد آتیپیک در آپاندیسیت به‌ویژه در افراد مسن یا خردسالان شایع‌تر است."
+    },
+    {
+      "heading": "آپاندیسیت در کودکان و سالمندان",
+      "body": "گرفتن شرح حال و انجام معاینه در کودکان سخت‌تر است. امنتوم در کودکان کوتاه‌تر است و اگر کودک دچار آپاندیسیت پرفوره شود، احتمال محصور و محدود شدن قسمت پرفوره توسط امنتوم کمتر است؛ بنابراین پرفوراسیون در کودکان کمتر به‌صورت موضعی باقی می‌ماند. مشاهده کودک در محیطی آرام می‌تواند در ارزیابی کمک‌کننده باشد.\n\nدر سالمندان، علائم آپاندیسیت ممکن است خفیف باشد، چون واکنش ایمنی آن‌ها به شدت افراد جوان نیست. درد از RLQ یا هر ناحیه‌ای که آپاندیس در آن قرار دارد منشأ می‌گیرد؛ این درد ممکن است غیرمهاجر باشد یا فقط با لمس عمیق قابل‌کشف باشد. تهوع، بی‌اشتهایی یا یبوست ممکن است علائم غالب باشند. در موارد نادر، بیمار ممکن است با علائم و نشانه‌های انسداد روده دیستال، به‌دلیل التهاب آپاندیس و تشکیل فلگمون یا آبسه، دیر مراجعه کند."
+    },
+    {
+      "heading": "بررسی‌های آزمایشگاهی",
+      "body": "WBC در حدود ۷۰٪ بیماران مبتلا به آپاندیسیت ساده افزایش می‌یابد، اما معمولاً فقط به‌صورت خفیف تا متوسط (در محدوده ۱۰۰۰۰ تا ۱۸۰۰۰). در بیش از ۹۵٪ موارد، Shift to the left به سوی نوتروفیل‌های نابالغ دیده می‌شود. تست Sickle Cell باید در افراد با تبار آفریقایی، اسپانیایی، مدیترانه‌ای یا هندی انجام شود. آمیلاز و لیپاز سرم نیز باید اندازه‌گیری شوند.\n\nآنالیز ادرار برای کمک به رد بیماری‌های مجاری ادراری-تناسلی که ممکن است شبیه آپاندیسیت حاد باشند ضروری است، اما ممکن است چند گلبول سفید یا قرمز نیز در ادرار یافت شود، چون آپاندیسی که در مجاورت مثانه یا حالب ملتهب شده باشد می‌تواند باعث پیوری استریل شود. تمام زنان در سن باروری باید تحت آزمایش بارداری قرار گیرند. در صورت شک به PID، انجام کشت ترشحات دهانه رحم الزامی است. اگر تست خون مخفی ادرار یا مدفوع مثبت باشد، باید به سایر بیماری‌ها یا سرطان‌ها مشکوک شد."
+    },
+    {
+      "heading": "تصویربرداری: رادیوگرافی، سونوگرافی و سی‌تی‌اسکن",
+      "body": "رادیوگرافی ساده شکم به‌ندرت مفید است و بنابراین به‌صورت روتین انجام نمی‌شود، مگر آنکه به بیماری دیگری مثل انسداد روده، پرفوراسیون احشا یا سنگ حالب مشکوک باشیم. در تصویر رادیوگرافی کمتر از ۵٪ بیماران در RLQ، یافته تشخیصی اختصاصی برای آپاندیسیت دیده می‌شود. وجود فکالیت به‌تنهایی برای تشخیص لازم نیست، اگرچه حضور آن به نفع آپاندیسیت است و با احتمال بالاتر بروز عوارض همراه است.\n\nسونوگرافی به‌شدت به مهارت و تجربه اپراتور وابسته است؛ حتی در دست افراد بسیار ماهر نیز ممکن است آپاندیس قابل مشاهده نباشد. حساسیت کلی این روش حدود ۰.۸۶ و اختصاصیت آن حدود ۰.۸۱ است. سونوگرافی ترانس‌واژینال (TVS) برای شناسایی پاتولوژی‌های لگنی در زنان جوان‌تر فایده بیشتری دارد. یافته‌های سونوگرافیک که وجود آپاندیسیت را مطرح می‌کنند عبارتند از ضخیم شدن دیواره، افزایش قطر آپاندیس، و وجود مایع آزاد. روش متداول این است که ابتدا سونوگرافی انجام شود و فقط در صورتی‌که یافته‌ها مبهم باشند یا شک به عوارض وجود داشته باشد، از سایر روش‌های تصویربرداری استفاده شود.\n\nحساسیت سی‌تی‌اسکن حداقل ۰.۹۴ و اختصاصیت آن حدود ۰.۹۵ است. اگر تشخیص آپاندیسیت مشکوک دشوار و مشکل باشد — به‌ویژه در بیماران چاق — باید از ماده حاجب خوراکی و وریدی به‌طور مناسب استفاده شود. در مراحل اولیه بیماری، ممکن است یافته‌های رادیولوژیک آتیپیک باشند. به‌طور کلی، در بیمارانی که تشخیص قطعی ندارند، تأخیر انداختن عمل جراحی برای انجام سی‌تی خطر پرفوراسیون را افزایش نمی‌دهد. اگر یافته‌های صفاقی دال بر بدخیمی وجود داشته باشد، سی‌تی‌اسکن حاد شکم روش انتخابی برای ارزیابی شدت آپاندیسیت حاد است.\n\nیافته‌های مشکوک در سی‌تی عبارتند از: گشادشدن بیش از ۶ میلی‌متر همراه با ضخیم شدن دیواره، پر نشدن لومن با ماده حاجب خوراکی، و وجود fat stranding یا هوا در اطراف آپاندیس که نشانگر التهاب است (شکل‌های ۳۴۲-۳ و ۳۴۲-۴). وجود هوا یا ماده حاجب در لومن با تشخیص آپاندیسیت سازگار نیست. اگر آپاندیس را در تصاویر CT نبینیم، این یافته غیراختصاصی است و نباید به‌تنهایی و بدون در نظر گرفتن التهاب بافت‌های اطراف، دلیلی برای رد آپاندیسیت باشد."
+    },
+    {
+      "heading": "جمعیت‌های خاص بیماران: بارداری و نقص ایمنی",
+      "body": "آپاندیسیت شایع‌ترین جراحی اورژانس عمومی خارج از رحم در دوران بارداری است. علائم اولیه مانند تهوع و بی‌اشتهایی ممکن است نادیده گرفته شوند. تشخیص آپاندیسیت در بیماران باردار سخت است، چون با بزرگ‌شدن رحم، آپاندیس ممکن است به سمت بالا و حتی تا RUQ یا پهلوی راست جابه‌جا شود. در رحم حامله، ممکن است معاینه فیزیکی یافته‌های تیپیک نداشته باشد. انجام سونوگرافی می‌تواند به تشخیص زودهنگام منجر شود. آپاندیسیت تشخیص‌داده‌نشده و درمان‌نشده اثرات زیان‌باری بر جنین دارد و برای تشخیص به‌موقع باید شک بالینی قوی داشته باشیم. در بیماران دچار پرفوراسیون، میزان مرگ‌ومیر جنینی چهار برابر بیشتر است (از ۵٪ به ۲۰٪).\n\nبیماران دارای نقص ایمنی ممکن است تنها با حساسیت خفیف شکمی مراجعه کنند و در تشخیص افتراقی آن‌ها باید فرایندهای عفونی متعدد ناشی از پاتوژن‌های غیرمعمول مثل مایکوباکتری‌های آتیپیک، سیتومگالوویروس، یا قارچ‌های دیگر نیز مطرح شوند. آنتروکولیت نوتروپنیک ممکن است در بیمارانی که به‌علت شیمی‌درمانی دچار درد شکم، تب و نوتروپنی مراجعه می‌کنند دیده شود؛ CT می‌تواند برای تشخیص آن مفید باشد. هرچند بیمارانی که احتمال بالایی برای آپاندیسیت دارند باید تحت عمل جراحی قرار گیرند و نیاز به احتیاط بیش از حد در این بیماران نیست."
+    },
+    {
+      "heading": "درمان آپاندیسیت حاد",
+      "body": "اگر کنترااندیکاسیونی وجود نداشته باشد، بیمارانی که شرح حال، معاینه فیزیکی و یافته‌های آزمایشگاهی آن‌ها به نفع آپاندیسیت حاد است، کاندید آپاندکتومی هستند. در برخی موارد انجام بررسی‌های تصویربرداری تشخیصی الزامی نیست، اما در اغلب موارد انجام می‌شود. در بیمارانی که یافته‌های بالینی مشکوک است ولی هنوز قطعی نیست، Close Observe و انجام تصویربرداری تکراری روش مناسبی محسوب می‌شود؛ سی‌تی‌اسکن می‌تواند سایر تشخیص‌های افتراقی را بررسی کند، و در بیمارانی که تشخیص قطعی مدنظر نیست، معاینه شکمی باید هر ۶ تا ۸ ساعت تکرار شود. اگر شواهد قوی مبنی بر پیشرفت بیماری وجود داشته باشد، بیمار مستقیماً به سمت جراحی هدایت می‌شود.\n\nپس از انجام معاینه کامل و دقیق اولیه، در بیمارانی که درد شدید دارند می‌توان از مسکن‌های نارکوتیک استفاده کرد. تمام بیماران باید پیش از عمل به‌طور کامل برای جراحی آماده شوند و هرگونه اختلال مایعات یا الکترولیت اصلاح شود. در بیماران مبتلا به آپاندیسیت بدون عارضه، هم آپاندکتومی باز و هم لاپاروسکوپیک انتخاب‌های قابل قبولی هستند. امروزه اکثر اعمال جراحی به‌صورت کم‌تهاجمی انجام می‌شوند و این امر به‌مرور زمان خطر کلی بروز عوارض را کاهش می‌دهد؛ درمان لاپاروسکوپیک برای بیماران مبتلا به آپاندیسیت بدون عارضه نیز همچنان در حال ارزیابی است.\n\nمدیریت بیمارانی که با فلگمون یا آبسه پری‌آپاندیکولار مراجعه می‌کنند دشوارتر است و شامل موارد زیر است: آنتی‌بیوتیک وسیع‌الطیف، درناژ از راه پوست (مخصوصاً اگر قطر آبسه بیش از ۳ سانتی‌متر باشد)، مایعات تزریقی، و استراحت روده. اگر بیمار به درمان محافظه‌کارانه پاسخ خوبی دهد، می‌توان آپاندکتومی با تأخیر (interval appendectomy) را ۶ تا ۱۲ هفته بعد، زمانی که التهاب فروکش کرده، با ایمنی بیشتری انجام داد.\n\nرویکرد لاپاروسکوپیک در مواردی که تشخیص دقیق نامشخص است نیز می‌تواند مفید باشد؛ این روش در بیماران چاق سودمند است و می‌تواند دید جراح را بهبود بخشد. بیشتر بیماران می‌توانند ظرف ۲۴ تا ۴۰ ساعت پس از عمل ترخیص شوند. شایع‌ترین عوارض پس از عمل تب و لکوسیتوز هستند. اگر تب و لکوسیتوز بیش از ۵ روز پس از آپاندکتومی ادامه یابند، باید به وجود آبسه داخل‌شکمی بدون عارضه آشکار دیگر مشکوک شد. میزان مرگ‌ومیر در آپاندیسیت بدون عارضه و غیرپرفوره بین ۰.۰۱ تا ۰.۰۵٪ است که تقریباً معادل خطر کلی بیهوشی عمومی است. میزان مرگ‌ومیر در آپاندیسیت پرفوره به‌مراتب بیشتر است و از حدود ۳٪ تا مجموعاً ۱۵٪، و در سالمندان متغیرتر، گزارش شده است."
+    },
+    {
+      "heading": "پریتونیت حاد: تعریف، انواع و اتیولوژی",
+      "body": "پریتونیت حاد، یا التهاب صفاق احشایی و جداری، در اغلب موارد منشا عفونی دارد، هرچند همیشه چنین نیست، و معمولاً به‌دنبال سوراخ‌شدن یکی از احشای توخالی ایجاد می‌شود؛ به این حالت پریتونیت ثانویه گفته می‌شود. پریتونیت اولیه یا خودبه‌خودی حالتی است که در آن منشا مشخص داخل‌شکمی قابل‌شناسایی وجود ندارد. در هر دو حالت، التهاب ممکن است موضعی یا منتشر باشد.\n\nعوامل عفونی معمولاً پس از نشت محتویات یک یا چند احشای توخالی به درون حفره صفاقی، در اثر زخم نافذ دیواره شکم، یا به‌دلیل ورود جسم خارجی مانند کاتتر پریتونئال دیالیز عفونت‌کرده که موجب آلودگی حفره صفاقی شده است، وارد حفره صفاقی می‌شوند. پریتونیت ثانویه در بیشتر موارد در اثر پرفوراسیون آپاندیس، دیورتیکولیت کولون، یا پرفوراسیون معده و دوازدهه ایجاد می‌شود. این عارضه ممکن است به‌دنبال انفارکتوس روده، اینکارسراسیون، یا ولوولوس یا اینتوساسپشن روده نیز بروز کند.\n\nبیش از ۹۰٪ موارد پریتونیت باکتریایی اولیه یا خودبه‌خودی در بیمارانی رخ می‌دهد که دچار سیروز یا هیپوپروتئینمی زمینه‌ای (پروتئین مایع آسیت پایین) هستند.\n\nپریتونیت آسپتیک در بیشتر موارد در اثر حضور مایعات فیزیولوژیک غیرطبیعی مانند شیره معده، صفرا، آنزیم‌های پانکراسی، خون یا ادرار در حفره صفاقی ایجاد می‌شود. همچنین ممکن است در اثر تأثیر اجسام خارجی استریل مانند اسفنج‌های جراحی یا ابزارهای جراحی ایجاد شود. در موارد نادرتر، ممکن است به‌عنوان عارضه بیماری‌های سیستمیک مثل لوپوس، تب مدیترانه‌ای فامیلیال (FMF)، و پورفیری بروز کند. در تب مدیترانه‌ای فامیلیال، تحریک شیمیایی ناشی از اسید معده و آنزیم‌های فعال پانکراسی می‌تواند بسیار شدید باشد و ممکن است به‌دنبال آن عفونت باکتریایی ثانویه نیز رخ دهد."
+    },
+    {
+      "heading": "تظاهرات بالینی، تشخیص، درمان و پیش‌آگهی پریتونیت",
+      "body": "علامت و نشانه اصلی پریتونیت، درد شکمی حاد (معمولاً شدید) همراه با حساسیت و تب است. نحوه بروز شکایت بیمار به وضعیت کلی جسمانی او و اینکه آیا التهاب منتشر یا موضعی است بستگی دارد. بیماران سالمند و دارای نقص ایمنی ممکن است واکنش تحریک صفاق منتشر را به‌شدت افراد دیگر نشان ندهند. پریتونیت منتشر معمولاً با سفتی دیواره شکم و حساسیت منتشر و سایر شواهد تحریک صفاق تشخیص داده می‌شود.\n\nدر مواردی که فرایند التهابی در داخل صفاق محصور شده است (مثلاً در بیماران مبتلا به آپاندیسیت یا دیورتیکولیت بدون تظاهر آشکار)، صداهای روده معمولاً طبیعی هستند، هرچند گاهی به‌عنوان نشانه ایلئوس کاهش می‌یابند؛ کاهش صدای روده یافته معاینه‌ای قابل‌اعتمادی محسوب نمی‌شود. اکثر بیماران تا زمانی که دچار هیپوتانسیون شوند، تاکی‌کاردی و شواهد کاهش حجم خون نشان می‌دهند.\n\nاز نظر آزمایشگاهی، لکوسیتوز معمولاً کمک قابل‌توجهی نمی‌کند و بیماران مبتلا به پریتونیت ممکن است دچار اسیدوز شدید شوند. در تصویربرداری، وجود هوای آزاد و اتساع و ادم دیواره روده، و وجود مایع آزاد یا سایر شواهد خروج محتویات احشا، نیازمند توجه جراحی فوری است. در بیماران دچار آسیت پایدار، انجام پاراسنتز تشخیصی توصیه می‌شود، به‌طوری‌که پروتئین و LDH مایع آسیت بررسی و شمارش سلولی آن اندازه‌گیری شود.\n\nدرحالی‌که میزان مرگ‌ومیر در بیماران نسبتاً سالم مبتلا به پریتونیت موضعی و ثانویه بدون عارضه می‌تواند کمتر از ۱۰٪ باشد، در بیماران دچار سپسیس یا ناپایداری همودینامیک، میزان مرگ‌ومیر می‌تواند تا بیش از ۴۰٪ نیز گزارش شود. در بیماران سالمند دارای نقص ایمنی، خطر مرگ‌ومیر حتی بیشتر است. موفقیت درمان به این موارد بستگی دارد: اصلاح هرگونه اختلال الکترولیتی، جایگزینی مایعات و پایدارسازی سیستم قلبی-عروقی، تجویز آنتی‌بیوتیک مناسب، و اصلاح جراحی علت زمینه‌ای در صورت وجود."
+    }
+  ]
+}
