@@ -53,7 +53,7 @@
     return auth("token?grant_type=password", {email:email, password:password}).then(function(value){
       saveSession(value);
       return profile().then(function(p){
-        if(!p || !p.approved){ saveSession(null); throw new Error("حساب هنوز توسط مدیر تأیید نشده است."); }
+        if(!p || !p.approved || p.rejected){ saveSession(null); throw new Error("حساب هنوز توسط مدیر تأیید نشده است."); }
         return {session:value, profile:p};
       });
     });
@@ -106,7 +106,7 @@
   }
   function signOut(){
     var current = session();
-    var promise = current ? request("/auth/v1/logout", {method:"POST"}).catch(function(){}) : Promise.resolve();
+    var promise = current ? request("/auth/v1/logout?scope=local", {method:"POST"}).catch(function(){}) : Promise.resolve();
     return promise.then(function(){ saveSession(null); });
   }
   function profile(){
@@ -138,6 +138,16 @@
     state.backendUsername = p.username || "";
     return state;
   }
+  var loadedSnapshot = null;
+  function clone(value){ return JSON.parse(JSON.stringify(value)); }
+  function canonical(value){
+    if(Array.isArray(value)) return value.map(canonical);
+    if(value && typeof value === "object"){
+      var result={};Object.keys(value).sort().forEach(function(key){result[key]=canonical(value[key]);});return result;
+    }
+    return value;
+  }
+  function equal(a,b){ return JSON.stringify(canonical(a)) === JSON.stringify(canonical(b)); }
   function loadLegacyState(){
     return Promise.all([
       select("profiles?select=*"),
@@ -149,7 +159,7 @@
       stateRows.forEach(function(row){ stateByUser[row.user_id] = row; });
       var users = {};
       profiles.forEach(function(p){ users[p.id] = profileToBucket(p, stateByUser[p.id]); });
-      return {
+      var result = {
         version:3,
         users:users,
         tickets:ticketRows.map(function(row){
@@ -161,32 +171,86 @@
           return {id:p.id, userId:p.id, username:p.username, fullName:p.full_name, email:p.email, mobile:p.phone, status:"pending", createdAt:p.created_at};
         })
       };
+      loadedSnapshot = clone(result);
+      return result;
+    });
+  }
+  function cleanBucket(bucket){
+    var result = Object.assign({}, bucket || {});
+    delete result.profile; delete result.backendRole; delete result.backendUsername; delete result.passwordHash;
+    return result;
+  }
+  function mergeChangedKeys(remote, before, after){
+    var result = Object.assign({}, remote || {});
+    var keys = new Set(Object.keys(before || {}).concat(Object.keys(after || {})));
+    keys.forEach(function(key){
+      if(key === "__proto__" || key === "constructor" || key === "prototype") return;
+      if(equal((before || {})[key], (after || {})[key])) return;
+      if(Object.prototype.hasOwnProperty.call(after || {},key)) result[key] = clone(after[key]);
+      else delete result[key];
+    });
+    return result;
+  }
+  function mergeStudyDelta(remote, before, after){
+    var result = Object.assign({}, remote || {});
+    result.itemState = mergeChangedKeys(result.itemState, before.itemState, after.itemState);
+    result.meta = mergeChangedKeys(result.meta, before.meta, after.meta);
+    result.highlights = Object.assign({}, result.highlights || {});
+    new Set(Object.keys(before.highlights || {}).concat(Object.keys(after.highlights || {}))).forEach(function(topic){
+      var toMap = function(list){ var map = {}; (list || []).forEach(function(h){ map[h.id]=h; }); return map; };
+      var merged = mergeChangedKeys(toMap(result.highlights[topic]), toMap((before.highlights || {})[topic]), toMap((after.highlights || {})[topic]));
+      result.highlights[topic] = Object.keys(merged).map(function(id){ return merged[id]; });
+    });
+    var logs = {};
+    (result.loginLog || []).concat(after.loginLog || []).forEach(function(row){ logs[row.at]=row; });
+    result.loginLog = Object.keys(logs).sort().slice(-500).map(function(at){return logs[at];});
+    return result;
+  }
+  function saveOwnState(userId, before, after, attempt){
+    return select("study_state?user_id=eq." + encodeURIComponent(userId) + "&select=state,updated_at&limit=1").then(function(rows){
+      var remote = (rows || [])[0];
+      var merged = mergeStudyDelta(remote && remote.state, before, after);
+      if(!remote){
+        return request("/rest/v1/study_state?on_conflict=user_id", {
+          method:"POST", headers:{Prefer:"resolution=ignore-duplicates,return=representation"},
+          body:JSON.stringify({user_id:userId,state:merged})
+        });
+      }
+      var nextTime = new Date(Math.max(Date.now(), Date.parse(remote.updated_at) + 1)).toISOString();
+      return request("/rest/v1/study_state?user_id=eq." + encodeURIComponent(userId) + "&updated_at=eq." + encodeURIComponent(remote.updated_at), {
+        method:"PATCH",headers:{Prefer:"return=representation"}, body:JSON.stringify({state:merged,updated_at:nextTime})
+      });
+    }).then(function(saved){
+      if(saved && saved.length) return;
+      if(attempt >= 2) throw new Error("conflict");
+      return saveOwnState(userId,before,after,attempt+1);
     });
   }
   function saveLegacyState(state){
     var current = session();
-    if(!current || !current.user) return Promise.reject(new Error("auth"));
-    var rows = [];
-    Object.keys(state.users || {}).forEach(function(userId){
-      var bucket = Object.assign({}, state.users[userId]);
-      delete bucket.profile; delete bucket.backendRole; delete bucket.backendUsername; delete bucket.passwordHash;
-      rows.push({user_id:userId, state:bucket, updated_at:new Date().toISOString()});
+    if(!current || !current.user || !loadedSnapshot) return Promise.reject(new Error("auth"));
+    var owner = current.user.id;
+    var snapshot = clone(state);
+    var old = loadedSnapshot;
+    var work = [];
+    var own = cleanBucket((snapshot.users || {})[owner]);
+    var before = cleanBucket((old.users || {})[owner]);
+    // Admin profile visibility never means rewriting other users' study snapshots.
+    if(!equal(own,before)) work.push(saveOwnState(owner,before,own,0));
+    (snapshot.tickets || []).forEach(function(ticket){
+      var previous = (old.tickets || []).find(function(row){return row.id===ticket.id;});
+      if(equal(ticket,previous)) return;
+      var payload = Object.assign({},ticket);delete payload.id;delete payload.userId;
+      work.push(upsert("tickets",[{id:ticket.id,user_id:ticket.userId,payload:payload,updated_at:new Date().toISOString()}],"id"));
     });
-    var ticketRows = (state.tickets || []).map(function(ticket){
-      var payload = Object.assign({}, ticket);
-      delete payload.id; delete payload.userId;
-      return {id:ticket.id, user_id:ticket.userId, payload:payload, updated_at:new Date().toISOString()};
+    Object.keys(snapshot.users || {}).forEach(function(userId){
+      var p = (snapshot.users[userId] || {}).profile || {};
+      if(equal(p,((old.users || {})[userId] || {}).profile || {})) return;
+      work.push(request("/rest/v1/profiles?id=eq."+encodeURIComponent(userId),{
+        method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({full_name:p.fullName||null,degree:p.degree||null,id_number:p.idNumber||null,phone:p.phone||null,email:p.email||null,updated_at:new Date().toISOString()})
+      }));
     });
-    var profileUpdates = Object.keys(state.users || {}).map(function(userId){
-      var bucket = state.users[userId] || {}, p = bucket.profile || {};
-      return request("/rest/v1/profiles?id=eq." + encodeURIComponent(userId), {
-        method:"PATCH", headers:{Prefer:"return=minimal"}, body:JSON.stringify({
-          full_name:p.fullName || null, degree:p.degree || null, id_number:p.idNumber || null,
-          phone:p.phone || null, email:p.email || null, updated_at:new Date().toISOString()
-        })
-      });
-    });
-    return Promise.all([upsert("study_state", rows, "user_id"), upsert("tickets", ticketRows, "id")].concat(profileUpdates));
+    return Promise.all(work).then(function(){ loadedSnapshot=snapshot; });
   }
   function approveUser(userId, approved){
     return request("/rest/v1/rpc/set_intmed_user_approval", {

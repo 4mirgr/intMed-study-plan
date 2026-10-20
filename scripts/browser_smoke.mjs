@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 
 const base = process.env.INTMED_BASE_URL || "http://127.0.0.1:8765";
-const systemChromium = "/usr/bin/chromium";
+const systemChromium = process.env.PLAYWRIGHT_EXECUTABLE_PATH || "/usr/bin/chromium";
 const browser = await chromium.launch({
   headless: true,
   timeout: 15000,
@@ -33,7 +33,7 @@ try {
   await topic.locator(".topic-list-btn").evaluate(element => element.click());
   await topic.locator(".learn-btn").filter({hasText:"درسنامه"}).evaluate(element => element.click());
   await topic.locator(".lesson-section").first().waitFor({state:"attached"});
-  if (!requested.some(url => url.endsWith("/content/topics/cardio-ecg.json"))) throw new Error("topic payload was not fetched lazily");
+  if (!requested.some(url => new URL(url).pathname.endsWith("/content/topics/cardio-ecg.json"))) throw new Error("topic payload was not fetched lazily");
   const anchor = await topic.locator("[data-hl-loc^='lesson:']").first().getAttribute("data-hl-loc");
   if (!anchor || /^lesson:\d+:\d+$/.test(anchor)) throw new Error(`lesson anchor is not stable: ${anchor}`);
   if (errors.length) throw new Error("browser errors: " + errors.join(" | "));

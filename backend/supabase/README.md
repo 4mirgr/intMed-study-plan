@@ -15,3 +15,14 @@
 
 Legacy passwords use an unsuitable FNV hash and cannot be migrated safely. Every user must
 set a new Supabase Auth password through an invite or password-reset email.
+
+## Verify the owner account without sharing credentials
+
+Run `verify_admin.sql` in SQL Editor after replacing its placeholder with your own
+Auth email. The expected row is `role=admin`, `approved=true`, `rejected=false`.
+No result means the IntMed profile does not exist yet. `bootstrap_admin.sql` can
+create/approve ONLY the explicitly specified verified owner account. It refuses a
+placeholder/unverified account; it does not change passwords or other users.
+
+The current project already has the IntMed tables. Do not reinstall or replace a
+shared project's schema just to check the admin account. Verify the owner first.

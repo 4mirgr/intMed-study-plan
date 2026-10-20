@@ -8,7 +8,9 @@ session history is not required for routine work.
 - `content/taxonomy.json`: categories and topics shown by the site.
 - `content/<category>/<topic-id>/data.json`: canonical educational content.
 - `content/_schema/topic-content.schema.json`: content contract.
-- `docs/`: generated/published GitHub Pages site.
+- `docs/index.html`: small page markup; `docs/intmed.css`: UI styles.
+- `docs/js/intmed-{theme,login,app,backend}.js`: separate UI/auth/storage code.
+- `docs/content/`: generated educational payloads. Other `docs/` files are site sources.
 - `scripts/content_pipeline.py`: initialize, migrate, validate, extract, and build content.
 - `docs/content-protocol.md`: complete chapter-production and medical-content rules.
 - `docs/architecture.md`: application, persistence, deployment, and migration design.
@@ -26,3 +28,6 @@ session history is not required for routine work.
 Do not put credentials, personal access tokens, raw passwords, or private user data in the
 repository. User accounts and personal state belong in the private backend described in
 `docs/architecture.md`, never in public GitHub content.
+
+After changing scripts/styles/config, run `python3 scripts/version_assets.py`.
+Run `node scripts/backend_state_test.mjs` for persistence conflict/isolation checks.

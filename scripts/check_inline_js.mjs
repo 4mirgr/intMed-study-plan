@@ -1,11 +1,12 @@
-import fs from "node:fs";
-import vm from "node:vm";
-
-const html = fs.readFileSync(new URL("../docs/index.html", import.meta.url), "utf8");
-const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
-if (!scripts.length) throw new Error("docs/index.html has no inline scripts");
-scripts.forEach((source, index) => new vm.Script(source, {filename: `docs/index.html#script-${index + 1}`}));
-for (const relative of ["docs/config.js", "docs/js/intmed-backend.js"]) {
-  new vm.Script(fs.readFileSync(new URL("../" + relative, import.meta.url), "utf8"), {filename: relative});
+import fs from 'node:fs';
+import vm from 'node:vm';
+const root=new URL('../docs/',import.meta.url),html=fs.readFileSync(new URL('index.html',root),'utf8');
+let count=0;
+for(const match of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)){
+ const src=/\bsrc=["']([^"']+)["']/.exec(match[1]);
+ const file=src?src[1].split('?')[0]:'index.html#inline';
+ const code=src?fs.readFileSync(new URL(file,root),'utf8'):match[2];
+ new vm.Script(code,{filename:file});count++;
 }
-console.log(`JavaScript syntax passed (${scripts.length} inline block(s) + backend files)`);
+if(!count)throw Error('No application scripts');
+console.log(`JavaScript syntax passed (${count} inline/external scripts).`);
