@@ -3398,3 +3398,52 @@ Validated inline JS with node --check and exercised actual Chromium new-tab
 navigation using the breast cancer images: all 3 previews linked, URLs reused,
 clicked image decoded successfully at 496x359. Static site only; artifact tools
 are unavailable in this environment.
+
+## Harrison Ch74 and Ch75 built for hematology/oncology (2026-10-20)
+
+User supplied both chapter PDFs and explicitly requested the established full
+content protocol and publication. Read all 9 pages of Ch74 and all 16 pages of
+Ch75; created two independent topics in the existing heme taxonomy:
+
+- heme-cancer-symptom-control: 16 lesson sections, 54 flashcards, 20 MCQs,
+  6 KF/PMP cases, 9 tables, 1 source image. Covers structured PRO/ESAS-r,
+  reversible fatigue and delayed immune toxicities, pain subtypes/CIPN,
+  mucositis, CINV and other nausea, anorexia/cachexia, constipation, dyspnea,
+  hot flashes and nasal vestibulitis. Saved source package is 97,730 bytes,
+  37.3% of the 256 KiB budget.
+- heme-cancer-prevention-screening: 20 lesson sections, 72 flashcards, 24 MCQs,
+  6 KF/PMP cases, 12 tables, no substantive source images. Covers lifestyle,
+  carcinogens/infections, chemoprevention benefits/harms, vaccination, risk-
+  reducing surgery, accuracy formulas, screening biases, and organ-specific
+  screening. Saved source package is 104,780 bytes, 40.0% of budget.
+
+Editorial safeguards: recommendations are attributed to the supplied chapter,
+not presented as a separately verified current guideline update. USPSTF and ACS
+criteria are kept distinct, especially mammography and the quit-year rule for
+LDCT. Source-table mammography recommendation (40-74 biennial) is distinguished
+from the narrative's discussion of uncertainty in younger women. Source PDF Ch74
+contains questionable dose/unit text for octreotide and a magnesium preparation;
+those unverified doses were deliberately omitted rather than copied into teaching
+recommendations or tested answers. The associated treatment principles remain.
+
+Figure inspection: extracted embedded image bytes with PyMuPDF. Ch74 contains a
+solid-black noninformational bitmap and the low-resolution 157x200 ESAS-r form;
+only the latter is embedded with explicit Harrison/McGraw Hill citation, a
+resolution note and a readable Persian companion table. Palette-PNG conversion
+was inspected, and encoded-byte SHA-256 roundtrip checked after saving. Ch75's
+only raster is a tiny 48x48 non-substantive symbol; substantive tables are
+reconstructed as readable Markdown, so no artificial figure was added.
+
+Validation: both packages schema-valid, unique explicit ids, correctIndex bounds,
+unique four-choice answers, no U+FFFD or forbidden liver term. Every flashcard
+answer is present verbatim in its lesson for fact traceability; question direction
+and Persian/English sentence flow reviewed. All 67 existing bundle entries are
+unchanged; rebuilt bundle now has 69 entries. Updated docs/index.html taxonomy;
+login gate, sync and previous image new-tab behavior preserved. node --check and
+actual Chromium checks passed at 390px viewport: all six section types render
+with exact counts, flashcard reveal and MCQ grading work, ESAS-r opens as a
+valid image in a separate tab, no JS errors. No user state was modified.
+
+Publication target is drgerami-md.ir via GitHub Pages. Claude ArtifactData and
+SendUserFile tools are unavailable in this environment; no artifact-db sync or
+email notification was attempted.
