@@ -3,20 +3,43 @@
   "title": "Topic content package",
   "description": "One file per topic (content/<category>/<topicId>/data.json). Matches the topic ids used in the study-plan artifact's knowledge map, so a topic folder and a topic's db doc share the same id. Consumed by: (1) the Claude session syncing it into the artifact's db (item_state / topic_content collections) for interactive use, (2) later, a WordPress import script.",
   "type": "object",
-  "required": ["topicId", "category"],
+  "required": [
+    "topicId",
+    "category"
+  ],
   "properties": {
-    "topicId": { "type": "string", "description": "Matches the subtopic id in the artifact's TOPICS taxonomy, e.g. 'rheum-sle'." },
-    "category": { "type": "string", "description": "Matches the category id, e.g. 'rheum'." },
+    "topicId": {
+      "type": "string",
+      "description": "Matches the subtopic id in the artifact's TOPICS taxonomy, e.g. 'rheum-sle'."
+    },
+    "category": {
+      "type": "string",
+      "description": "Matches the category id, e.g. 'rheum'."
+    },
     "flashcards": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["front", "back"],
+        "required": [
+          "front",
+          "back"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "front": { "type": "string" },
-          "back": { "type": "string" },
-          "tags": { "type": "array", "items": { "type": "string" } }
+          "id": {
+            "type": "string"
+          },
+          "front": {
+            "type": "string"
+          },
+          "back": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       }
     },
@@ -24,13 +47,38 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["stem", "options", "correctIndex"],
+        "required": [
+          "stem",
+          "options",
+          "correctIndex"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "stem": { "type": "string" },
-          "options": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 5 },
-          "correctIndex": { "type": "integer" },
-          "explanation": { "type": "string" }
+          "id": {
+            "type": "string"
+          },
+          "stem": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "maxItems": 5
+          },
+          "correctIndex": {
+            "type": "integer"
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "imageRef": {
+            "$ref": "#/definitions/imageRef"
+          },
+          "imageAlt": {
+            "type": "string"
+          }
         }
       }
     },
@@ -39,21 +87,49 @@
       "description": "Stepwise key-feature / patient-management-problem cases.",
       "items": {
         "type": "object",
-        "required": ["title", "steps"],
+        "required": [
+          "title",
+          "steps"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "title": { "type": "string" },
-          "vignette": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "vignette": {
+            "type": "string"
+          },
           "steps": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["prompt", "expectedAnswer"],
+              "required": [
+                "prompt",
+                "expectedAnswer"
+              ],
               "properties": {
-                "prompt": { "type": "string" },
-                "expectedAnswer": { "type": "string" }
+                "prompt": {
+                  "type": "string"
+                },
+                "expectedAnswer": {
+                  "type": "string"
+                },
+                "imageRef": {
+                  "$ref": "#/definitions/imageRef"
+                },
+                "imageAlt": {
+                  "type": "string"
+                }
               }
             }
+          },
+          "imageRef": {
+            "$ref": "#/definitions/imageRef"
+          },
+          "imageAlt": {
+            "type": "string"
           }
         }
       }
@@ -62,11 +138,23 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["caption"],
+        "required": [
+          "caption"
+        ],
         "properties": {
-          "caption": { "type": "string" },
-          "sourceUrl": { "type": "string", "description": "Link to the user's own private Drive file. Never a redistributable copy of copyrighted material." },
-          "note": { "type": "string" }
+          "caption": {
+            "type": "string"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "description": "Link to the user's own private Drive file. Never a redistributable copy of copyrighted material."
+          },
+          "note": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
         }
       }
     },
@@ -74,10 +162,17 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["title", "markdown"],
+        "required": [
+          "title",
+          "markdown"
+        ],
         "properties": {
-          "title": { "type": "string" },
-          "markdown": { "type": "string" }
+          "title": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          }
         }
       }
     },
@@ -86,10 +181,18 @@
       "description": "Narrative teaching content ('درسنامه') for the topic — explanatory prose beyond flashcard-level facts, meant to teach the topic from scratch. Rendered as ordered sections, each with a heading and a body; the artifact splits body on blank lines into paragraphs.",
       "items": {
         "type": "object",
-        "required": ["heading", "body"],
+        "required": [
+          "heading",
+          "body"
+        ],
         "properties": {
-          "heading": { "type": "string" },
-          "body": { "type": "string", "description": "One or more paragraphs, separated by a blank line (\\n\\n)." }
+          "heading": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "description": "One or more paragraphs, separated by a blank line (\\n\\n)."
+          }
         }
       }
     },
@@ -98,50 +201,132 @@
       "description": "Disease-driven ventilator/BiPAP/CPAP decision-support scenarios — curated clinical guidance (initial settings, rationale, an example ABG/VBG, titration steps, common pitfalls), NOT a live physiological simulator with settings-driven gas-exchange computation. Rendered as its own learn-type tab ('شبیه‌سازی ونتیلاتور'), scoped in the app's JS to specific topicIds that opt in (currently only crit-vent) rather than shown for every topic.",
       "items": {
         "type": "object",
-        "required": ["id", "disease", "supportType", "mode", "initialSettings", "rationale"],
+        "required": [
+          "id",
+          "disease",
+          "supportType",
+          "mode",
+          "initialSettings",
+          "rationale"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "disease": { "type": "string", "description": "e.g. 'ARDS', 'تشدید حاد COPD'." },
-          "riskFactors": { "type": "array", "items": { "type": "string" } },
-          "supportType": { "type": "string", "description": "e.g. invasive ventilation / BiPAP / NIV contraindicated." },
-          "indicationNote": { "type": "string" },
-          "mode": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
+          "disease": {
+            "type": "string",
+            "description": "e.g. 'ARDS', 'تشدید حاد COPD'."
+          },
+          "riskFactors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supportType": {
+            "type": "string",
+            "description": "e.g. invasive ventilation / BiPAP / NIV contraindicated."
+          },
+          "indicationNote": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string"
+          },
           "initialSettings": {
             "type": "object",
             "description": "Any subset of these fields; the renderer only shows the ones present.",
             "properties": {
-              "FiO2": { "type": "string" },
-              "PEEP": { "type": "string" },
-              "tidalVolume": { "type": "string" },
-              "respiratoryRate": { "type": "string" },
-              "ipap": { "type": "string" },
-              "epap": { "type": "string" },
-              "other": { "type": "array", "items": { "type": "string" } }
+              "FiO2": {
+                "type": "string"
+              },
+              "PEEP": {
+                "type": "string"
+              },
+              "tidalVolume": {
+                "type": "string"
+              },
+              "respiratoryRate": {
+                "type": "string"
+              },
+              "ipap": {
+                "type": "string"
+              },
+              "epap": {
+                "type": "string"
+              },
+              "other": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           },
-          "rationale": { "type": "string" },
+          "rationale": {
+            "type": "string"
+          },
           "exampleAbgVbg": {
             "type": "object",
             "properties": {
-              "ph": { "type": "string" },
-              "paco2": { "type": "string" },
-              "pao2": { "type": "string" },
-              "hco3": { "type": "string" },
-              "interpretation": { "type": "string" }
+              "ph": {
+                "type": "string"
+              },
+              "paco2": {
+                "type": "string"
+              },
+              "pao2": {
+                "type": "string"
+              },
+              "hco3": {
+                "type": "string"
+              },
+              "interpretation": {
+                "type": "string"
+              }
             }
           },
           "titrationSteps": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["trigger", "action"],
+              "required": [
+                "trigger",
+                "action"
+              ],
               "properties": {
-                "trigger": { "type": "string" },
-                "action": { "type": "string" }
+                "trigger": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                }
               }
             }
           },
-          "pitfalls": { "type": "array", "items": { "type": "string" } }
+          "pitfalls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "imageRef": {
+      "type": "object",
+      "required": [
+        "topicId",
+        "imageId"
+      ],
+      "properties": {
+        "topicId": {
+          "type": "string"
+        },
+        "imageId": {
+          "type": "string"
         }
       }
     }

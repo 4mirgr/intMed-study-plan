@@ -3206,6 +3206,40 @@
   });
 
   var imageTabUrls = new WeakMap();
+  function getImageTabUrl(img){
+    var source = img.sourceUrl || "";
+    if(source.indexOf("data:") !== 0) return source;
+    var cached = imageTabUrls.get(img);
+    if(cached) return cached;
+    var comma = source.indexOf(",");
+    var mime = source.slice(5, comma).split(";")[0];
+    var binary = atob(source.slice(comma + 1));
+    var bytes = new Uint8Array(binary.length);
+    for(var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    var url = URL.createObjectURL(new Blob([bytes], {type:mime}));
+    imageTabUrls.set(img, url);
+    return url;
+  }
+  function appendQuestionFigure(container, item){
+    var ref = item.imageRef;
+    if(!ref) return;
+    var sourceTopic = contentMap[ref.topicId] || {};
+    var img = (sourceTopic.images || []).find(function(candidate){ return candidate.id === ref.imageId; });
+    if(!img || !img.sourceUrl) return;
+    var figure = document.createElement("figure");
+    figure.className = "img-row question-figure";
+    var link = document.createElement("a");
+    link.href = getImageTabUrl(img); link.target = "_blank"; link.rel = "noopener";
+    link.title = "باز کردن تصویر در تب جدید";
+    var image = document.createElement("img");
+    image.className = "img-inline"; image.src = img.sourceUrl;
+    image.alt = item.imageAlt || "تصویر همراه سؤال"; image.loading = "lazy";
+    link.appendChild(image); figure.appendChild(link);
+    var caption = document.createElement("figcaption");
+    caption.className = "cap-note";
+    caption.textContent = "برای بزرگ‌نمایی روی تصویر بزنید. منبع: Harrison’s Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill.";
+    figure.appendChild(caption); container.appendChild(figure);
+  }
 
   function renderLearnPanel(topicId, type){
     var t = topicEls[topicId];
@@ -3358,13 +3392,14 @@
         stem.dataset.hlTopic = topicId;
         applyHighlightsToContainer(stem, topicId, stemLocKey);
         block.appendChild(stem);
+        appendQuestionFigure(block, q);
         var explain = document.createElement("div");
         explain.className = "mcq-explain";
         var explainLocKey = "mcq:" + qKey + ":explain";
-        explain.dataset.hlRawText = q.explanation || "";
+        explain.dataset.hlRawText = q.explanation || q.explain || "";
         explain.dataset.hlLoc = explainLocKey;
         explain.dataset.hlTopic = topicId;
-        if(q.explanation) applyHighlightsToContainer(explain, topicId, explainLocKey);
+        if(q.explanation || q.explain) applyHighlightsToContainer(explain, topicId, explainLocKey);
         (q.options||[]).forEach(function(opt, idx){
           var ob = document.createElement("button");
           ob.type = "button"; ob.className = "mcq-opt"; ob.textContent = opt;
@@ -3404,6 +3439,7 @@
           applyHighlightsToContainer(vig, topicId, vigLocKey);
           block.appendChild(vig);
         }
+        appendQuestionFigure(block, kf);
         (kf.steps||[]).forEach(function(step, i){
           var stepEl = document.createElement("div");
           stepEl.className = "kfp-step";
@@ -3429,7 +3465,7 @@
             ans.classList.toggle("show", !showing);
             btn.textContent = showing ? "نمایش پاسخ" : "مخفی کردن";
           });
-          stepEl.appendChild(prompt); stepEl.appendChild(btn); stepEl.appendChild(ans);
+          stepEl.appendChild(prompt); appendQuestionFigure(stepEl, step); stepEl.appendChild(btn); stepEl.appendChild(ans);
           block.appendChild(stepEl);
         });
         panel.appendChild(block);
@@ -3574,20 +3610,7 @@
         row.className = "img-row";
         var isDataUri = (img.sourceUrl || "").indexOf("data:") === 0;
         if(isDataUri){
-          // Open a binary image Blob, since browsers block new-tab data: navigation.
-          // Reuse the URL when this panel is reopened; document unload releases it.
-          var imageUrl = imageTabUrls.get(img);
-          if(!imageUrl){
-            var parts = img.sourceUrl.split(",");
-            var mime = parts[0].slice(5).split(";")[0];
-            var binary = atob(parts[1]);
-            var bytes = new Uint8Array(binary.length);
-            for(var byteIndex = 0; byteIndex < binary.length; byteIndex++){
-              bytes[byteIndex] = binary.charCodeAt(byteIndex);
-            }
-            imageUrl = URL.createObjectURL(new Blob([bytes], {type:mime}));
-            imageTabUrls.set(img, imageUrl);
-          }
+          var imageUrl = getImageTabUrl(img);
           var cap = document.createElement("div");
           cap.className = "img-cap"; cap.textContent = "🖼 " + img.caption;
           row.appendChild(cap);

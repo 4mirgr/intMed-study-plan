@@ -3447,3 +3447,49 @@ valid image in a separate tab, no JS errors. No user state was modified.
 Publication target is drgerami-md.ir via GitHub Pages. Claude ArtifactData and
 SendUserFile tools are unavailable in this environment; no artifact-db sync or
 email notification was attempted.
+
+## Image-based ECG questions and signup/storage architecture review (2026-10-20)
+
+User requested image/scenario ECG assessments and advice on PBS media hosting and
+signup/login/user isolation. Implemented 9 new image MCQs and 4 image KF/PMP cases:
+cardio-ecg +3/+1 (Wellens, calcium/QT, conduction interpretation), cardio-arrhythmia
++2/+1 (post-AF pause/tachy-brady), cardio-afib +2/+1, cardio-svt +2/+1 (AVNRT).
+Viewed the six existing Harrison source images used. Reused their bytes via stable
+optional image ids and imageRef {topicId,imageId}, avoiding duplicate base64.
+Added neutral question alt text and source-only captions (not diagnostic gallery
+captions), with clickable Blob/URL-based new-tab images. Existing images may
+contain original educational labels; these are teaching assessments, not an
+unlabelled board-exam image bank. Added short lesson bridges for newly tested
+principles. Optional references also supported on individual KF steps for future
+PBS cases. Extended schema compatibly; no source images were synthesized.
+
+Refactored shared image URL conversion with existing WeakMap URL reuse. Fixed
+legacy MCQ explanations: renderer now accepts explanation or explain, so existing
+questions using the older field show their answer explanations again.
+
+QA: reference resolution, ids and answer bounds validated; pre-existing schema
+exceptions for embedded lessons unchanged. All four updated packages remain below
+256 KiB (pretty file sizes 179677/256962/199161/201887 bytes respectively). Inline
+JS syntax passes. Chromium 390px checks passed for all four topics: all 9 images
+and 4 cases render, images decode and open in new tabs, correct options grade,
+neutral captions display, legacy explanations render, no JS errors. No signup,
+password, user state, or backend infrastructure was changed.
+
+Review findings to guide future authorized auth migration: signup form only builds
+WhatsApp/copy relay information, not a backend pending request. Static FNV login
+and bp_authed/bp_user_id are client-controlled; CURRENT_USER_ID falls back to amir.
+Shared public state.json and per-device repo-writing PATs do not provide per-user
+authorization. Saves read the latest sha but PUT a whole local snapshot, so retry
+alone does not prevent stale clients overwriting other users. cleanedStateForSave
+omits passwordHash (confirmed with isolated synthetic state); static gate hashes
+are also checked before the changed-password remote path. Existing approved-signup
+hash fallback means omission does not invalidate every dynamic login, but it is
+not a sound credential lifecycle. User asked for recommendations here, not an auth
+backend replacement; no personal state was read or migrated in this review.
+
+Media recommendation: 256 KiB was the Claude artifact per-doc budget, not a
+GitHub Pages per-topic HTML limit. Drive is suitable as source/archive; direct
+app media should use stable separately hosted image files/object storage/CDN.
+Current static site fetches one large bundle, so per-topic loading should accompany
+a large PBS library. PBS content itself awaits diagnostic-quality source images
+or chapter material; no image-less placeholder topic was published.
