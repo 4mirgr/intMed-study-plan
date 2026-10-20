@@ -60,14 +60,18 @@
     bars(document.getElementById('adminReadChart'),lastExport.filter(function(row){return row[metricKey]>0;}).slice(0,12).map(function(row){return {...row,value:row[metricKey]};}),metricKey==='seconds'?'seconds':metricKey==='readers'||metricKey==='completed'?'کاربر':'بار');
     bars(document.getElementById('adminStatusChart'),Object.keys(statuses).map(function(status){return {label:status,value:statuses[status]};}),'مبحث');week(document.getElementById('adminWeekChart'),daily);
   }
+  function visible(id){
+    var topic=api.topics()[id],education=document.getElementById('tabPanelEducation');
+    return !!(topic&&education&&education.classList.contains('active')&&topic.itemEl.classList.contains('open')&&topic.learnPanel.classList.contains('open')&&topic.itemEl.closest('.topic-cat').classList.contains('open'));
+  }
   function open(id,type){
-    stop();if(!api||!api.ready()||!api.topics()[id])return;current={id:id,type:type};lastTick=Date.now();lastInteraction=Date.now();
+    stop();if(!api||!api.ready()||!api.topics()[id]||!visible(id))return;current={id:id,type:type};lastTick=Date.now();lastInteraction=Date.now();
     var key='activity:'+id+':'+day(),data=Object.assign({opens:0,seconds:0,types:{}},bucket().itemState[key]||{}),throttle=id+':'+type;
     if(!lastOpens[throttle]||Date.now()-lastOpens[throttle]>30000){data.opens++;data.types=Object.assign({},data.types);data.types[type]=(data.types[type]||0)+1;data.lastOpenedAt=new Date().toISOString();api.save(key,data);lastOpens[throttle]=Date.now();render();}
   }
   function tick(final){
     var now=Date.now(),elapsed=(now-lastTick)/1000;lastTick=now;if(!current||!api||!api.ready()||elapsed<=0||elapsed>35||now-lastInteraction>120000)return;
-    var topic=api.topics()[current.id];if(!topic||topic.openType!==current.type||(!final&&(document.visibilityState!=='visible'||!document.hasFocus())))return;
+    var topic=api.topics()[current.id];if(!topic||!visible(current.id)||topic.openType!==current.type||(!final&&(document.visibilityState!=='visible'||!document.hasFocus())))return;
     var key='activity:'+current.id+':'+day(),data=Object.assign({opens:0,seconds:0,types:{}},bucket().itemState[key]||{});data.seconds=(Number(data.seconds)||0)+Math.round(elapsed);data.lastOpenedAt=new Date().toISOString();api.save(key,data);render();
   }
   function stop(){if(current)tick(false);current=null;}

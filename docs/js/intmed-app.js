@@ -201,6 +201,7 @@
   var HEART_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
   function isFavorite(bucket,id){return !!(bucket.itemState && bucket.itemState["favorite:"+id] && bucket.itemState["favorite:"+id].favorite===true);}
   function goToTopic(id){
+    if(window.IntMedDashboard)window.IntMedDashboard.stop();
     var topic=topicEls[id];if(!topic)return;
     setTab("education");
     if(openTopicDetailId && topicEls[openTopicDetailId]){
@@ -405,6 +406,7 @@
       detail.appendChild(learnPanel);
 
       listBtn.addEventListener("click", function(){
+        if(window.IntMedDashboard)window.IntMedDashboard.stop();
         var willOpen = openTopicDetailId !== sub.id;
         if(openTopicDetailId && topicEls[openTopicDetailId]){
           topicEls[openTopicDetailId].itemEl.classList.remove("open");
@@ -1496,7 +1498,8 @@
         if(usesPrivateBackend()){
           window.IntMedBackend.approveUser(s.userId || s.id, true).then(function(){
             s.status = "approved";
-            renderAdminSignups();
+            var bucket=STATE.users[s.userId||s.id];if(bucket){bucket.backendApproved=true;bucket.backendRejected=false;}
+            renderUserPanel();
           }).catch(function(){ alert("تأیید حساب ناموفق بود."); });
           return;
         }
@@ -1528,7 +1531,8 @@
         if(usesPrivateBackend()){
           window.IntMedBackend.approveUser(s.userId || s.id, false).then(function(){
             s.status = "rejected";
-            renderAdminSignups();
+            var bucket=STATE.users[s.userId||s.id];if(bucket){bucket.backendApproved=false;bucket.backendRejected=true;}
+            renderUserPanel();
           }).catch(function(){ alert("رد حساب ناموفق بود."); });
           return;
         }
