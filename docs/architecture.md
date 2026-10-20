@@ -81,3 +81,29 @@ the explicit verified-email `bootstrap_admin.sql`. No passwords or privileged ke
 need to be sent in chat. No live personal state was read or migrated by the UI
 hardening update. End-to-end acceptance uses two real approved accounts after
 owner verification; synthetic tests cannot establish those production identities.
+
+### Topic favorites and private popularity counts
+
+A favorite uses the stable key `favorite:<topic-id>` in that user's existing
+`study_state.state.itemState`, with `{favorite: true|false}`. It is a separate key
+from the topic's note/status, so toggling either does not overwrite the other and
+existing per-key concurrent-save merging applies. No SQL upgrade or GitHub token
+is needed. Hearts wait for the initial private state load before accepting input.
+Dashboard/profile shortcuts open the category and topic and account for the sticky
+header height. Admin popularity counts are computed from the study rows already
+readable by the admin under existing RLS: one active favorite per user/topic,
+excluding unknown taxonomy IDs. Counts are not pageviews. The refresh action first
+finishes pending writes and then fetches current state; clean private snapshots
+no longer overwrite newer server changes during reconnection. Ordinary members
+receive only their own state and never receive other users' favorite lists.
+
+### Email recovery UI
+
+Forgot-password is an email-only form calling Supabase Auth `/recover` with the
+site URL as `redirect_to`; there is no WhatsApp recovery path. The success message
+does not reveal whether an address exists. A recovery link captures the temporary
+Auth session, removes tokens from the URL, verifies matching new passwords, updates
+the password via Auth, signs out and returns to login. Hash-only links in an already
+open tab are supported. Study sync is paused for recovery sessions. The email
+provider, delivery and allowed redirect URLs remain Supabase project settings;
+browser tests mock email delivery and do not send messages to actual users.

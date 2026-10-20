@@ -3,9 +3,9 @@
 <title>IntMed</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=2c9afa739cb55165">
+<link rel="stylesheet" href="intmed.css?v=7e7d6d3eb5e58de7">
 
-<div class="login-gate" id="loginGate">
+<div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
     <span class="brand">
       <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="108" height="108"></span>
@@ -23,10 +23,11 @@
       <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="108" height="108"></span>
       <h2>بازیابی دسترسی</h2>
     </span>
-    <p style="margin:0 0 14px;font-size:.78rem;line-height:1.9;color:var(--ink-dim)">این سایت بک‌اند و ایمیل/پیامک خودکار نداره، پس بازیابی رمز خودکار نیست. نام کاربری و شماره موبایلت رو بنویس و پیام رو برای مدیر بفرست؛ مدیر هویتت رو تأیید می‌کنه و رمز جدید برات تنظیم می‌کنه.</p>
-    <input type="text" id="forgotUser" placeholder="نام کاربری">
-    <input type="tel" id="forgotMobile" placeholder="شماره موبایلی که با آن ثبت‌نام کردی">
-    <button type="button" id="forgotSendWhatsapp">ارسال درخواست به مدیر (واتساپ)</button>
+    <p class="auth-help">ایمیل ثبت‌شدهٔ حسابتان را وارد کنید تا لینک امن تنظیم رمز جدید برایتان ارسال شود.</p>
+    <label for="forgotUser">ایمیل حساب</label>
+    <input type="email" id="forgotUser" placeholder="ایمیل ثبت‌شده" autocomplete="email" required>
+    <button type="submit" id="forgotSendEmail">ارسال لینک بازیابی رمز</button>
+    <div id="forgotStatus" class="auth-status" role="status" aria-live="polite"></div>
     <div class="login-switch"><a href="#" id="showLoginFromForgot">بازگشت به ورود</a></div>
   </form>
   <form class="login-card" id="recoveryForm" style="display:none">
@@ -135,7 +136,7 @@
           <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال برای ذخیره‌سازی</button>
           <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
         </span>
-        <button type="button" class="header-collapse-btn" id="headerCollapseBtn" aria-expanded="true" aria-label="جمع‌کردن نوار بالا" title="جمع‌کردن/بازکردن نوار بالا"><span class="chev-ic">⌄</span></button>
+        <button type="button" class="header-collapse-btn" id="headerCollapseBtn" aria-expanded="true" aria-controls="headerCollapsible" aria-label="جمع‌کردن نوار بالا" title="جمع‌کردن/بازکردن نوار بالا"><svg class="chev-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 14 5-5 5 5"/><path d="M6 19h12"/></svg></button>
       </span>
     </div>
     <div class="header-collapsible" id="headerCollapsible">
@@ -160,6 +161,11 @@
       <button type="button" class="connect-reminder-btn" id="connectReminderBtn">اتصال الان</button>
     </div>
 
+    <section class="callout favorites-card" id="favoritesCard">
+      <div class="section-heading"><h2>علاقه‌مندی‌های من <span id="favoriteCount" class="neon-count">۰</span></h2><span class="section-caption">مسیر کوتاه به مباحث محبوب شما</span></div>
+      <div id="dashboardFavorites" class="favorite-list"></div>
+    </section>
+
     <section class="callout" id="userProfileCard" style="display:none">
       <h2>پروفایل من</h2>
       <p style="margin:0 0 12px">این اطلاعات فقط برای مدیر سایت قابل مشاهده می‌باشد.</p>
@@ -167,6 +173,7 @@
       <div class="profile-grid" id="myProfileGrid"></div>
       <button type="button" class="profile-save-btn" id="profileSaveBtn">ذخیره اطلاعات</button>
       <span class="profile-saved-note" id="profileSavedNote"></span>
+      <div class="profile-favorites"><h3>مباحث مورد علاقهٔ من</h3><div id="profileFavorites" class="favorite-list"></div></div>
       <div class="ticket-box">
         <label for="ticketMessage">ارسال پیام یا تیکت به مدیر</label>
         <textarea id="ticketMessage" class="ticket-textarea" placeholder="پیام یا سوالت رو اینجا بنویس..."></textarea>
@@ -177,6 +184,13 @@
 
     <section class="callout" id="adminPanelCard" style="display:none">
       <h2>پنل مدیریت</h2>
+      <section class="favorite-analytics" aria-labelledby="favoriteAnalyticsTitle">
+        <div class="section-heading"><h3 id="favoriteAnalyticsTitle">محبوب‌ترین مباحث</h3><button type="button" id="refreshFavoriteStats" class="stats-refresh">به‌روزرسانی آمار</button></div>
+        <p class="section-caption">هر کاربر برای هر مبحث یک لایک دارد؛ این آمار تعداد بازدید نیست.</p>
+        <div id="favoriteStatsSummary" class="stats-summary"></div>
+        <div id="adminFavoriteStats" class="favorite-ranking"></div>
+        <p id="favoriteStatsStatus" class="section-caption" role="status"></p>
+      </section>
 
       <div id="adminSignupsList"></div>
       <button type="button" class="admin-add-signup-btn" id="adminAddSignupToggle">+ افزودن درخواست ثبت‌نام</button>
@@ -238,12 +252,12 @@
 
   <div class="tab-panel active" id="tabPanelEducation">
     <h2 class="section-title">بخش آموزشی</h2>
-    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، فلش‌کارت‌ها، تست‌ها، KF‌وPMP و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در پنل کاربری خود نظرتان را ارسال بفرمایید.</p>
+    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. با لمس قلب، مبحث به علاقه‌مندی‌های داشبوردت اضافه می‌شود. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، فلش‌کارت‌ها، تست‌ها، KF‌وPMP و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در پنل کاربری خود نظرتان را ارسال بفرمایید.</p>
     <div id="topicsRoot"></div>
   </div>
 
   <footer class="bottom">
-    <span>تیک فازها، وضعیت مباحث، یادداشت‌ها و هایلایت‌ها ذخیره می‌شن (دکمهٔ «اتصال برای ذخیره‌سازی» بالای صفحه) — هر دستگاه باید یک‌بار جدا وصل بشه؛ بدون اتصال یا بدون اینترنت، تغییرات ذخیره نمی‌شن.</span>
+    <span>علاقه‌مندی‌ها، وضعیت مطالعه، یادداشت‌ها و هایلایت‌ها در حساب شخصی شما همگام می‌شوند. پیش از بستن صفحه از نمایش وضعیت «آنلاین ✓» مطمئن شوید.</span>
   </footer>
 </div>
 
@@ -251,5 +265,5 @@
 <script src="js/intmed-backend.js?v=d79c2076eb140fa8"></script>
 <script src="js/intmed-theme.js?v=6911a34aef1a2a68"></script>
 <script src="js/intmed-registration.js?v=86cbba87cc94b74f"></script>
-<script src="js/intmed-login.js?v=f83441cfc6d2f219"></script>
-<script src="js/intmed-app.js?v=0ee1a36ba4c736ce"></script>
+<script src="js/intmed-login.js?v=22cbc4f112546887"></script>
+<script src="js/intmed-app.js?v=24f0392b8dbb331e"></script>

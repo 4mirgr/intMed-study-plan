@@ -198,6 +198,71 @@
     phasesRoot.appendChild(el);
   });
 
+  var HEART_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
+  function isFavorite(bucket,id){return !!(bucket.itemState && bucket.itemState["favorite:"+id] && bucket.itemState["favorite:"+id].favorite===true);}
+  function goToTopic(id){
+    var topic=topicEls[id];if(!topic)return;
+    setTab("education");
+    if(openTopicDetailId && topicEls[openTopicDetailId]){
+      topicEls[openTopicDetailId].itemEl.classList.remove("open");
+      topicEls[openTopicDetailId].opener.setAttribute("aria-expanded","false");
+    }
+    var category=topic.itemEl.closest(".topic-cat");if(category)category.classList.add("open");
+    topic.itemEl.classList.add("open");topic.opener.setAttribute("aria-expanded","true");openTopicDetailId=id;
+    // Keep the topic below the floating header, including on small screens.
+    requestAnimationFrame(function(){
+      topic.itemEl.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+      topic.opener.focus({preventScroll:true});
+    });
+  }
+  function renderFavorites(){
+    var bucket=myBucket(),favorites=allTopicIds.filter(function(id){return isFavorite(bucket,id);});
+    allTopicIds.forEach(function(id){
+      var t=topicEls[id],liked=isFavorite(bucket,id);if(!t || !t.favorite)return;
+      t.favorite.disabled=usesPrivateBackend() && !stateLoaded;
+      t.favorite.classList.toggle("liked",liked);t.favorite.setAttribute("aria-pressed",String(liked));
+      t.favorite.setAttribute("aria-label",(liked?"حذف «":"افزودن «")+t.label+"» "+(liked?"از":"به")+" علاقه‌مندی‌ها");
+      t.favorite.title=liked?"حذف از علاقه‌مندی‌ها":"افزودن به علاقه‌مندی‌ها";
+    });
+    var count=document.getElementById("favoriteCount");if(count)count.textContent=faDigits(favorites.length);
+    ["dashboardFavorites","profileFavorites"].forEach(function(containerId){
+      var container=document.getElementById(containerId);if(!container)return;
+      container.replaceChildren();
+      if(!favorites.length){var empty=document.createElement("p");empty.className="favorites-empty";empty.textContent="با لمس قلب کنار هر مبحث، آن را به این فهرست اضافه کنید.";container.appendChild(empty);return;}
+      favorites.forEach(function(id){var button=document.createElement("button");button.type="button";button.className="favorite-shortcut";button.dataset.favoriteTopic=id;
+        var icon=document.createElement("span");icon.innerHTML=HEART_ICON;button.appendChild(icon);
+        button.appendChild(document.createTextNode(topicEls[id].label));button.addEventListener("click",function(){goToTopic(id);});container.appendChild(button);
+      });
+    });
+    renderFavoriteStats();
+  }
+  function renderFavoriteStats(){
+    var root=document.getElementById("adminFavoriteStats");if(!root)return;
+    root.replaceChildren();
+    if(myBucket().backendRole!=="admin")return;
+    var counts={},users=0,total=0;
+    Object.keys(STATE.users||{}).forEach(function(uid){var voted=false;allTopicIds.forEach(function(id){
+      if(isFavorite(STATE.users[uid],id)){counts[id]=(counts[id]||0)+1;total++;voted=true;}
+    });if(voted)users++;});
+    var ids=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]||topicEls[a].label.localeCompare(topicEls[b].label,"fa");});
+    var summary=document.getElementById("favoriteStatsSummary");
+    if(summary)summary.textContent=faDigits(total)+" لایک · "+faDigits(users)+" کاربر · "+faDigits(ids.length)+" مبحث";
+    if(!ids.length){root.textContent="هنوز مبحثی لایک نشده است.";return;}
+    ids.forEach(function(id,index){
+      var row=document.createElement("button");row.type="button";row.className="favorite-rank";row.dataset.rankedTopic=id;row.style.setProperty("--rank-width",(counts[id]/counts[ids[0]]*100)+"%");
+      var name=document.createElement("span");name.textContent=faDigits(index+1)+". "+topicEls[id].label;
+      var count=document.createElement("b");count.textContent=faDigits(counts[id])+" لایک";
+      row.appendChild(name);row.appendChild(count);row.addEventListener("click",function(){goToTopic(id);});root.appendChild(row);
+    });
+  }
+  var statsRefresh=document.getElementById("refreshFavoriteStats");
+  if(statsRefresh)statsRefresh.addEventListener("click",function(){
+    statsRefresh.disabled=true;var status=document.getElementById("favoriteStatsStatus");status.textContent="در حال دریافت آخرین آمار…";
+    waitForPendingWrites().then(connectGithub).then(function(){
+      status.textContent=document.getElementById("connStatus").classList.contains("ok")?"آمار به‌روزرسانی شد.":"دریافت آمار ناموفق بود؛ دوباره تلاش کنید.";
+    }).catch(function(){status.textContent="دریافت آمار ناموفق بود؛ اتصال را بررسی کنید.";}).finally(function(){statsRefresh.disabled=false;});
+  });
+
   function buildTopicsUI(){
     var topicsRoot = document.getElementById("topicsRoot");
     topicsRoot.innerHTML = "";
@@ -225,13 +290,16 @@
       var item = document.createElement("div");
       item.className = "topic-item";
 
-      var listBtn = document.createElement("button");
-      listBtn.type = "button";
+      var listBtn = document.createElement("div");
       listBtn.className = "topic-list-btn";
 
       var title = document.createElement("span");
       title.className = "topic-list-title";
       title.textContent = sub.label;
+      var topicOpener=document.createElement("button");
+      topicOpener.type="button";topicOpener.className="topic-open-btn";
+      topicOpener.setAttribute("aria-expanded","false");
+      topicOpener.appendChild(title);
 
       var contentBadge = document.createElement("span");
       contentBadge.className = "content-badge";
@@ -256,9 +324,21 @@
       chev.className = "chev";
       chev.textContent = "▾";
 
-      listBtn.appendChild(title);
+      listBtn.appendChild(topicOpener);
       listBtn.appendChild(contentBadge);
       listBtn.appendChild(pill);
+      var favorite=document.createElement("button");
+      favorite.type="button";favorite.className="topic-favorite";
+      favorite.innerHTML=HEART_ICON;
+      favorite.setAttribute("aria-label","افزودن «"+sub.label+"» به علاقه‌مندی‌ها");
+      favorite.setAttribute("aria-pressed","false");
+      favorite.addEventListener("click",function(e){
+        e.stopPropagation();
+        var key="favorite:"+sub.id;
+        myBucket().itemState[key]={favorite:!isFavorite(myBucket(),sub.id)};
+        scheduleFlush(400);renderFavorites();
+      });
+      listBtn.appendChild(favorite);
       listBtn.appendChild(chev);
 
       var detail = document.createElement("div");
@@ -322,16 +402,18 @@
         var willOpen = openTopicDetailId !== sub.id;
         if(openTopicDetailId && topicEls[openTopicDetailId]){
           topicEls[openTopicDetailId].itemEl.classList.remove("open");
+          topicEls[openTopicDetailId].opener.setAttribute("aria-expanded","false");
         }
         openTopicDetailId = willOpen ? sub.id : null;
         item.classList.toggle("open", willOpen);
+        topicOpener.setAttribute("aria-expanded",String(willOpen));
       });
 
       item.appendChild(listBtn);
       item.appendChild(detail);
       inner.appendChild(item);
 
-      topicEls[sub.id] = {itemEl:item, pill:pill, contentBadge:contentBadge, note:note, catId:cat.id, status:"نامشخص", learnBtns:learnBtns, learnPanel:learnPanel, openType:null};
+      topicEls[sub.id] = {label:sub.label, favorite:favorite, opener:topicOpener, itemEl:item, pill:pill, contentBadge:contentBadge, note:note, catId:cat.id, status:"نامشخص", learnBtns:learnBtns, learnPanel:learnPanel, openType:null};
       allTopicIds.push(sub.id);
     });
 
@@ -457,6 +539,7 @@
     updatePhaseCounts();
     updateOverallBar();
     updateHereCard();
+    renderFavorites();
   }
 
   // ---------------------------------------------------------------
@@ -491,7 +574,10 @@
   function legacySyncAllowed(){
     return !!(window.INTMED_CONFIG || {}).allowLegacyDemo && /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   }
-  function hasPersistenceCredentials(){ return usesPrivateBackend() ? !!window.IntMedBackend.session() : legacySyncAllowed() && !!getPat(); }
+  function hasPersistenceCredentials(){
+    if(!usesPrivateBackend())return legacySyncAllowed() && !!getPat();
+    var session=window.IntMedBackend.session();return !!(session && session.user && !session.recovery);
+  }
   function ghHeaders(){
     return {
       "Authorization": "Bearer " + getPat(),
@@ -551,6 +637,7 @@
   // shared state.json — see CURRENT_USER_ID above. myBucket() always returns
   // (creating if needed) the bucket for whoever is currently logged in.
   var STATE = { version:2, users:{}, tickets:[], signups:[] };
+  var stateLoaded=false;
   function emptyBucket(){ return {itemState:{}, meta:{currentPhaseOverride:null}, highlights:{}, profile:{}, loginLog:[]}; }
   function myBucket(){
     if(!STATE.users[CURRENT_USER_ID]) STATE.users[CURRENT_USER_ID] = emptyBucket();
@@ -819,8 +906,12 @@
       if(!migrated.users) migrated.users = {};
       if(!migrated.tickets) migrated.tickets = [];
       if(!migrated.signups) migrated.signups = [];
-      var mergedAnything = mergeLocalIntoRemote(localSnapshot, migrated);
+      // A clean private tab should accept fresh cross-device state instead of
+      // copying its stale snapshot over the server during an analytics refresh.
+      var hasLocalChanges=!stateLoaded || dirty || flushing || flushQueued || !!flushTimer;
+      var mergedAnything = (!usesPrivateBackend() || hasLocalChanges) && mergeLocalIntoRemote(localSnapshot, migrated);
       STATE = migrated;
+      stateLoaded=true;
       setConn("online");
       applyLoadedState();
       logLoginIfDue();
@@ -1466,6 +1557,7 @@
       adminSignupForm.style.display = "none";
       adminAddSignupToggle.textContent = "+ افزودن درخواست ثبت‌نام";
       scheduleFlush(200);
+      renderFavoriteStats();
       renderAdminSignups();
       renderAdminUsers();
       alert("کاربر «" + fullName + "» ساخته شد و همین الان می‌تواند با همین نام کاربری/رمز وارد شود.");
@@ -1483,6 +1575,7 @@
         if(adminAddSignupToggle) adminAddSignupToggle.style.display = "none";
         if(adminSignupForm) adminSignupForm.style.display = "none";
       }
+      renderFavoriteStats();
       renderAdminSignups();
       renderAdminUsers();
       renderAdminTickets();

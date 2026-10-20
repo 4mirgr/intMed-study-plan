@@ -858,3 +858,64 @@
   .admin-user-delete-btn{padding:10px 14px;background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger);border-radius:8px;font:inherit;cursor:pointer;min-height:44px}
   .admin-user-delete-btn:disabled{opacity:.6;cursor:wait}
   .admin-user-delete-note{display:block;color:var(--danger);font-size:.8rem;margin-top:8px}
+
+  /* Persian auth forms retain a consistent reading direction for every field. */
+  .login-gate .login-card,.login-gate input,.login-gate select,.login-gate textarea{
+    direction:rtl;text-align:right;
+  }
+  .login-gate input::placeholder,.login-gate textarea::placeholder{direction:rtl;text-align:right}
+  .auth-help{color:var(--ink-dim);font-size:.8rem;line-height:1.9;margin:0 0 16px}
+  .auth-status{font-size:.8rem;line-height:1.9;margin-top:14px;color:var(--accent-ink);overflow-wrap:anywhere}
+  .auth-status.error{color:var(--danger)}
+  .login-card button:disabled{opacity:.65;cursor:wait;transform:none}
+  .login-gate input:focus-visible,.login-gate select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* Floating navigation: a restrained glow works with both site themes. */
+  header.top{border:1px solid color-mix(in srgb,var(--accent) 28%,var(--border));box-shadow:0 10px 35px color-mix(in srgb,var(--primary) 12%,transparent),inset 0 1px 0 color-mix(in srgb,var(--accent) 15%,transparent);border-radius:22px;background:color-mix(in srgb,var(--surface-strong) 95%,transparent);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+  .title-row{gap:12px}
+  .tabbar{gap:8px;padding-top:5px}
+  .tab-btn{border-radius:12px}
+  .tab-btn.active{box-shadow:0 0 16px color-mix(in srgb,var(--accent) 18%,transparent)}
+  .header-collapse-btn{width:38px;height:38px;border-radius:12px;color:var(--accent-ink);border-color:color-mix(in srgb,var(--accent) 40%,var(--border));background:var(--accent-soft);box-shadow:0 0 14px color-mix(in srgb,var(--accent) 15%,transparent)}
+  .header-collapse-btn .chev-ic{width:22px;height:22px}
+  .header-collapse-btn:focus-visible,.topic-favorite:focus-visible,.favorite-shortcut:focus-visible,.favorite-rank:focus-visible,.topic-open-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .topic-open-btn{flex:1;min-width:0;text-align:right;font:inherit;color:inherit;border:0;background:none;padding:6px 0;cursor:pointer}
+  .topic-list-title{min-width:0;display:block}
+  .topic-item{scroll-margin-top:var(--intmed-header-height,220px)}
+  .topic-favorite{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:36px;padding:8px;border-radius:12px;cursor:pointer;color:var(--ink-dim);background:var(--surface-2);border:1px solid var(--border);transition:color .2s,box-shadow .2s,background .2s,transform .2s}
+  .topic-favorite svg,.favorite-shortcut svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .topic-favorite:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-1px)}
+  .topic-favorite.liked{color:var(--accent);border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 13px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .topic-favorite.liked svg{fill:currentColor;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--accent) 55%,transparent))}
+  .section-heading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .section-heading h2,.section-heading h3{margin:0}
+  .section-caption,.favorites-empty{color:var(--ink-dim);font-size:.78rem;line-height:1.9}
+  .neon-count{display:inline-block;padding:2px 9px;border-radius:20px;color:var(--accent-ink);background:var(--accent-soft);font-size:.8rem}
+  .favorite-list{display:flex;gap:8px;flex-wrap:wrap}
+  .favorite-shortcut{display:flex;align-items:center;gap:9px;text-align:right;padding:10px 14px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--border));border-radius:12px;color:var(--ink);background:var(--surface-2);font:inherit;font-size:.82rem;cursor:pointer;min-height:44px;max-width:100%}
+  .favorite-shortcut span{color:var(--accent);flex-shrink:0}
+  .favorite-shortcut:hover{border-color:var(--accent);box-shadow:0 0 16px var(--accent-soft)}
+  .favorites-card{border-inline-start:3px solid var(--accent)}
+  .profile-favorites{margin-block:18px;padding-block:12px;border-top:1px solid var(--border)}
+  .profile-favorites h3,.favorite-analytics h3{font-size:.9rem}
+  .favorite-analytics{margin:18px 0 24px;padding:18px;background:var(--surface-2);border:1px solid var(--border);border-radius:16px}
+  .stats-refresh{font:inherit;font-size:.75rem;padding:8px 12px;border:1px solid var(--accent);border-radius:10px;color:var(--accent-ink);background:var(--accent-soft);cursor:pointer}
+  .stats-summary{color:var(--primary);font-weight:700;margin-block:14px;font-size:.85rem}
+  .favorite-ranking{display:grid;gap:8px;max-height:440px;overflow:auto}
+  .favorite-rank{isolation:isolate;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-strong);color:var(--ink);font:inherit;font-size:.8rem;text-align:right;cursor:pointer}
+  .favorite-rank::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:var(--rank-width);background:var(--accent-soft);z-index:-1;border-inline-end:2px solid var(--accent)}
+  .favorite-rank b{color:var(--accent-ink);flex-shrink:0}
+
+  /* Distinct neon accents make the admin's people list easier to scan. */
+  .admin-user-card{--user-neon:var(--accent);border:1px solid color-mix(in srgb,var(--user-neon) 38%,var(--border));border-inline-start:3px solid var(--user-neon);border-radius:16px;overflow:hidden;margin-block:12px;background:var(--surface-strong);box-shadow:0 4px 20px color-mix(in srgb,var(--user-neon) 9%,transparent)}
+  .admin-user-card:nth-child(4n+2){--user-neon:#a78bfa}
+  .admin-user-card:nth-child(4n+3){--user-neon:#2dd4bf}
+  .admin-user-card:nth-child(4n){--user-neon:var(--primary)}
+  .admin-user-card.open{box-shadow:0 0 22px color-mix(in srgb,var(--user-neon) 15%,transparent)}
+  .admin-user-head{background:linear-gradient(110deg,color-mix(in srgb,var(--user-neon) 9%,transparent),transparent)}
+  .admin-user-name{color:var(--ink);text-shadow:0 0 18px color-mix(in srgb,var(--user-neon) 22%,transparent)}
+  .admin-user-card .admin-user-chev{color:var(--user-neon)}
+  @media(max-width:480px){header.top{border-radius:16px}.topic-list-btn{gap:6px;flex-wrap:wrap}.topic-open-btn{flex-basis:calc(100% - 145px)}.topic-list-btn>.content-badge{display:none}.topic-pill{padding:5px 8px}.topic-favorite{width:34px;height:34px;padding:7px}.section-caption{flex-basis:100%}.favorite-analytics{padding:12px}.favorite-rank{gap:8px}}
+  @media(prefers-reduced-motion:reduce){.topic-favorite,.header-collapse-btn .chev-ic{transition:none}.topic-favorite:hover{transform:none}}
+  .tab-btn.active,.admin-tab-btn.active{background:linear-gradient(120deg,var(--accent-soft),var(--surface-strong));color:var(--accent-ink);border:1px solid color-mix(in srgb,var(--accent) 28%,var(--border));box-shadow:0 0 16px color-mix(in srgb,var(--accent) 12%,transparent)}
+  .topic-favorite:disabled{opacity:.5;cursor:wait}

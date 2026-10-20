@@ -2,9 +2,17 @@
   var topHeader = document.querySelector("header.top");
   var collapseBtn = document.getElementById("headerCollapseBtn");
   if(!topHeader || !collapseBtn) return;
+  function measureHeader(){document.documentElement.style.setProperty("--intmed-header-height",(topHeader.getBoundingClientRect().height+24)+"px");}
+  if(window.ResizeObserver)new ResizeObserver(measureHeader).observe(topHeader);
+  else window.addEventListener("resize",measureHeader);
+  measureHeader();
   collapseBtn.addEventListener("click", function(){
     var collapsed = topHeader.classList.toggle("collapsed");
     collapseBtn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    collapseBtn.setAttribute("aria-label", collapsed ? "بازکردن نوار بالا" : "جمع‌کردن نوار بالا");
+    collapseBtn.title = collapsed ? "بازکردن نوار بالا" : "جمع‌کردن نوار بالا";
+    var region=document.getElementById("headerCollapsible");
+    if(region) region.inert=collapsed;
   });
 
   // Each entry: fnv1aHex(lowercased-username + ":" + normalized-password) -> a stable
@@ -44,6 +52,11 @@
       .replace(/[٠-٩]/g, function(d){ return String("٠١٢٣٤٥٦٧٨٩".indexOf(d)); })
       .trim();
   }
+  // Email links may return to an already-open tab via a hash-only navigation.
+  window.addEventListener("hashchange",function(){
+    var values=new URLSearchParams(location.hash.slice(1));
+    if((values.get("type")==="recovery" || values.get("type")==="invite") && values.get("access_token")) location.reload();
+  });
   var recovering = !!(window.IntMedBackend && window.IntMedBackend.isConfigured() && window.IntMedBackend.captureRecoverySession());
   try{
     var backendSession = window.IntMedBackend && window.IntMedBackend.isConfigured() && window.IntMedBackend.session();
@@ -230,26 +243,21 @@
     forgotForm.style.display = "none";
     loginForm.style.display = "";
   });
-  // Same human-relay pattern as signup — this page has no backend to send a
-  // reset email/SMS from, so "forgot password" is: tell the admin who you
-  // are over WhatsApp, the admin verifies it's really you and sets a new
-  // password from the admin panel's "تنظیم رمز عبور جدید" action.
-  document.getElementById("forgotSendWhatsapp").addEventListener("click", function(){
-    var user = normalizeDigits(document.getElementById("forgotUser").value).trim();
-    var mobile = normalizeDigits(document.getElementById("forgotMobile").value).trim();
-    if(!user){ document.getElementById("forgotUser").focus(); return; }
-    if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
-      window.IntMedBackend.resetPassword(user).then(function(){
-        alert("لینک بازیابی رمز به ایمیل شما ارسال شد.");
-      }).catch(function(){ alert("ارسال لینک بازیابی ناموفق بود."); });
-      return;
+  forgotForm.addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var email=document.getElementById("forgotUser").value.trim();
+    var button=document.getElementById("forgotSendEmail"),status=document.getElementById("forgotStatus");
+    status.textContent="";status.classList.remove("error");
+    if(!window.IntMedBackend || !window.IntMedBackend.isConfigured()){
+      status.textContent="بازیابی ایمیلی هنوز پیکربندی نشده است.";status.classList.add("error");return;
     }
-    if(!legacyDemoAllowed()){ alert("بازیابی رمز پس از اتصال backend امن فعال می‌شود."); return; }
-    var text = "درخواست بازیابی دسترسی IntMed:\n" +
-      "نام کاربری: " + user + "\n" +
-      "شماره موبایل: " + (mobile || "-");
-    var adminMobile = (window.INTMED_CONFIG || {}).legacyAdminWhatsapp || "";
-    if(adminMobile) window.open("https://wa.me/" + adminMobile + "?text=" + encodeURIComponent(text), "_blank");
+    button.disabled=true;button.textContent="در حال ارسال…";
+    window.IntMedBackend.resetPassword(email).then(function(){
+      status.textContent="اگر حسابی با این ایمیل ثبت شده باشد، لینک بازیابی برای آن ارسال می‌شود. پوشهٔ هرزنامه را هم بررسی کنید.";
+    }).catch(function(error){
+      status.textContent=error.status===429 ? "تعداد درخواست‌ها زیاد است؛ چند دقیقه بعد دوباره تلاش کنید." : "ارسال درخواست ناموفق بود؛ اتصال اینترنت را بررسی و دوباره تلاش کنید.";
+      status.classList.add("error");
+    }).finally(function(){button.disabled=false;button.textContent="ارسال لینک بازیابی رمز";});
   });
 
   signupForm.addEventListener("submit", function(ev){

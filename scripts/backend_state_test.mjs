@@ -23,11 +23,13 @@ function fetchMock(url,options={}){
 const window={INTMED_CONFIG:{supabaseUrl:'https://test.supabase.co',supabaseAnonKey:'public-test'}};
 const context=vm.createContext({window,fetch:fetchMock,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},JSON,Promise,Set,Date,URLSearchParams,encodeURIComponent,console});
 vm.runInContext(fs.readFileSync(new URL('../docs/js/intmed-backend.js',import.meta.url),'utf8'),context);
-const state=await window.IntMedBackend.loadLegacyState();state.users[owner].itemState.newNote={note:'my update'};
+const state=await window.IntMedBackend.loadLegacyState();state.users[owner].itemState.newNote={note:'my update'};state.users[owner].itemState['favorite:cardio-ecg']={favorite:true};
 await window.IntMedBackend.saveLegacyState(state);
-assert.equal(remote.state.itemState.anotherDevice.note,'preserve this');assert.equal(remote.state.itemState.newNote.note,'my update');
+assert.equal(remote.state.itemState.anotherDevice.note,'preserve this');assert.equal(remote.state.itemState.newNote.note,'my update');assert.equal(remote.state.itemState['favorite:cardio-ecg'].favorite,true);
 const writes=calls.filter(c=>c.options.method);
 assert.ok(writes.every(c=>c.url.includes('/study_state?user_id=eq.'+owner)),'Unexpected user/profile/ticket write');
 assert.equal(writes.length,2,'Expected failed CAS then successful retry');
 const count=calls.length;await window.IntMedBackend.saveLegacyState(state);assert.equal(calls.length,count,'Unchanged save performed network writes');
 console.log('State regression passed: admin cannot rewrite other users, CAS retries preserve concurrent device edits, unchanged profiles/tickets are not rewritten.');
+
+state.users[owner].itemState['favorite:cardio-ecg']={favorite:false};await window.IntMedBackend.saveLegacyState(state);assert.equal(remote.state.itemState['favorite:cardio-ecg'].favorite,false);assert.equal(remote.state.itemState.anotherDevice.note,'preserve this');
