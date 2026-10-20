@@ -1,9 +1,2 @@
-// Public deployment configuration. The Supabase anon key is intentionally public and is
-// safe only together with the row-level-security policies in backend/supabase/schema.sql.
-// Never put a service-role key here.
-window.INTMED_CONFIG = window.INTMED_CONFIG || {
-  supabaseUrl: "",
-  supabaseAnonKey: "",
-  allowLegacyDemo: false,
-  legacyAdminWhatsapp: ""
-};
+// Generated during deployment. Do not commit credentials here.
+window.INTMED_CONFIG = {"supabaseUrl":"https://upwbktvnybsjugdegjji.supabase.co","supabaseAnonKey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwd2JrdHZueWJzanVnZGVnamppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MDU0MDgsImV4cCI6MjEwODA4MTQwOH0.4IPs739cff9qFV6MFy84s37FhBPC66Gh8dKxhB5YV34","allowLegacyDemo":false,"legacyAdminWhatsapp":""};

@@ -85,14 +85,16 @@
   function captureRecoverySession(){
     if(!global.location || !global.location.hash) return false;
     var values = new URLSearchParams(global.location.hash.slice(1));
-    if(values.get("type") !== "recovery" || !values.get("access_token")) return false;
+    var flowType = values.get("type");
+    if((flowType !== "recovery" && flowType !== "invite") || !values.get("access_token")) return false;
     saveSession({
       access_token:values.get("access_token"),
       refresh_token:values.get("refresh_token") || "",
       token_type:values.get("token_type") || "bearer",
       expires_in:Number(values.get("expires_in") || 0),
       user:null,
-      recovery:true
+      recovery:true,
+      flow_type:flowType
     });
     if(global.history && global.history.replaceState){
       global.history.replaceState(null, "", global.location.pathname + global.location.search);

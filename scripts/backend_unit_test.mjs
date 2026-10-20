@@ -53,4 +53,7 @@ assert.equal(window.IntMedBackend.session().recovery, true);
 await window.IntMedBackend.updatePassword("a-new-secure-password");
 const passwordCall = calls.find(call => call.url.includes("/auth/v1/user"));
 assert.equal(passwordCall.options.headers.Authorization, "Bearer recovery-access");
-console.log("private backend unit test passed: sign-in, approval, bearer auth, sign-out, password recovery");
+window.location.hash = "#type=invite&access_token=invite-access&refresh_token=invite-refresh&expires_in=3600";
+assert.equal(window.IntMedBackend.captureRecoverySession(), true);
+assert.equal(window.IntMedBackend.session().flow_type, "invite");
+console.log("private backend unit test passed: sign-in, approval, bearer auth, sign-out, password recovery, invite setup");

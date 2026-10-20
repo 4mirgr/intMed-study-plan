@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -42,12 +43,25 @@ def render(url: str, anon_key: str) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=Path("docs/config.js"))
+    parser.add_argument(
+        "--allow-existing",
+        action="store_true",
+        help="validate an existing generated config when deployment variables are unavailable",
+    )
     args = parser.parse_args()
+    url = os.environ.get("INTMED_SUPABASE_URL", "")
+    anon_key = os.environ.get("INTMED_SUPABASE_ANON_KEY", "")
+    if args.allow_existing and not url and not anon_key:
+        existing = args.output.read_text(encoding="utf-8")
+        match = re.search(r"window\.INTMED_CONFIG\s*=\s*(\{.*\});", existing, re.S)
+        if not match:
+            parser.error("existing runtime config is not a generated JSON assignment")
+        config = json.loads(match.group(1))
+        validate(config.get("supabaseUrl", ""), config.get("supabaseAnonKey", ""))
+        print("existing production configuration is valid")
+        return 0
     try:
-        output = render(
-            os.environ.get("INTMED_SUPABASE_URL", ""),
-            os.environ.get("INTMED_SUPABASE_ANON_KEY", ""),
-        )
+        output = render(url, anon_key)
     except ValueError as exc:
         parser.error(str(exc))
 
