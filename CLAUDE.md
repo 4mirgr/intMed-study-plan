@@ -3376,3 +3376,13 @@ network hiccups now self-heal instead of requiring a manual reconnect. Verified 
 exploration boundary noted elsewhere in this file; only the user can confirm the real-world
 retry timing on an actual device). Artifact republished (version 50). No content/taxonomy
 change, so no bundle regen needed.
+
+## Breast cancer important images added (2026-10-20)
+
+Added all three user-supplied Harrison figures to heme-breast-ca images, as
+explicitly requested: general cancer diagnostic workup, diagnostic breast
+assessment with histology/receptor examples, and breast cancer continuum.
+Preserved source attribution, added Persian captions/notes, encoded as optimized
+JPEG quality 85 data URIs. Schema and SHA-256 encoding roundtrip validated.
+Bundle regenerated (67 topics). No other teaching content or user state changed.
+This update targets the static site; Claude artifact tools are unavailable.
