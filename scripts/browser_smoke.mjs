@@ -1,16 +1,15 @@
 import { createRequire } from "node:module";
-import fs from "node:fs";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 
 const base = process.env.INTMED_BASE_URL || "http://127.0.0.1:8765";
-const systemChromium = process.env.PLAYWRIGHT_EXECUTABLE_PATH || "/usr/bin/chromium";
+const systemChromium = process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 const browser = await chromium.launch({
   headless: true,
-  timeout: 15000,
+  timeout: 30000,
   args: ["--no-sandbox", "--disable-dev-shm-usage"],
-  ...(fs.existsSync(systemChromium) ? {executablePath: systemChromium} : {})
+  ...(systemChromium ? {executablePath: systemChromium} : {})
 });
 const page = await browser.newPage();
 const requested = [];
