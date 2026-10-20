@@ -571,7 +571,7 @@
     if(usesPrivateBackend()){
       var message = document.querySelector("#connectReminderBox .connect-reminder-text");
       if(message) message.textContent = kind === "auth" || kind === "nopat"
-        ? "برای ادامهٔ ذخیره‌سازی با ایمیل و رمز حساب خود دوباره وارد شوید. نیازی به توکن GitHub ندارید."
+        ? "برای ادامهٔ ذخیره‌سازی با نام کاربری و رمز حساب خود دوباره وارد شوید. نیازی به توکن GitHub ندارید."
         : "همگام‌سازی موقتاً قطع شده است؛ اتصال خودکار دوباره امتحان می‌شود. تا نمایش وضعیت آنلاین، صفحه را نبندید.";
       var retry = document.getElementById("connectReminderBtn");
       if(retry) retry.textContent = kind === "auth" || kind === "nopat" ? "ورود مجدد" : "تلاش مجدد";
@@ -887,7 +887,9 @@
   // filled) and the admin's per-user edit box (always editable) below.
   var PROFILE_FIELDS = [
     {key:"fullName", label:"نام و نام خانوادگی", type:"text", placeholder:"مثلاً: علی رضایی"},
-    {key:"degree", label:"آخرین مدرک تحصیلی", type:"text", placeholder:"مثلاً: دستیار داخلی سال ۲"},
+    {key:"degree", label:"آخرین مدرک تحصیلی", type:"text", placeholder:"مدرک تحصیلی"},
+    {key:"specialty", label:"رشته", type:"text", placeholder:"رشتهٔ پزشکی"},
+    {key:"province", label:"استان", type:"text", placeholder:"استان"},
     {key:"idNumber", label:"شماره نظام پزشکی / شماره دانشجویی", type:"text", placeholder:"مثلاً: ۱۲۳۴۵۶"},
     {key:"phone", label:"شماره موبایل", type:"tel", placeholder:"مثلاً: ۰۹۱۲۱۲۳۴۵۶۷"},
     {key:"email", label:"ایمیل", type:"email", placeholder:"مثلاً: name@example.com"}
@@ -1071,7 +1073,7 @@
     });
     if(query){
       rows = rows.filter(function(r){
-        var haystack = [r.displayName, r.id, r.p.idNumber, r.p.phone, r.p.email, r.p.degree]
+        var haystack = [r.displayName, r.id, r.p.idNumber, r.p.phone, r.p.email, r.p.degree, r.p.specialty, r.p.province]
           .map(function(v){ return normalizeDigits(v || "").toLowerCase(); }).join(" ");
         return haystack.indexOf(query) !== -1;
       });
@@ -1314,6 +1316,7 @@
         '<div class="admin-signup-pending-body">' +
           '<b>درخواست ثبت‌نام: ' + escapeHtml(s.fullName || s.username) + '</b>' +
           'نام کاربری: ' + escapeHtml(s.username) + ' — مدرک: ' + (escapeHtml(s.degree) || '—') +
+          ' — رشته: ' + (escapeHtml(s.specialty) || '—') + ' — استان: ' + (escapeHtml(s.province) || '—') +
           ' — کد نظام/دانشجویی: ' + (escapeHtml(s.idNumber) || '—') + '<br>' +
           'موبایل: ' + escapeHtml(s.mobile || '—') + ' — ایمیل: ' + (escapeHtml(s.email) || '—') +
           '<br>' + formatFaDateTime(s.createdAt) +

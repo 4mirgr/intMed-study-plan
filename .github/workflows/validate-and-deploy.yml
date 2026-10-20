@@ -40,6 +40,7 @@ jobs:
       - run: node scripts/check_inline_js.mjs
       - run: node scripts/backend_unit_test.mjs
       - run: node scripts/backend_state_test.mjs
+      - run: node scripts/username_login_test.mjs
       - run: python3 scripts/runtime_config_test.py
       - run: python3 scripts/smoke_test.py
       - name: Browser smoke test
@@ -49,6 +50,7 @@ jobs:
           trap 'kill "$server_pid"' EXIT
           node scripts/browser_smoke.mjs
           node scripts/auth_browser_test.mjs
+          node scripts/registration_browser_test.mjs
       - name: Build secure production configuration
         if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
         env:

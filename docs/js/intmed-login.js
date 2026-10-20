@@ -55,7 +55,7 @@
         revealApp();
       }).catch(function(){
         appEl.style.display="none"; gateEl.style.display="";
-        var error=document.getElementById("loginErr");error.textContent="ورود حساب تأیید نشد؛ ایمیل، تأیید مدیر و اتصال را بررسی کنید.";error.classList.add("show");
+        var error=document.getElementById("loginErr");error.textContent="ورود حساب تأیید نشد؛ نام کاربری، تأیید مدیر و اتصال را بررسی کنید.";error.classList.add("show");
       });
     } else if(legacyDemoAllowed() && localStorage.getItem("bp_authed") === "1"){
       // Backfill for sessions authenticated before multi-user support existed.
@@ -67,12 +67,12 @@
   var loginErr = document.getElementById("loginErr");
   var recoveryForm = document.getElementById("recoveryForm");
   if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
-    document.getElementById("loginUser").placeholder = "ایمیل";
+    document.getElementById("loginUser").placeholder = "نام کاربری";
     document.getElementById("forgotUser").placeholder = "ایمیل حساب";
     var forgotHelp = document.querySelector("#forgotForm p");
     if(forgotHelp) forgotHelp.textContent = "ایمیل حسابت را وارد کن تا لینک امن بازیابی رمز برایت ارسال شود.";
     var successText = document.querySelector("#signupSuccessBox .signup-success-text");
-    if(successText) successText.innerHTML = "<b>ثبت‌نام شما دریافت شد.</b> پس از تأیید مدیر می‌توانید با ایمیل و رمز خود وارد شوید.";
+    if(successText) successText.innerHTML = "<b>ثبت‌نام شما دریافت شد.</b> پس از تأیید ایمیل و تأیید مدیر می‌توانید با نام کاربری و رمز خود وارد شوید.";
     var successActions = document.querySelector("#signupSuccessBox .signup-success-actions");
     if(successActions) successActions.style.display = "none";
     if(recovering){
@@ -132,7 +132,7 @@
         doLogin(result.session.user.id);
       }).catch(function(error){
         secureLoginBtn.disabled = false; secureLoginBtn.textContent = "ورود";
-        loginErr.textContent = error.message || "ایمیل یا رمز عبور اشتباه است.";
+        loginErr.textContent = error.message || "نام کاربری یا رمز عبور اشتباه است.";
         loginErr.classList.add("show");
       });
       return;
@@ -258,23 +258,35 @@
     var password = window.IntMedBackend && window.IntMedBackend.isConfigured() ? document.getElementById("signupPass").value : normalizeDigits(document.getElementById("signupPass").value);
     var fullName = document.getElementById("signupFullName").value.trim();
     var degree = document.getElementById("signupDegree").value.trim();
+    var specialty = document.getElementById("signupSpecialty").value.trim();
+    var province = document.getElementById("signupProvince").value.trim();
     var idNumber = document.getElementById("signupIdNumber").value.trim();
     var mobile = normalizeDigits(document.getElementById("signupMobile").value).trim();
     var email = document.getElementById("signupEmail").value.trim();
-    if(!username || !password || !fullName || !mobile){
+    if(!username || !password || !fullName || !degree){
       signupErr.classList.add("show");
       return;
     }
     signupErr.classList.remove("show");
+    if(!/^[a-z0-9_.-]{3,64}$/.test(username) || password.length < 8){
+      signupErr.textContent = "نام کاربری باید ۳ تا ۶۴ حرف انگلیسی یا عدد و رمز حداقل ۸ نویسه باشد.";
+      signupErr.classList.add("show"); return;
+    }
+    if(!window.IntMedRegistration.valid(degree, specialty, province)){
+      signupErr.textContent = "مدرک، رشته و استان را از گزینه‌های فهرست انتخاب کنید.";
+      signupErr.classList.add("show"); return;
+    }
     if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
       if(!email){ signupErr.textContent = "برای حساب امن، ایمیل الزامی است."; signupErr.classList.add("show"); return; }
+      var signupButton = signupForm.querySelector("button[type=submit]");
+      signupButton.disabled = true;
       window.IntMedBackend.signUp(email, password, {
-        username:username, fullName:fullName, degree:degree, idNumber:idNumber, phone:mobile
+        app:"intmed", username:username, fullName:fullName, degree:degree, specialty:specialty, province:province, idNumber:idNumber, phone:mobile
       }).then(function(){
         lastSignupInfo = {username:username, fullName:fullName, degree:degree, idNumber:idNumber, mobile:mobile, email:email};
         signupForm.style.display = "none";
         signupSuccessBox.style.display = "";
-      }).catch(function(error){ signupErr.textContent = error.message || "ثبت‌نام ناموفق بود."; signupErr.classList.add("show"); });
+      }).catch(function(error){ signupErr.textContent = error.message || "ثبت‌نام ناموفق بود."; signupErr.classList.add("show"); }).finally(function(){ signupButton.disabled = false; });
       return;
     }
     if(!legacyDemoAllowed()){

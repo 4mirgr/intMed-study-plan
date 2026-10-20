@@ -26,3 +26,33 @@ placeholder/unverified account; it does not change passwords or other users.
 
 The current project already has the IntMed tables. Do not reinstall or replace a
 shared project's schema just to check the admin account. Verify the owner first.
+
+### Username sign-in and registration upgrade
+
+Existing sessions, UUIDs, approvals and study_state stay unchanged. Email password
+sign-in remains compatible during rollout; new UI requests a username. Email is
+still required for verification/recovery, and is never exposed by a public lookup.
+
+For a fresh installation, apply `schema.sql` first, then this upgrade.
+
+1. In the existing project's SQL Editor run `registration_upgrade.sql` (not the
+   entire schema again). It only adds profile fields, a case-insensitive username
+   uniqueness index and a server-only login rate budget, and updates the existing
+   signup trigger. If case-duplicate usernames exist it rolls back safely.
+2. In Supabase → Edge Functions → Deploy a new function → Via Editor, create
+   `intmed-login`, paste `functions/intmed-login/index.ts`, deploy and disable
+   **Verify JWT** for this function (it handles unauthenticated password login).
+   Supabase's default server environment supplies SUPABASE_URL,
+   SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY. Never copy the service key
+   into this website or the chat.
+   CLI alternative, from repository root:
+   `supabase --workdir backend functions deploy intmed-login --project-ref upwbktvnybsjugdegjji --no-verify-jwt`
+3. Test an approved existing username/password. Signup collects required full name,
+   username, password, degree and email. Phone, specialty and province are optional.
+   New fields are visible to the owner/admin under the existing RLS rules.
+
+The Edge Function looks up the Auth email only on the server and exchanges the
+password through Supabase Auth. Errors never return the lookup email. Attempts
+are limited per hashed username and client IP to 30 per ten minutes. Do not
+publish any separate anon RPC returning users' emails. Existing approval and
+study-state access rules still apply after password authentication.

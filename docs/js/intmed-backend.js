@@ -49,8 +49,15 @@
   function auth(path, body){
     return request("/auth/v1/" + path, {method:"POST", body:JSON.stringify(body), authenticated:false});
   }
-  function signIn(email, password){
-    return auth("token?grant_type=password", {email:email, password:password}).then(function(value){
+  function signIn(username, password){
+    // Email compatibility preserves existing accounts during the one-time rollout.
+    var login = username.indexOf("@") !== -1
+      ? auth("token?grant_type=password", {email:username, password:password})
+      : request("/functions/v1/intmed-login", {method:"POST", authenticated:false, body:JSON.stringify({username:username,password:password})});
+    return login.catch(function(error){
+      if(error.status === 404) error.message = "ورود با نام کاربری هنوز در سرور فعال نشده است؛ تا تکمیل راه‌اندازی از ایمیل حساب استفاده کنید.";
+      throw error;
+    }).then(function(value){
       saveSession(value);
       return profile().then(function(p){
         if(!p || !p.approved || p.rejected){ saveSession(null); throw new Error("حساب هنوز توسط مدیر تأیید نشده است."); }
@@ -137,7 +144,7 @@
     state.loginLog = state.loginLog || [];
     state.profile = {
       fullName:p.full_name || "", degree:p.degree || "", idNumber:p.id_number || "",
-      phone:p.phone || "", email:p.email || "", updatedAt:p.updated_at || ""
+      phone:p.phone || "", email:p.email || "", specialty:p.specialty || "", province:p.province || "", updatedAt:p.updated_at || ""
     };
     state.backendRole = p.role || "user";
     state.backendUsername = p.username || "";
@@ -173,7 +180,7 @@
           return payload;
         }),
         signups:profiles.filter(function(p){ return !p.approved && !p.rejected; }).map(function(p){
-          return {id:p.id, userId:p.id, username:p.username, fullName:p.full_name, email:p.email, mobile:p.phone, status:"pending", createdAt:p.created_at};
+          return {id:p.id, userId:p.id, username:p.username, fullName:p.full_name, email:p.email, mobile:p.phone, degree:p.degree, specialty:p.specialty, province:p.province, idNumber:p.id_number, status:"pending", createdAt:p.created_at};
         })
       };
       loadedSnapshot = clone(result);
@@ -252,7 +259,7 @@
       var p = (snapshot.users[userId] || {}).profile || {};
       if(equal(p,((old.users || {})[userId] || {}).profile || {})) return;
       work.push(request("/rest/v1/profiles?id=eq."+encodeURIComponent(userId),{
-        method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({full_name:p.fullName||null,degree:p.degree||null,id_number:p.idNumber||null,phone:p.phone||null,email:p.email||null,updated_at:new Date().toISOString()})
+        method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({full_name:p.fullName||null,degree:p.degree||null,id_number:p.idNumber||null,phone:p.phone||null,email:p.email||null,...((p.specialty || (((old.users || {})[userId] || {}).profile || {}).specialty) ? {specialty:p.specialty||null} : {}),...((p.province || (((old.users || {})[userId] || {}).profile || {}).province) ? {province:p.province||null} : {}),updated_at:new Date().toISOString()})
       }));
     });
     return Promise.all(work).then(function(){ loadedSnapshot=snapshot; });

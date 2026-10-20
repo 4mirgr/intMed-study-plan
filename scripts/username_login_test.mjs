@@ -1,0 +1,22 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';import {webcrypto} from 'node:crypto';
+let handler,allowed=true,found=true,passwordOK=true;const calls=[];
+const env={SUPABASE_URL:'https://test.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'server-secret',SUPABASE_ANON_KEY:'public-key'};
+const context=vm.createContext({Deno:{serve:fn=>{handler=fn},env:{get:key=>env[key]}},Set,Response,TextEncoder,Uint8Array,crypto:webcrypto,fetch:async(url,options)=>{
+ calls.push({url,options});
+ if(url.endsWith('/rpc/intmed_allow_login'))return Response.json(allowed);
+ if(url.includes('/profiles?'))return Response.json(found?[{id:'user-uuid'}]:[]);
+ if(url.includes('/auth/v1/admin/users/'))return Response.json({id:'user-uuid',email:'private@example.com'});
+ if(url.includes('/token?'))return passwordOK&&found?Response.json({access_token:'session',user:{id:'user-uuid'}}):Response.json({message:'Auth details'},{status:400});
+ throw Error('Unexpected request');
+}});
+vm.runInContext(fs.readFileSync('backend/supabase/functions/intmed-login/index.ts','utf8'),context);
+const login=()=>handler(new Request('https://test.supabase.co/functions/v1/intmed-login',{method:'POST',headers:{origin:'https://drgerami-md.ir','content-type':'application/json'},body:JSON.stringify({username:'Doctor_QA',password:'exact password '})}));
+let response=await login();assert.equal(response.status,200);assert.equal((await response.json()).access_token,'session');
+assert.ok(calls.find(c=>c.url.includes('username=ilike.doctor%5C_qa')));
+assert.equal(JSON.parse(calls.find(c=>c.url.includes('/token?')).options.body).password,'exact password ');
+assert.equal(calls.find(c=>c.url.includes('/token?')).options.headers.apikey,'public-key');
+passwordOK=false;response=await login();const badPassword=await response.text();assert.equal(response.status,401);assert.ok(!badPassword.includes('private@example.com'));
+found=false;response=await login();assert.equal(await response.text(),badPassword);
+allowed=false;response=await login();assert.equal(response.status,429);
+response=await handler(new Request('https://test.supabase.co/functions/v1/intmed-login',{method:'POST',headers:{origin:'https://evil.example'},body:'{}'}));assert.equal(response.status,403);
+console.log('Username login server passed: server-only lookup, preserved password, generic failure, rate limit and origin checks.');

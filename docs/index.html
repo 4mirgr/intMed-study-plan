@@ -3,7 +3,7 @@
 <title>IntMed</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=cb69bae69a16ca32">
+<link rel="stylesheet" href="intmed.css?v=5b2605bd96b2a96e">
 
 <div class="login-gate" id="loginGate">
   <form class="login-card" id="loginForm">
@@ -44,15 +44,37 @@
       <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="108" height="108"></span>
       <h2>عضویت در IntMed</h2>
     </span>
-    <input type="text" id="signupUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
-    <input type="password" id="signupPass" placeholder="رمز عبور" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
-    <input type="text" id="signupFullName" placeholder="نام و نام خانوادگی" required>
-    <input type="text" id="signupDegree" placeholder="آخرین مدرک تحصیلی">
+    <label for="signupFullName">نام و نام خانوادگی *</label>
+    <input type="text" id="signupFullName" autocomplete="name" placeholder="نام و نام خانوادگی" required>
+    <label for="signupUser">نام کاربری *</label>
+    <input type="text" id="signupUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" aria-describedby="usernameHelp" required>
+    <small id="usernameHelp">۳ تا ۶۴ حرف انگلیسی، عدد، نقطه، خط تیره یا زیرخط</small>
+    <label for="signupPass">رمز عبور *</label>
+    <input type="password" id="signupPass" placeholder="حداقل ۸ نویسه" autocomplete="new-password" minlength="8" required>
+    <label for="signupDegree">آخرین مدرک تحصیلی *</label>
+    <select id="signupDegree" required>
+      <option value="" disabled selected>مدرک تحصیلی را انتخاب کنید</option>
+      <option>دانشجوی پزشکی</option><option>اینترن</option><option>رزیدنت</option>
+      <option>متخصص</option><option>فلوشیپ</option><option>فوق تخصص</option>
+    </select>
+    <label for="signupSpecialty">رشته</label>
+    <div class="search-select" data-options="specialties">
+      <input type="text" id="signupSpecialty" role="combobox" aria-autocomplete="list" aria-controls="specialtyOptions" aria-expanded="false" placeholder="جست‌وجو و انتخاب رشته" autocomplete="off">
+      <div class="search-options" id="specialtyOptions" role="listbox" hidden></div>
+    </div>
+    <label for="signupProvince">استان</label>
+    <div class="search-select" data-options="provinces">
+      <input type="text" id="signupProvince" role="combobox" aria-autocomplete="list" aria-controls="provinceOptions" aria-expanded="false" placeholder="جست‌وجو و انتخاب استان" autocomplete="off">
+      <div class="search-options" id="provinceOptions" role="listbox" hidden></div>
+    </div>
+    <label for="signupIdNumber">کد نظام پزشکی / شماره دانشجویی</label>
     <input type="text" id="signupIdNumber" placeholder="کد نظام پزشکی / شماره دانشجویی">
-    <input type="tel" id="signupMobile" placeholder="شماره موبایل" required>
-    <input type="email" id="signupEmail" placeholder="ایمیل">
+    <label for="signupMobile">شماره موبایل</label>
+    <input type="tel" id="signupMobile" autocomplete="tel" placeholder="شماره موبایل">
+    <label for="signupEmail">ایمیل تأیید و بازیابی حساب *</label>
+    <input type="email" id="signupEmail" autocomplete="email" placeholder="ایمیل" required>
     <button type="submit">ثبت‌نام</button>
-    <div class="login-err" id="signupErr">نام کاربری و رمز عبور و نام/موبایل الزامی‌اند.</div>
+    <div class="login-err" id="signupErr">نام و نام خانوادگی، نام کاربری، رمز عبور، مدرک تحصیلی و ایمیل الزامی‌اند.</div>
     <div class="login-switch"><a href="#" id="showLoginLink">بازگشت به ورود</a></div>
   </form>
 
@@ -60,7 +82,7 @@
     <div class="signup-success-icon">✓</div>
     <div class="signup-success-text">
       <b>ثبت‌نام شما دریافت شد.</b>
-      پس از تأیید ایمیل و تأیید مدیر، با ایمیل و رمز حساب خود وارد شوید.
+      پس از تأیید ایمیل و تأیید مدیر، با نام کاربری و رمز حساب خود وارد شوید.
     </div>
     <div class="signup-success-actions">
       <button type="button" id="signupSendWhatsapp">ارسال به مدیر (واتساپ)</button>
@@ -226,7 +248,8 @@
 </div>
 
 <script src="config.js?v=e1c325a52a905cce"></script>
-<script src="js/intmed-backend.js?v=a4766e7edcad38cd"></script>
+<script src="js/intmed-backend.js?v=95f73d81349cbbaa"></script>
 <script src="js/intmed-theme.js?v=6911a34aef1a2a68"></script>
-<script src="js/intmed-login.js?v=0b6b6fd7a1ab782a"></script>
-<script src="js/intmed-app.js?v=1b77f66eb515d3e6"></script>
+<script src="js/intmed-registration.js?v=86cbba87cc94b74f"></script>
+<script src="js/intmed-login.js?v=f83441cfc6d2f219"></script>
+<script src="js/intmed-app.js?v=dbb0bb130f4b1527"></script>
