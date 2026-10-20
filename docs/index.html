@@ -3203,6 +3203,8 @@
     if(!hlToolbar.contains(e.target)) closeHlPopover();
   });
 
+  var imageTabUrls = new WeakMap();
+
   function renderLearnPanel(topicId, type){
     var t = topicEls[topicId];
     if(!t) return;
@@ -3570,17 +3572,31 @@
         row.className = "img-row";
         var isDataUri = (img.sourceUrl || "").indexOf("data:") === 0;
         if(isDataUri){
-          // data: URIs render fine inline, but mobile browsers (Chrome Android,
-          // in-app webviews) block top-level navigation to a data: URL as a
-          // security measure — a target="_blank" link to one opens a blank tab.
-          // Render the image inline instead of linking to it.
+          // Open a binary image Blob, since browsers block new-tab data: navigation.
+          // Reuse the URL when this panel is reopened; document unload releases it.
+          var imageUrl = imageTabUrls.get(img);
+          if(!imageUrl){
+            var parts = img.sourceUrl.split(",");
+            var mime = parts[0].slice(5).split(";")[0];
+            var binary = atob(parts[1]);
+            var bytes = new Uint8Array(binary.length);
+            for(var byteIndex = 0; byteIndex < binary.length; byteIndex++){
+              bytes[byteIndex] = binary.charCodeAt(byteIndex);
+            }
+            imageUrl = URL.createObjectURL(new Blob([bytes], {type:mime}));
+            imageTabUrls.set(img, imageUrl);
+          }
           var cap = document.createElement("div");
           cap.className = "img-cap"; cap.textContent = "🖼 " + img.caption;
           row.appendChild(cap);
           var imgEl = document.createElement("img");
           imgEl.className = "img-inline"; imgEl.src = img.sourceUrl; imgEl.alt = img.caption;
           imgEl.loading = "lazy";
-          row.appendChild(imgEl);
+          var imageLink = document.createElement("a");
+          imageLink.href = imageUrl; imageLink.target = "_blank"; imageLink.rel = "noopener";
+          imageLink.title = "باز کردن تصویر در تب جدید";
+          imageLink.appendChild(imgEl);
+          row.appendChild(imageLink);
         } else {
           var a = document.createElement("a");
           a.href = img.sourceUrl || "#"; a.target = "_blank"; a.rel = "noopener";

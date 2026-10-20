@@ -3386,3 +3386,15 @@ Preserved source attribution, added Persian captions/notes, encoded as optimized
 JPEG quality 85 data URIs. Schema and SHA-256 encoding roundtrip validated.
 Bundle regenerated (67 topics). No other teaching content or user state changed.
 This update targets the static site; Claude artifact tools are unavailable.
+
+## Important images open in a new tab (2026-10-20)
+
+User explicitly requested clickable images opening in a separate tab. Preserved
+inline previews and wrapped them in target=_blank, rel=noopener anchors. Embedded
+base64 images are decoded to binary image Blobs, avoiding browser restrictions
+on top-level data: navigation. WeakMap caches Blob URLs per image object for
+reopened panels; URLs live until document unload. External links are unchanged.
+Validated inline JS with node --check and exercised actual Chromium new-tab
+navigation using the breast cancer images: all 3 previews linked, URLs reused,
+clicked image decoded successfully at 496x359. Static site only; artifact tools
+are unavailable in this environment.
