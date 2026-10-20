@@ -3,7 +3,7 @@
 <title>IntMed</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=eb570804f3306a19">
+<link rel="stylesheet" href="intmed.css?v=dd8302d31647cb73">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
@@ -172,10 +172,16 @@
 
     <section class="neon-panel quiz-summary-panel"><div class="section-heading"><h3>کارنامهٔ تمرین تستی</h3><strong id="studyQuizSummary"></strong></div><div id="studyQuizChart" class="analytics-bars"></div><p class="section-caption">ملاک، نخستین پاسخ ثبت‌شدهٔ هر سؤال است؛ تمرین تکراری تعداد سؤال‌ها را افزایش نمی‌دهد. این آمار نمرهٔ آزمون رسمی نیست.</p></section>
 
-    <section class="callout favorites-card" id="favoritesCard">
+    <section class="callout favorites-card" id="favoritesCard" tabindex="-1">
       <div class="section-heading"><h2>علاقه‌مندی‌های من <span id="favoriteCount" class="neon-count">۰</span></h2><span class="section-caption">مسیر کوتاه به مباحث محبوب شما</span></div>
       <div id="dashboardFavorites" class="favorite-list"></div>
     </section>
+
+    <div class="annotation-toolbar"><h2>دفتر مطالعهٔ من</h2><input type="search" id="annotationSearch" placeholder="جست‌وجو در نوشته‌ها، هایلایت‌ها و مباحث" aria-label="جست‌وجو در نوشته‌ها و هایلایت‌های شخصی"></div>
+    <div class="annotation-grid">
+      <section class="neon-panel"><div class="section-heading"><h3>یادداشت‌های من</h3><span id="personalNotesCount" class="neon-count">۰</span></div><div id="personalNotes" class="annotation-list"></div></section>
+      <section class="neon-panel"><div class="section-heading"><h3>هایلایت‌های من</h3><span id="personalHighlightsCount" class="neon-count">۰</span></div><div id="personalHighlights" class="annotation-list"></div></section>
+    </div>
 
     <section class="callout" id="userProfileCard" style="display:none">
       <details id="profileEditor" class="profile-editor"><summary>پروفایل و تنظیمات حساب <small>تکمیل یا ویرایش مشخصات</small></summary><div class="profile-editor-body">
@@ -292,8 +298,8 @@
 
 <script src="config.js?v=e1c325a52a905cce"></script>
 <script src="js/intmed-backend.js?v=fc78daea9f8b7d19"></script>
-<script src="js/intmed-theme.js?v=6911a34aef1a2a68"></script>
+<script src="js/intmed-theme.js?v=10cbe508c7ceb533"></script>
 <script src="js/intmed-registration.js?v=86cbba87cc94b74f"></script>
 <script src="js/intmed-login.js?v=22cbc4f112546887"></script>
-<script src="js/intmed-dashboard.js?v=6f66bbda3f7bc54e"></script>
-<script src="js/intmed-app.js?v=856e73bf8d9714ad"></script>
+<script src="js/intmed-dashboard.js?v=e7d39baf9dbae0a4"></script>
+<script src="js/intmed-app.js?v=c3c60e88c294a076"></script>

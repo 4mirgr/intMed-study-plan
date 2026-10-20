@@ -59,6 +59,7 @@ jobs:
           node scripts/favorites_browser_test.mjs
           node scripts/recovery_browser_test.mjs
           node scripts/dashboard_browser_test.mjs
+          node scripts/annotations_theme_browser_test.mjs
       - name: Build secure production configuration
         if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
         env:

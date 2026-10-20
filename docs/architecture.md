@@ -151,3 +151,18 @@ The bot is free to use; its deployment and secret setup are owner-only steps.
 No real Telegram message is sent by automated tests. End-to-end iPhone delivery
 must be checked after the owner installs the function, adds its bot secret,
 starts their private bot chat and chooses it in the admin UI.
+
+## Personal notebook and reading palettes
+
+The dashboard notebook derives separate searchable notes/highlight lists from only the
+current user bucket. Topic notes and highlight notes retain their existing storage keys;
+source shortcuts load just the target topic and reveal the saved highlight anchor, including
+hidden answers. Unknown legacy topics stay readable in the notebook. Removing a favorite
+writes the existing `favorite:<topic-id>` flag and leaves annotations intact. No SQL migration
+is needed for these views.
+
+`bp_theme` stores `light`, `dark`, or `night-shift` per browser. Light uses a cream canvas;
+Night Shift uses warm colors and is not an operating-system display filter. Explicit choices
+override the system preference and synchronize across tabs. Dark highlight palettes maintain
+readable text contrast. `annotations_theme_browser_test.mjs` verifies notebook isolation,
+source navigation, removal persistence, saved palettes, contrast, and narrow-screen layout.

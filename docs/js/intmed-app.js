@@ -216,6 +216,24 @@
       topic.opener.focus({preventScroll:true});
     });
   }
+  function openAnnotation(topicId,highlightId){
+    goToTopic(topicId);var topic=topicEls[topicId];if(!topic)return Promise.resolve();
+    if(!highlightId){requestAnimationFrame(function(){topic.note.focus();topic.note.scrollIntoView({block:"center",behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});});return Promise.resolve();}
+    var highlight=getHighlights(topicId).find(function(h){return h.id===highlightId;});if(!highlight)return Promise.resolve();
+    var loc=String(highlight.loc||""),type=loc.indexOf("lesson:")===0?"lesson":loc.indexOf("fc")===0?"flashcards":loc.indexOf("mcq:")===0?"mcq":loc.indexOf("kf:")===0?"kfPmp":loc.indexOf("table:")===0?"tables":"highlights";
+    return (type==="highlights"?Promise.resolve():ensureTopicLoaded(topicId)).then(function(){
+      if(openTopicDetailId!==topicId)return;
+      Object.keys(topic.learnBtns).forEach(function(key){topic.learnBtns[key].classList.toggle("active",key===type);});
+      topic.openType=type;topic.learnPanel.classList.add("open");renderLearnPanel(topicId,type);
+      var target=Array.from(topic.learnPanel.querySelectorAll("[data-hl-loc]")).find(function(el){return el.dataset.hlLoc===highlight.loc||(el.dataset.hlAliases||"").split("|").includes(highlight.loc);});
+      if(target){var hidden=target.closest(".fc-back,.mcq-explain,.kfp-answer");if(hidden){hidden.classList.add("show");if(hidden.classList.contains("fc-back")){hidden.style.display="block";var reveal=hidden.parentElement.querySelector(".fc-reveal");if(reveal)reveal.textContent="مخفی کردن";}}target=Array.from(target.querySelectorAll("mark[data-hl-id]")).find(function(mark){return mark.dataset.hlId===highlightId;})||target;}
+      else target=topic.learnPanel;
+      target.classList.add("annotation-destination");target.tabIndex=-1;
+      requestAnimationFrame(function(){target.scrollIntoView({block:"center",behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});target.focus({preventScroll:true});});
+      setTimeout(function(){target.classList.remove("annotation-destination");},5000);
+      if(window.IntMedDashboard&&type!=="highlights")window.IntMedDashboard.open(topicId,type);
+    });
+  }
   function renderFavorites(){
     var bucket=myBucket(),favorites=allTopicIds.filter(function(id){return isFavorite(bucket,id);});
     allTopicIds.forEach(function(id){
@@ -232,7 +250,10 @@
       if(!favorites.length){var empty=document.createElement("p");empty.className="favorites-empty";empty.textContent="با لمس قلب کنار هر مبحث، آن را به این فهرست اضافه کنید.";container.appendChild(empty);return;}
       favorites.forEach(function(id){var button=document.createElement("button");button.type="button";button.className="favorite-shortcut";button.dataset.favoriteTopic=id;
         var icon=document.createElement("span");icon.innerHTML=HEART_ICON;button.appendChild(icon);
-        button.appendChild(document.createTextNode(topicEls[id].label));button.addEventListener("click",function(){goToTopic(id);});container.appendChild(button);
+        button.appendChild(document.createTextNode(topicEls[id].label));button.addEventListener("click",function(){goToTopic(id);});
+        var entry=document.createElement("div");entry.className="favorite-entry";entry.appendChild(button);
+        var remove=document.createElement("button");remove.type="button";remove.className="favorite-remove";remove.dataset.removeFavorite=id;remove.textContent="×";remove.title="حذف از علاقه‌مندی‌ها";remove.setAttribute("aria-label","حذف «"+topicEls[id].label+"» از علاقه‌مندی‌ها");
+        remove.disabled=usesPrivateBackend()&&!stateLoaded;remove.addEventListener("click",function(){if(usesPrivateBackend()&&!stateLoaded)return;myBucket().itemState["favorite:"+id]={favorite:false};scheduleFlush(400);renderFavorites();renderStudyDashboard();var next=container.querySelector("[data-remove-favorite]");if(next)next.focus();else document.getElementById("favoritesCard").focus();});entry.appendChild(remove);container.appendChild(entry);
       });
     });
     renderFavoriteStats();
@@ -422,7 +443,7 @@
       item.appendChild(detail);
       inner.appendChild(item);
 
-      topicEls[sub.id] = {label:sub.label, favorite:favorite, opener:topicOpener, itemEl:item, pill:pill, contentBadge:contentBadge, note:note, catId:cat.id, status:"نامشخص", learnBtns:learnBtns, learnPanel:learnPanel, openType:null};
+      topicEls[sub.id] = {label:sub.label, categoryLabel:cat.label, favorite:favorite, opener:topicOpener, itemEl:item, pill:pill, contentBadge:contentBadge, note:note, catId:cat.id, status:"نامشخص", learnBtns:learnBtns, learnPanel:learnPanel, openType:null};
       allTopicIds.push(sub.id);
     });
 
@@ -763,7 +784,7 @@
   }
   function writeTopicState(id, data){
     myBucket().itemState[id] = data;
-    scheduleFlush(400);
+    scheduleFlush(400);renderStudyDashboard();
   }
   function writeMeta(data){
     myBucket().meta = mergeObj(myBucket().meta, data);
@@ -2058,10 +2079,10 @@
       data.slice().reverse().forEach(function(h){
         var row = document.createElement("div");
         row.className = "hl-list-item hl-list-" + (h.color || "yellow");
-        var src = h.loc.indexOf("lesson:") === 0 ? "درسنامه"
-          : (h.loc.indexOf("fc:") === 0 || h.loc.indexOf("fc-front:") === 0) ? "فلش‌کارت"
-          : h.loc.indexOf("mcq:") === 0 ? "تست"
-          : h.loc.indexOf("kf:") === 0 ? "KF & PMP"
+        var src = String(h.loc||"").indexOf("lesson:") === 0 ? "درسنامه"
+          : (String(h.loc||"").indexOf("fc:") === 0 || String(h.loc||"").indexOf("fc-front:") === 0) ? "فلش‌کارت"
+          : String(h.loc||"").indexOf("mcq:") === 0 ? "تست"
+          : String(h.loc||"").indexOf("kf:") === 0 ? "KF & PMP"
           : "جدول";
         var quote = document.createElement("div");
         quote.className = "hl-list-quote";
@@ -2488,13 +2509,14 @@
     tabBtnEducation.classList.toggle("active", !isDash);
     tabPanelDashboard.classList.toggle("active", isDash);
     tabPanelEducation.classList.toggle("active", !isDash);
+    if(isDash)renderStudyDashboard();
   }
   tabBtnDashboard.addEventListener("click", function(){ setTab("dashboard"); });
   tabBtnEducation.addEventListener("click", function(){ setTab("education"); });
 
   if(window.IntMedDashboard)window.IntMedDashboard.init({
     state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},topics:function(){return topicEls;},
-    ready:function(){return stateLoaded;},goto:goToTopic,save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},
+    ready:function(){return stateLoaded;},goto:goToTopic,annotation:openAnnotation,phases:function(){return PHASES;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},
     flush:doFlush,wait:waitForPendingWrites
   });
   refreshAll();
