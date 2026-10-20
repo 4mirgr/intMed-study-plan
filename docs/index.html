@@ -3,7 +3,7 @@
 <title>IntMed</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=7e7d6d3eb5e58de7">
+<link rel="stylesheet" href="intmed.css?v=eb570804f3306a19">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
@@ -161,18 +161,36 @@
       <button type="button" class="connect-reminder-btn" id="connectReminderBtn">اتصال الان</button>
     </div>
 
+    <section class="study-hero"><div><p class="eyebrow">فضای شخصی مطالعه</p><h2 id="studyGreeting">مسیر یادگیری من</h2><p>قدم‌های کوچک، مرور هدفمند و پیشرفت قابل مشاهده</p></div><span class="hero-orbit" aria-hidden="true">✦</span></section>
+    <section id="studyMetrics" class="metric-grid" aria-label="آمار شخصی مطالعه"></section>
+    <div class="dashboard-grid">
+      <section class="neon-panel"><h3>فعالیت هفت روز اخیر</h3><div id="studyWeekChart" class="week-chart"></div><p class="section-caption">زمان فعال محتوا؛ زمانِ تب پنهان یا بی‌فعالیتی طولانی محاسبه نمی‌شود.</p></section>
+      <section class="neon-panel"><h3>ادامهٔ مسیر</h3><div id="studyRecent" class="insight-list"></div></section>
+      <section class="neon-panel"><h3>مرور پیشنهادی</h3><div id="studySuggestions" class="insight-list"></div></section>
+      <section class="neon-panel"><div class="section-heading"><h3>برچسب‌های من</h3><select id="studyTagFilter" aria-label="فیلتر برچسب"><option value="همه">همه</option><option>مهم</option><option>نیاز به مرور</option><option>مطالعه‌شده</option></select></div><div id="studyTagged" class="insight-list"></div></section>
+    </div>
+
+    <section class="neon-panel quiz-summary-panel"><div class="section-heading"><h3>کارنامهٔ تمرین تستی</h3><strong id="studyQuizSummary"></strong></div><div id="studyQuizChart" class="analytics-bars"></div><p class="section-caption">ملاک، نخستین پاسخ ثبت‌شدهٔ هر سؤال است؛ تمرین تکراری تعداد سؤال‌ها را افزایش نمی‌دهد. این آمار نمرهٔ آزمون رسمی نیست.</p></section>
+
     <section class="callout favorites-card" id="favoritesCard">
       <div class="section-heading"><h2>علاقه‌مندی‌های من <span id="favoriteCount" class="neon-count">۰</span></h2><span class="section-caption">مسیر کوتاه به مباحث محبوب شما</span></div>
       <div id="dashboardFavorites" class="favorite-list"></div>
     </section>
 
     <section class="callout" id="userProfileCard" style="display:none">
-      <h2>پروفایل من</h2>
-      <p style="margin:0 0 12px">این اطلاعات فقط برای مدیر سایت قابل مشاهده می‌باشد.</p>
-      <p style="margin:0 0 12px;font-size:.76rem">فیلدهایی که قبلاً پر شده قابل ویرایش نیستند (فقط مدیر می‌تواند آن‌ها را تغییر بدهد) — فقط جاهای خالی را می‌توانید کامل کنید.</p>
+      <details id="profileEditor" class="profile-editor"><summary>پروفایل و تنظیمات حساب <small>تکمیل یا ویرایش مشخصات</small></summary><div class="profile-editor-body">
+      <p style="margin:0 0 12px">این مشخصات فقط برای خودتان و مدیر سایت قابل مشاهده است.</p>
+      <p style="margin:0 0 12px;font-size:.76rem">مشخصات را تکمیل یا ویرایش کنید؛ تغییر مشخصات، شناسهٔ حساب، هایلایت‌ها، یادداشت‌ها و سوابق مطالعه را تغییر نمی‌دهد. ایمیل بازیابی از بخش امنیت حساب و پس از تأیید لینک تغییر می‌کند.</p>
       <div class="profile-grid" id="myProfileGrid"></div>
       <button type="button" class="profile-save-btn" id="profileSaveBtn">ذخیره اطلاعات</button>
       <span class="profile-saved-note" id="profileSavedNote"></span>
+      <details class="account-security"><summary>نام کاربری و امنیت حساب</summary>
+        <label for="accountUsername">نام کاربری</label><input id="accountUsername" autocomplete="username" minlength="3" maxlength="64">
+        <label for="accountEmail">ایمیل تأییدشدهٔ ورود و بازیابی</label><input id="accountEmail" type="email" autocomplete="email" required>
+        <p class="section-caption">تغییر ایمیل به تأیید از مسیر امن ایمیل نیاز دارد؛ تا آن زمان ایمیل قبلی معتبر می‌ماند.</p>
+        <button type="button" id="accountSave" class="profile-save-btn">ذخیره اطلاعات حساب</button><button type="button" id="accountRecovery" class="secondary-action">دریافت لینک تغییر رمز</button>
+        <p id="accountStatus" role="status" class="section-caption"></p>
+      </details>
       <div class="profile-favorites"><h3>مباحث مورد علاقهٔ من</h3><div id="profileFavorites" class="favorite-list"></div></div>
       <div class="ticket-box">
         <label for="ticketMessage">ارسال پیام یا تیکت به مدیر</label>
@@ -180,10 +198,20 @@
         <button type="button" class="profile-save-btn" id="ticketSendBtn">ارسال پیام</button>
       </div>
       <div id="ticketHistoryList" class="ticket-history"></div>
+      </div></details>
     </section>
 
     <section class="callout" id="adminPanelCard" style="display:none">
-      <h2>پنل مدیریت</h2>
+      <div class="section-heading"><h2>مرکز مدیریت</h2><button type="button" id="adminExportStats" class="stats-refresh">خروجی CSV آمار مباحث</button></div>
+      <div id="adminOverview" class="metric-grid"></div>
+      <details class="notification-panel"><summary>اعلان ثبت‌نام در تلگرام</summary><p class="section-caption">پس از راه‌اندازی یک‌باره، درخواست‌های جدید به بات تلگرام شما ارسال می‌شوند؛ دریافت اعلان روی آیفون به فعال‌بودن اعلان‌های Telegram بستگی دارد.</p>
+        <div class="admin-account-actions"><button type="button" data-notification-action="status">بررسی اتصال</button><button type="button" data-notification-action="discover">پیداکردن گفت‌وگوی من با بات</button><button type="button" data-notification-action="test">ارسال اعلان آزمایشی</button><button type="button" data-notification-action="retry">تلاش دوباره برای اعلان‌های در صف</button></div>
+        <div id="notificationChats"></div><p id="notificationStatus" class="section-caption" role="status">اتصال هنوز بررسی نشده است.</p>
+      </details>
+      <div class="dashboard-grid">
+        <section class="neon-panel"><h3>بیشترین بازشدن محتوا</h3><div class="chart-controls"><label>بازه <select id="analyticsRange"><option value="7">هفت روز</option><option value="30">سی روز</option><option value="all">از شروع ثبت آمار</option></select></label><label>معیار <select id="analyticsMetric"><option value="opens">بازشدن محتوا</option><option value="seconds">زمان فعال</option><option value="readers">کاربران یکتا</option><option value="completed">علامت مطالعه‌شده</option></select></label></div><div id="adminReadChart" class="analytics-bars"></div><p class="section-caption">آمار از نصب این نسخه ثبت می‌شود؛ بازشدن صفحه، اثبات خواندن کامل آن نیست.</p></section>
+        <section class="neon-panel"><h3>توزیع وضعیت مباحث کاربران</h3><div id="adminStatusChart" class="analytics-bars"></div><h3>فعالیت کاربران در هفت روز اخیر</h3><div id="adminWeekChart" class="week-chart"></div></section>
+      </div>
       <section class="favorite-analytics" aria-labelledby="favoriteAnalyticsTitle">
         <div class="section-heading"><h3 id="favoriteAnalyticsTitle">محبوب‌ترین مباحث</h3><button type="button" id="refreshFavoriteStats" class="stats-refresh">به‌روزرسانی آمار</button></div>
         <p class="section-caption">هر کاربر برای هر مبحث یک لایک دارد؛ این آمار تعداد بازدید نیست.</p>
@@ -211,6 +239,7 @@
         <button type="button" class="admin-tab-btn active" id="adminTabUsers">کاربران</button>
         <button type="button" class="admin-tab-btn" id="adminTabTickets">پیام‌ها و تیکت‌ها<span class="admin-badge" id="adminTicketBadge" style="display:none"></span></button>
       </div>
+      <label class="admin-status-filter" for="adminUserStatusFilter">وضعیت حساب <select id="adminUserStatusFilter"><option value="all">همه کاربران</option><option value="active">فعال</option><option value="pending">منتظر تأیید</option><option value="suspended">معلق</option><option value="admin">مدیر</option></select></label>
       <input type="text" class="admin-user-search" id="adminUserSearch" placeholder="جستجو در میان کاربران (نام، نام کاربری، شماره نظام/دانشجویی، موبایل...)">
       <div id="adminUsersPanel"></div>
       <div id="adminTicketsPanel" style="display:none"></div>
@@ -262,8 +291,9 @@
 </div>
 
 <script src="config.js?v=e1c325a52a905cce"></script>
-<script src="js/intmed-backend.js?v=d79c2076eb140fa8"></script>
+<script src="js/intmed-backend.js?v=fc78daea9f8b7d19"></script>
 <script src="js/intmed-theme.js?v=6911a34aef1a2a68"></script>
 <script src="js/intmed-registration.js?v=86cbba87cc94b74f"></script>
 <script src="js/intmed-login.js?v=22cbc4f112546887"></script>
-<script src="js/intmed-app.js?v=24f0392b8dbb331e"></script>
+<script src="js/intmed-dashboard.js?v=fb428cea82d39f4d"></script>
+<script src="js/intmed-app.js?v=f7dc0be33effb64a"></script>

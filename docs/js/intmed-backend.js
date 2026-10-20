@@ -148,6 +148,7 @@
     };
     state.backendRole = p.role || "user";
     state.backendUsername = p.username || "";
+    state.backendApproved=p.approved===true;state.backendRejected=p.rejected===true;state.backendCreatedAt=p.created_at||"";
     return state;
   }
   var loadedSnapshot = null;
@@ -189,7 +190,7 @@
   }
   function cleanBucket(bucket){
     var result = Object.assign({}, bucket || {});
-    delete result.profile; delete result.backendRole; delete result.backendUsername; delete result.passwordHash;
+    delete result.profile; delete result.backendRole; delete result.backendUsername; delete result.passwordHash; delete result.backendApproved; delete result.backendRejected; delete result.backendCreatedAt;
     return result;
   }
   function mergeChangedKeys(remote, before, after){
@@ -206,6 +207,23 @@
   function mergeStudyDelta(remote, before, after){
     var result = Object.assign({}, remote || {});
     result.itemState = mergeChangedKeys(result.itemState, before.itemState, after.itemState);
+    // Activity counters use additive deltas so two devices do not overwrite
+    // each other's positive increments inside the same topic/day entry.
+    Object.keys(after.itemState||{}).forEach(function(key){
+      if(!/^activity:.+:\d{4}-\d{2}-\d{2}$/.test(key))return;
+      var prior=(before.itemState||{})[key]||{},next=after.itemState[key]||{},latest=(remote.itemState||{})[key]||{};
+      if(equal(prior,next))return;
+      var merged=Object.assign({},latest);
+      ["opens","seconds"].forEach(function(field){merged[field]=(Number(latest[field])||0)+Math.max(0,(Number(next[field])||0)-(Number(prior[field])||0));});
+      merged.types=Object.assign({},latest.types||{});
+      Object.keys(next.types||{}).forEach(function(type){if(type!=="__proto__"&&type!=="constructor"&&type!=="prototype")merged.types[type]=(Number((latest.types||{})[type])||0)+Math.max(0,(Number(next.types[type])||0)-(Number((prior.types||{})[type])||0));});
+      merged.lastOpenedAt=[latest.lastOpenedAt||"",next.lastOpenedAt||""].sort().pop();result.itemState[key]=merged;
+    });
+    Object.keys(after.itemState||{}).forEach(function(key){
+      if(key.indexOf("quiz:")!==0)return;
+      var latest=(remote.itemState||{})[key],next=after.itemState[key];
+      if(latest && next && latest.answeredAt && next.answeredAt && latest.answeredAt<next.answeredAt)result.itemState[key]=latest;
+    });
     result.meta = mergeChangedKeys(result.meta, before.meta, after.meta);
     result.highlights = Object.assign({}, result.highlights || {});
     new Set(Object.keys(before.highlights || {}).concat(Object.keys(after.highlights || {}))).forEach(function(topic){
@@ -259,7 +277,7 @@
       var p = (snapshot.users[userId] || {}).profile || {};
       if(equal(p,((old.users || {})[userId] || {}).profile || {})) return;
       work.push(request("/rest/v1/profiles?id=eq."+encodeURIComponent(userId),{
-        method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({full_name:p.fullName||null,degree:p.degree||null,id_number:p.idNumber||null,phone:p.phone||null,email:p.email||null,...((p.specialty || (((old.users || {})[userId] || {}).profile || {}).specialty) ? {specialty:p.specialty||null} : {}),...((p.province || (((old.users || {})[userId] || {}).profile || {}).province) ? {province:p.province||null} : {}),updated_at:new Date().toISOString()})
+        method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({full_name:p.fullName||null,degree:p.degree||null,id_number:p.idNumber||null,phone:p.phone||null,...((p.specialty || (((old.users || {})[userId] || {}).profile || {}).specialty) ? {specialty:p.specialty||null} : {}),...((p.province || (((old.users || {})[userId] || {}).profile || {}).province) ? {province:p.province||null} : {}),updated_at:new Date().toISOString()})
       }));
     });
     return Promise.all(work).then(function(){ loadedSnapshot=snapshot; });
@@ -287,6 +305,23 @@
     });
   }
 
+  function updateProfile(p){
+    var current=session(),id=current && current.user && current.user.id;
+    if(!id)return Promise.reject(new Error("auth"));
+    var fields={fullName:"full_name",degree:"degree",specialty:"specialty",province:"province",idNumber:"id_number",phone:"phone"},body={updated_at:new Date().toISOString()};
+    Object.keys(fields).forEach(function(key){body[fields[key]]=p[key]||null;});
+    return request("/rest/v1/profiles?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify(body)}).then(function(){
+      if(loadedSnapshot && loadedSnapshot.users[id])Object.keys(fields).forEach(function(key){loadedSnapshot.users[id].profile[key]=p[key]||"";});
+    });
+  }
+  function updateUsername(username){
+    return request("/rest/v1/rpc/update_intmed_username",{method:"POST",body:JSON.stringify({new_username:username})}).then(function(){
+      var id=session().user.id;if(loadedSnapshot && loadedSnapshot.users[id])loadedSnapshot.users[id].backendUsername=username;
+    });
+  }
+  function updateEmail(email){return request("/auth/v1/user",{method:"PUT",body:JSON.stringify({email:email})});}
+
+  function notificationAction(action,chatId){return request("/functions/v1/intmed-signup-notify",{method:"POST",body:JSON.stringify({action:action,chatId:chatId})});}
   global.IntMedBackend = {
     isConfigured:configured,
     session:session,
@@ -301,6 +336,6 @@
     loadLegacyState:loadLegacyState,
     saveLegacyState:saveLegacyState,
     approveUser:approveUser,
-    deleteUser:deleteUser
+    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,notificationAction:notificationAction
   };
 })(window);

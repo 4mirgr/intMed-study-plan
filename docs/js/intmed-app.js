@@ -317,7 +317,7 @@
         pill.className = "topic-pill st-" + next;
         pill.textContent = next;
         writeTopicState(sub.id, {status: next, note: note.value});
-        updateCatStat(cat);
+        updateCatStat(cat);renderStudyDashboard();
       });
 
       var chev = document.createElement("span");
@@ -336,7 +336,7 @@
         e.stopPropagation();
         var key="favorite:"+sub.id;
         myBucket().itemState[key]={favorite:!isFavorite(myBucket(),sub.id)};
-        scheduleFlush(400);renderFavorites();
+        scheduleFlush(400);renderFavorites();renderStudyDashboard();
       });
       listBtn.appendChild(favorite);
       listBtn.appendChild(chev);
@@ -353,6 +353,11 @@
         });
       });
       detail.appendChild(note);
+      var tagBox=document.createElement("div");tagBox.className="study-tag-controls";tagBox.dataset.tagTopic=sub.id;
+      ["مهم","نیاز به مرور","مطالعه‌شده"].forEach(function(tag){
+        var button=document.createElement("button");button.type="button";button.className="study-tag-button";button.textContent=tag;button.dataset.studyTag=tag;button.setAttribute("aria-pressed","false");
+        button.addEventListener("click",function(){window.IntMedDashboard.toggleTag(sub.id,tag);});tagBox.appendChild(button);
+      });detail.appendChild(tagBox);
 
       var learnRow = document.createElement("div");
       learnRow.className = "learn-row";
@@ -373,6 +378,7 @@
         b.innerHTML = lt.label + '<span class="cnt" data-lc="'+sub.id+'-'+lt.key+'"></span>';
         b.addEventListener("click", function(e){
           e.stopPropagation();
+          if(window.IntMedDashboard)window.IntMedDashboard.stop();
           var isActive = b.classList.contains("active");
           learnRow.querySelectorAll(".learn-btn").forEach(function(x){ x.classList.remove("active"); });
           hlRow.querySelectorAll(".learn-btn").forEach(function(x){ x.classList.remove("active"); });
@@ -384,7 +390,7 @@
             learnPanel.classList.add("open");
             topicEls[sub.id].openType = lt.key;
             ensureTopicLoaded(sub.id).then(function(){
-              if(topicEls[sub.id].openType === lt.key) renderLearnPanel(sub.id, lt.key);
+              if(topicEls[sub.id].openType === lt.key){renderLearnPanel(sub.id, lt.key);if(window.IntMedDashboard)window.IntMedDashboard.open(sub.id,lt.key);}
             }).catch(function(){
               if(topicEls[sub.id].openType !== lt.key) return;
               learnPanel.innerHTML = '<div class="learn-empty">بارگذاری این مبحث ناموفق بود. اتصال را بررسی و دوباره تلاش کنید.</div>';
@@ -407,6 +413,7 @@
         openTopicDetailId = willOpen ? sub.id : null;
         item.classList.toggle("open", willOpen);
         topicOpener.setAttribute("aria-expanded",String(willOpen));
+        if(!willOpen && window.IntMedDashboard)window.IntMedDashboard.stop();
       });
 
       item.appendChild(listBtn);
@@ -535,11 +542,13 @@
     writeMeta({currentPhaseOverride: val});
   });
 
+  function renderStudyDashboard(){if(window.IntMedDashboard)window.IntMedDashboard.render();}
   function refreshAll(){
     updatePhaseCounts();
     updateOverallBar();
     updateHereCard();
     renderFavorites();
+    renderStudyDashboard();
   }
 
   // ---------------------------------------------------------------
@@ -989,8 +998,8 @@
     }catch(e){ return ""; }
   }
 
-  // The 5 profile fields, shared by the non-admin profile card (locked once
-  // filled) and the admin's per-user edit box (always editable) below.
+  // Editable biographical fields. Auth email is read-only here; its separate
+  // account action uses Supabase email verification.
   var PROFILE_FIELDS = [
     {key:"fullName", label:"نام و نام خانوادگی", type:"text", placeholder:"مثلاً: علی رضایی"},
     {key:"degree", label:"آخرین مدرک تحصیلی", type:"text", placeholder:"مدرک تحصیلی"},
@@ -1001,27 +1010,26 @@
     {key:"email", label:"ایمیل", type:"email", placeholder:"مثلاً: name@example.com"}
   ];
   var myProfileGridEl = document.getElementById("myProfileGrid");
-  // Renders the non-admin user's own profile grid: a field that already has
-  // a value becomes locked, plain-text display (per the user's explicit
-  // request — only the admin can correct an already-filled field); an empty
-  // field stays an editable input so the user can complete it themselves.
+  // Profile changes always retain the same account UUID and study bucket.
   function renderMyProfileFields(){
     if(!myProfileGridEl) return;
     var p = myBucket().profile || {};
     myProfileGridEl.innerHTML = PROFILE_FIELDS.map(function(f){
-      var val = (p[f.key] || "").trim();
-      if(val){
-        return '<div class="profile-field">' +
-          '<label>' + f.label + '</label>' +
-          '<div class="profile-field-value"><span class="lock-ic">🔒</span>' + escapeHtml(val) + '</div>' +
-          '</div>';
+      var value=p[f.key]||"",field='<input type="'+f.type+'" id="profileInput-'+f.key+'" data-profile-field="'+f.key+'" value="'+escapeHtml(value)+'" placeholder="'+f.placeholder+'"'+(f.key==='email'?' readonly':'')+'>';
+      if(f.key==='degree' && window.IntMedRegistration){
+        var choices=window.IntMedRegistration.degrees.slice();if(value && choices.indexOf(value)===-1)choices.unshift(value);
+        field='<select id="profileInput-degree"><option value="">انتخاب مدرک</option>'+choices.map(function(v){return '<option'+(v===value?' selected':'')+'>'+escapeHtml(v)+'</option>';}).join('')+'</select>';
       }
-      return '<div class="profile-field">' +
-        '<label for="profileInput-' + f.key + '">' + f.label + '</label>' +
-        '<input type="' + f.type + '" id="profileInput-' + f.key + '" data-profile-field="' + f.key + '" placeholder="' + f.placeholder + '">' +
-        '</div>';
+      if((f.key==='province'||f.key==='specialty') && window.IntMedRegistration){
+        var options=f.key==='province'?window.IntMedRegistration.provinces:window.IntMedRegistration.specialties;
+        field=field.replace(' data-profile-field=', ' list="profile-options-'+f.key+'" data-profile-field=')+'<datalist id="profile-options-'+f.key+'">'+options.map(function(v){return '<option value="'+escapeHtml(v)+'">';}).join('')+'</datalist>';
+      }
+      return '<div class="profile-field"><label for="profileInput-'+f.key+'">'+f.label+'</label>'+field+'</div>';
     }).join("");
+    var username=document.getElementById("accountUsername");if(username)username.value=myBucket().backendUsername||"";
+    var email=document.getElementById("accountEmail");if(email)email.value=p.email||"";
   }
+
   var profileSaveBtn = document.getElementById("profileSaveBtn");
   var profileSavedNote = document.getElementById("profileSavedNote");
   var ticketMessageEl = document.getElementById("ticketMessage");
@@ -1030,6 +1038,7 @@
   var adminTabTickets = document.getElementById("adminTabTickets");
   var adminUsersPanel = document.getElementById("adminUsersPanel");
   var adminUserSearchEl = document.getElementById("adminUserSearch");
+  var accountFilter=document.getElementById("adminUserStatusFilter");if(accountFilter)accountFilter.addEventListener("change",renderAdminUsers);
   var adminTicketsPanel = document.getElementById("adminTicketsPanel");
   var adminTicketBadge = document.getElementById("adminTicketBadge");
 
@@ -1064,30 +1073,39 @@
   }
 
   if(profileSaveBtn){
-    profileSaveBtn.addEventListener("click", function(){
-      var bucket = myBucket();
-      var p = bucket.profile || {};
-      var changed = false;
-      PROFILE_FIELDS.forEach(function(f){
-        var input = document.getElementById("profileInput-" + f.key);
-        if(!input) return; // already locked/filled — this user can't touch it
-        var v = input.value.trim();
-        if(v){ p[f.key] = v; changed = true; }
-      });
-      if(!changed){
-        profileSavedNote.textContent = "چیزی برای ذخیره نبود.";
-        setTimeout(function(){ profileSavedNote.textContent = ""; }, 2000);
-        return;
-      }
-      p.updatedAt = new Date().toISOString();
-      bucket.profile = p;
-      scheduleFlush(300);
-      syncProfileToSheet(CURRENT_USER_ID, p);
-      renderMyProfileFields();
-      profileSavedNote.textContent = "ذخیره شد ✓";
-      setTimeout(function(){ profileSavedNote.textContent = ""; }, 2500);
+    profileSaveBtn.addEventListener("click",function(){
+      var p=Object.assign({},myBucket().profile||{});
+      PROFILE_FIELDS.forEach(function(f){var input=document.getElementById("profileInput-"+f.key);if(input && f.key!=="email")p[f.key]=input.value.trim();});
+      if(!p.fullName){profileSavedNote.textContent="نام و نام خانوادگی را وارد کنید.";return;}
+      var lists=window.IntMedRegistration;
+      if(lists && ((p.province && !lists.provinces.includes(p.province)) || (p.specialty && !lists.specialties.includes(p.specialty)))){profileSavedNote.textContent="رشته و استان را از فهرست انتخاب کنید.";return;}
+      profileSaveBtn.disabled=true;profileSavedNote.textContent="در حال ذخیره…";
+      waitForPendingWrites().then(function(){return window.IntMedBackend.updateProfile(p);}).then(function(){
+        // Same UUID, separate profile PATCH: never replace study_state/highlights.
+        myBucket().profile=p;var label=document.getElementById("userLabel");if(label)label.textContent=p.fullName;
+        profileSavedNote.textContent="مشخصات ذخیره شد؛ اطلاعات مطالعه محفوظ است ✓";renderStudyDashboard();
+      }).catch(function(e){profileSavedNote.textContent=e.message||"ذخیره ناموفق بود.";}).finally(function(){profileSaveBtn.disabled=false;});
     });
   }
+  var accountSave=document.getElementById("accountSave");
+  if(accountSave)accountSave.addEventListener("click",function(){
+    var username=document.getElementById("accountUsername").value.trim().toLowerCase(),email=document.getElementById("accountEmail").value.trim(),status=document.getElementById("accountStatus");
+    if(!/^[a-z0-9_.-]{3,64}$/.test(username)){status.textContent="نام کاربری باید ۳ تا ۶۴ نویسهٔ انگلیسی، عدد، نقطه، خط تیره یا زیرخط باشد.";return;}
+    var emailInput=document.getElementById("accountEmail");if(!emailInput.reportValidity())return;
+    accountSave.disabled=true;status.textContent="در حال بررسی…";
+    waitForPendingWrites().then(function(){
+      if(username!==myBucket().backendUsername)return window.IntMedBackend.updateUsername(username).then(function(){myBucket().backendUsername=username;});
+    }).then(function(){
+      if(email!==(myBucket().profile.email||""))return window.IntMedBackend.updateEmail(email).then(function(){status.textContent="نام کاربری ذخیره شد. تغییر ایمیل پس از تأیید لینک‌های ایمیل انجام می‌شود؛ سپس دوباره وارد شوید.";});
+      status.textContent="اطلاعات حساب ذخیره شد؛ شناسه و اطلاعات مطالعه تغییر نکرده‌اند ✓";
+    }).catch(function(e){status.textContent=e.status===404?"تغییر نام کاربری به نصب فایل dashboard_upgrade.sql نیاز دارد.":e.message||"ذخیره ناموفق بود.";}).finally(function(){accountSave.disabled=false;});
+  });
+  var accountRecovery=document.getElementById("accountRecovery");
+  if(accountRecovery)accountRecovery.addEventListener("click",function(){
+    var email=myBucket().profile.email;if(!email)return;
+    accountRecovery.disabled=true;var status=document.getElementById("accountStatus");
+    window.IntMedBackend.resetPassword(email).then(function(){status.textContent="درخواست لینک تنظیم رمز به ایمیل فعلی حساب ارسال شد.";}).catch(function(){status.textContent="ارسال درخواست ناموفق بود.";}).finally(function(){accountRecovery.disabled=false;});
+  });
   if(ticketSendBtn){
     ticketSendBtn.addEventListener("click", function(){
       var msg = ticketMessageEl.value.trim();
@@ -1163,7 +1181,7 @@
       var bucket = STATE.users[id] || {};
       var p = bucket.profile || {};
       var log = bucket.loginLog || [];
-      var displayName = USER_NAMES[id] || p.fullName || (approvedSignupById[id] && approvedSignupById[id].fullName) || id;
+      var displayName = USER_NAMES[id] || p.fullName || (approvedSignupById[id] && approvedSignupById[id].fullName) || bucket.backendUsername || id;
       // Static accounts (amir/arash/alisalehi) have their password hash
       // hardcoded in GATE_USERS in this file's own source — nothing in
       // STATE can change how they log in, so the password-change action
@@ -1175,8 +1193,10 @@
       // need this exact string to compute a matching hash for a password
       // change.
       var loginUsername = bucket.backendUsername || (approvedSignupById[id] && approvedSignupById[id].username) || id;
-      return {id:id, p:p, log:log, displayName:displayName, isStatic:isStatic, loginUsername:loginUsername, canDelete:usesPrivateBackend() && id!==CURRENT_USER_ID && bucket.backendRole!=="admin"};
+      return {id:id, p:p, log:log, displayName:displayName, isStatic:isStatic, loginUsername:loginUsername, role:bucket.backendRole,approved:bucket.backendApproved,rejected:bucket.backendRejected,canDelete:usesPrivateBackend() && id!==CURRENT_USER_ID && bucket.backendRole!=="admin"};
     });
+    var filter=document.getElementById("adminUserStatusFilter");
+    if(filter && filter.value!=="all")rows=rows.filter(function(r){return filter.value==='admin'?r.role==='admin':filter.value==='active'?r.approved&&!r.rejected:filter.value==='suspended'?r.rejected:!r.approved&&!r.rejected;});
     if(query){
       rows = rows.filter(function(r){
         var haystack = [r.displayName, r.loginUsername, r.id, r.p.idNumber, r.p.phone, r.p.email, r.p.degree, r.p.specialty, r.p.province]
@@ -1192,17 +1212,21 @@
       return '<div class="admin-user-card' + (isOpen ? " open" : "") + '" data-user-row="' + escapeHtml(r.id) + '">' +
         '<div class="admin-user-head" data-user-toggle="' + escapeHtml(r.id) + '">' +
           '<div class="admin-user-head-left"><span class="admin-user-name">' + escapeHtml(r.displayName) + '</span></div>' +
-          '<div class="admin-user-head-right"><span>' + faDigits(count) + ' ورود</span><span class="admin-user-chev">▾</span></div>' +
+          '<div class="admin-user-head-right"><span class="account-state">'+(r.role==='admin'?'مدیر':r.approved?'فعال':r.rejected?'معلق':'منتظر تأیید')+'</span><span>' + faDigits(count) + ' ورود</span><span class="admin-user-chev">▾</span></div>' +
         '</div>' +
         '<div class="admin-user-body"><div class="admin-user-body-inner">' +
           '<div class="admin-user-row"><span>نام کاربری:</span><b>' + escapeHtml(r.loginUsername) + '</b></div>' +
           '<div class="admin-user-row"><span>تعداد ورود:</span><b>' + faDigits(count) + '</b></div>' +
           '<div class="admin-user-row"><span>آخرین ورود:</span><b>' + last + '</b></div>' +
           '<div class="admin-user-row admin-user-recent"><span>۵ ورود اخیر:</span><b>' + recent + '</b></div>' +
+          (r.canDelete ? '<div class="admin-account-actions">'+
+            '<button type="button" data-account-approval="'+escapeHtml(r.id)+'" data-approved="'+String(r.approved===true)+'">'+(r.approved?'تعلیق دسترسی':'تأیید / فعال‌سازی')+'</button>'+
+            '<button type="button" data-account-recovery="'+escapeHtml(r.id)+'">ارسال لینک بازیابی</button><span role="status" id="accountAction-'+escapeHtml(r.id)+'"></span></div>' : '') +
+          '<div class="admin-user-analytics" data-user-analytics="'+escapeHtml(r.id)+'"></div>'+
           '<div class="admin-user-edit-box">' +
             '<div class="profile-grid">' + PROFILE_FIELDS.map(function(f){
               return '<div class="profile-field"><label for="adminEdit-' + r.id + '-' + f.key + '">' + f.label + '</label>' +
-                '<input type="' + f.type + '" id="adminEdit-' + r.id + '-' + f.key + '" value="' + escapeHtml(r.p[f.key] || "") + '"></div>';
+                '<input type="' + f.type + '" id="adminEdit-' + r.id + '-' + f.key + '" value="' + escapeHtml(r.p[f.key] || "") + '"'+(f.key==='email'?' readonly':'')+'></div>';
             }).join("") +
             '</div>' +
             '<button type="button" class="profile-save-btn admin-user-save-btn" data-save-profile="' + escapeHtml(r.id) + '">ذخیره تغییرات پروفایل</button>' +
@@ -1259,10 +1283,20 @@
         });
       });
     });
-    // Admin editing a user's profile bypasses the user's own lock (the
-    // user asked for this explicitly: locked fields are only correctable
-    // by the admin). Always writes all 5 fields as typed, then mirrors
-    // to the Sheet the same way the user's own save does.
+    adminUsersPanel.querySelectorAll("[data-account-approval]").forEach(function(button){button.addEventListener("click",function(){
+      var id=button.dataset.accountApproval,approved=button.dataset.approved==="true";
+      if(approved && !confirm("دسترسی این کاربر تعلیق شود؟ یادداشت‌ها و اطلاعات مطالعهٔ او حذف نمی‌شوند."))return;
+      button.disabled=true;var status=document.getElementById("accountAction-"+id);
+      window.IntMedBackend.approveUser(id,!approved).then(function(){STATE.users[id].backendApproved=!approved;STATE.users[id].backendRejected=approved;STATE.signups=(STATE.signups||[]).filter(function(s){return (s.userId||s.id)!==id;});renderUserPanel();}).catch(function(e){status.textContent=e.message||"عملیات ناموفق بود.";button.disabled=false;});
+    });});
+    adminUsersPanel.querySelectorAll("[data-account-recovery]").forEach(function(button){button.addEventListener("click",function(){
+      var id=button.dataset.accountRecovery,email=(STATE.users[id].profile||{}).email;if(!email)return;
+      if(!confirm("لینک بازیابی رمز به ایمیل ثبت‌شدهٔ این کاربر ارسال شود؟"))return;
+      button.disabled=true;var status=document.getElementById("accountAction-"+id);
+      window.IntMedBackend.resetPassword(email).then(function(){status.textContent="درخواست ارسال شد.";}).catch(function(){status.textContent="ارسال ناموفق بود.";}).finally(function(){button.disabled=false;});
+    });});
+    renderStudyDashboard();
+    // Admin edits basic profile fields; verified Auth email stays protected.
     adminUsersPanel.querySelectorAll("[data-save-profile]").forEach(function(btn){
       btn.addEventListener("click", function(){
         var id = btn.getAttribute("data-save-profile");
@@ -1270,7 +1304,7 @@
         var p = STATE.users[id].profile || {};
         PROFILE_FIELDS.forEach(function(f){
           var input = document.getElementById("adminEdit-" + id + "-" + f.key);
-          if(input) p[f.key] = input.value.trim();
+          if(input && f.key!=="email") p[f.key] = input.value.trim();
         });
         p.updatedAt = new Date().toISOString();
         STATE.users[id].profile = p;
@@ -1566,9 +1600,12 @@
 
   function renderUserPanel(){
     var isAdmin = usesPrivateBackend() ? myBucket().backendRole === "admin" : CURRENT_USER_ID === "amir";
+    renderStudyDashboard();
     var profileCard = document.getElementById("userProfileCard");
     var adminCard = document.getElementById("adminPanelCard");
-    if(profileCard) profileCard.style.display = isAdmin ? "none" : "";
+    if(profileCard) profileCard.style.display = "";
+    if(isAdmin)renderMyProfileFields();
+    if(profileCard){var ownTicket=profileCard.querySelector('.ticket-box');if(ownTicket)ownTicket.style.display=isAdmin?'none':'';}
     if(adminCard) adminCard.style.display = isAdmin ? "" : "none";
     if(isAdmin){
       if(usesPrivateBackend()){
@@ -2170,6 +2207,7 @@
           var ob = document.createElement("button");
           ob.type = "button"; ob.className = "mcq-opt"; ob.textContent = opt;
           ob.addEventListener("click", function(){
+            if(window.IntMedDashboard)window.IntMedDashboard.answer(topicId,qKey,idx===q.correctIndex);
             block.querySelectorAll(".mcq-opt").forEach(function(x){ x.disabled = true; });
             ob.classList.add(idx === q.correctIndex ? "correct" : "incorrect");
             if(idx !== q.correctIndex){
@@ -2441,6 +2479,7 @@
   var tabPanelEducation = document.getElementById("tabPanelEducation");
   function setTab(name){
     var isDash = name === "dashboard";
+    if(isDash && window.IntMedDashboard)window.IntMedDashboard.stop();
     tabBtnDashboard.classList.toggle("active", isDash);
     tabBtnEducation.classList.toggle("active", !isDash);
     tabPanelDashboard.classList.toggle("active", isDash);
@@ -2449,5 +2488,10 @@
   tabBtnDashboard.addEventListener("click", function(){ setTab("dashboard"); });
   tabBtnEducation.addEventListener("click", function(){ setTab("education"); });
 
+  if(window.IntMedDashboard)window.IntMedDashboard.init({
+    state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},topics:function(){return topicEls;},
+    ready:function(){return stateLoaded;},goto:goToTopic,save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},
+    flush:doFlush,wait:waitForPendingWrites
+  });
   refreshAll();
 })();

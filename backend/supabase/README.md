@@ -78,3 +78,16 @@ Validation: `node scripts/delete_user_sql_test.mjs` runs PostgreSQL security and
 rollback scenarios in a local in-memory database with synthetic identities only.
 `node scripts/delete_user_browser_test.mjs` covers confirmation cancellation,
 request failure, success and the non-admin UI with mocked private APIs.
+
+### New dashboard, manager username and Telegram notifications
+
+Start with [the Persian setup guide](TELEGRAM_SETUP_FA.md). The generated
+`setup_dashboard.sql` bundles the additive dashboard security upgrade, the guarded
+owner rename to `drgerami` (same verified Auth email/UUID/password) and the private
+notification outbox/trigger. Regenerate using `python3 scripts/build_dashboard_setup.py`.
+The bot secret goes only in Supabase Edge Secrets; `intmed-signup-notify` must have
+JWT verification enabled. The original `intmed-login` function keeps it disabled.
+
+Basic profile editing, tags, pink favorites and activity/quiz analytics are frontend
+changes; username RPCs, email protection/synchronization and automatic Telegram
+notifications additionally require the one-time SQL/server installation.

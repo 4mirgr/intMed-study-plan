@@ -31,3 +31,6 @@ repository. User accounts and personal state belong in the private backend descr
 
 After changing scripts/styles/config, run `python3 scripts/version_assets.py`.
 Run `node scripts/backend_state_test.mjs` for persistence conflict/isolation checks.
+
+Dashboard/analytics UI lives in `docs/js/intmed-dashboard.js`. After changing dashboard
+SQL source files, run `python3 scripts/build_dashboard_setup.py`; never add bot tokens.

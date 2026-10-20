@@ -1,2 +1,5 @@
 [functions.intmed-login]
 verify_jwt = false
+
+[functions.intmed-signup-notify]
+verify_jwt = true

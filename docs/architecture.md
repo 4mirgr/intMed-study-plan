@@ -107,3 +107,47 @@ the password via Auth, signs out and returns to login. Hash-only links in an alr
 open tab are supported. Study sync is paused for recovery sessions. The email
 provider, delivery and allowed redirect URLs remain Supabase project settings;
 browser tests mock email delivery and do not send messages to actual users.
+
+### Dashboard, profile editing and account identity
+
+`docs/js/intmed-dashboard.js` owns the new personal/admin metric cards, weekly
+activity charts, recent topics, review suggestions, manual study tags, first-answer
+quiz summary and CSV topic analytics. It uses existing private study_state only:
+
+- `tag:<topic-id>` stores selected tags and timestamps (including completedAt).
+- `activity:<topic-id>:<Tehran YYYY-MM-DD>` stores opens, active seconds, content
+  type counts and lastOpenedAt. Counters merge additive deltas across concurrent
+  device saves. Clean reconnects accept fresh server state.
+- `quiz:<topic-id>:<stable-question-id>` stores the first recorded MCQ answer's
+  correctness and timestamp; repeated answers do not inflate the question count.
+
+Activity begins only after a content tab loads. Hidden tabs, closed panels and
+extended inactivity do not add active time; tab switches flush the current slice.
+This is an approximate activity metric, not proof of reading or a proctored exam.
+No historical activity is invented. Manual 'مطالعه‌شده' marks are separate from
+content opens, favorites and the old knowledge-status pills.
+
+Profile PATCH requests whitelist basic biographical fields and target the current
+session UUID. They never replace study_state. Optional fields can be cleared.
+Email is read-only in profile editors: the account action requests a verified Auth
+email change. The additive dashboard SQL synchronizes verified Auth email and
+revokes direct browser writes to profiles.email. Username changes use a checked
+RPC, preserve UUIDs and cannot change roles or approval flags. The owner-only
+rename script refuses multiple active admins or an unverified owner email.
+
+### Signup notifications
+
+See `backend/supabase/TELEGRAM_SETUP_FA.md`. Telegram credentials live only in Edge
+secrets. The setup SQL creates a private outbox and an asynchronous pg_net signup
+trigger scoped to new IntMed Auth metadata. A failed notification never rolls
+back signup. The Edge Function verifies the actual pending profile and Auth
+identity before sending just a username and management link, never personal study
+content/contact details. Atomic service-only claims prevent normal duplicate
+sends; pending/error deliveries can be retried explicitly by an authenticated
+admin. Setup, chat discovery/selection, test and retry actions require a live,
+approved, non-rejected admin identity. Notifications do not grant access.
+
+The bot is free to use; its deployment and secret setup are owner-only steps.
+No real Telegram message is sent by automated tests. End-to-end iPhone delivery
+must be checked after the owner installs the function, adds its bot secret,
+starts their private bot chat and chooses it in the admin UI.
