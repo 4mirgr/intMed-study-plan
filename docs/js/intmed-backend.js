@@ -69,7 +69,12 @@
       return value;
     }).catch(function(error){
       refreshPromise = null;
-      saveSession(null);
+      // A network/server failure must not destroy the refresh session. Only a
+      // definitive rejected refresh requires a fresh password login.
+      if(error.status === 400 || error.status === 401 || error.status === 403){
+        saveSession(null);
+        error.message = "auth";
+      }
       throw error;
     });
     return refreshPromise;

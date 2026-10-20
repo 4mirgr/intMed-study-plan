@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 
+let refreshMode = "ok", expired = false;
 const calls = [];
 const store = new Map();
 const userId = "11111111-1111-4111-8111-111111111111";
@@ -14,9 +15,12 @@ function reply(body, status = 200){
 }
 function fetchMock(url, options = {}){
   calls.push({url, options});
+  if(url.includes("grant_type=refresh_token") && refreshMode === "network") return Promise.reject(new Error("offline"));
+  if(url.includes("grant_type=refresh_token") && refreshMode === "invalid") return reply({message:"Invalid refresh"},400);
   if(url.includes("grant_type=refresh_token")) return reply({access_token:"refreshed", refresh_token:"refresh-2", user:{id:userId}});
   if(url.includes("/auth/v1/token")) return reply({access_token:"access", refresh_token:"refresh", user:{id:userId}});
   if(url.includes("/auth/v1/user")) return reply({id:userId});
+  if(url.includes("/rest/v1/profiles?id=eq.") && expired && options.headers.Authorization !== "Bearer refreshed") return reply({message:"Expired"},401);
   if(url.includes("/rest/v1/profiles?id=eq.")) return reply({id:userId, username:"doctor", approved:true, role:"user"});
   if(url.includes("/auth/v1/logout")) return reply(null, 204);
   throw new Error("unexpected test request: " + url);
@@ -57,3 +61,16 @@ window.location.hash = "#type=invite&access_token=invite-access&refresh_token=in
 assert.equal(window.IntMedBackend.captureRecoverySession(), true);
 assert.equal(window.IntMedBackend.session().flow_type, "invite");
 console.log("private backend unit test passed: sign-in, approval, bearer auth, sign-out, password recovery, invite setup");
+
+await window.IntMedBackend.signIn("doctor@example.com", "password");
+expired=true;refreshMode="network";
+await assert.rejects(window.IntMedBackend.profile(), /offline/);
+assert.equal(window.IntMedBackend.session().refresh_token,"refresh");
+refreshMode="ok";
+await window.IntMedBackend.profile();
+assert.equal(window.IntMedBackend.session().access_token,"refreshed");
+store.set("intmed_supabase_session",JSON.stringify({access_token:"expired",refresh_token:"revoked",user:{id:userId}}));
+refreshMode="invalid";
+await assert.rejects(window.IntMedBackend.profile(), /auth/);
+assert.equal(window.IntMedBackend.session(),null);
+console.log("Session regression passed: automatic refresh, offline session retained, rejected refresh requires login.");

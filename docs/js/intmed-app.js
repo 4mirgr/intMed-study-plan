@@ -340,12 +340,13 @@
     topicsRoot.appendChild(catEl);
   });
 
+  TOPICS.forEach(updateCatStat);
+  }
+
   function updateCatStat(cat){
     var good = cat.subs.filter(function(s){ return topicEls[s.id].status === "خوب"; }).length;
     var el = document.querySelector('.cat-stat[data-cat-stat="'+cat.id+'"]');
     if(el) el.textContent = faDigits(good) + "/" + faDigits(cat.subs.length) + " خوب";
-  }
-  TOPICS.forEach(updateCatStat);
   }
 
   function topicHasContent(topicId){
@@ -487,7 +488,10 @@
   function getPat(){ try{ return localStorage.getItem("gh_pat") || ""; }catch(e){ return ""; } }
   function setPat(v){ try{ if(v){ localStorage.setItem("gh_pat", v); } else { localStorage.removeItem("gh_pat"); } }catch(e){} }
   function usesPrivateBackend(){ return !!(window.IntMedBackend && window.IntMedBackend.isConfigured()); }
-  function hasPersistenceCredentials(){ return usesPrivateBackend() ? !!window.IntMedBackend.session() : !!getPat(); }
+  function legacySyncAllowed(){
+    return !!(window.INTMED_CONFIG || {}).allowLegacyDemo && /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  }
+  function hasPersistenceCredentials(){ return usesPrivateBackend() ? !!window.IntMedBackend.session() : legacySyncAllowed() && !!getPat(); }
   function ghHeaders(){
     return {
       "Authorization": "Bearer " + getPat(),
@@ -498,6 +502,7 @@
 
   function ghFetchState(){
     if(usesPrivateBackend()) return window.IntMedBackend.loadLegacyState();
+    if(!legacySyncAllowed()) return Promise.reject(new Error("auth"));
     return fetch(GH_API + "?ref=" + GH_BRANCH, { headers: ghHeaders() })
       .then(function(r){
         if(r.status === 401 || r.status === 403) throw new Error("auth");
@@ -511,6 +516,7 @@
 
   function ghSaveState(stateObj){
     if(usesPrivateBackend()) return window.IntMedBackend.saveLegacyState(stateObj);
+    if(!legacySyncAllowed()) return Promise.reject(new Error("auth"));
     return fetch(GH_API + "?ref=" + GH_BRANCH, { headers: ghHeaders() })
       .then(function(r){
         if(r.status === 401 || r.status === 403) throw new Error("auth");
@@ -560,8 +566,16 @@
     else if(kind === "connecting"){ el.textContent = "در حال اتصال..."; el.className = "conn num"; }
     else if(kind === "nopat"){ el.textContent = "برای ذخیره‌سازی وصل نیست"; el.className = "conn num bad"; }
     else if(kind === "error"){ el.textContent = "خطا در همگام‌سازی"; el.className = "conn num bad"; }
-    else if(kind === "auth"){ el.textContent = "توکن نامعتبر — دوباره وصل شو"; el.className = "conn num bad"; }
+    else if(kind === "auth"){ el.textContent = usesPrivateBackend() ? "نشست پایان یافته؛ دوباره وارد شوید" : "اتصال معتبر نیست"; el.className = "conn num bad"; }
     var reminder = document.getElementById("connectReminderBox");
+    if(usesPrivateBackend()){
+      var message = document.querySelector("#connectReminderBox .connect-reminder-text");
+      if(message) message.textContent = kind === "auth" || kind === "nopat"
+        ? "برای ادامهٔ ذخیره‌سازی با ایمیل و رمز حساب خود دوباره وارد شوید. نیازی به توکن GitHub ندارید."
+        : "همگام‌سازی موقتاً قطع شده است؛ اتصال خودکار دوباره امتحان می‌شود. تا نمایش وضعیت آنلاین، صفحه را نبندید.";
+      var retry = document.getElementById("connectReminderBtn");
+      if(retry) retry.textContent = kind === "auth" || kind === "nopat" ? "ورود مجدد" : "تلاش مجدد";
+    }
     if(reminder) reminder.style.display = (kind === "nopat" || kind === "error" || kind === "auth") ? "" : "none";
   }
 
@@ -598,7 +612,7 @@
       if(flushQueued){ flushQueued = false; scheduleFlush(200); }
     }).catch(function(err){
       flushing = false;
-      var isAuth = err && err.message === "auth";
+      var isAuth = err && (err.message === "auth" || err.status === 401);
       var isConflict = err && err.message === "conflict";
       setConn(isAuth ? "auth" : "error");
       // Bug fixed 2026-10-05: this used to just set the red "error" status and
@@ -813,7 +827,7 @@
       // debounced flush would have fired.
       if(mergedAnything) scheduleFlush(200);
     }).catch(function(err){
-      var isAuth = err && err.message === "auth";
+      var isAuth = err && (err.message === "auth" || err.status === 401);
       setConn(isAuth ? "auth" : "error");
       updateGhBtn();
       // Same spirit as doFlush()'s retry below: a plain network hiccup on the
@@ -1446,7 +1460,8 @@
   var ghPatDisconnectBtn = document.getElementById("ghPatDisconnect");
 
   function updateGhBtn(){
-    if(usesPrivateBackend()){
+    if(usesPrivateBackend() || !legacySyncAllowed()){
+      ghModal.style.display = "none";
       ghConnectBtn.style.display = "none";
       return;
     }
@@ -1454,6 +1469,7 @@
     ghConnectBtn.textContent = getPat() ? "⚙ تنظیمات همگام‌سازی" : "اتصال برای ذخیره‌سازی";
   }
   ghConnectBtn.addEventListener("click", function(){
+    if(usesPrivateBackend() || !legacySyncAllowed()) return;
     ghModalErr.textContent = "";
     ghPatInput.value = "";
     ghPatDisconnectBtn.style.display = getPat() ? "" : "none";
@@ -1462,9 +1478,21 @@
     ghModal.style.display = "flex";
   });
   var connectReminderBtn = document.getElementById("connectReminderBtn");
-  if(connectReminderBtn) connectReminderBtn.addEventListener("click", function(){ ghConnectBtn.click(); });
+  if(connectReminderBtn) connectReminderBtn.addEventListener("click", function(){
+    if(usesPrivateBackend()){
+      if(!window.IntMedBackend.session() || document.getElementById("connStatus").textContent.indexOf("نشست") !== -1){ location.reload(); return; }
+      if(dirty || flushing){ doFlush(); } else { connectGithub(); }
+      return;
+    }
+    ghConnectBtn.click();
+  });
+  window.addEventListener("online", function(){
+    if(!usesPrivateBackend() || !hasPersistenceCredentials()) return;
+    if(dirty || flushing){ doFlush(); } else { connectGithub(); }
+  });
   document.getElementById("ghPatCancel").addEventListener("click", function(){ ghModal.style.display = "none"; });
   document.getElementById("ghPatSave").addEventListener("click", function(){
+    if(usesPrivateBackend() || !legacySyncAllowed()) return;
     var v = ghPatInput.value.trim();
     if(!v){ ghModalErr.textContent = "توکن را وارد کن."; return; }
     setPat(v);
