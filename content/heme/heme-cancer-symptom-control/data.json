@@ -5,67 +5,189 @@
   "lesson": [
     {
       "heading": "ارزیابی منظم علائم و مراقبت تسکینی همزمان",
-      "body": "در یک مطالعه، میانهٔ علائمِ خودبه‌خود گزارش‌شده یک مورد بود، اما چک‌لیست ۴۸‌موردی میانهٔ ۱۰ علامت را آشکار کرد؛ حدود نیمی از علائم متوسط یا شدید بودند. پرسش فعال، بار پنهان علائم را مشخص می‌کند. پایش هفتگی patient-reported outcomes یا PRO همراه با پاسخ درمانی به تشدید علائم، کیفیت زندگی را بهتر می‌کند و در برخی کارآزمایی‌ها با افزایش بقا همراه بوده است؛ مراقبت تسکینی می‌تواند همزمان با درمان سرطان ارائه شود. Edmonton Symptom Assessment System–Revised یا ESAS-r ابزاری کوتاه برای ثبت شدت علائم به گزارش خود بیمار است؛ نسخه‌های کاغذی هم قابل استفاده‌اند و نسخهٔ توسعه‌یافته، نگرانی معنوی و فشار مالی را نیز می‌پرسد. پیش از تکیه بر نمرهٔ صفر تا ۱۰، علت و زیرنوع قابل‌درمان علامت را مشخص کنید، بپرسید چقدر بیمار را آزار می‌دهد و هدف قابل‌قبول او چیست؛ ناراحتی خانواده لزوماً معادل ناراحتی خود بیمار نیست.\n\nدر کارآزمایی ۷۶۶ بیمار با تومور جامد متاستاتیک، میانهٔ بقای کلی در گروه پایش PRO برابر ۳۱٫۲ ماه در برابر ۲۶ ماه در مراقبت معمول بود؛ پرستار به تشدید علائم پاسخ می‌داد، پس صرف ثبت نمره بدون اقدام همان مداخله نیست."
+      "id": "lsn-001",
+      "paragraphs": [
+        {
+          "id": "lsn-001-p01",
+          "text": "در یک مطالعه، میانهٔ علائمِ خودبه‌خود گزارش‌شده یک مورد بود، اما چک‌لیست ۴۸‌موردی میانهٔ ۱۰ علامت را آشکار کرد؛ حدود نیمی از علائم متوسط یا شدید بودند. پرسش فعال، بار پنهان علائم را مشخص می‌کند. پایش هفتگی patient-reported outcomes یا PRO همراه با پاسخ درمانی به تشدید علائم، کیفیت زندگی را بهتر می‌کند و در برخی کارآزمایی‌ها با افزایش بقا همراه بوده است؛ مراقبت تسکینی می‌تواند همزمان با درمان سرطان ارائه شود. Edmonton Symptom Assessment System–Revised یا ESAS-r ابزاری کوتاه برای ثبت شدت علائم به گزارش خود بیمار است؛ نسخه‌های کاغذی هم قابل استفاده‌اند و نسخهٔ توسعه‌یافته، نگرانی معنوی و فشار مالی را نیز می‌پرسد. پیش از تکیه بر نمرهٔ صفر تا ۱۰، علت و زیرنوع قابل‌درمان علامت را مشخص کنید، بپرسید چقدر بیمار را آزار می‌دهد و هدف قابل‌قبول او چیست؛ ناراحتی خانواده لزوماً معادل ناراحتی خود بیمار نیست.",
+          "legacyLoc": "lesson:0:0"
+        },
+        {
+          "id": "lsn-001-p02",
+          "text": "در کارآزمایی ۷۶۶ بیمار با تومور جامد متاستاتیک، میانهٔ بقای کلی در گروه پایش PRO برابر ۳۱٫۲ ماه در برابر ۲۶ ماه در مراقبت معمول بود؛ پرستار به تشدید علائم پاسخ می‌داد، پس صرف ثبت نمره بدون اقدام همان مداخله نیست.",
+          "legacyLoc": "lesson:0:1"
+        }
+      ]
     },
     {
       "heading": "خستگی: افتراق علل برگشت‌پذیر",
-      "body": "خستگی شایع‌ترین علامت سرطان است و شیوع آن اغلب به ۸۰٪ یا بیشتر می‌رسد؛ نسبت‌دادن همهٔ موارد به پیشرفت تومور درست نیست. در خستگی، کم‌خونی، کم‌کاری تیروئید، هایپرکلسمی و سایر اختلالات الکترولیتی، نارسایی کلیه و افسردگی یا demoralization را بررسی کنید؛ خود سرطان، شیمی‌درمانی و ایمونوتراپی هم می‌توانند علت باشند. پس از checkpoint inhibitorها، کم‌کاری تیروئید و hypophysitis را در نظر بگیرید. کم‌کاری تیروئید معمولاً طی ۶ تا ۸ هفته ظاهر می‌شود، اما ممکن است ماه‌ها پس از قطع ایمونوتراپی هم بروز کند."
+      "id": "lsn-002",
+      "paragraphs": [
+        {
+          "id": "lsn-002-p01",
+          "text": "خستگی شایع‌ترین علامت سرطان است و شیوع آن اغلب به ۸۰٪ یا بیشتر می‌رسد؛ نسبت‌دادن همهٔ موارد به پیشرفت تومور درست نیست. در خستگی، کم‌خونی، کم‌کاری تیروئید، هایپرکلسمی و سایر اختلالات الکترولیتی، نارسایی کلیه و افسردگی یا demoralization را بررسی کنید؛ خود سرطان، شیمی‌درمانی و ایمونوتراپی هم می‌توانند علت باشند. پس از checkpoint inhibitorها، کم‌کاری تیروئید و hypophysitis را در نظر بگیرید. کم‌کاری تیروئید معمولاً طی ۶ تا ۸ هفته ظاهر می‌شود، اما ممکن است ماه‌ها پس از قطع ایمونوتراپی هم بروز کند.",
+          "legacyLoc": "lesson:1:0"
+        }
+      ]
     },
     {
       "heading": "خستگی: مداخلهٔ مرحله‌ای",
-      "body": "اصلاح کم‌خونی، اختلال تیروئید و الکترولیت‌ها مقدم است. فعالیت بدنی ساختارمند و متناسب با توان بیمار، مانند پیاده‌روی، هم اثر پیشگیرانه و هم اثر درمانی دارد؛ بازگشت به فعالیت قبلی بیمار عملی‌تر از تحمیل برنامه‌ای ناآشناست. در بیمار منتخب می‌توان methylphenidate را با ۵ mg ساعت ۷ و ۱۱ صبح برای ۴۸ ساعت آزمود و فقط در صورت سود ادامه داد؛ پاسخ همه‌گیر نیست و این جایگزین اصلاح علت زمینه‌ای نمی‌شود. برای bupropion شواهدی از بهبود خستگی وجود دارد. دگزامتازون، مثلاً ۸ mg صبح در بیمار منتخب نزدیک پایان زندگی، ممکن است کمک کند؛ سود مصرف طولانی روشن نیست و باید هایپرگلیسمی را پایش کرد."
+      "id": "lsn-003",
+      "paragraphs": [
+        {
+          "id": "lsn-003-p01",
+          "text": "اصلاح کم‌خونی، اختلال تیروئید و الکترولیت‌ها مقدم است. فعالیت بدنی ساختارمند و متناسب با توان بیمار، مانند پیاده‌روی، هم اثر پیشگیرانه و هم اثر درمانی دارد؛ بازگشت به فعالیت قبلی بیمار عملی‌تر از تحمیل برنامه‌ای ناآشناست. در بیمار منتخب می‌توان methylphenidate را با ۵ mg ساعت ۷ و ۱۱ صبح برای ۴۸ ساعت آزمود و فقط در صورت سود ادامه داد؛ پاسخ همه‌گیر نیست و این جایگزین اصلاح علت زمینه‌ای نمی‌شود. برای bupropion شواهدی از بهبود خستگی وجود دارد. دگزامتازون، مثلاً ۸ mg صبح در بیمار منتخب نزدیک پایان زندگی، ممکن است کمک کند؛ سود مصرف طولانی روشن نیست و باید هایپرگلیسمی را پایش کرد.",
+          "legacyLoc": "lesson:2:0"
+        }
+      ]
     },
     {
       "heading": "طبقه‌بندی و ارزیابی درد سرطان",
-      "body": "درد nociceptive معمولاً عمقی، مبهم و مداوم است؛ درد احشایی ناشی از اتساع عضو توخالی، کولیکی و متناوب است؛ درد نوروپاتیک سوزشی یا تیرکشنده و همراه allodynia یا hyperalgesia است؛ درد incident با حرکت تشدید می‌شود و در استراحت ممکن است اندک باشد. بهترین، بدترین و متوسط شدت درد و نمرهٔ قابل‌قبول برای بیمار را بپرسید؛ داروها و روش‌های قبلی را ثبت کنید و مصرف ضدانعقاد، به‌ویژه NOACها، را پیش از انتخاب NSAID بررسی کنید. در متاستاز استخوان، درد incident می‌تواند در استراحت ناچیز و با حرکت بسیار شدید باشد؛ شواهد دارویی اختصاصی آن محدود است و گزارش‌های کوچک را نباید معادل درمان قطعی دانست."
+      "id": "lsn-004",
+      "paragraphs": [
+        {
+          "id": "lsn-004-p01",
+          "text": "درد nociceptive معمولاً عمقی، مبهم و مداوم است؛ درد احشایی ناشی از اتساع عضو توخالی، کولیکی و متناوب است؛ درد نوروپاتیک سوزشی یا تیرکشنده و همراه allodynia یا hyperalgesia است؛ درد incident با حرکت تشدید می‌شود و در استراحت ممکن است اندک باشد. بهترین، بدترین و متوسط شدت درد و نمرهٔ قابل‌قبول برای بیمار را بپرسید؛ داروها و روش‌های قبلی را ثبت کنید و مصرف ضدانعقاد، به‌ویژه NOACها، را پیش از انتخاب NSAID بررسی کنید. در متاستاز استخوان، درد incident می‌تواند در استراحت ناچیز و با حرکت بسیار شدید باشد؛ شواهد دارویی اختصاصی آن محدود است و گزارش‌های کوچک را نباید معادل درمان قطعی دانست.",
+          "legacyLoc": "lesson:3:0"
+        }
+      ]
     },
     {
       "heading": "درمان درد nociceptive و احشایی",
-      "body": "هر تجویز opioid باید از ابتدا با برنامهٔ پیشگیری از یبوست همراه شود؛ منتظر یبوست شدید نمانید. فصل برای درد nociceptive از استامینوفن، سپس NSAID و سپس opioid نام می‌برد؛ انتخاب و شدت درمان باید با شدت درد و خطرات بیمار تناسب داشته باشد. افزودن استامینوفن به opioid با دوز بالا الزاماً سود اضافی ندارد. در درد احشایی ممکن است ترکیب opioid با NSAID یا داروی درد نوروپاتیک مانند gabapentin یا pregabalin لازم شود؛ octreotide همراه opioid در درد احشاییِ انسداد بدخیم روده می‌تواند کمک‌کننده باشد. اثر متوسط glucocorticoidها بر درد سرطان کوچک است؛ در مرور ذکرشده، کاهش درد حدود ۰٫۸۴ نمره از ۱۰ در یک هفته بود، هرچند خستگی، تهوع و احساس سلامت هم ممکن است بهتر شوند."
+      "id": "lsn-005",
+      "paragraphs": [
+        {
+          "id": "lsn-005-p01",
+          "text": "هر تجویز opioid باید از ابتدا با برنامهٔ پیشگیری از یبوست همراه شود؛ منتظر یبوست شدید نمانید. فصل برای درد nociceptive از استامینوفن، سپس NSAID و سپس opioid نام می‌برد؛ انتخاب و شدت درمان باید با شدت درد و خطرات بیمار تناسب داشته باشد. افزودن استامینوفن به opioid با دوز بالا الزاماً سود اضافی ندارد. در درد احشایی ممکن است ترکیب opioid با NSAID یا داروی درد نوروپاتیک مانند gabapentin یا pregabalin لازم شود؛ octreotide همراه opioid در درد احشاییِ انسداد بدخیم روده می‌تواند کمک‌کننده باشد. اثر متوسط glucocorticoidها بر درد سرطان کوچک است؛ در مرور ذکرشده، کاهش درد حدود ۰٫۸۴ نمره از ۱۰ در یک هفته بود، هرچند خستگی، تهوع و احساس سلامت هم ممکن است بهتر شوند.",
+          "legacyLoc": "lesson:4:0"
+        }
+      ]
     },
     {
       "heading": "درد نوروپاتیک و نوروپاتی ناشی از شیمی‌درمانی",
-      "body": "opioidها می‌توانند در درد نوروپاتیک مؤثر باشند و ترکیب آن‌ها با gabapentin یا nortriptyline ممکن است از تک‌دارویی بهتر باشد؛ پاسخ داروها معمولاً کامل نیست و باید با آزمون درمانی محدود و ارزیابی پاسخ پیش رفت. taxaneها، platinumها، epothiloneها، eribulin، vinca alkaloidها، bortezomib و lenalidomide از عوامل مهم chemotherapy-induced peripheral neuropathy یا CIPN هستند؛ آسیب اعصاب بلند معمولاً الگوی جوراب‌ودستکش ایجاد می‌کند. در CIPN قابل‌توجه حین شیمی‌درمانی، کاهش دوز یا قطع عامل نوروتوکسیک باید با تیم درمان بررسی شود؛ مطابق فصل، روش پیشگیری قطعی دارویی اثبات نشده و cryotherapy یا compression هنوز رویکردهایی با شواهد در حال تکامل‌اند. برای CIPN تثبیت‌شده پس از پایان شیمی‌درمانی نوروتوکسیک، duloxetine شواهد سود دارد، اما اثر آن کوچک است؛ کاهش حدود ۰٫۶ تا ۱ نمره از ۱۰ گزارش شده است. اثربخشی داروهای معمول درد نوروپاتیک را نباید خودکار به CIPN تعمیم داد."
+      "id": "lsn-006",
+      "paragraphs": [
+        {
+          "id": "lsn-006-p01",
+          "text": "opioidها می‌توانند در درد نوروپاتیک مؤثر باشند و ترکیب آن‌ها با gabapentin یا nortriptyline ممکن است از تک‌دارویی بهتر باشد؛ پاسخ داروها معمولاً کامل نیست و باید با آزمون درمانی محدود و ارزیابی پاسخ پیش رفت. taxaneها، platinumها، epothiloneها، eribulin، vinca alkaloidها، bortezomib و lenalidomide از عوامل مهم chemotherapy-induced peripheral neuropathy یا CIPN هستند؛ آسیب اعصاب بلند معمولاً الگوی جوراب‌ودستکش ایجاد می‌کند. در CIPN قابل‌توجه حین شیمی‌درمانی، کاهش دوز یا قطع عامل نوروتوکسیک باید با تیم درمان بررسی شود؛ مطابق فصل، روش پیشگیری قطعی دارویی اثبات نشده و cryotherapy یا compression هنوز رویکردهایی با شواهد در حال تکامل‌اند. برای CIPN تثبیت‌شده پس از پایان شیمی‌درمانی نوروتوکسیک، duloxetine شواهد سود دارد، اما اثر آن کوچک است؛ کاهش حدود ۰٫۶ تا ۱ نمره از ۱۰ گزارش شده است. اثربخشی داروهای معمول درد نوروپاتیک را نباید خودکار به CIPN تعمیم داد.",
+          "legacyLoc": "lesson:5:0"
+        }
+      ]
     },
     {
       "heading": "موکوزیت دهان و دستگاه گوارش",
-      "body": "موکوزیت اغلب ۷ تا ۱۰ روز پس از درمان رخ می‌دهد. در دهان، thrush، آفت و herpes یا عفونت‌های دیگر باید افتراق داده شوند؛ اسهال با زمان‌بندی نامتناسب نیازمند بررسی عفونت و مصرف بیش از حد ملین است. doxorubicin، fluorouracil و عوامل هدفمند مانند everolimus و palbociclib می‌توانند موکوزیت ایجاد کنند؛ آسیب گوارشی با اسهال حجیم، کرامپ و از دست‌رفتن مایع همراه می‌شود. مکیدن یخ هنگام انفوزیون bolus fluorouracil، یعنی oral cryotherapy، می‌تواند بروز و شدت موکوزیت را حدود ۵۰٪ کم کند؛ این نتیجه را نباید بدون شواهد به هر رژیم دارویی تعمیم داد. برای درد موکوزیت دهانی، لیدوکائین ویسکوز ۲٪ به‌کار می‌رود. شست‌وشوی موضعی با glucocorticoid می‌تواند مفید باشد، هرچند شواهد پیشگیری یکدست نیست؛ زخم‌ها ممکن است به steroid موضعی قوی و در موارد منتخب به دورهٔ کوتاه سیستمیک نیاز داشته باشند. پس از ارزیابی علت و وضعیت مایعات، loperamide خط اول اسهال موکوزیتی است؛ octreotide برای موارد مقاوم مطرح می‌شود. علت اسهال و شدت آن باید پیش از نسبت‌دادن صرف به موکوزیت روشن شود."
+      "id": "lsn-007",
+      "paragraphs": [
+        {
+          "id": "lsn-007-p01",
+          "text": "موکوزیت اغلب ۷ تا ۱۰ روز پس از درمان رخ می‌دهد. در دهان، thrush، آفت و herpes یا عفونت‌های دیگر باید افتراق داده شوند؛ اسهال با زمان‌بندی نامتناسب نیازمند بررسی عفونت و مصرف بیش از حد ملین است. doxorubicin، fluorouracil و عوامل هدفمند مانند everolimus و palbociclib می‌توانند موکوزیت ایجاد کنند؛ آسیب گوارشی با اسهال حجیم، کرامپ و از دست‌رفتن مایع همراه می‌شود. مکیدن یخ هنگام انفوزیون bolus fluorouracil، یعنی oral cryotherapy، می‌تواند بروز و شدت موکوزیت را حدود ۵۰٪ کم کند؛ این نتیجه را نباید بدون شواهد به هر رژیم دارویی تعمیم داد. برای درد موکوزیت دهانی، لیدوکائین ویسکوز ۲٪ به‌کار می‌رود. شست‌وشوی موضعی با glucocorticoid می‌تواند مفید باشد، هرچند شواهد پیشگیری یکدست نیست؛ زخم‌ها ممکن است به steroid موضعی قوی و در موارد منتخب به دورهٔ کوتاه سیستمیک نیاز داشته باشند. پس از ارزیابی علت و وضعیت مایعات، loperamide خط اول اسهال موکوزیتی است؛ octreotide برای موارد مقاوم مطرح می‌شود. علت اسهال و شدت آن باید پیش از نسبت‌دادن صرف به موکوزیت روشن شود.",
+          "legacyLoc": "lesson:6:0"
+        }
+      ]
     },
     {
       "heading": "تهوع و استفراغ ناشی از شیمی‌درمانی",
-      "body": "پیشگیری شیمی‌درمانی بسیار emetogenic با ترکیب دگزامتازون، آنتاگونیست 5-HT3، آنتاگونیست NK1 و olanzapine انجام می‌شود؛ پیشگیری از آغاز درمان شروع می‌شود و معمولاً چند روز ادامه می‌یابد. در توصیف فصل، آنتاگونیست 5-HT3 بیشتر برای فاز حادِ ۲۴ ساعت اول و آنتاگونیست NK1 برای فاز تأخیری اهمیت دارد؛ بنابراین NK1 به ترکیب اضافه می‌شود و جایگزین 5-HT3 نیست. cisplatin و doxorubicin از مثال‌های داروهای با قابلیت قابل‌توجه ایجاد تهوع و استفراغ‌اند؛ خطر ضدتهوع باید بر اساس رژیم کامل درمان تعیین شود. olanzapine با افزوده‌شدن به ترکیب سه‌دارویی، کنترل تهوع و استفراغ را بهتر می‌کند."
+      "id": "lsn-008",
+      "paragraphs": [
+        {
+          "id": "lsn-008-p01",
+          "text": "پیشگیری شیمی‌درمانی بسیار emetogenic با ترکیب دگزامتازون، آنتاگونیست 5-HT3، آنتاگونیست NK1 و olanzapine انجام می‌شود؛ پیشگیری از آغاز درمان شروع می‌شود و معمولاً چند روز ادامه می‌یابد. در توصیف فصل، آنتاگونیست 5-HT3 بیشتر برای فاز حادِ ۲۴ ساعت اول و آنتاگونیست NK1 برای فاز تأخیری اهمیت دارد؛ بنابراین NK1 به ترکیب اضافه می‌شود و جایگزین 5-HT3 نیست. cisplatin و doxorubicin از مثال‌های داروهای با قابلیت قابل‌توجه ایجاد تهوع و استفراغ‌اند؛ خطر ضدتهوع باید بر اساس رژیم کامل درمان تعیین شود. olanzapine با افزوده‌شدن به ترکیب سه‌دارویی، کنترل تهوع و استفراغ را بهتر می‌کند.",
+          "legacyLoc": "lesson:7:0"
+        }
+      ]
     },
     {
       "heading": "تهوع مستقل از شیمی‌درمانی",
-      "body": "در تهوع خارج از شیمی‌درمانی، انسداد روده، opioid و سایر داروها، اختلالات الکترولیتی، متاستاز مغزی، رادیوتراپی و وضعیت پس از بیهوشی را بررسی کنید؛ صرف وجود سرطان علت را مشخص نمی‌کند. در مطالعات کوچک سرطان پیشرفته، olanzapine با دوز پایین ۵ mg/day و در مطالعه‌ای دیگر ۲٫۵ mg/day تهوع مستقل از شیمی‌درمانی بسیار emetogenic را کاهش داده است؛ این درمان علامتی باید همراه بررسی علت باشد."
+      "id": "lsn-009",
+      "paragraphs": [
+        {
+          "id": "lsn-009-p01",
+          "text": "در تهوع خارج از شیمی‌درمانی، انسداد روده، opioid و سایر داروها، اختلالات الکترولیتی، متاستاز مغزی، رادیوتراپی و وضعیت پس از بیهوشی را بررسی کنید؛ صرف وجود سرطان علت را مشخص نمی‌کند. در مطالعات کوچک سرطان پیشرفته، olanzapine با دوز پایین ۵ mg/day و در مطالعه‌ای دیگر ۲٫۵ mg/day تهوع مستقل از شیمی‌درمانی بسیار emetogenic را کاهش داده است؛ این درمان علامتی باید همراه بررسی علت باشد.",
+          "legacyLoc": "lesson:8:0"
+        }
+      ]
     },
     {
       "heading": "آنورکسی و کاشکسی: تعریف و هدف درمان",
-      "body": "کاشکسی سرطان فرایندی چندعاملی با اتلاف عضلهٔ اسکلتی و بافت چربی، اختلال تنظیم متابولیسم و کاهش دریافت غذایی است؛ معمولاً با افزودن صرف کالری و مواد مغذی کاملاً برنمی‌گردد. اشتها را از بیمار و خانواده بپرسید؛ کاهش وزن، BMI، خستگی، CRP و شواهد sarcopenia در CT می‌توانند به ارزیابی کاشکسی کمک کنند. مشکلات مکانیکی خوردن، درمان دارویی، رادیوتراپی و ناامنی غذایی نیز باید بررسی شوند. مشاورهٔ تغذیه قابل ارائه است و گاهی وزن را بهتر می‌کند، اما اثر آن بزرگ نیست. لولهٔ تغذیه و تغذیهٔ وریدی برای کاشکسی سرطان به‌طور روتین توصیه نمی‌شوند؛ تصمیم خاص بیمار با این حکم عمومی تفاوت دارد.\n\nدر تعریف‌های نقل‌شده، کاهش ۵ یا ۱۰٪ وزن پیش از سرطان مطرح است؛ تعریف‌های دقیق‌تر علاوه بر وزن از خستگی، آنورکسی، التهاب، BMI کمتر از ۲۰ و sarcopenia استفاده می‌کنند. یک معیار واحد را نباید جایگزین ارزیابی چندبعدی کرد."
+      "id": "lsn-010",
+      "paragraphs": [
+        {
+          "id": "lsn-010-p01",
+          "text": "کاشکسی سرطان فرایندی چندعاملی با اتلاف عضلهٔ اسکلتی و بافت چربی، اختلال تنظیم متابولیسم و کاهش دریافت غذایی است؛ معمولاً با افزودن صرف کالری و مواد مغذی کاملاً برنمی‌گردد. اشتها را از بیمار و خانواده بپرسید؛ کاهش وزن، BMI، خستگی، CRP و شواهد sarcopenia در CT می‌توانند به ارزیابی کاشکسی کمک کنند. مشکلات مکانیکی خوردن، درمان دارویی، رادیوتراپی و ناامنی غذایی نیز باید بررسی شوند. مشاورهٔ تغذیه قابل ارائه است و گاهی وزن را بهتر می‌کند، اما اثر آن بزرگ نیست. لولهٔ تغذیه و تغذیهٔ وریدی برای کاشکسی سرطان به‌طور روتین توصیه نمی‌شوند؛ تصمیم خاص بیمار با این حکم عمومی تفاوت دارد.",
+          "legacyLoc": "lesson:9:0"
+        },
+        {
+          "id": "lsn-010-p02",
+          "text": "در تعریف‌های نقل‌شده، کاهش ۵ یا ۱۰٪ وزن پیش از سرطان مطرح است؛ تعریف‌های دقیق‌تر علاوه بر وزن از خستگی، آنورکسی، التهاب، BMI کمتر از ۲۰ و sarcopenia استفاده می‌کنند. یک معیار واحد را نباید جایگزین ارزیابی چندبعدی کرد.",
+          "legacyLoc": "lesson:9:1"
+        }
+      ]
     },
     {
       "heading": "داروهای آنورکسی و کاشکسی",
-      "body": "فصل olanzapine را گزینهٔ خط اول دارویی آنورکسی می‌داند؛ در کارآزمایی ۱۲۴ بیمار، دوز ۲٫۵ mg هنگام خواب با افزایش وزن حداقل ۵٪ در ۶۰٪ افراد، در برابر ۹٪ با placebo، همراه بود. mirtazapine در کارآزمایی بزرگِ ذکرشده برای آنورکسی سرطان مؤثر نبود. megestrol acetate و corticosteroidها اشتها و مقداری وزن را زیاد می‌کنند، اما عارضه دارند و بهبود بقا نشان نداده‌اند. ponsegromab آنتی‌بادی ضد GDF-15 است که در مطالعهٔ فاز ۲ کاشکسی، اشتها، وزن و فعالیت را بهتر کرد؛ در زمان نگارش این فصل تأیید FDA نداشت و نباید به‌عنوان درمان استانداردِ تأییدشده معرفی شود."
+      "id": "lsn-011",
+      "paragraphs": [
+        {
+          "id": "lsn-011-p01",
+          "text": "فصل olanzapine را گزینهٔ خط اول دارویی آنورکسی می‌داند؛ در کارآزمایی ۱۲۴ بیمار، دوز ۲٫۵ mg هنگام خواب با افزایش وزن حداقل ۵٪ در ۶۰٪ افراد، در برابر ۹٪ با placebo، همراه بود. mirtazapine در کارآزمایی بزرگِ ذکرشده برای آنورکسی سرطان مؤثر نبود. megestrol acetate و corticosteroidها اشتها و مقداری وزن را زیاد می‌کنند، اما عارضه دارند و بهبود بقا نشان نداده‌اند. ponsegromab آنتی‌بادی ضد GDF-15 است که در مطالعهٔ فاز ۲ کاشکسی، اشتها، وزن و فعالیت را بهتر کرد؛ در زمان نگارش این فصل تأیید FDA نداشت و نباید به‌عنوان درمان استانداردِ تأییدشده معرفی شود.",
+          "legacyLoc": "lesson:10:0"
+        }
+      ]
     },
     {
       "heading": "یبوست و پیشگیری همراه opioid",
-      "body": "opioidها، ondansetron، برخی درمان‌های سرطان، داروهای همراه، کم‌تحرکی، کم‌آبی، دریافت کم فیبر، هایپرکلسمی و کم‌کاری تیروئید در یبوست نقش دارند؛ زمان آخرین دفع و الگوی معمول بیمار مهم‌تر از تکیه بر یک نمرهٔ ثابت‌اند. از ابتدا برنامهٔ پیشگیری بگذارید. senna همراه هیدراتاسیون انتخاب اول فصل است؛ در صورت ناکافی‌بودن پاسخ یا عدم تحمل، polyethylene glycol اضافه یا جایگزین می‌شود. lactulose و sorbitol ممکن است به‌علت طعم کمتر تحمل شوند. در یبوست وابسته به opioid که به اقدامات معمول پاسخ نمی‌دهد، آنتاگونیست‌های محیطی گیرندهٔ opioid مطرح‌اند؛ هدف، معکوس‌کردن اثر گوارشی بدون ازبین‌بردن اثر مرکزی ضد درد است."
+      "id": "lsn-012",
+      "paragraphs": [
+        {
+          "id": "lsn-012-p01",
+          "text": "opioidها، ondansetron، برخی درمان‌های سرطان، داروهای همراه، کم‌تحرکی، کم‌آبی، دریافت کم فیبر، هایپرکلسمی و کم‌کاری تیروئید در یبوست نقش دارند؛ زمان آخرین دفع و الگوی معمول بیمار مهم‌تر از تکیه بر یک نمرهٔ ثابت‌اند. از ابتدا برنامهٔ پیشگیری بگذارید. senna همراه هیدراتاسیون انتخاب اول فصل است؛ در صورت ناکافی‌بودن پاسخ یا عدم تحمل، polyethylene glycol اضافه یا جایگزین می‌شود. lactulose و sorbitol ممکن است به‌علت طعم کمتر تحمل شوند. در یبوست وابسته به opioid که به اقدامات معمول پاسخ نمی‌دهد، آنتاگونیست‌های محیطی گیرندهٔ opioid مطرح‌اند؛ هدف، معکوس‌کردن اثر گوارشی بدون ازبین‌بردن اثر مرکزی ضد درد است.",
+          "legacyLoc": "lesson:11:0"
+        }
+      ]
     },
     {
       "heading": "تنگی نفس: ارزیابی علت و پیش‌آگهی",
-      "body": "تنگی نفس یا air hunger تجربه‌ای ذهنی است و شدت آن را خود بیمار گزارش می‌کند؛ SpO2 به ارزیابی هیپوکسمی کمک می‌کند ولی جانشین تجربهٔ بیمار نیست. هیپوکسمی، پنومونی، آمبولی ریه، افیوژن پلور، COPD، آسم و انسداد راه هوایی را بررسی کنید. مرور داروها برای pneumonitis ناشی از ایمونوتراپی ضروری است؛ این عارضه ممکن است ماه‌ها پس از قطع درمان رخ دهد. تنگی نفس در سرطان پیشرفته می‌تواند با پیش‌آگهی کوتاه همراه باشد؛ ارزیابی منظم، ارجاع به مراقبت تسکینی و گفت‌وگوی صادقانه دربارهٔ پیش‌آگهی، اهداف مراقبت و advance directive باید مدنظر باشد."
+      "id": "lsn-013",
+      "paragraphs": [
+        {
+          "id": "lsn-013-p01",
+          "text": "تنگی نفس یا air hunger تجربه‌ای ذهنی است و شدت آن را خود بیمار گزارش می‌کند؛ SpO2 به ارزیابی هیپوکسمی کمک می‌کند ولی جانشین تجربهٔ بیمار نیست. هیپوکسمی، پنومونی، آمبولی ریه، افیوژن پلور، COPD، آسم و انسداد راه هوایی را بررسی کنید. مرور داروها برای pneumonitis ناشی از ایمونوتراپی ضروری است؛ این عارضه ممکن است ماه‌ها پس از قطع درمان رخ دهد. تنگی نفس در سرطان پیشرفته می‌تواند با پیش‌آگهی کوتاه همراه باشد؛ ارزیابی منظم، ارجاع به مراقبت تسکینی و گفت‌وگوی صادقانه دربارهٔ پیش‌آگهی، اهداف مراقبت و advance directive باید مدنظر باشد.",
+          "legacyLoc": "lesson:12:0"
+        }
+      ]
     },
     {
       "heading": "تنگی نفس: درمان علامتی",
-      "body": "درمان سرطان در صورت احتمال سود و اصلاح علل همراه مقدم‌اند؛ opioid با دوز پایین می‌تواند air hunger را کاهش دهد، بنزودیازپین با دوز پایین در اضطراب منتخب کمک می‌کند و جریان هوای خنکِ پنکه روی صورت ممکن است آرامش ایجاد کند. در تنگی نفس همراه هیپوکسمی، اکسیژن مکمل برای SpO2 برابر یا کمتر از ۹۰٪ در هوای اتاق در دسترس باشد؛ اکسیژن صرفاً بر اساس احساس تنگی نفس برای همهٔ بیماران تجویز نمی‌شود. HFNO ممکن است پلی به درمان بعدی باشد، اما وابستگی به آن به‌علت هزینه و امکانات می‌تواند انتقال به منزل یا hospice را دشوار کند؛ پیش از شروع، هدف و امکان ادامهٔ مراقبت روشن شود."
+      "id": "lsn-014",
+      "paragraphs": [
+        {
+          "id": "lsn-014-p01",
+          "text": "درمان سرطان در صورت احتمال سود و اصلاح علل همراه مقدم‌اند؛ opioid با دوز پایین می‌تواند air hunger را کاهش دهد، بنزودیازپین با دوز پایین در اضطراب منتخب کمک می‌کند و جریان هوای خنکِ پنکه روی صورت ممکن است آرامش ایجاد کند. در تنگی نفس همراه هیپوکسمی، اکسیژن مکمل برای SpO2 برابر یا کمتر از ۹۰٪ در هوای اتاق در دسترس باشد؛ اکسیژن صرفاً بر اساس احساس تنگی نفس برای همهٔ بیماران تجویز نمی‌شود. HFNO ممکن است پلی به درمان بعدی باشد، اما وابستگی به آن به‌علت هزینه و امکانات می‌تواند انتقال به منزل یا hospice را دشوار کند؛ پیش از شروع، هدف و امکان ادامهٔ مراقبت روشن شود.",
+          "legacyLoc": "lesson:13:0"
+        }
+      ]
     },
     {
       "heading": "گرگرفتگی در درمان سرطان پستان و پروستات",
-      "body": "کاهش استروژن یا تستوسترون، به‌ویژه افت سریع، علت نزدیک گرگرفتگی است؛ حدود دوسوم زنان درمان‌شده برای سرطان پستان و سه‌چهارم مردان تحت androgen deprivation آن را تجربه می‌کنند و علائم ممکن است دهه‌ها ادامه یابند. برای زنان، citalopram با دوز ۲۰ mg/day از گزینه‌های مورد ترجیح نویسندگان است؛ gabapentin و oxybutynin هم شواهد سود دارند. oxybutynin در سالمندان به‌علت نگرانی از عوارض شناختی به احتیاط نیاز دارد. venlafaxine در کارآزمایی تصادفی مردان مبتلا به سرطان پروستات سود معنی‌دار نشان نداد؛ برای gabapentin با دوز ۹۰۰ mg/day در مردان شواهد تصادفی مثبت وجود دارد. oxybutynin و آنالوگ‌های پروژسترون نیز می‌توانند مؤثر باشند. fezolinetant آنتاگونیست گیرندهٔ NK3 و گزینه‌ای غیرهورمونی برای گرگرفتگی زنان است؛ دسترس‌پذیری بالینی آن از ۲۰۲۳ در فصل ذکر شده است. درمان‌های پروژستینی برای موارد منتخب و مقاوم مطرح‌اند، نه به‌عنوان جایگزین خودکار مشاورهٔ انکولوژی."
+      "id": "lsn-015",
+      "paragraphs": [
+        {
+          "id": "lsn-015-p01",
+          "text": "کاهش استروژن یا تستوسترون، به‌ویژه افت سریع، علت نزدیک گرگرفتگی است؛ حدود دوسوم زنان درمان‌شده برای سرطان پستان و سه‌چهارم مردان تحت androgen deprivation آن را تجربه می‌کنند و علائم ممکن است دهه‌ها ادامه یابند. برای زنان، citalopram با دوز ۲۰ mg/day از گزینه‌های مورد ترجیح نویسندگان است؛ gabapentin و oxybutynin هم شواهد سود دارند. oxybutynin در سالمندان به‌علت نگرانی از عوارض شناختی به احتیاط نیاز دارد. venlafaxine در کارآزمایی تصادفی مردان مبتلا به سرطان پروستات سود معنی‌دار نشان نداد؛ برای gabapentin با دوز ۹۰۰ mg/day در مردان شواهد تصادفی مثبت وجود دارد. oxybutynin و آنالوگ‌های پروژسترون نیز می‌توانند مؤثر باشند. fezolinetant آنتاگونیست گیرندهٔ NK3 و گزینه‌ای غیرهورمونی برای گرگرفتگی زنان است؛ دسترس‌پذیری بالینی آن از ۲۰۲۳ در فصل ذکر شده است. درمان‌های پروژستینی برای موارد منتخب و مقاوم مطرح‌اند، نه به‌عنوان جایگزین خودکار مشاورهٔ انکولوژی.",
+          "legacyLoc": "lesson:14:0"
+        }
+      ]
     },
     {
       "heading": "Nasal vestibulitis: علامتی که باید فعالانه پرسید",
-      "body": "paclitaxel، nab-paclitaxel و bevacizumab از درمان‌های مرتبط با علائم بینی مانند خشکی، درد، دلمه و خونریزی‌اند؛ در مطالعات ذکرشده بیش از ۷۵٪ برخی گروه‌ها علامت داشتند. معاینه برای آسیب مخاط و عفونت ثانویه و پرسش دربارهٔ درد، خشکی، دلمه و خونریزی لازم است. اسپری saline کمک می‌کند؛ برای rose geranium در sesame oil نیز دادهٔ سود گزارش شده، اما فرآوردهٔ ترکیبی است و شواهد آن هم‌تراز کارآزمایی‌های بزرگ نیست."
+      "id": "lsn-016",
+      "paragraphs": [
+        {
+          "id": "lsn-016-p01",
+          "text": "paclitaxel، nab-paclitaxel و bevacizumab از درمان‌های مرتبط با علائم بینی مانند خشکی، درد، دلمه و خونریزی‌اند؛ در مطالعات ذکرشده بیش از ۷۵٪ برخی گروه‌ها علامت داشتند. معاینه برای آسیب مخاط و عفونت ثانویه و پرسش دربارهٔ درد، خشکی، دلمه و خونریزی لازم است. اسپری saline کمک می‌کند؛ برای rose geranium در sesame oil نیز دادهٔ سود گزارش شده، اما فرآوردهٔ ترکیبی است و شواهد آن هم‌تراز کارآزمایی‌های بزرگ نیست.",
+          "legacyLoc": "lesson:15:0"
+        }
+      ]
     }
   ],
   "flashcards": [
@@ -752,15 +874,21 @@
       "steps": [
         {
           "prompt": "آیا می‌توان علامت را مستقیماً به پیشرفت سرطان نسبت داد؟",
-          "expectedAnswer": "خیر؛ کم‌خونی، اختلال تیروئید، هایپرکلسمی و سایر الکترولیت‌ها، نارسایی کلیه و افسردگی یا demoralization ارزیابی شوند."
+          "expectedAnswer": "خیر؛ کم‌خونی، اختلال تیروئید، هایپرکلسمی و سایر الکترولیت‌ها، نارسایی کلیه و افسردگی یا demoralization ارزیابی شوند.",
+          "id": "heme-cancer-symptom-control-kf-1-step-001",
+          "legacyIndex": 0
         },
         {
           "prompt": "کدام عارضهٔ دارویی با وجود قطع درمان هنوز مطرح است؟",
-          "expectedAnswer": "کم‌کاری تیروئید و در ارزیابی مناسب hypophysitis ناشی از checkpoint inhibitor؛ شروع تأخیری ممکن است."
+          "expectedAnswer": "کم‌کاری تیروئید و در ارزیابی مناسب hypophysitis ناشی از checkpoint inhibitor؛ شروع تأخیری ممکن است.",
+          "id": "heme-cancer-symptom-control-kf-1-step-002",
+          "legacyIndex": 1
         },
         {
           "prompt": "پس از اصلاح علت برگشت‌پذیر، راهکار پایه چیست؟",
-          "expectedAnswer": "فعالیت بدنی ساختارمند و متناسب، ترجیحاً بازگشت تدریجی به فعالیت قبلی؛ داروهای محرک یا steroid برای بیمار منتخب و با ارزیابی پاسخ‌اند."
+          "expectedAnswer": "فعالیت بدنی ساختارمند و متناسب، ترجیحاً بازگشت تدریجی به فعالیت قبلی؛ داروهای محرک یا steroid برای بیمار منتخب و با ارزیابی پاسخ‌اند.",
+          "id": "heme-cancer-symptom-control-kf-1-step-003",
+          "legacyIndex": 2
         }
       ]
     },
@@ -771,15 +899,21 @@
       "steps": [
         {
           "prompt": "نوع درد و پدیدهٔ درد با تماس را نام ببرید.",
-          "expectedAnswer": "درد نوروپاتیک و allodynia؛ الگوی اعصاب بلند با CIPN سازگار است."
+          "expectedAnswer": "درد نوروپاتیک و allodynia؛ الگوی اعصاب بلند با CIPN سازگار است.",
+          "id": "heme-cancer-symptom-control-kf-2-step-001",
+          "legacyIndex": 0
         },
         {
           "prompt": "تصمیم دربارهٔ درمان عامل مسبب چیست؟",
-          "expectedAnswer": "شدت و اثر عملکردی ثبت و با انکولوژی دربارهٔ کاهش دوز یا قطع عامل نوروتوکسیک بحث شود؛ پیشگیری دارویی قطعی را نباید وعده داد."
+          "expectedAnswer": "شدت و اثر عملکردی ثبت و با انکولوژی دربارهٔ کاهش دوز یا قطع عامل نوروتوکسیک بحث شود؛ پیشگیری دارویی قطعی را نباید وعده داد.",
+          "id": "heme-cancer-symptom-control-kf-2-step-002",
+          "legacyIndex": 1
         },
         {
           "prompt": "اگر پس از پایان درمان CIPN دردناک باقی ماند کدام دارو شواهد اختصاصی دارد؟",
-          "expectedAnswer": "duloxetine، با انتظار سود محدود؛ سایر داروهای درد نوروپاتیک به‌طور خودکار شواهد برابر برای CIPN ندارند."
+          "expectedAnswer": "duloxetine، با انتظار سود محدود؛ سایر داروهای درد نوروپاتیک به‌طور خودکار شواهد برابر برای CIPN ندارند.",
+          "id": "heme-cancer-symptom-control-kf-2-step-003",
+          "legacyIndex": 2
         }
       ]
     },
@@ -790,15 +924,21 @@
       "steps": [
         {
           "prompt": "پیش از نسبت‌دادن اسهال به موکوزیت چه بررسی‌ای لازم است؟",
-          "expectedAnswer": "زمان‌بندی درمان، عفونت، مصرف ملین، شدت اسهال و وضعیت مایعات بررسی شوند."
+          "expectedAnswer": "زمان‌بندی درمان، عفونت، مصرف ملین، شدت اسهال و وضعیت مایعات بررسی شوند.",
+          "id": "heme-cancer-symptom-control-kf-3-step-001",
+          "legacyIndex": 0
         },
         {
           "prompt": "اگر اسهال موکوزیتی تأیید و مقاوم باشد چه توالی درمانی مطرح است؟",
-          "expectedAnswer": "اصلاح مایعات و علت، سپس loperamide و در مقاومت octreotide بر اساس ارزیابی بالینی."
+          "expectedAnswer": "اصلاح مایعات و علت، سپس loperamide و در مقاومت octreotide بر اساس ارزیابی بالینی.",
+          "id": "heme-cancer-symptom-control-kf-3-step-002",
+          "legacyIndex": 1
         },
         {
           "prompt": "برای دورهٔ بعدی رژیم بسیار emetogenic چه پیشگیری‌ای مطرح است؟",
-          "expectedAnswer": "دگزامتازون، آنتاگونیست 5-HT3، آنتاگونیست NK1 و olanzapine، از آغاز شیمی‌درمانی و معمولاً چند روز پس از آن."
+          "expectedAnswer": "دگزامتازون، آنتاگونیست 5-HT3، آنتاگونیست NK1 و olanzapine، از آغاز شیمی‌درمانی و معمولاً چند روز پس از آن.",
+          "id": "heme-cancer-symptom-control-kf-3-step-003",
+          "legacyIndex": 2
         }
       ]
     },
@@ -809,15 +949,21 @@
       "steps": [
         {
           "prompt": "توضیح پایه دربارهٔ ماهیت مشکل چیست؟",
-          "expectedAnswer": "کاشکسی صرفاً کمبود کالری نیست؛ تغییرات متابولیک، اتلاف عضله و چربی و کاهش دریافت نقش دارند و جایگزینی کالری به‌تنهایی معمولاً کافی نیست."
+          "expectedAnswer": "کاشکسی صرفاً کمبود کالری نیست؛ تغییرات متابولیک، اتلاف عضله و چربی و کاهش دریافت نقش دارند و جایگزینی کالری به‌تنهایی معمولاً کافی نیست.",
+          "id": "heme-cancer-symptom-control-kf-4-step-001",
+          "legacyIndex": 0
         },
         {
           "prompt": "رویکرد تغذیه‌ای چیست؟",
-          "expectedAnswer": "بررسی مشکلات مکانیکی خوردن، درمان، ناامنی غذایی و ارائهٔ مشاورهٔ تغذیه؛ تغذیهٔ لوله‌ای یا وریدی برای کاشکسی به‌طور روتین توصیه نمی‌شود."
+          "expectedAnswer": "بررسی مشکلات مکانیکی خوردن، درمان، ناامنی غذایی و ارائهٔ مشاورهٔ تغذیه؛ تغذیهٔ لوله‌ای یا وریدی برای کاشکسی به‌طور روتین توصیه نمی‌شود.",
+          "id": "heme-cancer-symptom-control-kf-4-step-002",
+          "legacyIndex": 1
         },
         {
           "prompt": "گزینهٔ دارویی با شواهد ذکرشده چیست؟",
-          "expectedAnswer": "olanzapine کم‌دوز؛ mirtazapine سود ثابت‌شده در کارآزمایی مذکور ندارد و megestrol یا steroidها با وجود بهبود اشتها، زیان دارند و بقا را بهتر نکرده‌اند."
+          "expectedAnswer": "olanzapine کم‌دوز؛ mirtazapine سود ثابت‌شده در کارآزمایی مذکور ندارد و megestrol یا steroidها با وجود بهبود اشتها، زیان دارند و بقا را بهتر نکرده‌اند.",
+          "id": "heme-cancer-symptom-control-kf-4-step-003",
+          "legacyIndex": 2
         }
       ]
     },
@@ -828,15 +974,21 @@
       "steps": [
         {
           "prompt": "چه علل قابل‌درمانی باید بررسی شوند؟",
-          "expectedAnswer": "هیپوکسمی، پنومونی، PE، افیوژن، COPD یا آسم، انسداد و pneumonitis ناشی از ایمونوتراپی؛ قطع قبلی دارو این عارضه را رد نمی‌کند."
+          "expectedAnswer": "هیپوکسمی، پنومونی، PE، افیوژن، COPD یا آسم، انسداد و pneumonitis ناشی از ایمونوتراپی؛ قطع قبلی دارو این عارضه را رد نمی‌کند.",
+          "id": "heme-cancer-symptom-control-kf-5-step-001",
+          "legacyIndex": 0
         },
         {
           "prompt": "چه درمان علامتی در کنار درمان علت مطرح است؟",
-          "expectedAnswer": "اکسیژن برای هیپوکسمی، opioid کم‌دوز در بیمار منتخب و هوای خنک روی صورت؛ اضطراب نیز درمان شود."
+          "expectedAnswer": "اکسیژن برای هیپوکسمی، opioid کم‌دوز در بیمار منتخب و هوای خنک روی صورت؛ اضطراب نیز درمان شود.",
+          "id": "heme-cancer-symptom-control-kf-5-step-002",
+          "legacyIndex": 1
         },
         {
           "prompt": "پیش از وابسته‌کردن بیمار به HFNO چه باید روشن شود؟",
-          "expectedAnswer": "احتمال سود درمان بعدی، اهداف مراقبت، پیش‌آگهی و امکان انتقال منزل یا hospice؛ مراقبت تسکینی و advance directive مطرح شوند."
+          "expectedAnswer": "احتمال سود درمان بعدی، اهداف مراقبت، پیش‌آگهی و امکان انتقال منزل یا hospice؛ مراقبت تسکینی و advance directive مطرح شوند.",
+          "id": "heme-cancer-symptom-control-kf-5-step-003",
+          "legacyIndex": 2
         }
       ]
     },
@@ -847,15 +999,21 @@
       "steps": [
         {
           "prompt": "چه علل یبوست و چه برنامه‌ای را بررسی می‌کنید؟",
-          "expectedAnswer": "داروها، کم‌آبی، کم‌تحرکی، هایپرکلسمی و کم‌کاری تیروئید؛ وجود برنامهٔ پیشگیرانه با senna و در صورت نیاز PEG بررسی شود."
+          "expectedAnswer": "داروها، کم‌آبی، کم‌تحرکی، هایپرکلسمی و کم‌کاری تیروئید؛ وجود برنامهٔ پیشگیرانه با senna و در صورت نیاز PEG بررسی شود.",
+          "id": "heme-cancer-symptom-control-kf-6-step-001",
+          "legacyIndex": 0
         },
         {
           "prompt": "اگر درمان متعارف کافی نباشد کدام گروه مطرح است؟",
-          "expectedAnswer": "آنتاگونیست محیطی گیرندهٔ opioid برای یبوست وابسته به opioid مقاوم، با هدف حفظ اثر مرکزی ضد درد."
+          "expectedAnswer": "آنتاگونیست محیطی گیرندهٔ opioid برای یبوست وابسته به opioid مقاوم، با هدف حفظ اثر مرکزی ضد درد.",
+          "id": "heme-cancer-symptom-control-kf-6-step-002",
+          "legacyIndex": 1
         },
         {
           "prompt": "علامت بینی چه ارتباطی با درمان دارد؟",
-          "expectedAnswer": "nasal vestibulitis با bevacizumab یا taxaneها مطرح است؛ معاینه برای آسیب و عفونت، saline و مراقبت مناسب لازم است."
+          "expectedAnswer": "nasal vestibulitis با bevacizumab یا taxaneها مطرح است؛ معاینه برای آسیب و عفونت، saline و مراقبت مناسب لازم است.",
+          "id": "heme-cancer-symptom-control-kf-6-step-003",
+          "legacyIndex": 2
         }
       ]
     }
@@ -864,45 +1022,210 @@
     {
       "caption": "فرم ESAS-r برای ارزیابی علائم به گزارش بیمار",
       "sourceUrl": "data:image/png;base64,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",
-      "note": "تصویر هاریسون؛ منبع: Harrison's Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill. شکل 74-1، استخراج مستقیم از PDF. وضوح تصویر در فایل اصلی محدود است؛ برای مرور خوانا، جدول «راهنمای فارسی پایش علائم با ESAS-r» و درسنامهٔ ارزیابی علائم را ببینید."
+      "note": "تصویر هاریسون؛ منبع: Harrison's Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill. شکل 74-1، استخراج مستقیم از PDF. وضوح تصویر در فایل اصلی محدود است؛ برای مرور خوانا، جدول «راهنمای فارسی پایش علائم با ESAS-r» و درسنامهٔ ارزیابی علائم را ببینید.",
+      "id": "img-001"
     }
   ],
   "tables": [
     {
       "title": "ارزیابی هدفمند علائم شایع",
-      "markdown": "| علامت | علل قابل بررسی | نکتهٔ تصمیم |\n| --- | --- | --- |\n| خستگی | کم‌خونی، تیروئید، کلسیم/الکترولیت، کلیه، افسردگی، درمان | عارضهٔ ایمونوتراپی ممکن است تأخیری باشد |\n| درد | نوع nociceptive، احشایی، نوروپاتیک یا incident | شدت قابل‌قبول برای خود بیمار و سابقهٔ درمان را بپرسید |\n| اسهال | موکوزیت، عفونت، ملین | زمان‌بندی نامتناسب نیازمند افتراق است |\n| تهوع | رژیم دارویی، انسداد، اختلال متابولیک، مغز | پیشگیری CINV را از درمان تهوع غیرشیمی‌درمانی جدا کنید |\n| تنگی نفس | PE، پنومونی، افیوژن، انسداد، pneumonitis | SpO2 جای گزارش شدت علامت را نمی‌گیرد |"
+      "markdown": "| علامت | علل قابل بررسی | نکتهٔ تصمیم |\n| --- | --- | --- |\n| خستگی | کم‌خونی، تیروئید، کلسیم/الکترولیت، کلیه، افسردگی، درمان | عارضهٔ ایمونوتراپی ممکن است تأخیری باشد |\n| درد | نوع nociceptive، احشایی، نوروپاتیک یا incident | شدت قابل‌قبول برای خود بیمار و سابقهٔ درمان را بپرسید |\n| اسهال | موکوزیت، عفونت، ملین | زمان‌بندی نامتناسب نیازمند افتراق است |\n| تهوع | رژیم دارویی، انسداد، اختلال متابولیک، مغز | پیشگیری CINV را از درمان تهوع غیرشیمی‌درمانی جدا کنید |\n| تنگی نفس | PE، پنومونی، افیوژن، انسداد، pneumonitis | SpO2 جای گزارش شدت علامت را نمی‌گیرد |",
+      "id": "tbl-001",
+      "rowIds": [
+        "tbl-001-r00",
+        "tbl-001-r01",
+        "tbl-001-r02",
+        "tbl-001-r03",
+        "tbl-001-r04",
+        "tbl-001-r05"
+      ],
+      "legacyIndex": 0,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
     },
     {
       "title": "انواع درد و دام‌های درمان",
-      "markdown": "| الگو | مشخصه | رویکرد |\n| --- | --- | --- |\n| nociceptive | عمقی، مبهم، مداوم | مسکن متناسب با شدت؛ توجه به خطر NSAID و ضدانعقاد |\n| احشایی | کرامپ و اتساع عضو توخالی | درمان ترکیبی؛ octreotide در انسداد بدخیم منتخب |\n| نوروپاتیک | سوزش، تیرکشیدن، allodynia | داروهای نوروپاتیک و گاهی opioid؛ پاسخ کامل تضمین نیست |\n| incident | کم در استراحت، شدید با حرکت | اغلب استخوانی؛ شواهد اختصاصی محدود |\n| CIPN | الگوی جوراب‌ودستکش | تعدیل عامل مسبب حین درمان؛ duloxetine برای نوع تثبیت‌شده |"
+      "markdown": "| الگو | مشخصه | رویکرد |\n| --- | --- | --- |\n| nociceptive | عمقی، مبهم، مداوم | مسکن متناسب با شدت؛ توجه به خطر NSAID و ضدانعقاد |\n| احشایی | کرامپ و اتساع عضو توخالی | درمان ترکیبی؛ octreotide در انسداد بدخیم منتخب |\n| نوروپاتیک | سوزش، تیرکشیدن، allodynia | داروهای نوروپاتیک و گاهی opioid؛ پاسخ کامل تضمین نیست |\n| incident | کم در استراحت، شدید با حرکت | اغلب استخوانی؛ شواهد اختصاصی محدود |\n| CIPN | الگوی جوراب‌ودستکش | تعدیل عامل مسبب حین درمان؛ duloxetine برای نوع تثبیت‌شده |",
+      "id": "tbl-002",
+      "rowIds": [
+        "tbl-002-r00",
+        "tbl-002-r01",
+        "tbl-002-r02",
+        "tbl-002-r03",
+        "tbl-002-r04",
+        "tbl-002-r05"
+      ],
+      "legacyIndex": 1,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
     },
     {
       "title": "CIPN: عامل و سطح شواهد",
-      "markdown": "| موضوع | جمع‌بندی |\n| --- | --- |\n| عوامل مهم | taxane، platinum، vinca، epothilone، eribulin، bortezomib، lenalidomide |\n| پیشگیری دارویی | در زمان نگارش، روش قطعی اثبات‌شده وجود ندارد |\n| cryotherapy/compression | شواهد در حال تکامل؛ تضمین پیشگیری نیست |\n| حین شیمی‌درمانی | کاهش دوز یا قطع عامل مسبب در موارد قابل‌توجه بررسی شود |\n| پس از پایان درمان | duloxetine با سود کوچکِ اختصاصی اثبات‌شده |"
+      "markdown": "| موضوع | جمع‌بندی |\n| --- | --- |\n| عوامل مهم | taxane، platinum، vinca، epothilone، eribulin، bortezomib، lenalidomide |\n| پیشگیری دارویی | در زمان نگارش، روش قطعی اثبات‌شده وجود ندارد |\n| cryotherapy/compression | شواهد در حال تکامل؛ تضمین پیشگیری نیست |\n| حین شیمی‌درمانی | کاهش دوز یا قطع عامل مسبب در موارد قابل‌توجه بررسی شود |\n| پس از پایان درمان | duloxetine با سود کوچکِ اختصاصی اثبات‌شده |",
+      "id": "tbl-003",
+      "rowIds": [
+        "tbl-003-r00",
+        "tbl-003-r01",
+        "tbl-003-r02",
+        "tbl-003-r03",
+        "tbl-003-r04",
+        "tbl-003-r05"
+      ],
+      "legacyIndex": 2,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
     },
     {
       "title": "موکوزیت و تهوع: اقدام عملی",
-      "markdown": "| وضعیت | اقدام |\n| --- | --- |\n| bolus fluorouracil | مکیدن یخ هنگام انفوزیون برای کاهش موکوزیت |\n| موکوزیت دهانی | افتراق thrush/آفت/herpes؛ لیدوکائین ویسکوز ۲٪ و درمان موضعی منتخب |\n| اسهال موکوزیتی | ارزیابی علت و مایعات؛ loperamide سپس octreotide در مقاومت |\n| CINV با خطر بالا | دگزامتازون + 5-HT3 antagonist + NK1 antagonist + olanzapine |\n| تهوع غیر CINV | جست‌وجوی انسداد، مغز، دارو و متابولیک؛ olanzapine کم‌دوز در بیمار منتخب |"
+      "markdown": "| وضعیت | اقدام |\n| --- | --- |\n| bolus fluorouracil | مکیدن یخ هنگام انفوزیون برای کاهش موکوزیت |\n| موکوزیت دهانی | افتراق thrush/آفت/herpes؛ لیدوکائین ویسکوز ۲٪ و درمان موضعی منتخب |\n| اسهال موکوزیتی | ارزیابی علت و مایعات؛ loperamide سپس octreotide در مقاومت |\n| CINV با خطر بالا | دگزامتازون + 5-HT3 antagonist + NK1 antagonist + olanzapine |\n| تهوع غیر CINV | جست‌وجوی انسداد، مغز، دارو و متابولیک؛ olanzapine کم‌دوز در بیمار منتخب |",
+      "id": "tbl-004",
+      "rowIds": [
+        "tbl-004-r00",
+        "tbl-004-r01",
+        "tbl-004-r02",
+        "tbl-004-r03",
+        "tbl-004-r04",
+        "tbl-004-r05"
+      ],
+      "legacyIndex": 3,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
     },
     {
       "title": "آنورکسی و کاشکسی: شواهد و محدودیت‌ها",
-      "markdown": "| مداخله | جایگاه در فصل |\n| --- | --- |\n| مشاورهٔ تغذیه | قابل ارائه، سود وزنی محدود و نه در همهٔ مطالعات |\n| تغذیهٔ لوله‌ای یا وریدی | برای کاشکسی به‌طور روتین توصیه نمی‌شود |\n| olanzapine | خط اول دارویی مطرح؛ مطالعهٔ ۲٫۵ mg شبانه |\n| mirtazapine | در کارآزمایی بزرگ مذکور مؤثر نبود |\n| megestrol / steroid | افزایش اشتها و مقداری وزن، بدون اثبات بهبود بقا و همراه عارضه |\n| ponsegromab | ضد GDF-15؛ دادهٔ فاز ۲، بدون تأیید FDA در زمان نگارش |"
+      "markdown": "| مداخله | جایگاه در فصل |\n| --- | --- |\n| مشاورهٔ تغذیه | قابل ارائه، سود وزنی محدود و نه در همهٔ مطالعات |\n| تغذیهٔ لوله‌ای یا وریدی | برای کاشکسی به‌طور روتین توصیه نمی‌شود |\n| olanzapine | خط اول دارویی مطرح؛ مطالعهٔ ۲٫۵ mg شبانه |\n| mirtazapine | در کارآزمایی بزرگ مذکور مؤثر نبود |\n| megestrol / steroid | افزایش اشتها و مقداری وزن، بدون اثبات بهبود بقا و همراه عارضه |\n| ponsegromab | ضد GDF-15؛ دادهٔ فاز ۲، بدون تأیید FDA در زمان نگارش |",
+      "id": "tbl-005",
+      "rowIds": [
+        "tbl-005-r00",
+        "tbl-005-r01",
+        "tbl-005-r02",
+        "tbl-005-r03",
+        "tbl-005-r04",
+        "tbl-005-r05",
+        "tbl-005-r06"
+      ],
+      "legacyIndex": 4,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
     },
     {
       "title": "یبوست همراه opioid",
-      "markdown": "| گام | اقدام |\n| --- | --- |\n| از شروع opioid | برنامهٔ پیشگیری، هیدراتاسیون و senna |\n| پاسخ ناکافی یا عدم تحمل | افزودن یا جایگزینی polyethylene glycol |\n| مقاومت وابسته به opioid | بررسی آنتاگونیست محیطی گیرندهٔ opioid |\n| در تمام مراحل | بررسی دارو، کم‌آبی، کم‌تحرکی، هایپرکلسمی و تیروئید |"
+      "markdown": "| گام | اقدام |\n| --- | --- |\n| از شروع opioid | برنامهٔ پیشگیری، هیدراتاسیون و senna |\n| پاسخ ناکافی یا عدم تحمل | افزودن یا جایگزینی polyethylene glycol |\n| مقاومت وابسته به opioid | بررسی آنتاگونیست محیطی گیرندهٔ opioid |\n| در تمام مراحل | بررسی دارو، کم‌آبی، کم‌تحرکی، هایپرکلسمی و تیروئید |",
+      "id": "tbl-006",
+      "rowIds": [
+        "tbl-006-r00",
+        "tbl-006-r01",
+        "tbl-006-r02",
+        "tbl-006-r03",
+        "tbl-006-r04"
+      ],
+      "legacyIndex": 5,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
     },
     {
       "title": "تنگی نفس: شدت علامت در برابر اکسیژناسیون",
-      "markdown": "| موضوع | نکته |\n| --- | --- |\n| ارزیابی | گزارش بیمار + بررسی علت برگشت‌پذیر و داروها |\n| SpO2 ≤۹۰٪ | اکسیژن مکمل برای هیپوکسمی |\n| air hunger | opioid کم‌دوز در بیمار منتخب و جریان هوای خنک |\n| HFNO | هدف درمان بعدی و امکان مراقبت در منزل/hospice روشن شود |\n| سرطان پیشرفته | مراقبت تسکینی، پیش‌آگهی و advance directive مطرح شوند |"
+      "markdown": "| موضوع | نکته |\n| --- | --- |\n| ارزیابی | گزارش بیمار + بررسی علت برگشت‌پذیر و داروها |\n| SpO2 ≤۹۰٪ | اکسیژن مکمل برای هیپوکسمی |\n| air hunger | opioid کم‌دوز در بیمار منتخب و جریان هوای خنک |\n| HFNO | هدف درمان بعدی و امکان مراقبت در منزل/hospice روشن شود |\n| سرطان پیشرفته | مراقبت تسکینی، پیش‌آگهی و advance directive مطرح شوند |",
+      "id": "tbl-007",
+      "rowIds": [
+        "tbl-007-r00",
+        "tbl-007-r01",
+        "tbl-007-r02",
+        "tbl-007-r03",
+        "tbl-007-r04",
+        "tbl-007-r05"
+      ],
+      "legacyIndex": 6,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
     },
     {
       "title": "گرگرفتگی: گزینه‌ها و عدم تعمیم شواهد",
-      "markdown": "| جمعیت/دارو | نکته |\n| --- | --- |\n| زنان: citalopram | ۲۰ mg/day از گزینه‌های ترجیحی نویسندگان |\n| gabapentin | در هر دو جنس مؤثر؛ مطالعهٔ مردان با ۹۰۰ mg/day |\n| venlafaxine | سود در زنان را نباید به مردان تعمیم داد؛ RCT مردان منفی بود |\n| oxybutynin | شواهد سود؛ احتیاط شناختی در سالمندان |\n| fezolinetant | آنتاگونیست NK3، غیرهورمونی |\n| پروژستین‌ها | برای موارد منتخب و مقاوم؛ تصمیم انکولوژی لازم است |"
+      "markdown": "| جمعیت/دارو | نکته |\n| --- | --- |\n| زنان: citalopram | ۲۰ mg/day از گزینه‌های ترجیحی نویسندگان |\n| gabapentin | در هر دو جنس مؤثر؛ مطالعهٔ مردان با ۹۰۰ mg/day |\n| venlafaxine | سود در زنان را نباید به مردان تعمیم داد؛ RCT مردان منفی بود |\n| oxybutynin | شواهد سود؛ احتیاط شناختی در سالمندان |\n| fezolinetant | آنتاگونیست NK3، غیرهورمونی |\n| پروژستین‌ها | برای موارد منتخب و مقاوم؛ تصمیم انکولوژی لازم است |",
+      "id": "tbl-008",
+      "rowIds": [
+        "tbl-008-r00",
+        "tbl-008-r01",
+        "tbl-008-r02",
+        "tbl-008-r03",
+        "tbl-008-r04",
+        "tbl-008-r05",
+        "tbl-008-r06"
+      ],
+      "legacyIndex": 7,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
     },
     {
       "title": "راهنمای فارسی پایش علائم با ESAS-r",
-      "markdown": "| حوزهٔ ارزیابی | روش ثبت و استفاده |\n| --- | --- |\n| درد، خستگی، خواب‌آلودگی | شدت فعلی به گزارش بیمار روی مقیاس صفر تا ۱۰ |\n| تهوع، اشتها، تنگی نفس | پرسش فعال؛ شکایت خودبه‌خودی کافی نیست |\n| افسردگی، اضطراب، احساس سلامت | ثبت بار علامت برای خود بیمار و پیگیری روند |\n| نگرانی معنوی و مالی | در نسخهٔ توسعه‌یافته نیز پرسیده می‌شوند |\n| پس از ثبت نمره | تعیین علت، درمان قابل‌اقدام و پیگیری پاسخ؛ نمره جانشین ارزیابی بالینی نیست |"
+      "markdown": "| حوزهٔ ارزیابی | روش ثبت و استفاده |\n| --- | --- |\n| درد، خستگی، خواب‌آلودگی | شدت فعلی به گزارش بیمار روی مقیاس صفر تا ۱۰ |\n| تهوع، اشتها، تنگی نفس | پرسش فعال؛ شکایت خودبه‌خودی کافی نیست |\n| افسردگی، اضطراب، احساس سلامت | ثبت بار علامت برای خود بیمار و پیگیری روند |\n| نگرانی معنوی و مالی | در نسخهٔ توسعه‌یافته نیز پرسیده می‌شوند |\n| پس از ثبت نمره | تعیین علت، درمان قابل‌اقدام و پیگیری پاسخ؛ نمره جانشین ارزیابی بالینی نیست |",
+      "id": "tbl-009",
+      "rowIds": [
+        "tbl-009-r00",
+        "tbl-009-r01",
+        "tbl-009-r02",
+        "tbl-009-r03",
+        "tbl-009-r04",
+        "tbl-009-r05"
+      ],
+      "legacyIndex": 8,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
     }
   ]
 }

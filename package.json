@@ -1,0 +1,11 @@
+{
+  "name": "intmed-study-plan",
+  "private": true,
+  "scripts": {
+    "test:js": "node scripts/check_inline_js.mjs",
+    "test:browser": "node scripts/browser_smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

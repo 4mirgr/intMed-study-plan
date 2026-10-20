@@ -16,6 +16,12 @@
       "type": "string",
       "description": "Matches the category id, e.g. 'rheum'."
     },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/source"
+      }
+    },
     "flashcards": {
       "type": "array",
       "items": {
@@ -39,6 +45,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "sourceRefs": {
+            "$ref": "#/definitions/sourceRefs"
           }
         }
       }
@@ -78,6 +87,9 @@
           },
           "imageAlt": {
             "type": "string"
+          },
+          "sourceRefs": {
+            "$ref": "#/definitions/sourceRefs"
           }
         }
       }
@@ -121,6 +133,12 @@
                 },
                 "imageAlt": {
                   "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "sourceRefs": {
+                  "$ref": "#/definitions/sourceRefs"
                 }
               }
             }
@@ -130,6 +148,9 @@
           },
           "imageAlt": {
             "type": "string"
+          },
+          "sourceRefs": {
+            "$ref": "#/definitions/sourceRefs"
           }
         }
       }
@@ -154,6 +175,9 @@
           },
           "id": {
             "type": "string"
+          },
+          "sourceRefs": {
+            "$ref": "#/definitions/sourceRefs"
           }
         }
       }
@@ -163,35 +187,97 @@
       "items": {
         "type": "object",
         "required": [
+          "id",
           "title",
           "markdown"
         ],
         "properties": {
+          "id": {
+            "type": "string"
+          },
           "title": {
             "type": "string"
           },
           "markdown": {
             "type": "string"
+          },
+          "rowIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "legacyRowIndices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "sourceRefs": {
+            "$ref": "#/definitions/sourceRefs"
           }
         }
       }
     },
     "lesson": {
       "type": "array",
-      "description": "Narrative teaching content ('درسنامه') for the topic — explanatory prose beyond flashcard-level facts, meant to teach the topic from scratch. Rendered as ordered sections, each with a heading and a body; the artifact splits body on blank lines into paragraphs.",
+      "description": "Narrative teaching content. A section contains stable paragraphs, an embedded module, or a group header.",
       "items": {
         "type": "object",
         "required": [
-          "heading",
-          "body"
+          "id",
+          "heading"
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "paragraphs"
+            ]
+          },
+          {
+            "required": [
+              "body"
+            ]
+          },
+          {
+            "required": [
+              "embedPath"
+            ]
+          },
+          {
+            "required": [
+              "groupHeader"
+            ]
+          }
         ],
         "properties": {
+          "id": {
+            "type": "string"
+          },
           "heading": {
             "type": "string"
           },
           "body": {
             "type": "string",
             "description": "One or more paragraphs, separated by a blank line (\\n\\n)."
+          },
+          "paragraphs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/lessonParagraph"
+            }
+          },
+          "embedPath": {
+            "type": "string"
+          },
+          "embedNote": {
+            "type": "string"
+          },
+          "groupHeader": {
+            "type": "boolean"
+          },
+          "sourceRefs": {
+            "$ref": "#/definitions/sourceRefs"
           }
         }
       }
@@ -309,12 +395,39 @@
             "items": {
               "type": "string"
             }
+          },
+          "sourceRefs": {
+            "$ref": "#/definitions/sourceRefs"
           }
         }
       }
     }
   },
   "definitions": {
+    "source": {
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "edition": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "imageRef": {
       "type": "object",
       "required": [
@@ -326,6 +439,65 @@
           "type": "string"
         },
         "imageId": {
+          "type": "string"
+        }
+      }
+    },
+    "sourceRef": {
+      "type": "object",
+      "required": [
+        "sourceId"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string"
+        },
+        "page": {
+          "type": [
+            "integer",
+            "string"
+          ]
+        },
+        "pages": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "sourceRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/sourceRef"
+      }
+    },
+    "lessonParagraph": {
+      "type": "object",
+      "required": [
+        "id",
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "sourceRefs": {
+          "$ref": "#/definitions/sourceRefs"
+        },
+        "legacyLoc": {
           "type": "string"
         }
       }
