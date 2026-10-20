@@ -270,6 +270,23 @@
     });
   }
 
+  function deleteUser(userId){
+    var current=session();
+    if(!current || !current.user || current.user.id===userId) return Promise.reject(new Error("حذف حساب خودتان مجاز نیست."));
+    return request("/rest/v1/rpc/delete_intmed_user", {
+      method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify({target_user:userId})
+    }).then(function(){
+      if(loadedSnapshot){
+        delete loadedSnapshot.users[userId];
+        loadedSnapshot.tickets=(loadedSnapshot.tickets||[]).filter(function(t){return t.userId!==userId;});
+        loadedSnapshot.signups=(loadedSnapshot.signups||[]).filter(function(s){return (s.userId||s.id)!==userId;});
+      }
+    }).catch(function(error){
+      if(error.status===404) error.message="امکان حذف کاربر هنوز در دیتابیس فعال نشده است؛ فایل delete_user.sql باید نصب شود.";
+      throw error;
+    });
+  }
+
   global.IntMedBackend = {
     isConfigured:configured,
     session:session,
@@ -283,6 +300,7 @@
     profile:profile,
     loadLegacyState:loadLegacyState,
     saveLegacyState:saveLegacyState,
-    approveUser:approveUser
+    approveUser:approveUser,
+    deleteUser:deleteUser
   };
 })(window);

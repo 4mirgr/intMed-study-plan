@@ -625,6 +625,21 @@
       if(!isAuth) scheduleFlush(isConflict ? 2500 : 8000);
     });
   }
+  function waitForPendingWrites(){
+    return new Promise(function(resolve,reject){
+      var started=Date.now();
+      function check(){
+        if(Date.now()-started>15000){reject(new Error("همگام‌سازی هنوز تمام نشده است؛ پس از برقراری اتصال دوباره حذف را امتحان کنید."));return;}
+        if(flushing){setTimeout(check,100);return;}
+        if(dirty || flushQueued){
+          if(!flushTimer){flushQueued=false;doFlush();}
+          setTimeout(check,100);return;
+        }
+        resolve();
+      }
+      check();
+    });
+  }
   function scheduleFlush(delay){
     if(!hasPersistenceCredentials()) return;
     dirty = true;
@@ -1068,12 +1083,12 @@
       // typed at signup (s.username), not the derived/slugified userId —
       // need this exact string to compute a matching hash for a password
       // change.
-      var loginUsername = (approvedSignupById[id] && approvedSignupById[id].username) || id;
-      return {id:id, p:p, log:log, displayName:displayName, isStatic:isStatic, loginUsername:loginUsername};
+      var loginUsername = bucket.backendUsername || (approvedSignupById[id] && approvedSignupById[id].username) || id;
+      return {id:id, p:p, log:log, displayName:displayName, isStatic:isStatic, loginUsername:loginUsername, canDelete:usesPrivateBackend() && id!==CURRENT_USER_ID && bucket.backendRole!=="admin"};
     });
     if(query){
       rows = rows.filter(function(r){
-        var haystack = [r.displayName, r.id, r.p.idNumber, r.p.phone, r.p.email, r.p.degree, r.p.specialty, r.p.province]
+        var haystack = [r.displayName, r.loginUsername, r.id, r.p.idNumber, r.p.phone, r.p.email, r.p.degree, r.p.specialty, r.p.province]
           .map(function(v){ return normalizeDigits(v || "").toLowerCase(); }).join(" ");
         return haystack.indexOf(query) !== -1;
       });
@@ -1089,7 +1104,7 @@
           '<div class="admin-user-head-right"><span>' + faDigits(count) + ' ورود</span><span class="admin-user-chev">▾</span></div>' +
         '</div>' +
         '<div class="admin-user-body"><div class="admin-user-body-inner">' +
-          '<div class="admin-user-row"><span>نام کاربری:</span><b>' + escapeHtml(r.id) + '</b></div>' +
+          '<div class="admin-user-row"><span>نام کاربری:</span><b>' + escapeHtml(r.loginUsername) + '</b></div>' +
           '<div class="admin-user-row"><span>تعداد ورود:</span><b>' + faDigits(count) + '</b></div>' +
           '<div class="admin-user-row"><span>آخرین ورود:</span><b>' + last + '</b></div>' +
           '<div class="admin-user-row admin-user-recent"><span>۵ ورود اخیر:</span><b>' + recent + '</b></div>' +
@@ -1113,6 +1128,9 @@
                  '<span class="admin-user-pass-note" id="passNote-' + escapeHtml(r.id) + '"></span>' +
                  '<p class="admin-user-pass-hint">رمز فعلی هیچ‌جا ذخیره نمی‌شه (حتی برای خودِ مدیر) — فقط می‌تونی رمز جدید تنظیم کنی، نه رمز قبلی رو ببینی.</p>')) +
           '</div>' +
+          (r.canDelete ? '<div class="admin-user-delete-box">' +
+            '<button type="button" class="admin-user-delete-btn" data-delete-user="' + escapeHtml(r.id) + '" data-delete-name="' + escapeHtml(r.displayName) + '">حذف کاربر از IntMed</button>' +
+            '<span role="status" class="admin-user-delete-note" id="deleteNote-' + escapeHtml(r.id) + '"></span></div>' : '') +
           '<div class="admin-user-msg-box">' +
             '<label for="msgBox-' + escapeHtml(r.id) + '">ارسال پیام به ' + escapeHtml(r.displayName) + ':</label>' +
             '<textarea id="msgBox-' + escapeHtml(r.id) + '" placeholder="پیامت رو اینجا بنویس..."></textarea>' +
@@ -1130,6 +1148,24 @@
         var nowOpen = !card.classList.contains("open");
         adminUsersOpenIds[id] = nowOpen;
         card.classList.toggle("open", nowOpen);
+      });
+    });
+    adminUsersPanel.querySelectorAll("[data-delete-user]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var id=btn.getAttribute("data-delete-user"),name=btn.getAttribute("data-delete-name");
+        if(!confirm("آیا از حذف کاربر «"+name+"» از IntMed مطمئن هستید؟\nپروفایل، پیشرفت مطالعه، یادداشت‌ها، هایلایت‌ها و پیام‌های او حذف می‌شوند. این کار قابل بازگشت نیست.")) return;
+        var note=document.getElementById("deleteNote-"+id);
+        btn.disabled=true;btn.textContent="در حال حذف…";
+        // Finish in-flight writes before removal so this tab cannot restore data.
+        waitForPendingWrites().then(function(){return window.IntMedBackend.deleteUser(id);}).then(function(){
+          delete STATE.users[id];delete adminUsersOpenIds[id];
+          STATE.tickets=(STATE.tickets||[]).filter(function(t){return t.userId!==id;});
+          STATE.signups=(STATE.signups||[]).filter(function(s){return (s.userId||s.id)!==id;});
+          renderUserPanel();
+        }).catch(function(error){
+          btn.disabled=false;btn.textContent="حذف کاربر از IntMed";
+          if(note) note.textContent=error.message||"حذف انجام نشد؛ دوباره تلاش کنید.";
+        });
       });
     });
     // Admin editing a user's profile bypasses the user's own lock (the

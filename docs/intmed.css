@@ -853,3 +853,8 @@
   /* Keep the longer registration form reachable on phones and tablets. */
   .login-gate{overflow-y:auto;align-items:flex-start}
   .login-card,.signup-success{margin-block:auto;flex-shrink:0}
+
+  .admin-user-delete-box{margin-block:14px;padding-block:12px;border-block:1px solid var(--border)}
+  .admin-user-delete-btn{padding:10px 14px;background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger);border-radius:8px;font:inherit;cursor:pointer;min-height:44px}
+  .admin-user-delete-btn:disabled{opacity:.6;cursor:wait}
+  .admin-user-delete-note{display:block;color:var(--danger);font-size:.8rem;margin-top:8px}

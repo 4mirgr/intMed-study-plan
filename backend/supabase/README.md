@@ -56,3 +56,25 @@ password through Supabase Auth. Errors never return the lookup email. Attempts
 are limited per hashed username and client IP to 30 per ten minutes. Do not
 publish any separate anon RPC returning users' emails. Existing approval and
 study-state access rules still apply after password authentication.
+
+### Admin user removal (existing shared project)
+
+Run `delete_user.sql` once in SQL Editor. Installing it does not remove anyone.
+The administrator can then expand a user's card and choose **حذف کاربر از IntMed**.
+The confirmation names the user and explains the permanent removal of their
+profile, study progress, notes, highlights and tickets. Cancelling sends no request.
+Errors keep the card visible. The checked RPC only allows an approved, non-rejected
+admin to remove a non-admin; self-removal and deletion of any admin are rejected.
+The deletes are atomic and stale browser writes cannot recreate removed state/tickets.
+
+This is **IntMed membership/data removal**, not deletion of the shared Supabase
+Auth identity. That distinction protects the other applications in this project.
+A removed user cannot read IntMed data or pass IntMed's profile/approval gate,
+even with a previously issued Auth token. Their Auth identity may still appear
+in Supabase Authentication. Restoring IntMed membership would require an explicit
+admin action; repeated signup does not recreate an existing Auth user's profile.
+
+Validation: `node scripts/delete_user_sql_test.mjs` runs PostgreSQL security and
+rollback scenarios in a local in-memory database with synthetic identities only.
+`node scripts/delete_user_browser_test.mjs` covers confirmation cancellation,
+request failure, success and the non-admin UI with mocked private APIs.

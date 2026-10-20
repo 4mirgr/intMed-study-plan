@@ -6,6 +6,7 @@
     "test:browser": "node scripts/browser_smoke.mjs"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.10",
     "playwright": "1.62.1"
   }
 }
