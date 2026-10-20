@@ -2,6 +2,7 @@ name: Validate and deploy IntMed
 
 on:
   push:
+    branches-ignore: [study-state]
   pull_request:
   workflow_dispatch:
 
