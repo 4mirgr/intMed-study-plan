@@ -321,6 +321,7 @@
   }
   function updateEmail(email){return request("/auth/v1/user",{method:"PUT",body:JSON.stringify({email:email})});}
 
+  function newsletterAction(payload){return request("/functions/v1/intmed-newsletter",{method:"POST",body:JSON.stringify(payload)});}
   function notificationAction(action,chatId){return request("/functions/v1/intmed-signup-notify",{method:"POST",body:JSON.stringify({action:action,chatId:chatId})});}
   global.IntMedBackend = {
     isConfigured:configured,
@@ -336,6 +337,6 @@
     loadLegacyState:loadLegacyState,
     saveLegacyState:saveLegacyState,
     approveUser:approveUser,
-    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,notificationAction:notificationAction
+    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,notificationAction:notificationAction,newsletterAction:newsletterAction
   };
 })(window);

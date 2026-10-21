@@ -3,7 +3,7 @@
 <title>IntMed</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=dd8302d31647cb73">
+<link rel="stylesheet" href="intmed.css?v=8517faa40ae6f857">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
@@ -178,6 +178,7 @@
     </section>
 
     <div class="annotation-toolbar"><h2>دفتر مطالعهٔ من</h2><input type="search" id="annotationSearch" placeholder="جست‌وجو در نوشته‌ها، هایلایت‌ها و مباحث" aria-label="جست‌وجو در نوشته‌ها و هایلایت‌های شخصی"></div>
+    <div class="notebook-export-controls"><label>خروجی دفتر من <select id="personalExportKind"><option value="all">یادداشت‌ها و هایلایت‌ها</option><option value="notes">فقط یادداشت‌ها</option><option value="highlights">فقط هایلایت‌ها</option></select></label><button type="button" id="personalExportPdf" class="secondary-action">خروجی PDF</button><small id="personalExportStatus" role="status"></small></div>
     <div class="annotation-grid">
       <section class="neon-panel"><div class="section-heading"><h3>یادداشت‌های من</h3><span id="personalNotesCount" class="neon-count">۰</span></div><div id="personalNotes" class="annotation-list"></div></section>
       <section class="neon-panel"><div class="section-heading"><h3>هایلایت‌های من</h3><span id="personalHighlightsCount" class="neon-count">۰</span></div><div id="personalHighlights" class="annotation-list"></div></section>
@@ -197,6 +198,7 @@
         <button type="button" id="accountSave" class="profile-save-btn">ذخیره اطلاعات حساب</button><button type="button" id="accountRecovery" class="secondary-action">دریافت لینک تغییر رمز</button>
         <p id="accountStatus" role="status" class="section-caption"></p>
       </details>
+      <div class="newsletter-preference"><label><input type="checkbox" id="newsletterOptIn"> مایلم خبرنامهٔ تغییرات سایت را در ایمیل تأییدشدهٔ حسابم دریافت کنم.</label><p id="newsletterPreferenceStatus" role="status" class="section-caption"></p></div>
       <div class="profile-favorites"><h3>مباحث مورد علاقهٔ من</h3><div id="profileFavorites" class="favorite-list"></div></div>
       <div class="ticket-box">
         <label for="ticketMessage">ارسال پیام یا تیکت به مدیر</label>
@@ -209,7 +211,9 @@
 
     <section class="callout" id="adminPanelCard" style="display:none">
       <div class="section-heading"><h2>مرکز مدیریت</h2><button type="button" id="adminExportStats" class="stats-refresh">خروجی CSV آمار مباحث</button></div>
+      <details class="notification-panel"><summary>خبرنامهٔ ایمیلی به‌روزرسانی سایت</summary><p id="newsletterAdminStatus" class="section-caption"></p><p class="section-caption">عضویت اختیاری است و کاربر هر زمان می‌تواند آن را لغو کند. پیش از اولین ارسال، سرویس ایمیل را متصل و ارسال آزمایشی را بررسی کنید. هر نوبت حداکثر ۲۰ نفر از مشترکان واجد شرایط را پوشش می‌دهد.</p><div class="newsletter-composer"><label for="newsletterSubject">عنوان خبرنامه</label><input id="newsletterSubject" maxlength="160" placeholder="مثلاً: آزمون‌های تصویری قلب اضافه شد"><label for="newsletterBody">متن خبرنامه</label><textarea id="newsletterBody" maxlength="12000" rows="6" placeholder="تغییرات جدید و لینک مباحث را بنویسید."></textarea><div class="admin-account-actions"><button type="button" data-newsletter-action="status">بررسی اتصال ایمیل</button><button type="button" data-newsletter-action="preview">پیش‌نمایش و تعداد گیرندگان</button><button type="button" data-newsletter-action="test">ارسال آزمایشی فقط به مدیر</button><button type="button" data-newsletter-action="send" id="newsletterSend" disabled>ارسال به حداکثر ۲۰ مشترک بعدی</button><button type="button" id="newsletterNew">خبرنامهٔ جدید</button></div><p id="newsletterDeliveryStatus" role="status" class="section-caption"></p><pre id="newsletterPreview"></pre></div><button type="button" id="newsletterExport" class="secondary-action">خروجی CSV مشترکان فعال</button></details>
       <div id="adminOverview" class="metric-grid"></div>
+      <details class="notification-panel"><summary>خروجی PDF دفتر مطالعهٔ کاربران</summary><div class="notebook-export-controls"><label>کاربر <select id="notebookExportUser"></select></label><label>محتوا <select id="notebookExportKind"><option value="all">یادداشت‌ها و هایلایت‌ها</option><option value="notes">فقط یادداشت‌ها</option><option value="highlights">فقط هایلایت‌ها</option></select></label><button type="button" id="adminExportNotebook" class="secondary-action">آماده‌سازی PDF</button><small id="notebookExportStatus" role="status"></small></div><p class="section-caption">فقط اطلاعات کاربر انتخاب‌شده در خروجی قرار می‌گیرد. در پنجرهٔ چاپ، Save as PDF را انتخاب کنید.</p></details>
       <details class="notification-panel"><summary>اعلان ثبت‌نام در تلگرام</summary><p class="section-caption">پس از راه‌اندازی یک‌باره، درخواست‌های جدید به بات تلگرام شما ارسال می‌شوند؛ دریافت اعلان روی آیفون به فعال‌بودن اعلان‌های Telegram بستگی دارد.</p>
         <div class="admin-account-actions"><button type="button" data-notification-action="status">بررسی اتصال</button><button type="button" data-notification-action="discover">پیداکردن گفت‌وگوی من با بات</button><button type="button" data-notification-action="test">ارسال اعلان آزمایشی</button><button type="button" data-notification-action="retry">تلاش دوباره برای اعلان‌های در صف</button></div>
         <div id="notificationChats"></div><p id="notificationStatus" class="section-caption" role="status">اتصال هنوز بررسی نشده است.</p>
@@ -297,9 +301,9 @@
 </div>
 
 <script src="config.js?v=e1c325a52a905cce"></script>
-<script src="js/intmed-backend.js?v=fc78daea9f8b7d19"></script>
+<script src="js/intmed-backend.js?v=3678437c96b9ed2d"></script>
 <script src="js/intmed-theme.js?v=10cbe508c7ceb533"></script>
 <script src="js/intmed-registration.js?v=86cbba87cc94b74f"></script>
 <script src="js/intmed-login.js?v=22cbc4f112546887"></script>
-<script src="js/intmed-dashboard.js?v=e7d39baf9dbae0a4"></script>
-<script src="js/intmed-app.js?v=c3c60e88c294a076"></script>
+<script src="js/intmed-dashboard.js?v=1a6d666ed3f9724d"></script>
+<script src="js/intmed-app.js?v=940b91e32f0224d8"></script>

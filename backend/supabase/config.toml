@@ -3,3 +3,7 @@ verify_jwt = false
 
 [functions.intmed-signup-notify]
 verify_jwt = true
+
+# Public signed unsubscribe links; admin actions validate Auth/role inside the handler.
+[functions.intmed-newsletter]
+verify_jwt = false

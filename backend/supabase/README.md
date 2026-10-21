@@ -91,3 +91,14 @@ JWT verification enabled. The original `intmed-login` function keeps it disabled
 Basic profile editing, tags, pink favorites and activity/quiz analytics are frontend
 changes; username RPCs, email protection/synchronization and automatic Telegram
 notifications additionally require the one-time SQL/server installation.
+
+### Email update newsletter (optional installation)
+
+See [the Persian newsletter guide](NEWSLETTER_SETUP_FA.md). Install `newsletter.sql`,
+deploy `intmed-newsletter` with gateway JWT verification OFF (signed public unsubscribe;
+active admin/Auth validation is enforced in code for every management action), and set
+`RESEND_API_KEY`, `NEWSLETTER_FROM`, and `NEWSLETTER_SIGNING_SECRET` only in Edge Secrets.
+No existing user is auto-enrolled. Browser UI includes consent/revocation, admin preview,
+self-test and manually confirmed 20-recipient batches. No real messages are sent by tests.
+The SQL installation is independent of `setup_dashboard.sql` and does not change existing
+profiles or study data. Run `node scripts/newsletter_test.mjs` for security/regression checks.

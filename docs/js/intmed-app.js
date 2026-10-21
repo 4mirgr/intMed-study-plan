@@ -2057,7 +2057,8 @@
     link.appendChild(image); figure.appendChild(link);
     var caption = document.createElement("figcaption");
     caption.className = "cap-note";
-    caption.textContent = "برای بزرگ‌نمایی روی تصویر بزنید. منبع: Harrison’s Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill.";
+    caption.textContent = "برای بزرگ‌نمایی روی تصویر بزنید. منبع: " + (img.credit ? img.credit + " · " + (img.licenseLabel||"") : "Harrison’s Principles of Internal Medicine, 22nd Edition — Copyright © McGraw Hill.");
+    [[img.originUrl,"منبع تصویر"],[img.licenseUrl,"مجوز تصویر"]].forEach(function(pair){if(pair[0]&&/^https?:\/\//.test(pair[0])){var credit=document.createElement("a");credit.href=pair[0];credit.target="_blank";credit.rel="noopener noreferrer";credit.textContent=" · "+pair[1];caption.appendChild(credit);}});
     figure.appendChild(caption); container.appendChild(figure);
   }
 
@@ -2207,7 +2208,7 @@
       panel.innerHTML = "";
       data.forEach(function(q, qIdx){
         var block = document.createElement("div");
-        block.className = "mcq-block";
+        block.className = "mcq-block";block.dataset.questionId=q.id||String(qIdx);
         var qKey = q.id || qIdx;
         var stem = document.createElement("div");
         stem.className = "mcq-stem";
@@ -2228,6 +2229,9 @@
         if(q.legacyKey != null) explain.dataset.hlAliases = "mcq:" + q.legacyKey + ":explain";
         explain.dataset.hlTopic = topicId;
         if(q.explanation || q.explain) applyHighlightsToContainer(explain, topicId, explainLocKey);
+        var feedback=document.createElement("p");feedback.className="mcq-feedback";feedback.setAttribute("role","status");feedback.hidden=true;
+        var sources=document.createElement("div");sources.className="question-sources";sources.hidden=true;
+        (q.sourceRefs||[]).forEach(function(ref){var source=((contentMap[topicId]||{}).sources||[]).find(function(s){return s.id===ref.sourceId;});if(source&&/^https?:\/\//.test(source.url||"")){var anchor=document.createElement("a");anchor.href=source.url;anchor.target="_blank";anchor.rel="noopener noreferrer";anchor.textContent=source.title;sources.appendChild(anchor);}});
         (q.options||[]).forEach(function(opt, idx){
           var ob = document.createElement("button");
           ob.type = "button"; ob.className = "mcq-opt"; ob.textContent = opt;
@@ -2239,11 +2243,14 @@
               var correctBtn = block.querySelectorAll(".mcq-opt")[q.correctIndex];
               if(correctBtn) correctBtn.classList.add("correct");
             }
-            explain.classList.add("show");
+            feedback.hidden=false;feedback.classList.add(idx===q.correctIndex?"correct":"incorrect");feedback.textContent=(idx===q.correctIndex?"✓ پاسخ درست است. ":"✕ پاسخ انتخابی نادرست است. ")+(q.optionExplanations&&q.optionExplanations[idx]||"");
+            explain.classList.add("show");sources.hidden=false;
           });
           block.appendChild(ob);
         });
-        block.appendChild(explain);
+        block.appendChild(feedback);block.appendChild(explain);
+        if(q.optionExplanations){var reasons=document.createElement("details");reasons.className="option-reasons";var summary=document.createElement("summary");summary.textContent="تحلیل تمام گزینه‌ها";reasons.appendChild(summary);q.optionExplanations.forEach(function(reason,i){var paragraph=document.createElement("p");paragraph.textContent=faDigits(i+1)+". "+reason;reasons.appendChild(paragraph);});reasons.hidden=true;block.appendChild(reasons);block.querySelectorAll(".mcq-opt").forEach(function(button){button.addEventListener("click",function(){reasons.hidden=false;});});}
+        block.appendChild(sources);
         panel.appendChild(block);
       });
       return;
@@ -2459,6 +2466,7 @@
           note.className = "cap-note"; note.textContent = img.note;
           row.appendChild(note);
         }
+        if(img.credit){var attribution=document.createElement("div");attribution.className="cap-note";attribution.textContent=img.credit+" · "+(img.licenseLabel||"");[[img.originUrl,"منبع تصویر"],[img.licenseUrl,"مجوز تصویر"]].forEach(function(pair){if(pair[0]&&/^https?:\/\//.test(pair[0])){var anchor=document.createElement("a");anchor.href=pair[0];anchor.target="_blank";anchor.rel="noopener noreferrer";anchor.textContent=" · "+pair[1];attribution.appendChild(anchor);}});row.appendChild(attribution);}
         panel.appendChild(row);
       });
       return;

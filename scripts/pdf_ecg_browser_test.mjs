@@ -1,0 +1,48 @@
+import {createRequire} from 'node:module';import assert from 'node:assert/strict';
+const {chromium}=createRequire(import.meta.url)('playwright'),exe=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
+const browser=await chromium.launch({headless:true,...(exe?{executablePath:exe}:{})});
+const owner='11111111-1111-4111-8111-111111111111',other='22222222-2222-4222-8222-222222222222',topic='cardio-ecg';
+let admin=false;const profiles=[{id:owner,username:'qa',full_name:'پزشک آزمایشی',role:'user',approved:true},{id:other,username:'other',full_name:'کاربر دوم',role:'user',approved:true}];
+const states={[owner]:{itemState:{},highlights:{},meta:{}},[other]:{itemState:{['favorite:'+topic]:{favorite:true}},meta:{},highlights:{}}};
+const context=await browser.newContext({viewport:{width:390,height:844}});
+await context.addInitScript(id=>localStorage.setItem('intmed_supabase_session',JSON.stringify({access_token:id,user:{id}})),owner);
+await context.route('**/*.supabase.co/**',async route=>{
+ const req=route.request(),url=new URL(req.url()),uid=(req.headers().authorization||'').replace('Bearer ','')||owner;
+ if(url.pathname==='/rest/v1/profiles'){
+  const list=(admin?profiles:profiles.filter(p=>p.id===uid)).map(p=>p.id===owner?{...p,role:admin?'admin':'user'}:p);
+  return route.fulfill({json:url.searchParams.has('id')?list.find(p=>p.id===uid):list});
+ }
+ if(url.pathname==='/rest/v1/study_state'){
+  if(req.method()==='PATCH'){const body=req.postDataJSON();states[uid]=body.state;return route.fulfill({json:[{user_id:uid,...body}]});}
+  const ids=url.searchParams.has('user_id')?[uid]:(admin?Object.keys(states):[uid]);
+  return route.fulfill({json:ids.map(id=>({user_id:id,state:states[id],updated_at:'2026-10-21T10:00:00Z'}))});
+ }
+ if(url.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
+ throw Error('Unexpected request '+url.pathname);
+});
+const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+try{
+ const base=process.env.INTMED_BASE_URL||'http://127.0.0.1:8765';
+ profiles[0].email='owner@example.com';profiles[1].email='other@example.com';admin=true;
+ states[owner].itemState[topic]={note:'نوشته مدیر <img src=x onerror="alert(1)">'};states[owner].highlights[topic]=[{id:'mine',quote:'هایلایت مدیر',loc:'lesson:old',note:'توضیح مدیر'}];
+ states[other].itemState[topic]={note:'یادداشت خصوصی کاربر دوم'};states[other].highlights[topic]=[{id:'other',quote:'هایلایت کاربر دوم',loc:'lesson:old'}];
+ await page.goto(base);await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnDashboard').click();
+ let popupPromise=page.waitForEvent('popup');await page.locator('#personalExportPdf').click();let popup=await popupPromise;await popup.locator('article').first().waitFor();assert.ok((await popup.locator('body').textContent()).includes('نوشته مدیر <img'));assert.ok(!(await popup.locator('body').textContent()).includes('کاربر دوم'));assert.equal(await popup.locator('img').count(),0);assert.equal(await popup.evaluate(()=>window.opener),null);await popup.pdf({path:'/tmp/intmed-notebook-fa.pdf',format:'A4'});await popup.close();
+ await page.locator('#adminExportNotebook').evaluate(e=>e.closest('details').open=true);await page.locator('#notebookExportUser').selectOption(other);await page.locator('#notebookExportKind').selectOption('highlights');popupPromise=page.waitForEvent('popup');await page.locator('#adminExportNotebook').click();popup=await popupPromise;await popup.locator('article').waitFor();const exported=await popup.locator('body').textContent();assert.ok(exported.includes('هایلایت کاربر دوم'));assert.ok(!exported.includes('یادداشت خصوصی'));assert.ok(!exported.includes('هایلایت مدیر'));await popup.close();
+ await page.locator('#profileEditor summary').first().click();assert.equal(await page.locator('#newsletterOptIn').isChecked(),false);await page.locator('#newsletterOptIn').check();await page.waitForTimeout(1000);assert.equal(states[owner].itemState['newsletter:subscription'].subscribed,true);assert.equal(states[owner].itemState['newsletter:subscription'].email,'owner@example.com');await page.locator('#newsletterOptIn').uncheck();await page.waitForTimeout(800);assert.equal(states[owner].itemState['newsletter:subscription'].subscribed,false);assert.equal(states[other].itemState['newsletter:subscription'],undefined);
+ for(const tid of ['cardio-ecg','cardio-arrhythmia']){
+  const payload=await (await page.request.get(base+'/content/topics/'+tid+'.json')).json(),added=payload.mcq.filter(q=>q.id.startsWith('board-2026-'));assert.equal(added.length,tid==='cardio-ecg'?4:8);
+  const row=page.locator('.topic-item').filter({has:page.locator('[data-lc="'+tid+'-mcq"]')});await page.locator('#tabBtnEducation').click();await row.evaluate(e=>e.closest('.topic-cat').classList.add('open'));if(!await row.evaluate(e=>e.classList.contains('open')))await row.locator('.topic-open-btn').click();await row.locator('.learn-btn').filter({hasText:'آزمون ۴ گزینه‌ای'}).click();
+  for(const q of added){const block=row.locator('[data-question-id="'+q.id+'"]');await block.waitFor();await block.locator('img').scrollIntoViewIfNeeded();await block.locator('img').evaluate(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;}));assert.ok(await block.locator('img').evaluate(img=>img.naturalWidth>400),'Missing ECG '+q.id);assert.equal(await block.locator('.question-sources').isVisible(),false);assert.equal(await block.locator('.option-reasons').isVisible(),false);const selected=(q.correctIndex+1)%q.options.length;await block.locator('.mcq-opt').nth(selected).click();assert.equal(await block.locator('.mcq-feedback').evaluate(e=>e.classList.contains('incorrect')),true);assert.ok((await block.locator('.mcq-feedback').textContent()).includes(q.optionExplanations[selected]));assert.equal(await block.locator('.mcq-opt.correct').count(),1);assert.ok(await block.locator('.question-sources a').count()>=2);assert.equal(await block.locator('.option-reasons p').count(),4);}
+  await row.locator('.learn-btn').filter({hasText:'درسنامه'}).click();await row.locator('.learn-btn').filter({hasText:'آزمون ۴ گزینه‌ای'}).click();const first=added[0],block=row.locator('[data-question-id="'+first.id+'"]');await block.locator('.mcq-opt').nth(first.correctIndex).click();assert.equal(await block.locator('.mcq-feedback').evaluate(e=>e.classList.contains('correct')),true);
+  await row.locator('.learn-btn').filter({hasText:'تصاویر مهم'}).click();for(const img of payload.images.filter(img=>img.id.startsWith('board-img-'))){const figure=row.locator('.img-row').filter({hasText:img.caption});assert.ok((await figure.textContent()).includes(img.credit));assert.equal(await figure.locator('a[href="'+img.licenseUrl+'"]').count(),1);}
+ }
+ const newsletterCalls=[];await page.route('**/functions/v1/intmed-newsletter',async route=>{const body=route.request().postDataJSON();newsletterCalls.push(body);return route.fulfill({json:body.action==='status'?{configured:true}:body.action==='preview'?{recipients:0,subject:body.subject,text:body.text}:{sent:1,failed:0,remaining:0}});});
+ await page.locator('#tabBtnDashboard').click();await page.locator('#newsletterSubject').evaluate(e=>e.closest('details').open=true);await page.locator('[data-newsletter-action="status"]').click();await page.waitForFunction(()=>document.getElementById('newsletterDeliveryStatus').textContent.includes('سرویس آماده'));
+ await page.locator('#newsletterSubject').fill('عنوان آزمایشی');await page.locator('#newsletterBody').fill('متن آزمایشی خبرنامه');await page.locator('[data-newsletter-action="preview"]').click();await page.waitForFunction(()=>document.getElementById('newsletterPreview').textContent.includes('عنوان آزمایشی'));const campaign=newsletterCalls.at(-1).campaignId;
+ page.once('dialog',d=>d.dismiss());await page.locator('#newsletterSend').click();assert.equal(newsletterCalls.filter(c=>c.action==='send').length,0,'Cancel sent email');
+ await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnDashboard').click();await page.locator('#newsletterSubject').evaluate(e=>e.closest('details').open=true);await page.locator('#newsletterSubject').fill('عنوان آزمایشی');await page.locator('#newsletterBody').fill('متن آزمایشی خبرنامه');await page.locator('[data-newsletter-action="preview"]').click();await page.waitForFunction(()=>document.getElementById('newsletterPreview').textContent.includes('عنوان آزمایشی'));assert.equal(newsletterCalls.at(-1).campaignId,campaign,'Refresh changed campaign identity');
+ await page.locator('#newsletterNew').click();await page.locator('[data-newsletter-action="preview"]').click();await page.waitForTimeout(100);assert.notEqual(newsletterCalls.at(-1).campaignId,campaign);
+ const count=newsletterCalls.length;admin=false;await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('[data-newsletter-action="status"]').dispatchEvent('click');await page.waitForTimeout(100);assert.equal(newsletterCalls.length,count,'Non-admin called newsletter endpoint');
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);assert.deepEqual(errors,[]);console.log('PDF/newsletter/ECG browser passed: RTL printable PDF, safe text, user-scoped export, opt-in/out persistence, 12 real-image questions, answer-specific red/green feedback, all-option reasons, source links and mobile width.');
+}finally{await browser.close()}

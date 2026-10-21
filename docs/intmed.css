@@ -972,3 +972,11 @@
   .annotation-destination{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px;scroll-margin-top:var(--intmed-header-height,220px)}
   .favorite-remove:focus-visible,.annotation-open:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
   @media(max-width:700px){.annotation-grid{grid-template-columns:1fr}.annotation-toolbar input{width:100%}.annotation-list{max-height:440px}.favorite-entry{width:100%}.favorite-entry .favorite-shortcut{flex:1}.title-row-extras{gap:4px}}
+
+.notebook-export-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}.notebook-export-controls label{font-size:.8rem;display:flex;gap:8px;align-items:center}.notebook-export-controls select{font:inherit;max-width:100%;padding:8px;border-radius:8px;color:var(--ink);background:var(--surface-solid);border:1px solid var(--border)}.notebook-export-controls small{flex-basis:100%;color:var(--ink-dim)}
+
+.mcq-feedback{padding:10px 12px;border-radius:9px;line-height:1.9;font-size:.83rem}.mcq-feedback.correct{background:var(--success-soft);color:var(--success);border-inline-start:3px solid var(--success)}.mcq-feedback.incorrect{background:var(--danger-soft);color:var(--danger);border-inline-start:3px solid var(--danger)}.question-sources{font-size:.72rem;line-height:1.9;margin-top:10px}.question-sources a{display:block;color:var(--accent-ink);overflow-wrap:anywhere}.option-reasons{font-size:.8rem;line-height:1.9;padding:10px;margin-top:10px;background:var(--surface-2);border-radius:9px}.option-reasons summary{cursor:pointer;color:var(--accent-ink)}
+
+.newsletter-preference{padding:14px;border:1px solid var(--border);border-radius:12px;margin:18px 0;background:var(--surface-2)}.newsletter-preference label{font-size:.82rem;line-height:1.9;cursor:pointer}.newsletter-preference input{accent-color:var(--accent);vertical-align:middle}
+
+.newsletter-composer{display:grid;gap:8px}.newsletter-composer input,.newsletter-composer textarea{font:inherit;direction:rtl;color:var(--ink);background:var(--surface-solid);border:1px solid var(--border);border-radius:8px;padding:10px;max-width:100%;box-sizing:border-box}.newsletter-composer pre{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem}

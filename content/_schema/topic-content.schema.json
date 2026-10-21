@@ -90,6 +90,22 @@
           },
           "sourceRefs": {
             "$ref": "#/definitions/sourceRefs"
+          },
+          "optionExplanations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "maxItems": 5
+          },
+          "reviewStatus": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "reviewed"
+            ],
+            "description": "Draft authored clinical questions require final teacher review."
           }
         }
       }

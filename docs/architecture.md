@@ -166,3 +166,33 @@ Night Shift uses warm colors and is not an operating-system display filter. Expl
 override the system preference and synchronize across tabs. Dark highlight palettes maintain
 readable text contrast. `annotations_theme_browser_test.mjs` verifies notebook isolation,
 source navigation, removal persistence, saved palettes, contrast, and narrow-screen layout.
+
+## Notebook PDF and update newsletter
+
+Notebook export uses a same-origin blank window filled with text-only DOM, local Persian
+font and A4 print styles. Members export their own notebook; active admins choose one loaded
+account. Notes and highlights can be exported together or separately. Nothing is sent to an
+external PDF converter. Use the browser print dialog's Save as PDF option.
+
+Newsletter consent is private `itemState["newsletter:subscription"]` with a boolean, current
+verified email snapshot and timestamps. Existing members are not automatically enrolled;
+email changes require a new opt-in. Membership can be revoked from the profile. CSV export
+is admin-only and includes only active consenting accounts matching their current email.
+
+Prepared (not automatically installed) server files: `backend/supabase/newsletter.sql`,
+`functions/intmed-newsletter/index.ts`, and `NEWSLETTER_SETUP_FA.md`. Delivery uses Resend,
+requires a verified sender, server-only API/signing secrets and manual admin action. The
+Edge Function validates the real Auth user plus active admin role for preview/test/send,
+rechecks consent and the Auth-confirmed recipient email before each message, sends to one
+recipient, and claims a private unique campaign/user delivery record before contacting the
+provider. It never automatically retries uncertain or failed delivery. Signed unsubscribe
+links show a confirmation on GET; POST changes only the newsletter key using CAS, preserving
+concurrent study edits. Admin draft campaign IDs survive refresh in the same browser tab;
+use New newsletter intentionally for a new send. Subject/body changes after a campaign
+starts are rejected. There is no automatic publication-triggered emailing or scheduler.
+
+New ECG image questions use the existing stable IDs/imageRef contract, source-specific
+figure credits and source links. Option explanations are shown only after answering. They
+are authored practice questions, not claimed copies of official examinations. Source and
+visual checks are recorded in `content/cardio/ECG_IMAGE_REVIEW.md`; clinical accuracy still
+needs the teacher's final review under the content protocol.
