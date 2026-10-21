@@ -72,7 +72,9 @@ jobs:
       - name: Build secure production configuration
         if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
         env:
-          INTMED_SUPABASE_URL: ${{ vars.INTMED_SUPABASE_URL }}
+          # The same-domain Cloudflare gateway avoids ISP-specific blocking of
+          # *.supabase.co. It is public configuration, not a credential.
+          INTMED_SUPABASE_URL: https://api.drgerami-md.ir
           INTMED_SUPABASE_ANON_KEY: ${{ vars.INTMED_SUPABASE_ANON_KEY }}
         run: python3 scripts/write_runtime_config.py --allow-existing
       - run: python3 scripts/version_assets.py

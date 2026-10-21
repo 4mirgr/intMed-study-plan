@@ -17,8 +17,11 @@ def validate(url: str, anon_key: str) -> tuple[str, str]:
     parsed = urlparse(url)
     if parsed.scheme != "https" or not parsed.netloc or parsed.path not in ("", "/"):
         raise ValueError("INTMED_SUPABASE_URL must be an HTTPS project root URL")
-    if not parsed.hostname or not parsed.hostname.endswith(".supabase.co"):
-        raise ValueError("INTMED_SUPABASE_URL must use a *.supabase.co host")
+    allowed_gateway = parsed.hostname == "api.drgerami-md.ir"
+    if not parsed.hostname or not (parsed.hostname.endswith(".supabase.co") or allowed_gateway):
+        raise ValueError(
+            "INTMED_SUPABASE_URL must use the IntMed gateway or a *.supabase.co host"
+        )
     if len(anon_key) < 20 or any(char.isspace() for char in anon_key):
         raise ValueError("INTMED_SUPABASE_ANON_KEY is missing or malformed")
     return url, anon_key

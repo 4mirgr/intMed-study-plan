@@ -19,6 +19,14 @@ class RuntimeConfigTest(unittest.TestCase):
         self.assertEqual(config["supabaseUrl"], "https://sample.supabase.co")
         self.assertFalse(config["allowLegacyDemo"])
 
+    def test_render_accepts_intmed_same_domain_gateway(self) -> None:
+        output = render("https://api.drgerami-md.ir", "a" * 32)
+        payload = re.fullmatch(r".*window\.INTMED_CONFIG = (\{.*\});\n", output, re.S)
+        self.assertEqual(
+            json.loads(payload.group(1))["supabaseUrl"],
+            "https://api.drgerami-md.ir",
+        )
+
     def test_rejects_blank_values(self) -> None:
         with self.assertRaises(ValueError):
             validate("", "")
