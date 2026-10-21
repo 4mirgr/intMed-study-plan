@@ -50,11 +50,13 @@
     return request("/auth/v1/" + path, {method:"POST", body:JSON.stringify(body), authenticated:false});
   }
   function signIn(username, password){
+    username=String(username||"").trim().toLowerCase();
     // Email compatibility preserves existing accounts during the one-time rollout.
     var login = username.indexOf("@") !== -1
       ? auth("token?grant_type=password", {email:username, password:password})
       : request("/functions/v1/intmed-login", {method:"POST", authenticated:false, body:JSON.stringify({username:username,password:password})});
     return login.catch(function(error){
+      if(!error.status && /fetch|network|load failed|offline/i.test(error.message||""))error.message="ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ بررسی اتصال را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
       if(error.status === 404) error.message = "ورود با نام کاربری هنوز در سرور فعال نشده است؛ تا تکمیل راه‌اندازی از ایمیل حساب استفاده کنید.";
       throw error;
     }).then(function(value){
@@ -336,6 +338,7 @@
     isConfigured:configured,
     session:session,
     signIn:signIn,
+    checkAuthConnection:function(){return request("/auth/v1/health",{authenticated:false});},
     signUp:signUp,
     resetPassword:resetPassword,
     refreshSession:refreshSession,

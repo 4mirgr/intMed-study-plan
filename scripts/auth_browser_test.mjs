@@ -26,5 +26,8 @@ try{
  await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
  if(await page.locator('#ghModal').isVisible())throw Error('Private retry opened token modal');
  if(github)throw Error('Private mode contacted GitHub state');
+ const probe=await browser.newPage();let reachable=false;
+ await probe.route('**/*.supabase.co/**',r=>reachable&&r.request().url().includes('/auth/v1/health')?r.fulfill({json:{name:'GoTrue'}}):r.abort('failed'));
+ await probe.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');await probe.locator('#loginUser').fill('network_qa');await probe.locator('#loginPass').fill('synthetic-password');await probe.locator('#loginForm button[type=submit]').click();await probe.waitForFunction(()=>document.getElementById('loginErr').textContent.includes('ارتباط مرورگر'));await probe.locator('#checkLoginConnection').click();await probe.waitForFunction(()=>document.getElementById('loginConnectionStatus').textContent.includes('دسترسی ندارد'));reachable=true;await probe.locator('#checkLoginConnection').click();await probe.waitForFunction(()=>document.getElementById('loginConnectionStatus').textContent.includes('برقرار است'));await probe.close();
  console.log('Auth browser passed: stored-session approval rechecked, forged legacy identity ignored, approved account allowed, no GitHub state requests.');
 }finally{await browser.close()}

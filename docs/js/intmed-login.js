@@ -133,6 +133,11 @@
     });
   }
 
+  document.getElementById('checkLoginConnection').addEventListener('click',function(){
+    var button=this,status=document.getElementById('loginConnectionStatus');button.disabled=true;status.textContent='در حال بررسی اتصال امن…';
+    var timer=setTimeout(function(){status.textContent='پاسخی دریافت نشد. روی همین دستگاه اینترنت دیگری یا وضعیت دیگر VPN را امتحان کنید و آدرس https://drgerami-md.ir را باز کنید.';button.disabled=false;},12000);
+    window.IntMedBackend.checkAuthConnection().then(function(){status.textContent='ارتباط با سرویس حساب برقرار است. دوباره ورود را امتحان کنید؛ اگر خطا باقی ماند، متن دقیق خطای جدید را ارسال کنید.';}).catch(function(e){status.textContent=e.status?'سرور پاسخ داد، اما خطای '+e.status+' دارد. این کد را به مدیریت گزارش کنید.':'این مرورگر به سرور حساب دسترسی ندارد. با اینترنت دیگر یا تغییر وضعیت VPN دوباره بررسی کنید؛ افزونهٔ مسدودکننده نیز ممکن است مانع اتصال باشد.';}).finally(function(){clearTimeout(timer);button.disabled=false;});
+  });
   loginForm.addEventListener("submit", function(ev){
     ev.preventDefault();
     var u = normalizeDigits(document.getElementById("loginUser").value).toLowerCase();
