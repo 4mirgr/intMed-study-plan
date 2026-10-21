@@ -35,6 +35,7 @@ try{
  assert.equal(states[owner].itemState[topic].note,'یادداشت محفوظ');assert.equal(states[owner].itemState['favorite:'+topic].favorite,true);
  await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
  assert.equal(await row.locator('.topic-favorite').getAttribute('aria-pressed'),'true');
+ await page.locator('#headerCollapseBtn').click();
  await page.locator('#tabBtnDashboard').click();assert.equal(await page.locator('#dashboardFavorites [data-favorite-topic]').count(),1);assert.equal(await page.locator('#profileFavorites [data-favorite-topic]').count(),1);
  await page.locator('#dashboardFavorites [data-favorite-topic]').click();await page.waitForTimeout(350);
  assert.equal(await page.locator('#tabPanelEducation').evaluate(e=>e.classList.contains('active')),true);assert.equal(await row.evaluate(e=>e.classList.contains('open')),true);
@@ -42,7 +43,7 @@ try{
  await page.locator('#headerCollapseBtn').click();assert.equal(await page.locator('#headerCollapseBtn').getAttribute('aria-expanded'),'false');assert.equal(await page.locator('#headerCollapsible').evaluate(e=>e.inert),true);
  await page.locator('#headerCollapseBtn').click();assert.equal(await page.locator('#headerCollapseBtn').getAttribute('aria-expanded'),'true');
  await row.locator('.topic-favorite').click();await page.waitForTimeout(700);assert.equal(states[owner].itemState['favorite:'+topic].favorite,false);assert.equal(states[other].itemState['favorite:'+topic].favorite,true);
- admin=true;await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnManagement').click();
+ admin=true;await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#headerCollapseBtn').click();await page.locator('#tabBtnManagement').click();
  assert.equal(await page.locator('[data-ranked-topic="'+topic+'"] b').textContent(),'۱ لایک');
  // A fresh server-side change must survive manual statistics refresh.
  states[owner].itemState['favorite:'+topic]={favorite:true};
