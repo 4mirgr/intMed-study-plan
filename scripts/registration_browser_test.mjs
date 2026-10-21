@@ -18,10 +18,11 @@ try{
  await page.waitForFunction(()=>document.getElementById('loginErr').classList.contains('show'));
  if(loginBody.username!=='doctor'||loginBody.password!==' password unchanged ')throw Error('Username/password login payload wrong');
  await page.locator('#showSignupLink').click();
- for(const id of ['signupFullName','signupUser','signupPass','signupDegree'])if(!await page.locator('#'+id).evaluate(e=>e.required))throw Error(id+' not required');
- if(await page.locator('#signupDegree option').count()!==7)throw Error('Degree list wrong');
+ for(const id of ['signupFullName','signupUser','signupPass','signupPassConfirm','signupDegree'])if(!await page.locator('#'+id).evaluate(e=>e.required))throw Error(id+' not required');
+ const degreeLabels=await page.locator('#signupDegree option').allTextContents();
+ if(degreeLabels.length!==8||degreeLabels.indexOf('پزشکی عمومی')+1!==degreeLabels.indexOf('رزیدنت'))throw Error('Degree list/order wrong');
  if(await page.evaluate(()=>window.IntMedRegistration.provinces.length)!==31)throw Error('Province list incomplete');
- await page.locator('#signupFullName').fill('پزشک آزمایشی');await page.locator('#signupUser').fill('doctor_qa');await page.locator('#signupPass').fill('StrongPassword-123');await page.locator('#signupDegree').selectOption({label:'رزیدنت'});
+ await page.locator('#signupFullName').fill('پزشک آزمایشی');await page.locator('#signupUser').fill('doctor_qa');await page.locator('#signupPass').fill('StrongPassword-123');await page.locator('#signupPassConfirm').fill('different-password');await page.locator('#signupDegree').selectOption({label:'رزیدنت'});
  await page.locator('#signupSpecialty').fill('داخلی');await page.getByRole('option',{name:'بیماری های داخلی',exact:true}).click();
  await page.locator('#signupProvince').fill('غيرمعتبر');
  if(await page.locator('#signupProvince').evaluate(e=>e.checkValidity()))throw Error('Invalid province accepted');
@@ -29,7 +30,9 @@ try{
  // Normal Persian spelling and Arabic Yeh searches both match.
  await page.locator('#signupProvince').fill('آذربايجان');await page.locator('#signupProvince').press('ArrowDown');await page.locator('#signupProvince').press('Enter');
  if(await page.locator('#signupProvince').inputValue()!=='آذربایجان شرقی')throw Error('Province keyboard selection failed');
- await page.locator('#signupEmail').fill('qa@example.com');await page.locator('#signupForm button[type=submit]').click();await page.locator('#signupSuccessBox').waitFor({state:'visible'});
+ await page.locator('#signupEmail').fill('qa@example.com');await page.locator('#signupForm button[type=submit]').click();
+ if(!await page.locator('#signupErr').textContent().then(t=>t.includes('یکسان نیستند')))throw Error('Password confirmation mismatch accepted');
+ await page.locator('#signupPassConfirm').fill('StrongPassword-123');await page.locator('#signupForm button[type=submit]').click();await page.locator('#signupSuccessBox').waitFor({state:'visible'});
  if(!gatewayAttempts)throw Error('Public gateway fallback was not exercised');
  if(signupBody.data.specialty!=='بیماری های داخلی'||signupBody.data.province!=='آذربایجان شرقی'||signupBody.data.degree!=='رزیدنت'||signupBody.data.app!=='intmed')throw Error('New profile metadata lost');
  await page.locator('#backToLoginFromSuccess').click();await page.locator('#showSignupLink').click();await page.locator('#signupEmail').fill('duplicate@example.com');await page.locator('#signupForm button[type=submit]').click();await page.locator('#signupRecoveryGuide').waitFor({state:'visible'});

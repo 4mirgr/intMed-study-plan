@@ -28,7 +28,7 @@ begin
     if coalesce(new.raw_user_meta_data->>'username','') !~ '^[a-z0-9_.-]{3,64}$'
       or length(trim(coalesce(new.raw_user_meta_data->>'fullName','')))=0
       or coalesce(new.raw_user_meta_data->>'degree','') not in
-        ('دانشجوی پزشکی','اینترن','رزیدنت','متخصص','فلوشیپ','فوق تخصص') then
+        ('دانشجوی پزشکی','اینترن','پزشکی عمومی','رزیدنت','متخصص','فلوشیپ','فوق تخصص') then
       raise exception 'Invalid IntMed signup profile';
     end if;
   end if;

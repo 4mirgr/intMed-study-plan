@@ -286,6 +286,7 @@
     ev.preventDefault();
     var username = normalizeDigits(document.getElementById("signupUser").value).toLowerCase().trim();
     var password = window.IntMedBackend && window.IntMedBackend.isConfigured() ? document.getElementById("signupPass").value : normalizeDigits(document.getElementById("signupPass").value);
+    var confirmPassword = window.IntMedBackend && window.IntMedBackend.isConfigured() ? document.getElementById("signupPassConfirm").value : normalizeDigits(document.getElementById("signupPassConfirm").value);
     var fullName = document.getElementById("signupFullName").value.trim();
     var degree = document.getElementById("signupDegree").value.trim();
     var specialty = document.getElementById("signupSpecialty").value.trim();
@@ -294,13 +295,17 @@
     var mobile = normalizeDigits(document.getElementById("signupMobile").value).trim();
     var email = document.getElementById("signupEmail").value.trim();
     signupRecoveryGuide.hidden = true;
-    if(!username || !password || !fullName || !degree){
+    if(!username || !password || !confirmPassword || !fullName || !degree){
       signupErr.classList.add("show");
       return;
     }
     signupErr.classList.remove("show");
     if(!/^[a-z0-9_.-]{3,64}$/.test(username) || password.length < 8){
       signupErr.textContent = "نام کاربری باید ۳ تا ۶۴ حرف انگلیسی یا عدد و رمز حداقل ۸ نویسه باشد.";
+      signupErr.classList.add("show"); return;
+    }
+    if(password !== confirmPassword){
+      signupErr.textContent = "رمز عبور و تکرار آن یکسان نیستند.";
       signupErr.classList.add("show"); return;
     }
     if(!window.IntMedRegistration.valid(degree, specialty, province)){

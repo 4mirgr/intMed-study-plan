@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://api.drgerami-md.ir https://upwbktvnybsjugdegjji.supabase.co; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=72a08404d50a1b6a">
+<link rel="stylesheet" href="intmed.css?v=93e3af2f3be749ef">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
@@ -56,10 +56,12 @@
     <small id="usernameHelp">۳ تا ۶۴ حرف انگلیسی، عدد، نقطه، خط تیره یا زیرخط</small>
     </div><div class="signup-field"><label for="signupPass">رمز عبور <span class="required-mark" aria-label="الزامی">*</span></label>
     <input type="password" id="signupPass" placeholder="حداقل ۸ نویسه" autocomplete="new-password" minlength="8" required>
+    </div><div class="signup-field"><label for="signupPassConfirm">تکرار رمز عبور <span class="required-mark" aria-label="الزامی">*</span></label>
+    <input type="password" id="signupPassConfirm" placeholder="رمز عبور را دوباره وارد کنید" autocomplete="new-password" minlength="8" required>
     </div><div class="signup-field"><label for="signupDegree">آخرین مدرک تحصیلی <span class="required-mark" aria-label="الزامی">*</span></label>
     <select id="signupDegree" required>
       <option value="" disabled selected>مدرک تحصیلی را انتخاب کنید</option>
-      <option>دانشجوی پزشکی</option><option>اینترن</option><option>رزیدنت</option>
+      <option>دانشجوی پزشکی</option><option>اینترن</option><option>پزشکی عمومی</option><option>رزیدنت</option>
       <option>متخصص</option><option>فلوشیپ</option><option>فوق تخصص</option>
     </select>
     </div><div class="signup-field"><label for="signupSpecialty">رشته</label>
@@ -257,7 +259,7 @@
   <div class="tab-panel" id="tabPanelManagement">    <section class="callout dashboard-admin" id="adminPanelCard" style="display:none">
       <div class="section-heading"><h2>مرکز مدیریت</h2><a class="secondary-action" target="_blank" rel="noopener noreferrer" href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/ACCOUNT_UI_SETUP_FA.md">راهنمای فعال‌سازی نام مدیر، بازیابی و تیکت</a><button type="button" id="adminExportStats" class="stats-refresh">خروجی CSV آمار مباحث</button></div>
       <details class="notification-panel"><summary>خبرنامهٔ ایمیلی به‌روزرسانی سایت</summary><p id="newsletterAdminStatus" class="section-caption"></p><p class="section-caption">عضویت اختیاری است و کاربر هر زمان می‌تواند آن را لغو کند. پیش از اولین ارسال، سرویس ایمیل را متصل و ارسال آزمایشی را بررسی کنید. هر نوبت حداکثر ۲۰ نفر از مشترکان واجد شرایط را پوشش می‌دهد.</p><div class="newsletter-composer"><label for="newsletterSubject">عنوان خبرنامه</label><input id="newsletterSubject" maxlength="160" placeholder="مثلاً: آزمون‌های تصویری قلب اضافه شد"><label for="newsletterBody">متن خبرنامه</label><textarea id="newsletterBody" maxlength="12000" rows="6" placeholder="تغییرات جدید و لینک مباحث را بنویسید."></textarea><div class="admin-account-actions"><button type="button" data-newsletter-action="status">بررسی اتصال ایمیل</button><button type="button" data-newsletter-action="preview">پیش‌نمایش و تعداد گیرندگان</button><button type="button" data-newsletter-action="test">ارسال آزمایشی فقط به مدیر</button><button type="button" data-newsletter-action="send" id="newsletterSend" disabled>ارسال به حداکثر ۲۰ مشترک بعدی</button><button type="button" id="newsletterNew">خبرنامهٔ جدید</button></div><p id="newsletterDeliveryStatus" role="status" class="section-caption"></p><pre id="newsletterPreview"></pre></div><button type="button" id="newsletterExport" class="secondary-action">خروجی CSV مشترکان فعال</button></details>
-      <section class="neon-panel integration-setup" data-panel-color="blue"><h3>راه‌اندازی اعلان‌ها · تنظیمات سرور لازم است</h3><div class="integration-status-row"><span id="telegramSetupBadge" class="setup-status">تلگرام: بررسی نشده</span><span id="newsletterSetupBadge" class="setup-status">ایمیل: بررسی نشده</span><button type="button" id="checkServiceConnections" class="secondary-action">بررسی هر دو اتصال</button></div><p class="section-caption">در بررسی ۲۹ مهر ۱۴۰۵، تابع‌های تلگرام و خبرنامه نصب نبودند (404). تا تکمیل مراحل زیر ارسال فعال نمی‌شود. رمز یا کلید را در چت یا کد سایت وارد نکنید.</p><ol><li>در پروژهٔ خودتان در <a href="https://supabase.com/dashboard/project/upwbktvnybsjugdegjji/functions" target="_blank" rel="noopener noreferrer">Supabase → Edge Functions</a> تابع مربوط را نصب کنید.</li><li>توکن بات یا کلید Resend را فقط در Edge Functions → Secrets ذخیره کنید و فایل آمادهٔ setup_services.sql را یک‌بار در SQL Editor اجرا کنید.</li><li>در بخش تلگرام «بررسی اتصال»، «پیداکردن گفت‌وگو» و سپس «اعلان آزمایشی» را بزنید؛ برای ایمیل ابتدا اتصال و ارسال آزمایشی فقط به مدیر را بررسی کنید.</li></ol><p><a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/TELEGRAM_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم تلگرام</a> · <a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/NEWSLETTER_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم ایمیل</a></p><p><a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/SETUP_SERVICES_FA.md" target="_blank" rel="noopener noreferrer">شروع از اینجا: نصب سادهٔ سرویس‌ها</a> · <a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/setup_services.sql" target="_blank" rel="noopener noreferrer">فایل یک‌جای نصب SQL اعلان‌ها و سخت‌گیری دسترسی</a> · <a href="security/assessment-fa.md" target="_blank" rel="noopener noreferrer">گزارش بررسی امنیت و حفاظت محتوا</a></p><p class="section-caption">این یادداشت نتیجهٔ بررسی اولیه است؛ نتیجهٔ دکمهٔ بررسی اتصال، وضعیت تازهٔ هر سرویس را نشان می‌دهد.</p></section>
+      <section class="neon-panel integration-setup" data-panel-color="blue"><h3>راه‌اندازی اعلان‌ها · اتصال سرویس‌دهنده لازم است</h3><div class="integration-status-row"><span id="telegramSetupBadge" class="setup-status">تلگرام: بررسی نشده</span><span id="newsletterSetupBadge" class="setup-status">ایمیل: بررسی نشده</span><button type="button" id="checkServiceConnections" class="secondary-action">بررسی هر دو اتصال</button></div><p class="section-caption">تابع‌ها و زیرساخت سرور نصب شده‌اند. برای فعال‌شدن ارسال، کلیدهای محرمانهٔ سرویس‌دهنده را فقط در Supabase ذخیره کنید؛ رمز یا کلید را در چت یا کد سایت وارد نکنید.</p><ol><li>برای تلگرام، توکن ساخته‌شده با BotFather را با نام <code>TELEGRAM_BOT_TOKEN</code> در <a href="https://supabase.com/dashboard/project/upwbktvnybsjugdegjji/settings/functions" target="_blank" rel="noopener noreferrer">Supabase → Edge Functions → Secrets</a> ثبت کنید.</li><li>برای خبرنامه، کلید Resend، فرستندهٔ تأییدشده و کلید امضا را مطابق راهنما در همان بخش Secrets ثبت کنید.</li><li>سپس در همین پنل «بررسی هر دو اتصال» را بزنید؛ گفت‌وگوی تلگرام را انتخاب و برای هر سرویس یک ارسال آزمایشی انجام دهید.</li></ol><p><a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/TELEGRAM_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم تلگرام</a> · <a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/NEWSLETTER_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم ایمیل</a></p><p class="section-caption">نتیجهٔ دکمهٔ بررسی اتصال، وضعیت زندهٔ کلیدها و اتصال هر سرویس را نشان می‌دهد.</p></section>
       <details class="notification-panel"><summary>پیام‌های بازیابی دسترسی <span id="recoveryTicketCount" class="management-badge" hidden></span></summary><button type="button" id="refreshRecoveryTickets">بررسی پیام‌های جدید</button><p id="recoveryAdminStatus" role="status"></p><div id="recoveryAdminList"></div></details><div id="adminOverview" class="metric-grid"></div>
       <details class="notification-panel"><summary>خروجی PDF دفتر مطالعهٔ کاربران</summary><div class="notebook-export-controls"><label>کاربر <select id="notebookExportUser"></select></label><label>محتوا <select id="notebookExportKind"><option value="all">یادداشت‌ها و هایلایت‌ها</option><option value="notes">فقط یادداشت‌ها</option><option value="highlights">فقط هایلایت‌ها</option></select></label><button type="button" id="adminExportNotebook" class="secondary-action">آماده‌سازی PDF</button><small id="notebookExportStatus" role="status"></small></div><p class="section-caption">فقط اطلاعات کاربر انتخاب‌شده در خروجی قرار می‌گیرد. در پنجرهٔ چاپ، Save as PDF را انتخاب کنید.</p></details>
       <details class="notification-panel"><summary>اعلان ثبت‌نام در تلگرام</summary><p class="section-caption">پس از راه‌اندازی یک‌باره، درخواست‌های جدید به بات تلگرام شما ارسال می‌شوند؛ دریافت اعلان روی آیفون به فعال‌بودن اعلان‌های Telegram بستگی دارد.</p>
@@ -311,13 +313,13 @@
   </footer>
 </div>
 
-<script src="config.js?v=5f48a99e989da9ef"></script>
-<script src="js/intmed-backend.js?v=e01f0e87d5898156"></script>
+<script src="config.js?v=066d4f9726ed485f"></script>
+<script src="js/intmed-backend.js?v=5ea61e450dc938b8"></script>
 <script src="js/intmed-theme.js?v=10cbe508c7ceb533"></script>
-<script src="js/intmed-registration.js?v=5d2e004281bbb0f3"></script>
-<script src="js/intmed-login.js?v=306c3cab2b783056"></script>
+<script src="js/intmed-registration.js?v=48c353ccb8e01649"></script>
+<script src="js/intmed-login.js?v=c0ef4deaa6683a30"></script>
 <script src="js/intmed-exams.js?v=e47f2f76f0d62b96"></script>
 <script src="js/intmed-dashboard.js?v=cf5abe1d8f4d1365"></script>
 <script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
 <script src="js/intmed-motion.js?v=ea46b287e6f400c4"></script>
-<script src="js/intmed-app.js?v=2d3d93e8f4932677"></script>
+<script src="js/intmed-app.js?v=2f0210a7d4da4d28"></script>

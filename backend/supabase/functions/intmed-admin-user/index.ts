@@ -1,6 +1,6 @@
 // Admin-only account editor. Passwords are deliberately not accepted here.
 const allowedOrigins = new Set(['https://drgerami-md.ir','https://www.drgerami-md.ir','http://localhost:8765','http://127.0.0.1:8765']);
-const degrees = new Set(['دانشجوی پزشکی','اینترن','رزیدنت','متخصص','فلوشیپ','فوق تخصص']);
+const degrees = new Set(['دانشجوی پزشکی','اینترن','پزشکی عمومی','رزیدنت','متخصص','فلوشیپ','فوق تخصص']);
 
 Deno.serve(async (req) => {
   const origin=req.headers.get('origin')||'';
