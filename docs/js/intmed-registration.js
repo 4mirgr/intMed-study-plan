@@ -5,7 +5,8 @@
   var specialties = ['پزشکی عمومی','پزشکی داخلی','قلب و عروق','گوارش و کبد بزرگسالان','بیماری‌های کلیه (نفرولوژی)','غدد درون‌ریز و متابولیسم','بیماری‌های ریه','روماتولوژی','خون و سرطان بالغین (هماتولوژی و انکولوژی)','بیماری‌های عفونی و گرمسیری','آلرژی و ایمونولوژی بالینی','طب مراقبت‌های ویژه','طب تسکینی','طب سالمندی','کودکان','قلب کودکان','گوارش کودکان','کلیه کودکان','غدد کودکان','خون و سرطان کودکان','مغز و اعصاب کودکان','ریه کودکان','عفونی کودکان','روماتولوژی کودکان','طب نوزادی و پیرامون تولد','جراحی عمومی','جراحی قلب و عروق','جراحی قفسه سینه','جراحی عروق','جراحی کودکان','جراحی پلاستیک و ترمیمی','جراحی مغز و اعصاب','جراحی سرطان','جراحی کولورکتال','جراحی پستان','جراحی کبد، پانکراس و مجاری صفراوی','جراحی پیوند','جراحی لاپاروسکوپی','جراحی چاقی','ارتوپدی','جراحی دست','جراحی ستون فقرات','ارتوپدی کودکان','اورولوژی','اورولوژی کودکان','اندویورولوژی','زنان و زایمان','انکولوژی زنان','طب مادر و جنین (پریناتولوژی)','ناباروری و IVF','جراحی لگن و اوروژنیکولوژی','بیهوشی','طب درد','بیهوشی قلب','بیهوشی کودکان','طب اورژانس','مغز و اعصاب (نورولوژی)','صرع','سکته مغزی','اختلالات حرکت','بیماری‌های عصب و عضله','ام‌اس و نوروايمونولوژی','روان‌پزشکی','روان‌پزشکی کودک و نوجوان','روان‌پزشکی اعتیاد','روان‌تنی','پوست','چشم‌پزشکی','شبکیه','قرنیه','گلوکوم','استرابیسم','اکولوپلاستی','گوش و حلق و بینی و جراحی سر و گردن','اتولوژی و نورواتولوژی','رینولوژی','لارنگولوژی','رادیولوژی','رادیولوژی مداخله‌ای','نورورادیولوژی','رادیوانکولوژی (پرتودرمانی)','پزشکی هسته‌ای','آسیب‌شناسی (پاتولوژی)','هماتوپاتولوژی','سیتوپاتولوژی','پزشکی قانونی','طب فیزیکی و توان‌بخشی','پزشکی ورزشی','طب کار','پزشکی اجتماعی','پزشکی خانواده','طب پیشگیری','طب ایرانی','طب هوافضا','طب دریایی','ژنتیک پزشکی','ایمونولوژی پزشکی','میکروب‌شناسی پزشکی','ویروس‌شناسی پزشکی','انگل‌شناسی پزشکی','قارچ‌شناسی پزشکی','بیوشیمی بالینی','علوم آزمایشگاهی','اپیدمیولوژی','تغذیه بالینی','فارماکولوژی','فیزیولوژی پزشکی','علوم تشریحی','آموزش پزشکی','اخلاق پزشکی','سایر'];
   var aliases = {'پزشکی داخلی':'داخلی internal medicine','قلب و عروق':'کاردیولوژی cardiology','رادیوانکولوژی (پرتودرمانی)':'رادیوانکو رادیو انکولوژی radiation oncology','زنان و زایمان':'زنان gynecology','جراحی عمومی':'جراحی surgery','مغز و اعصاب (نورولوژی)':'نورولوژی neurology'};
   function normalize(value){return value.normalize('NFKC').replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/[\u200c\u200e\u200f\sـ-]+/g,'').toLowerCase();}
-  document.querySelectorAll('.search-select').forEach(function(root){
+  function mount(scope){(scope||document).querySelectorAll('.search-select').forEach(function(root){
+    if(root.dataset.mounted)return;root.dataset.mounted='true';
     var input=root.querySelector('input'),list=root.querySelector('[role=listbox]');
     var choices=root.dataset.options==='provinces'?provinces:specialties,filtered=[],active=-1;
     function close(){list.hidden=true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');active=-1;}
@@ -25,5 +26,7 @@
       if(e.key==='Enter'&&!list.hidden){e.preventDefault();if(active>=0)choose(filtered[active]);else if(filtered.length===1)choose(filtered[0]);}
     });
   });
-  global.IntMedRegistration={degrees:degrees,provinces:provinces,specialties:specialties,valid:function(degree,specialty,province){return degrees.includes(degree)&&(!specialty||specialties.includes(specialty))&&(!province||provinces.includes(province));}};
+  }
+  mount(document);
+  global.IntMedRegistration={mount:mount,degrees:degrees,provinces:provinces,specialties:specialties,valid:function(degree,specialty,province){return degrees.includes(degree)&&(!specialty||specialties.includes(specialty))&&(!province||provinces.includes(province));}};
 })(window);

@@ -81,9 +81,9 @@
   var recoveryForm = document.getElementById("recoveryForm");
   if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
     document.getElementById("loginUser").placeholder = "نام کاربری";
-    document.getElementById("forgotUser").placeholder = "ایمیل حساب";
+    document.getElementById("forgotUser").placeholder = "ایمیل یا نام کاربری";
     var forgotHelp = document.querySelector("#forgotForm p");
-    if(forgotHelp) forgotHelp.textContent = "ایمیل حسابت را وارد کن تا لینک امن بازیابی رمز برایت ارسال شود.";
+    if(forgotHelp) forgotHelp.textContent = "ایمیل یا نام کاربری را وارد کنید؛ لینک تغییر رمز فقط به ایمیل تأییدشدهٔ حساب ارسال می‌شود.";
     var successText = document.querySelector("#signupSuccessBox .signup-success-text");
     if(successText) successText.innerHTML = "<b>ثبت‌نام شما دریافت شد.</b> پس از تأیید ایمیل و تأیید مدیر می‌توانید با نام کاربری و رمز خود وارد شوید.";
     var successActions = document.querySelector("#signupSuccessBox .signup-success-actions");
@@ -253,9 +253,9 @@
     }
     button.disabled=true;button.textContent="در حال ارسال…";
     window.IntMedBackend.resetPassword(email).then(function(){
-      status.textContent="اگر حسابی با این ایمیل ثبت شده باشد، لینک بازیابی برای آن ارسال می‌شود. پوشهٔ هرزنامه را هم بررسی کنید.";
+      status.textContent="اگر حسابی با این مشخصات ثبت شده باشد، لینک بازیابی به ایمیل آن ارسال می‌شود. پوشهٔ هرزنامه را هم بررسی کنید.";
     }).catch(function(error){
-      status.textContent=error.status===429 ? "تعداد درخواست‌ها زیاد است؛ چند دقیقه بعد دوباره تلاش کنید." : "ارسال درخواست ناموفق بود؛ اتصال اینترنت را بررسی و دوباره تلاش کنید.";
+      status.textContent=error.status===404 ? "بازیابی با نام کاربری هنوز در سرور نصب نشده؛ فعلاً ایمیل خود را وارد کنید." : error.status===429 ? "تعداد درخواست‌ها زیاد است؛ چند دقیقه بعد دوباره تلاش کنید." : "ارسال درخواست ناموفق بود؛ اتصال اینترنت را بررسی و دوباره تلاش کنید.";
       status.classList.add("error");
     }).finally(function(){button.disabled=false;button.textContent="ارسال لینک بازیابی رمز";});
   });

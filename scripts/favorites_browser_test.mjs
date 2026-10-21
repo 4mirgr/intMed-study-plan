@@ -21,6 +21,7 @@ await context.route('**/*.supabase.co/**',async route=>{
  throw Error('Unexpected request '+url.pathname);
 });
 const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await context.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));
 try{
  await page.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
  const row=page.locator('.topic-item').filter({hasText:'خواندن و تفسیر ECG'});
@@ -41,7 +42,7 @@ try{
  await page.locator('#headerCollapseBtn').click();assert.equal(await page.locator('#headerCollapseBtn').getAttribute('aria-expanded'),'false');assert.equal(await page.locator('#headerCollapsible').evaluate(e=>e.inert),true);
  await page.locator('#headerCollapseBtn').click();assert.equal(await page.locator('#headerCollapseBtn').getAttribute('aria-expanded'),'true');
  await row.locator('.topic-favorite').click();await page.waitForTimeout(700);assert.equal(states[owner].itemState['favorite:'+topic].favorite,false);assert.equal(states[other].itemState['favorite:'+topic].favorite,true);
- admin=true;await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnDashboard').click();
+ admin=true;await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnManagement').click();
  assert.equal(await page.locator('[data-ranked-topic="'+topic+'"] b').textContent(),'۱ لایک');
  // A fresh server-side change must survive manual statistics refresh.
  states[owner].itemState['favorite:'+topic]={favorite:true};

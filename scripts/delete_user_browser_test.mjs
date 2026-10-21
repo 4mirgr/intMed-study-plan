@@ -28,9 +28,10 @@ await page.route('**/*.supabase.co/**',async route=>{
  if(u.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
  throw Error('Unexpected request '+u.pathname);
 });
+await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));
 try{
  await page.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
- await page.locator('#tabBtnDashboard').click();
+ await page.locator('#tabBtnManagement').click();
  assert.equal(await page.locator('[data-delete-user="'+owner+'"]').count(),0);
  assert.equal(await page.locator('[data-delete-user="'+otherAdmin+'"]').count(),0);
  await page.locator('[data-user-toggle="'+victim+'"]').click();

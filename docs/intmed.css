@@ -1000,3 +1000,17 @@
 .integration-status-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}.setup-status{font-size:.76rem;border:1px solid var(--border);background:var(--surface-2);padding:7px 10px;border-radius:999px;color:var(--ink-dim)}.setup-status.ready{color:var(--accent-ink);border-color:var(--neon-a);box-shadow:0 0 12px var(--panel-glow)}
 @supports selector(details::details-content){.topic-tags::details-content{opacity:0;transition:opacity .16s ease,content-visibility .16s allow-discrete}.topic-tags[open]::details-content{opacity:1}}
 @media(prefers-reduced-motion:reduce){.topic-tags::details-content{transition:none}}
+
+/* Account workspace: compact, touch-friendly controls. */
+.tab-btn{border-radius:999px!important}.tab-btn[hidden]{display:none!important}
+.management-badge{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;margin-inline-start:.3em;background:#facc15;color:#282100;border-radius:99px;font-weight:900;box-shadow:0 0 12px #facc1570}.management-badge[hidden]{display:none}
+.tab-btn.needs-attention{box-shadow:inset 0 0 0 1px #facc15,0 0 12px #facc1540}
+.admin-ticket-item.unread,.admin-signup-pending{border-color:#eab308!important;box-shadow:0 0 12px #eab30820}
+.annotation-card{position:relative;display:flex;flex-direction:column;align-items:stretch}.annotation-open{display:block!important;align-self:flex-end;float:none!important;font-size:.68rem!important;padding:5px 10px!important;margin:10px 0 0!important}
+.dashboard-fold{border:1px solid #2dd4bf50;border-radius:20px;margin-block:14px;background:var(--panel);box-shadow:0 0 16px #22d3ee0a;overflow:visible}.dashboard-fold>summary{padding:16px 20px;cursor:pointer;font-weight:700}.dashboard-fold section{margin:0!important;border:0!important;box-shadow:none!important}
+.metric-card{position:relative;overflow:hidden;padding-inline-end:76px!important;min-height:125px}.metric-art{position:absolute;inset-inline-end:14px;top:24px;width:48px;height:48px;border-radius:15px;color:#2dd4bf;background:linear-gradient(140deg,#b5fff35c,#22d3ee19 50%,#137b7333);border:1px solid #7bfff375;box-shadow:inset 2px 2px 5px #ffffff30,inset -3px -3px 8px #0005,4px 8px 12px #0003;transform:perspective(180px) rotateY(-16deg) rotateX(9deg);filter:drop-shadow(0 0 8px #22d3ee35)}.metric-art svg{width:100%;height:100%;padding:6px;box-sizing:border-box;filter:drop-shadow(1px 3px 1px #0005)}
+.logo-badge img{user-select:none;-webkit-user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none}
+#signupForm{width:min(1120px,100%);max-width:none;min-height:100dvh;box-sizing:border-box;border-radius:0;margin:0 auto;padding:clamp(20px,4vw,56px)}.signup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 24px;text-align:right}.signup-field{min-width:0;padding:14px;border:1px solid #2dd4bf35;border-radius:16px;background:#22d3ee06}.signup-field label{display:block;margin:0 0 8px}.signup-field input,.signup-field select{width:100%;box-sizing:border-box;margin:0!important}.required-mark{color:#fb7185;font-weight:900}.signup-field small{display:block;margin-top:6px}.profile-field .search-select{width:100%}.search-options{z-index:1000;max-height:230px;overflow:auto;overscroll-behavior:contain}.search-options [role=option]{min-height:44px;box-sizing:border-box;cursor:pointer}
+@media(max-width:600px){.signup-grid{grid-template-columns:1fr;gap:10px}#signupForm{padding:20px 14px}.signup-field{padding:10px}.tab-btn{font-size:.75rem;padding-inline:12px!important}}
+
+.signup-field:last-child{grid-column:1/-1}

@@ -90,6 +90,7 @@
     return auth("signup", {email:email, password:password, data:metadata || {}});
   }
   function resetPassword(email){
+    if(email.indexOf('@')===-1)return request('/functions/v1/intmed-recovery',{method:'POST',authenticated:false,body:JSON.stringify({action:'recover',identity:email})});
     var redirect = global.location ? global.location.origin + global.location.pathname : "";
     var path = "recover" + (redirect ? "?redirect_to=" + encodeURIComponent(redirect) : "");
     return auth(path, {email:email});

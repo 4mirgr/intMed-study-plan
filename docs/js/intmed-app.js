@@ -1051,11 +1051,11 @@
         field='<select id="profileInput-degree"><option value="">انتخاب مدرک</option>'+choices.map(function(v){return '<option'+(v===value?' selected':'')+'>'+escapeHtml(v)+'</option>';}).join('')+'</select>';
       }
       if((f.key==='province'||f.key==='specialty') && window.IntMedRegistration){
-        var options=f.key==='province'?window.IntMedRegistration.provinces:window.IntMedRegistration.specialties;
-        field=field.replace(' data-profile-field=', ' list="profile-options-'+f.key+'" data-profile-field=')+'<datalist id="profile-options-'+f.key+'">'+options.map(function(v){return '<option value="'+escapeHtml(v)+'">';}).join('')+'</datalist>';
+        field='<div class="search-select" data-options="'+(f.key==='province'?'provinces':'specialties')+'"><input id="profileInput-'+f.key+'" value="'+escapeHtml(value)+'" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="profile-options-'+f.key+'" autocomplete="off" placeholder="جست‌وجو و انتخاب"><div id="profile-options-'+f.key+'" class="search-options" role="listbox" hidden></div></div>';
       }
       return '<div class="profile-field"><label for="profileInput-'+f.key+'">'+f.label+'</label>'+field+'</div>';
     }).join("");
+    if(window.IntMedRegistration)window.IntMedRegistration.mount(myProfileGridEl);
     var username=document.getElementById("accountUsername");if(username)username.value=myBucket().backendUsername||"";
     var email=document.getElementById("accountEmail");if(email)email.value=p.email||"";
   }
@@ -1128,7 +1128,7 @@
     }).then(function(){
       if(email!==(myBucket().profile.email||""))return window.IntMedBackend.updateEmail(email).then(function(){status.textContent="نام کاربری ذخیره شد. تغییر ایمیل پس از تأیید لینک‌های ایمیل انجام می‌شود؛ سپس دوباره وارد شوید.";});
       status.textContent="اطلاعات حساب ذخیره شد؛ شناسه و اطلاعات مطالعه تغییر نکرده‌اند ✓";
-    }).catch(function(e){status.textContent=e.status===404?"تغییر نام کاربری به نصب فایل dashboard_upgrade.sql نیاز دارد.":e.message||"ذخیره ناموفق بود.";}).finally(function(){accountSave.disabled=false;});
+    }).catch(function(e){status.textContent=e.status===409?"این نام کاربری قبلاً انتخاب شده؛ نام دیگری وارد کنید.":e.status===404?"تغییر نام کاربری به نصب فایل setup_services.sql نیاز دارد؛ راهنما در تب مدیریت است.":e.message||"ذخیره ناموفق بود.";}).finally(function(){accountSave.disabled=false;});
   });
   var accountRecovery=document.getElementById("accountRecovery");
   if(accountRecovery)accountRecovery.addEventListener("click",function(){
@@ -1405,6 +1405,7 @@
   }
 
   function renderAdminTickets(){
+    updateManagementBadge();
     if(!adminTicketsPanel) return;
     var list = (STATE.tickets || []).slice().reverse();
     var unreadCount = list.filter(function(t){ return !t.read; }).length;
@@ -1636,6 +1637,8 @@
     var profileCard = document.getElementById("userProfileCard");
     var adminCard = document.getElementById("adminPanelCard");
     if(profileCard) profileCard.style.display = "";
+    var managementButton=document.getElementById("tabBtnManagement");if(managementButton)managementButton.hidden=!isAdmin;
+    updateManagementBadge();
     if(isAdmin)renderMyProfileFields();
     if(profileCard){var ownTicket=profileCard.querySelector('.ticket-box');if(ownTicket)ownTicket.style.display=isAdmin?'none':'';}
     if(adminCard) adminCard.style.display = isAdmin ? "" : "none";
@@ -2518,18 +2521,38 @@
     }
   }
 
+  document.querySelectorAll('#tabPanelDashboard section.neon-panel, #tabPanelDashboard section.favorites-card').forEach(function(section){
+    var heading=section.querySelector('h2,h3');if(!heading)return;
+    var fold=document.createElement('details');fold.className='dashboard-fold';fold.open=true;
+    var summary=document.createElement('summary');summary.textContent=heading.textContent;
+    section.before(fold);fold.append(summary,section);
+  });
+  document.querySelectorAll('img[src="assets/logo.png"]').forEach(function(logo){
+    ['contextmenu','dragstart'].forEach(function(type){logo.addEventListener(type,function(e){e.preventDefault();});});
+  });
   var tabBtnDashboard = document.getElementById("tabBtnDashboard");
   var tabBtnEducation = document.getElementById("tabBtnEducation");
   var tabPanelDashboard = document.getElementById("tabPanelDashboard");
   var tabPanelEducation = document.getElementById("tabPanelEducation");
   function setTab(name){
-    var isDash = name === "dashboard";
-    if(isDash && window.IntMedDashboard)window.IntMedDashboard.stop();
-    tabBtnDashboard.classList.toggle("active", isDash);
-    tabBtnEducation.classList.toggle("active", !isDash);
-    tabPanelDashboard.classList.toggle("active", isDash);
-    tabPanelEducation.classList.toggle("active", !isDash);
-    if(isDash)renderStudyDashboard();
+    if(name==='management' && (usesPrivateBackend()?myBucket().backendRole!=='admin':CURRENT_USER_ID!=='amir'))name='dashboard';
+    if(name!=='education' && window.IntMedDashboard)window.IntMedDashboard.stop();
+    ['dashboard','education','management'].forEach(function(key){
+      var suffix=key[0].toUpperCase()+key.slice(1),button=document.getElementById('tabBtn'+suffix),panel=document.getElementById('tabPanel'+suffix);
+      if(button){button.classList.toggle('active',key===name);button.setAttribute('aria-pressed',String(key===name));}
+      if(panel)panel.classList.toggle('active',key===name);
+    });
+    if(name==='dashboard')renderStudyDashboard();
+    if(name==='management')renderUserPanel();
+  }
+  document.getElementById('tabBtnManagement').addEventListener('click',function(){setTab('management');});
+  var recoveryPending=0;window.addEventListener('intmed-support-count',function(e){recoveryPending=Number(e.detail)||0;updateManagementBadge();});
+  function updateManagementBadge(){
+    var pending=Object.keys(STATE.users||{}).filter(function(id){var u=STATE.users[id];return u.backendApproved===false&&!u.backendRejected;}).length;
+    var tickets=(STATE.tickets||[]).filter(function(t){return !t.fromAdmin&&!t.reply;}).length;
+    var count=pending+tickets+(recoveryPending||0),badge=document.getElementById('managementBadge');
+    if(badge){badge.textContent=faDigits(count);badge.hidden=!count;}
+    var button=document.getElementById('tabBtnManagement');if(button)button.classList.toggle('needs-attention',count>0);
   }
   tabBtnDashboard.addEventListener("click", function(){ setTab("dashboard"); });
   tabBtnEducation.addEventListener("click", function(){ setTab("education"); });

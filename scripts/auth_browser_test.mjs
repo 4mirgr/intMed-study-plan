@@ -6,6 +6,7 @@ const page=await browser.newPage();const id='11111111-1111-4111-8111-11111111111
 await page.addInitScript(({id})=>{localStorage.setItem('bp_authed','1');localStorage.setItem('bp_user_id','amir');localStorage.setItem('intmed_supabase_session',JSON.stringify({access_token:'test-only',user:{id}}));},{id});
 await page.route('**/*.supabase.co/**',route=>{const u=new URL(route.request().url());if(u.pathname==='/rest/v1/profiles'&&u.searchParams.has('id'))return route.fulfill({json:{id,username:'qa',role:'user',approved,rejected:false}});if(u.pathname==='/rest/v1/profiles')return route.fulfill({json:[{id,username:'qa',role:'user',approved,rejected:false}]});if(failState && u.pathname==='/rest/v1/study_state')return route.fulfill({status:503,json:{message:'Temporary outage'}});if(route.request().method()==='POST')return route.fulfill({json:[{}]});return route.fulfill({json:[]});});
 await page.route('https://api.github.com/**',route=>{github++;return route.abort()});
+await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));
 try{
  await page.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');
  await page.waitForFunction(()=>document.getElementById('loginErr').textContent.includes('ورود حساب تأیید نشد'));

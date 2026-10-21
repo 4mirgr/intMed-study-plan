@@ -9,6 +9,7 @@ await page.route('**/*.supabase.co/**',async route=>{
  if(url.pathname==='/functions/v1/intmed-login'){loginBody=req.postDataJSON();return route.fulfill({status:401,json:{message:'نام کاربری یا رمز عبور اشتباه است.'}});}
  throw Error('Unexpected request '+url.pathname);
 });
+await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));
 try{
  await page.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');
  if(await page.locator('#loginUser').getAttribute('placeholder')!=='نام کاربری')throw Error('Login asks for email');

@@ -13,6 +13,7 @@ await page.route('**/*.supabase.co/**',async route=>{
  return route.fulfill({status:401,json:{message:'no session'}});
 });
 page.on('dialog',dialog=>dialog.accept());
+await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));
 try{
  const base=process.env.INTMED_BASE_URL||'http://127.0.0.1:8765';await page.goto(base);await page.locator('#showForgotLink').click();
  assert.ok(!(await page.locator('#forgotForm').textContent()).includes('واتساپ'));assert.equal(await page.locator('#forgotMobile').count(),0);

@@ -44,6 +44,7 @@ jobs:
       - run: node scripts/security_hardening_test.mjs
       - run: python3 scripts/build_services_setup.py --check
       - run: node scripts/username_login_test.mjs
+      - run: node scripts/recovery_support_test.mjs
       - run: node scripts/delete_user_sql_test.mjs
       - run: python3 scripts/build_dashboard_setup.py --check
       - run: node scripts/dashboard_sql_test.mjs
@@ -62,6 +63,7 @@ jobs:
           node scripts/delete_user_browser_test.mjs
           node scripts/favorites_browser_test.mjs
           node scripts/recovery_browser_test.mjs
+          node scripts/recovery_support_browser_test.mjs
           node scripts/dashboard_browser_test.mjs
           node scripts/annotations_theme_browser_test.mjs
           node scripts/pdf_ecg_browser_test.mjs

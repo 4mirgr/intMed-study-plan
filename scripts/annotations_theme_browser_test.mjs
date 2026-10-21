@@ -21,6 +21,7 @@ await context.route('**/*.supabase.co/**',async route=>{
  throw Error('Unexpected request '+url.pathname);
 });
 const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await context.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));
 try{
  const base=process.env.INTMED_BASE_URL||'http://127.0.0.1:8765';
  const payload=await (await page.request.get(base+'/content/topics/cardio-ecg.json')).json();

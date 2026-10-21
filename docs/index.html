@@ -5,12 +5,12 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://upwbktvnybsjugdegjji.supabase.co; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=621cb279fde8ca57">
+<link rel="stylesheet" href="intmed.css?v=93ba1dcccb9a331c">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
     <span class="brand">
-      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="108" height="108"></span>
+      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" draggable="false" alt="" width="108" height="108"></span>
       <h2>ورود به IntMed</h2>
     </span>
     <input type="text" id="loginUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
@@ -22,16 +22,17 @@
 
   <form class="login-card" id="forgotForm" style="display:none">
     <span class="brand">
-      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="108" height="108"></span>
+      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" draggable="false" alt="" width="108" height="108"></span>
       <h2>بازیابی دسترسی</h2>
     </span>
     <p class="auth-help">ایمیل ثبت‌شدهٔ حسابتان را وارد کنید تا لینک امن تنظیم رمز جدید برایتان ارسال شود.</p>
-    <label for="forgotUser">ایمیل حساب</label>
-    <input type="email" id="forgotUser" placeholder="ایمیل ثبت‌شده" autocomplete="email" required>
+    <label for="forgotUser">ایمیل یا نام کاربری</label>
+    <input type="text" id="forgotUser" placeholder="ایمیل یا نام کاربری" autocomplete="username" required>
     <button type="submit" id="forgotSendEmail">ارسال لینک بازیابی رمز</button>
     <div id="forgotStatus" class="auth-status" role="status" aria-live="polite"></div>
-    <div class="login-switch"><a href="#" id="showLoginFromForgot">بازگشت به ورود</a></div>
+    <button type="button" id="showRecoveryTicket" class="secondary-action">به مشکل خوردید؟ پیام به مدیریت</button><div class="login-switch"><a href="#" id="showLoginFromForgot">بازگشت به ورود</a></div>
   </form>
+  <form class="login-card" id="recoveryTicketForm" style="display:none"><h2>به مشکل خوردید؟ به مدیریت تیکت بگذارید</h2><label>نام و نام خانوادگی<input id="recoveryTicketName" required minlength="3" maxlength="150" autocomplete="name"></label><label>ایمیل پاسخ<input id="recoveryTicketEmail" type="email" required autocomplete="email"></label><label>شرح مشکل<textarea id="recoveryTicketMessage" required minlength="10" maxlength="3000" rows="4"></textarea></label><button type="submit">ثبت تیکت</button><p id="recoveryTicketStatus" role="status"></p></form>
   <form class="login-card" id="recoveryForm" style="display:none">
     <div class="login-logo">IntMed</div>
     <h1>تنظیم رمز جدید</h1>
@@ -44,39 +45,39 @@
 
   <form class="login-card" id="signupForm" style="display:none">
     <span class="brand">
-      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" alt="" width="108" height="108"></span>
+      <span class="logo-badge logo-badge-lg"><img src="assets/logo.png" draggable="false" alt="" width="108" height="108"></span>
       <h2>عضویت در IntMed</h2>
     </span>
-    <label for="signupFullName">نام و نام خانوادگی *</label>
+<div class="signup-grid">    <div class="signup-field"><label for="signupFullName">نام و نام خانوادگی <span class="required-mark" aria-label="الزامی">*</span></label>
     <input type="text" id="signupFullName" autocomplete="name" placeholder="نام و نام خانوادگی" required>
-    <label for="signupUser">نام کاربری *</label>
+    </div><div class="signup-field"><label for="signupUser">نام کاربری <span class="required-mark" aria-label="الزامی">*</span></label>
     <input type="text" id="signupUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" aria-describedby="usernameHelp" required>
     <small id="usernameHelp">۳ تا ۶۴ حرف انگلیسی، عدد، نقطه، خط تیره یا زیرخط</small>
-    <label for="signupPass">رمز عبور *</label>
+    </div><div class="signup-field"><label for="signupPass">رمز عبور <span class="required-mark" aria-label="الزامی">*</span></label>
     <input type="password" id="signupPass" placeholder="حداقل ۸ نویسه" autocomplete="new-password" minlength="8" required>
-    <label for="signupDegree">آخرین مدرک تحصیلی *</label>
+    </div><div class="signup-field"><label for="signupDegree">آخرین مدرک تحصیلی <span class="required-mark" aria-label="الزامی">*</span></label>
     <select id="signupDegree" required>
       <option value="" disabled selected>مدرک تحصیلی را انتخاب کنید</option>
       <option>دانشجوی پزشکی</option><option>اینترن</option><option>رزیدنت</option>
       <option>متخصص</option><option>فلوشیپ</option><option>فوق تخصص</option>
     </select>
-    <label for="signupSpecialty">رشته</label>
+    </div><div class="signup-field"><label for="signupSpecialty">رشته</label>
     <div class="search-select" data-options="specialties">
       <input type="text" id="signupSpecialty" role="combobox" aria-autocomplete="list" aria-controls="specialtyOptions" aria-expanded="false" placeholder="جست‌وجو و انتخاب رشته" autocomplete="off">
       <div class="search-options" id="specialtyOptions" role="listbox" hidden></div>
     </div>
-    <label for="signupProvince">استان</label>
+    </div><div class="signup-field"><label for="signupProvince">استان</label>
     <div class="search-select" data-options="provinces">
       <input type="text" id="signupProvince" role="combobox" aria-autocomplete="list" aria-controls="provinceOptions" aria-expanded="false" placeholder="جست‌وجو و انتخاب استان" autocomplete="off">
       <div class="search-options" id="provinceOptions" role="listbox" hidden></div>
     </div>
-    <label for="signupIdNumber">کد نظام پزشکی / شماره دانشجویی</label>
+    </div><div class="signup-field"><label for="signupIdNumber">کد نظام پزشکی / شماره دانشجویی</label>
     <input type="text" id="signupIdNumber" placeholder="کد نظام پزشکی / شماره دانشجویی">
-    <label for="signupMobile">شماره موبایل</label>
+    </div><div class="signup-field"><label for="signupMobile">شماره موبایل</label>
     <input type="tel" id="signupMobile" autocomplete="tel" placeholder="شماره موبایل">
-    <label for="signupEmail">ایمیل تأیید و بازیابی حساب *</label>
+    </div><div class="signup-field"><label for="signupEmail">ایمیل تأیید و بازیابی حساب <span class="required-mark" aria-label="الزامی">*</span></label>
     <input type="email" id="signupEmail" autocomplete="email" placeholder="ایمیل" required>
-    <button type="submit">ثبت‌نام</button>
+</div></div>    <button type="submit">ثبت‌نام</button>
     <div class="login-err" id="signupErr">نام و نام خانوادگی، نام کاربری، رمز عبور، مدرک تحصیلی و ایمیل الزامی‌اند.</div>
     <div class="login-switch"><a href="#" id="showLoginLink">بازگشت به ورود</a></div>
   </form>
@@ -126,7 +127,7 @@
   <header class="top">
     <div class="title-row">
       <span class="brand">
-        <span class="logo-badge"><img src="assets/logo.png" alt="" width="64" height="64"></span>
+        <span class="logo-badge"><img src="assets/logo.png" draggable="false" alt="" width="64" height="64"></span>
         <h1>IntMed</h1>
         <span class="header-clock" id="headerClock"></span>
       </span>
@@ -148,7 +149,7 @@
       </div>
       <div class="tabbar">
         <button type="button" class="tab-btn" id="tabBtnDashboard">داشبورد</button>
-        <button type="button" class="tab-btn active" id="tabBtnEducation">بخش آموزشی</button>
+        <button type="button" class="tab-btn active" id="tabBtnEducation">بخش آموزشی</button><button type="button" class="tab-btn" id="tabBtnManagement" hidden>مدیریت <span id="managementBadge" class="management-badge" hidden></span></button>
       </div>
     </div>
   </header>
@@ -212,11 +213,47 @@
       </div></details>
     </section>
 
-    <section class="callout dashboard-admin" id="adminPanelCard" style="display:none">
-      <div class="section-heading"><h2>مرکز مدیریت</h2><button type="button" id="adminExportStats" class="stats-refresh">خروجی CSV آمار مباحث</button></div>
+
+
+    <!-- Old dashboard content (status callout, removed-items note, "here" card,
+         phase checklist) — hidden for now per user request, kept in the DOM so
+         it can come back later by just dropping the display:none, not by
+         re-adding deleted markup. See CLAUDE.md. -->
+    <div id="dashboardLegacyContent" style="display:none">
+      <section class="callout danger">
+        <h2>ارزیابی وضعیت، قبل از هر برنامه‌ای</h2>
+        <p><span class="tag certain">قطعی</span>فاز پایانی نقشهٔ اصلی روی «شهریور ۱۴۰۵» تنظیم شده بود — یعنی همین هفته، نه سال بعد. زمان‌بندی زیر از صفر و بر اساس فاصلهٔ واقعی تا آزمون بعدی بازسازی شده.</p>
+        <p><span class="tag likely">محتمل</span>تصمیم‌گیری بالینی خوب + نمرهٔ ۶۸ در ارتقا یعنی مشکل اصلی «ندانستن» نیست. نیاز اصلی‌تان تمرین closed-book و تایم‌دار است، نه مرور دوبارهٔ کتاب از اول.</p>
+        <p><span class="tag guess">حدسی</span>فرض شده امتحان ارتقا و بورد کشوری از نظر فرمت و منبع به‌قدر کافی شبیه‌اند که نمرهٔ ۶۸ سیگنال معتبری برای آمادگی بورد باشد. اگر ساختار این دو امتحان در دانشگاهتان فرق زیادی دارد، فاز صفر را جدی‌تر بگیرید.</p>
+      </section>
+
+      <div class="removed">
+        <b>چه چیزی از نقشهٔ اصلی حذف شد و چرا:</b>
+        معرفی کامل ساختار آزمون به یک خط تقلیل یافت. «تماشای کامل ویدیوها از پایه» فقط برای مباحث واقعاً ناآشنا نگه داشته شده. تست‌زنی از «فاز آخر» به «از هفتهٔ اول» منتقل شد، چون مشکل شما بر اساس داده‌ای که دادید تکنیک آزمون است نه محتوا.
+      </div>
+
+      <div class="here-card">
+        <div class="here-eyebrow">الان اینجام</div>
+        <h2 class="here-title" id="hereTitle">—</h2>
+        <p class="here-sub" id="hereSub"></p>
+        <div class="here-next" id="hereNext"></div>
+        <div class="here-override">
+          <label for="hereSelect">تغییر دستی مرحلهٔ فعلی:</label>
+          <select id="hereSelect"></select>
+        </div>
+      </div>
+
+      <h2 class="section-title">مسیر مطالعه (فازها)</h2>
+      <p class="section-desc">هر آیتم یک چک‌باکس است؛ زیرش جا برای یادداشت کوتاه هست — همون‌جایی که گیر کردی یا اشتباه فهمیدی. همه‌چیز آنلاین ذخیره می‌شه و بین موبایل و مک همگام می‌مونه.</p>
+      <div id="phasesRoot"></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tabPanelManagement">    <section class="callout dashboard-admin" id="adminPanelCard" style="display:none">
+      <div class="section-heading"><h2>مرکز مدیریت</h2><a class="secondary-action" target="_blank" rel="noopener noreferrer" href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/ACCOUNT_UI_SETUP_FA.md">راهنمای فعال‌سازی نام مدیر، بازیابی و تیکت</a><button type="button" id="adminExportStats" class="stats-refresh">خروجی CSV آمار مباحث</button></div>
       <details class="notification-panel"><summary>خبرنامهٔ ایمیلی به‌روزرسانی سایت</summary><p id="newsletterAdminStatus" class="section-caption"></p><p class="section-caption">عضویت اختیاری است و کاربر هر زمان می‌تواند آن را لغو کند. پیش از اولین ارسال، سرویس ایمیل را متصل و ارسال آزمایشی را بررسی کنید. هر نوبت حداکثر ۲۰ نفر از مشترکان واجد شرایط را پوشش می‌دهد.</p><div class="newsletter-composer"><label for="newsletterSubject">عنوان خبرنامه</label><input id="newsletterSubject" maxlength="160" placeholder="مثلاً: آزمون‌های تصویری قلب اضافه شد"><label for="newsletterBody">متن خبرنامه</label><textarea id="newsletterBody" maxlength="12000" rows="6" placeholder="تغییرات جدید و لینک مباحث را بنویسید."></textarea><div class="admin-account-actions"><button type="button" data-newsletter-action="status">بررسی اتصال ایمیل</button><button type="button" data-newsletter-action="preview">پیش‌نمایش و تعداد گیرندگان</button><button type="button" data-newsletter-action="test">ارسال آزمایشی فقط به مدیر</button><button type="button" data-newsletter-action="send" id="newsletterSend" disabled>ارسال به حداکثر ۲۰ مشترک بعدی</button><button type="button" id="newsletterNew">خبرنامهٔ جدید</button></div><p id="newsletterDeliveryStatus" role="status" class="section-caption"></p><pre id="newsletterPreview"></pre></div><button type="button" id="newsletterExport" class="secondary-action">خروجی CSV مشترکان فعال</button></details>
       <section class="neon-panel integration-setup" data-panel-color="blue"><h3>راه‌اندازی اعلان‌ها · تنظیمات سرور لازم است</h3><div class="integration-status-row"><span id="telegramSetupBadge" class="setup-status">تلگرام: بررسی نشده</span><span id="newsletterSetupBadge" class="setup-status">ایمیل: بررسی نشده</span><button type="button" id="checkServiceConnections" class="secondary-action">بررسی هر دو اتصال</button></div><p class="section-caption">در بررسی ۲۹ مهر ۱۴۰۵، تابع‌های تلگرام و خبرنامه نصب نبودند (404). تا تکمیل مراحل زیر ارسال فعال نمی‌شود. رمز یا کلید را در چت یا کد سایت وارد نکنید.</p><ol><li>در پروژهٔ خودتان در <a href="https://supabase.com/dashboard/project/upwbktvnybsjugdegjji/functions" target="_blank" rel="noopener noreferrer">Supabase → Edge Functions</a> تابع مربوط را نصب کنید.</li><li>توکن بات یا کلید Resend را فقط در Edge Functions → Secrets ذخیره کنید و فایل آمادهٔ setup_services.sql را یک‌بار در SQL Editor اجرا کنید.</li><li>در بخش تلگرام «بررسی اتصال»، «پیداکردن گفت‌وگو» و سپس «اعلان آزمایشی» را بزنید؛ برای ایمیل ابتدا اتصال و ارسال آزمایشی فقط به مدیر را بررسی کنید.</li></ol><p><a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/TELEGRAM_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم تلگرام</a> · <a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/NEWSLETTER_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم ایمیل</a></p><p><a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/SETUP_SERVICES_FA.md" target="_blank" rel="noopener noreferrer">شروع از اینجا: نصب سادهٔ سرویس‌ها</a> · <a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/setup_services.sql" target="_blank" rel="noopener noreferrer">فایل یک‌جای نصب SQL اعلان‌ها و سخت‌گیری دسترسی</a> · <a href="security/assessment-fa.md" target="_blank" rel="noopener noreferrer">گزارش بررسی امنیت و حفاظت محتوا</a></p><p class="section-caption">این یادداشت نتیجهٔ بررسی اولیه است؛ نتیجهٔ دکمهٔ بررسی اتصال، وضعیت تازهٔ هر سرویس را نشان می‌دهد.</p></section>
-      <div id="adminOverview" class="metric-grid"></div>
+      <details class="notification-panel"><summary>پیام‌های بازیابی دسترسی <span id="recoveryTicketCount" class="management-badge" hidden></span></summary><button type="button" id="refreshRecoveryTickets">بررسی پیام‌های جدید</button><p id="recoveryAdminStatus" role="status"></p><div id="recoveryAdminList"></div></details><div id="adminOverview" class="metric-grid"></div>
       <details class="notification-panel"><summary>خروجی PDF دفتر مطالعهٔ کاربران</summary><div class="notebook-export-controls"><label>کاربر <select id="notebookExportUser"></select></label><label>محتوا <select id="notebookExportKind"><option value="all">یادداشت‌ها و هایلایت‌ها</option><option value="notes">فقط یادداشت‌ها</option><option value="highlights">فقط هایلایت‌ها</option></select></label><button type="button" id="adminExportNotebook" class="secondary-action">آماده‌سازی PDF</button><small id="notebookExportStatus" role="status"></small></div><p class="section-caption">فقط اطلاعات کاربر انتخاب‌شده در خروجی قرار می‌گیرد. در پنجرهٔ چاپ، Save as PDF را انتخاب کنید.</p></details>
       <details class="notification-panel"><summary>اعلان ثبت‌نام در تلگرام</summary><p class="section-caption">پس از راه‌اندازی یک‌باره، درخواست‌های جدید به بات تلگرام شما ارسال می‌شوند؛ دریافت اعلان روی آیفون به فعال‌بودن اعلان‌های Telegram بستگی دارد.</p>
         <div class="admin-account-actions"><button type="button" data-notification-action="status">بررسی اتصال</button><button type="button" data-notification-action="discover">پیداکردن گفت‌وگوی من با بات</button><button type="button" data-notification-action="test">ارسال اعلان آزمایشی</button><button type="button" data-notification-action="retry">تلاش دوباره برای اعلان‌های در صف</button></div>
@@ -257,42 +294,7 @@
       <input type="text" class="admin-user-search" id="adminUserSearch" placeholder="جستجو در میان کاربران (نام، نام کاربری، شماره نظام/دانشجویی، موبایل...)">
       <div id="adminUsersPanel"></div>
       <div id="adminTicketsPanel" style="display:none"></div>
-    </section>
-
-    <!-- Old dashboard content (status callout, removed-items note, "here" card,
-         phase checklist) — hidden for now per user request, kept in the DOM so
-         it can come back later by just dropping the display:none, not by
-         re-adding deleted markup. See CLAUDE.md. -->
-    <div id="dashboardLegacyContent" style="display:none">
-      <section class="callout danger">
-        <h2>ارزیابی وضعیت، قبل از هر برنامه‌ای</h2>
-        <p><span class="tag certain">قطعی</span>فاز پایانی نقشهٔ اصلی روی «شهریور ۱۴۰۵» تنظیم شده بود — یعنی همین هفته، نه سال بعد. زمان‌بندی زیر از صفر و بر اساس فاصلهٔ واقعی تا آزمون بعدی بازسازی شده.</p>
-        <p><span class="tag likely">محتمل</span>تصمیم‌گیری بالینی خوب + نمرهٔ ۶۸ در ارتقا یعنی مشکل اصلی «ندانستن» نیست. نیاز اصلی‌تان تمرین closed-book و تایم‌دار است، نه مرور دوبارهٔ کتاب از اول.</p>
-        <p><span class="tag guess">حدسی</span>فرض شده امتحان ارتقا و بورد کشوری از نظر فرمت و منبع به‌قدر کافی شبیه‌اند که نمرهٔ ۶۸ سیگنال معتبری برای آمادگی بورد باشد. اگر ساختار این دو امتحان در دانشگاهتان فرق زیادی دارد، فاز صفر را جدی‌تر بگیرید.</p>
-      </section>
-
-      <div class="removed">
-        <b>چه چیزی از نقشهٔ اصلی حذف شد و چرا:</b>
-        معرفی کامل ساختار آزمون به یک خط تقلیل یافت. «تماشای کامل ویدیوها از پایه» فقط برای مباحث واقعاً ناآشنا نگه داشته شده. تست‌زنی از «فاز آخر» به «از هفتهٔ اول» منتقل شد، چون مشکل شما بر اساس داده‌ای که دادید تکنیک آزمون است نه محتوا.
-      </div>
-
-      <div class="here-card">
-        <div class="here-eyebrow">الان اینجام</div>
-        <h2 class="here-title" id="hereTitle">—</h2>
-        <p class="here-sub" id="hereSub"></p>
-        <div class="here-next" id="hereNext"></div>
-        <div class="here-override">
-          <label for="hereSelect">تغییر دستی مرحلهٔ فعلی:</label>
-          <select id="hereSelect"></select>
-        </div>
-      </div>
-
-      <h2 class="section-title">مسیر مطالعه (فازها)</h2>
-      <p class="section-desc">هر آیتم یک چک‌باکس است؛ زیرش جا برای یادداشت کوتاه هست — همون‌جایی که گیر کردی یا اشتباه فهمیدی. همه‌چیز آنلاین ذخیره می‌شه و بین موبایل و مک همگام می‌مونه.</p>
-      <div id="phasesRoot"></div>
-    </div>
-  </div>
-
+    </section></div>
   <div class="tab-panel active" id="tabPanelEducation">
     <h2 class="section-title">بخش آموزشی</h2>
     <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. با لمس قلب، مبحث به علاقه‌مندی‌های داشبوردت اضافه می‌شود. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، فلش‌کارت‌ها، تست‌ها، KF‌وPMP و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در پنل کاربری خود نظرتان را ارسال بفرمایید.</p>
@@ -305,11 +307,12 @@
 </div>
 
 <script src="config.js?v=e1c325a52a905cce"></script>
-<script src="js/intmed-backend.js?v=200672286e6f2550"></script>
+<script src="js/intmed-backend.js?v=83b86230612babe7"></script>
 <script src="js/intmed-theme.js?v=10cbe508c7ceb533"></script>
-<script src="js/intmed-registration.js?v=86cbba87cc94b74f"></script>
-<script src="js/intmed-login.js?v=22cbc4f112546887"></script>
+<script src="js/intmed-registration.js?v=e99cd781859901dd"></script>
+<script src="js/intmed-login.js?v=075ff82923502440"></script>
 <script src="js/intmed-exams.js?v=e47f2f76f0d62b96"></script>
-<script src="js/intmed-dashboard.js?v=1a0a2d034dc1090b"></script>
+<script src="js/intmed-dashboard.js?v=4d88d0bab289fbd8"></script>
+<script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
 <script src="js/intmed-motion.js?v=ea46b287e6f400c4"></script>
-<script src="js/intmed-app.js?v=f299abc9cfa9c2ef"></script>
+<script src="js/intmed-app.js?v=2d3d93e8f4932677"></script>
