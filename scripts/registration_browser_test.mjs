@@ -2,9 +2,10 @@ import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)('playwright');
 const executable=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 const browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{})});
-const page=await browser.newPage({viewport:{width:390,height:844}});let signupBody,loginBody;
+const page=await browser.newPage({viewport:{width:390,height:844}});let signupBody,loginBody,gatewayAttempts=0;
 await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,async route=>{
  const req=route.request(),url=new URL(req.url());
+ if(url.hostname==='api.drgerami-md.ir'){gatewayAttempts++;return route.abort('failed');}
  if(url.pathname==='/auth/v1/signup'){signupBody=req.postDataJSON();return route.fulfill({json:{user:{id:'test-signup',identities:signupBody.email==='duplicate@example.com'?[]:[{id:'identity'}]}}});}
  if(url.pathname==='/functions/v1/intmed-login'){loginBody=req.postDataJSON();return route.fulfill({status:401,json:{message:'نام کاربری یا رمز عبور اشتباه است.'}});}
  throw Error('Unexpected request '+url.pathname);
@@ -29,6 +30,7 @@ try{
  await page.locator('#signupProvince').fill('آذربايجان');await page.locator('#signupProvince').press('ArrowDown');await page.locator('#signupProvince').press('Enter');
  if(await page.locator('#signupProvince').inputValue()!=='آذربایجان شرقی')throw Error('Province keyboard selection failed');
  await page.locator('#signupEmail').fill('qa@example.com');await page.locator('#signupForm button[type=submit]').click();await page.locator('#signupSuccessBox').waitFor({state:'visible'});
+ if(!gatewayAttempts)throw Error('Public gateway fallback was not exercised');
  if(signupBody.data.specialty!=='بیماری های داخلی'||signupBody.data.province!=='آذربایجان شرقی'||signupBody.data.degree!=='رزیدنت'||signupBody.data.app!=='intmed')throw Error('New profile metadata lost');
  await page.locator('#backToLoginFromSuccess').click();await page.locator('#showSignupLink').click();await page.locator('#signupEmail').fill('duplicate@example.com');await page.locator('#signupForm button[type=submit]').click();await page.locator('#signupRecoveryGuide').waitFor({state:'visible'});
  if(!await page.locator('#signupErr').textContent().then(t=>t.includes('این ایمیل قبلاً ثبت شده است')))throw Error('Duplicate email message missing');

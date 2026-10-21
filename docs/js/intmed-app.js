@@ -1040,21 +1040,23 @@
     {key:"email", label:"ایمیل", type:"email", placeholder:"مثلاً: name@example.com"}
   ];
   var myProfileGridEl = document.getElementById("myProfileGrid");
+  function profileControl(prefix,f,value,emailReadOnly){
+    var id=prefix+f.key,field='<input type="'+f.type+'" id="'+id+'" value="'+escapeHtml(value)+'" placeholder="'+f.placeholder+'"'+(f.key==='email'&&emailReadOnly?' readonly':'')+'>';
+    if(f.key==='degree'&&window.IntMedRegistration){
+      var choices=window.IntMedRegistration.degrees.slice();if(value&&choices.indexOf(value)===-1)choices.unshift(value);
+      field='<select id="'+id+'"><option value="">انتخاب مدرک</option>'+choices.map(function(v){return '<option'+(v===value?' selected':'')+'>'+escapeHtml(v)+'</option>';}).join('')+'</select>';
+    }
+    if((f.key==='province'||f.key==='specialty')&&window.IntMedRegistration){
+      var kind=f.key==='province'?'provinces':'specialties',optionsId=id+'-options';
+      field='<div class="search-select" data-options="'+kind+'"><input id="'+id+'" value="'+escapeHtml(value)+'" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="'+optionsId+'" autocomplete="off" placeholder="جست‌وجو و انتخاب"><div id="'+optionsId+'" class="search-options" role="listbox" hidden></div></div>';
+    }
+    return '<div class="profile-field"><label for="'+id+'">'+f.label+'</label>'+field+'</div>';
+  }
   // Profile changes always retain the same account UUID and study bucket.
   function renderMyProfileFields(){
     if(!myProfileGridEl) return;
     var p = myBucket().profile || {};
-    myProfileGridEl.innerHTML = PROFILE_FIELDS.map(function(f){
-      var value=p[f.key]||"",field='<input type="'+f.type+'" id="profileInput-'+f.key+'" data-profile-field="'+f.key+'" value="'+escapeHtml(value)+'" placeholder="'+f.placeholder+'"'+(f.key==='email'?' readonly':'')+'>';
-      if(f.key==='degree' && window.IntMedRegistration){
-        var choices=window.IntMedRegistration.degrees.slice();if(value && choices.indexOf(value)===-1)choices.unshift(value);
-        field='<select id="profileInput-degree"><option value="">انتخاب مدرک</option>'+choices.map(function(v){return '<option'+(v===value?' selected':'')+'>'+escapeHtml(v)+'</option>';}).join('')+'</select>';
-      }
-      if((f.key==='province'||f.key==='specialty') && window.IntMedRegistration){
-        field='<div class="search-select" data-options="'+(f.key==='province'?'provinces':'specialties')+'"><input id="profileInput-'+f.key+'" value="'+escapeHtml(value)+'" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="profile-options-'+f.key+'" autocomplete="off" placeholder="جست‌وجو و انتخاب"><div id="profile-options-'+f.key+'" class="search-options" role="listbox" hidden></div></div>';
-      }
-      return '<div class="profile-field"><label for="profileInput-'+f.key+'">'+f.label+'</label>'+field+'</div>';
-    }).join("");
+    myProfileGridEl.innerHTML = PROFILE_FIELDS.map(function(f){return profileControl('profileInput-',f,p[f.key]||'',true);}).join("");
     if(window.IntMedRegistration)window.IntMedRegistration.mount(myProfileGridEl);
     var username=document.getElementById("accountUsername");if(username)username.value=myBucket().backendUsername||"";
     var email=document.getElementById("accountEmail");if(email)email.value=p.email||"";
@@ -1197,7 +1199,7 @@
   function renderAdminUsers(){
     if(!adminUsersPanel) return;
     var ids = usesPrivateBackend()
-      ? Object.keys(STATE.users || {}).filter(function(id){ return id !== CURRENT_USER_ID; })
+      ? Object.keys(STATE.users || {})
       : Object.keys(USER_NAMES).filter(function(id){ return id !== "amir"; });
     var approvedSignupById = {};
     (STATE.signups || []).forEach(function(s){
@@ -1254,10 +1256,7 @@
             '<button type="button" data-account-recovery="'+escapeHtml(r.id)+'">ارسال لینک بازیابی</button><span role="status" id="accountAction-'+escapeHtml(r.id)+'"></span></div>' : '') +
           '<div class="admin-user-analytics" data-user-analytics="'+escapeHtml(r.id)+'"></div>'+
           '<div class="admin-user-edit-box">' +
-            '<div class="profile-grid">' + PROFILE_FIELDS.map(function(f){
-              return '<div class="profile-field"><label for="adminEdit-' + r.id + '-' + f.key + '">' + f.label + '</label>' +
-                '<input type="' + f.type + '" id="adminEdit-' + r.id + '-' + f.key + '" value="' + escapeHtml(r.p[f.key] || "") + '"'+(f.key==='email'?' readonly':'')+'></div>';
-            }).join("") +
+            '<div class="profile-grid"><div class="profile-field"><label for="adminEdit-'+r.id+'-username">نام کاربری</label><input type="text" id="adminEdit-'+r.id+'-username" value="'+escapeHtml(r.loginUsername)+'" autocomplete="off"></div>' + PROFILE_FIELDS.map(function(f){return profileControl('adminEdit-'+r.id+'-',f,r.p[f.key]||'',false);}).join("") +
             '</div>' +
             '<button type="button" class="profile-save-btn admin-user-save-btn" data-save-profile="' + escapeHtml(r.id) + '">ذخیره تغییرات پروفایل</button>' +
             '<span class="admin-user-save-note" id="saveNote-' + escapeHtml(r.id) + '"></span>' +
@@ -1286,6 +1285,7 @@
       '</div>';
     }).join("");
     adminUsersPanel.innerHTML = html || '<p class="learn-empty">' + (query ? "کاربری با این مشخصات پیدا نشد." : "هنوز کاربری ثبت نشده.") + '</p>';
+    if(window.IntMedRegistration)window.IntMedRegistration.mount(adminUsersPanel);
     adminUsersPanel.querySelectorAll("[data-user-toggle]").forEach(function(head){
       head.addEventListener("click", function(){
         var id = head.getAttribute("data-user-toggle");
@@ -1331,19 +1331,21 @@
       btn.addEventListener("click", function(){
         var id = btn.getAttribute("data-save-profile");
         if(!STATE.users[id]) STATE.users[id] = emptyBucket();
-        var p = STATE.users[id].profile || {};
+        var p = Object.assign({},STATE.users[id].profile||{}),username=document.getElementById("adminEdit-"+id+"-username").value.trim().toLowerCase();
         PROFILE_FIELDS.forEach(function(f){
           var input = document.getElementById("adminEdit-" + id + "-" + f.key);
-          if(input && f.key!=="email") p[f.key] = input.value.trim();
+          if(input) p[f.key] = input.value.trim();
         });
-        p.updatedAt = new Date().toISOString();
-        STATE.users[id].profile = p;
-        scheduleFlush(200);
-        syncProfileToSheet(id, p);
         var note = document.getElementById("saveNote-" + id);
-        if(note) note.textContent = "ذخیره شد ✓";
-        adminUsersOpenIds[id] = true; // keep this card open through the re-render
-        setTimeout(renderAdminUsers, 900);
+        var lists=window.IntMedRegistration;
+        if(!p.fullName){note.textContent="نام و نام خانوادگی الزامی است.";return;}
+        if(!/^[a-z0-9_.-]{3,64}$/.test(username)){note.textContent="نام کاربری نامعتبر است.";return;}
+        if(lists&&((p.province&&!lists.provinces.includes(p.province))||(p.specialty&&!lists.specialties.includes(p.specialty)))){note.textContent="رشته و استان را از فهرست انتخاب کنید.";return;}
+        var emailInput=document.getElementById("adminEdit-"+id+"-email");if(emailInput&&!emailInput.reportValidity())return;
+        btn.disabled=true;note.textContent="در حال ذخیره…";
+        window.IntMedBackend.adminUpdateUser(id,p,username,p.email).then(function(result){
+          p.updatedAt=new Date().toISOString();STATE.users[id].profile=p;STATE.users[id].backendUsername=username;syncProfileToSheet(id,p);note.textContent="تمام اطلاعات حساب ذخیره شد ✓";adminUsersOpenIds[id]=true;setTimeout(renderAdminUsers,700);
+        }).catch(function(error){note.textContent=error.status===409?"این نام کاربری یا ایمیل قبلاً استفاده شده است.":error.message||"ذخیره انجام نشد.";}).finally(function(){btn.disabled=false;});
       });
     });
     // Sets a brand-new password hash — never reads or stores the old

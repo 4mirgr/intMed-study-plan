@@ -299,7 +299,7 @@
   .admin-user-chev{flex-shrink:0;transition:transform var(--dur) var(--ease);color:var(--ink-faint)}
   .admin-user-card.open .admin-user-chev{transform:rotate(180deg)}
   .admin-user-body{max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
-  .admin-user-card.open .admin-user-body{max-height:900px}
+  .admin-user-card.open .admin-user-body{max-height:2200px;overflow:visible}
   .admin-user-body-inner{padding:0 14px 12px}
   .admin-user-row{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;padding:4px 0;border-top:1px dashed var(--border)}
   .admin-user-row:first-of-type{border-top:none}
@@ -846,7 +846,10 @@
   .login-card label{display:block;font-size:.8rem;margin:5px 0 6px}
   .login-card small{display:block;color:var(--ink-dim);font-size:.7rem;margin:-4px 0 12px}
   .search-select{position:relative}
-  .search-options{position:absolute;top:calc(100% - 10px);inset-inline:0;z-index:20;max-height:220px;overflow:auto;background:var(--surface-strong);border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow-md)}
+  .search-select::after{content:"⌄";position:absolute;inset-inline-end:12px;top:50%;transform:translateY(-54%);color:var(--accent-ink);font-size:1.1rem;pointer-events:none;transition:transform .18s var(--ease)}
+  .search-select:has(input[aria-expanded="true"])::after{transform:translateY(-42%) rotate(180deg)}
+  .search-select>input{padding-inline-end:38px!important;cursor:pointer}
+  .search-options{position:absolute;top:calc(100% + 4px);inset-inline:0;z-index:20;max-height:220px;overflow:auto;background:var(--surface-strong);border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow-md)}
   .search-options [role=option]{padding:10px 12px;cursor:pointer;font-size:.85rem}
   .search-options [role=option]:hover,.search-options [aria-selected=true]{background:var(--surface-2);color:var(--accent)}
   .search-options .empty-option{padding:12px;color:var(--ink-dim);font-size:.8rem}

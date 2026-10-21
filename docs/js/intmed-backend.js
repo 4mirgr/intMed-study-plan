@@ -3,8 +3,9 @@
 
   var config = global.INTMED_CONFIG || {};
   var sessionKey = "intmed_supabase_session";
+  var activeOrigin = "";
 
-  function configured(){ return /^https:\/\//.test(config.supabaseUrl || "") && !!config.supabaseAnonKey; }
+  function configured(){ return /^https:\/\//.test(config.supabaseUrl || config.supabaseFallbackUrl || "") && !!config.supabaseAnonKey; }
   function session(){
     try{ return JSON.parse(localStorage.getItem(sessionKey) || "null"); }catch(e){ return null; }
   }
@@ -24,11 +25,19 @@
   function request(path, options){
     options = options || {};
     var authenticated = options.authenticated !== false;
+    function origins(){
+      var values=[activeOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
+      return values;
+    }
     function perform(retried){
       var requestOptions = {};
       Object.keys(options).forEach(function(key){ if(key !== "authenticated" && key !== "headers") requestOptions[key] = options[key]; });
       requestOptions.headers = headers(options.headers, authenticated);
-      return fetch(config.supabaseUrl.replace(/\/$/, "") + path, requestOptions).then(function(response){
+      var candidates=origins();
+      function send(index,firstNetworkError){
+        var origin=candidates[index];
+        return fetch(origin.replace(/\/$/, "") + path, requestOptions).then(function(response){
+        activeOrigin=origin;
         if(response.status === 401 && authenticated && !retried){
           return response.text().then(function(){ return refreshSession(); }).then(function(){ return perform(true); });
         }
@@ -43,7 +52,14 @@
           }
           return body;
         });
-      });
+        }).catch(function(error){
+          if(!error.status && index+1<candidates.length)return send(index+1,firstNetworkError||error);
+          if(!error.status&&firstNetworkError)throw firstNetworkError;
+          throw error;
+        });
+      }
+      if(!candidates.length)return Promise.reject(new Error("Backend is not configured"));
+      return send(0);
     }
     return perform(false);
   }
@@ -104,6 +120,7 @@
         error.code = "duplicate_email";
         error.message = "این ایمیل قبلاً ثبت شده است.";
       }
+      if(!error.status && /fetch|network|load failed|offline/i.test(error.message||""))error.message="ارتباط با سرور ثبت‌نام برقرار نشد. اینترنت یا VPN را تغییر دهید و دوباره تلاش کنید.";
       throw error;
     });
   }
@@ -347,6 +364,9 @@
     });
   }
   function updateEmail(email){return request("/auth/v1/user",{method:"PUT",body:JSON.stringify({email:email})});}
+  function adminUpdateUser(userId,p,username,email){
+    return request("/functions/v1/intmed-admin-user",{method:"POST",body:JSON.stringify({userId:userId,profile:p,username:username,email:email})});
+  }
 
   function newsletterAction(payload){return request("/functions/v1/intmed-newsletter",{method:"POST",body:JSON.stringify(payload)});}
   function notificationAction(action,chatId){return request("/functions/v1/intmed-signup-notify",{method:"POST",body:JSON.stringify({action:action,chatId:chatId})});}
@@ -365,6 +385,6 @@
     loadLegacyState:loadLegacyState,
     saveLegacyState:saveLegacyState,
     approveUser:approveUser,
-    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,notificationAction:notificationAction,newsletterAction:newsletterAction
+    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,adminUpdateUser:adminUpdateUser,notificationAction:notificationAction,newsletterAction:newsletterAction
   };
 })(window);

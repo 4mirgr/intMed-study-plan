@@ -46,6 +46,7 @@ jobs:
       - run: node scripts/username_login_test.mjs
       - run: node scripts/recovery_support_test.mjs
       - run: node scripts/cloudflare_proxy_test.mjs
+      - run: node scripts/admin_user_function_test.mjs
       - run: node scripts/delete_user_sql_test.mjs
       - run: python3 scripts/build_dashboard_setup.py --check
       - run: node scripts/dashboard_sql_test.mjs
@@ -90,6 +91,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Enforce HTTPS on the custom domain
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" -F https_enforced=true
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

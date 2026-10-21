@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 
-let refreshMode = "ok", expired = false;
+let refreshMode = "ok", expired = false, gatewayAttempts = 0;
 const calls = [];
 const store = new Map();
 const userId = "11111111-1111-4111-8111-111111111111";
@@ -15,6 +15,7 @@ function reply(body, status = 200){
 }
 function fetchMock(url, options = {}){
   calls.push({url, options});
+  if(url.startsWith("https://api.drgerami-md.ir")){ gatewayAttempts++; return Promise.reject(new Error("Load failed")); }
   if(url.includes("grant_type=refresh_token") && refreshMode === "network") return Promise.reject(new Error("offline"));
   if(url.includes("grant_type=refresh_token") && refreshMode === "invalid") return reply({message:"Invalid refresh"},400);
   if(url.includes("grant_type=refresh_token")) return reply({access_token:"refreshed", refresh_token:"refresh-2", user:{id:userId}});
@@ -28,7 +29,7 @@ function fetchMock(url, options = {}){
 }
 
 const window = {
-  INTMED_CONFIG:{supabaseUrl:"https://example.supabase.co", supabaseAnonKey:"anon"},
+  INTMED_CONFIG:{supabaseUrl:"https://api.drgerami-md.ir", supabaseFallbackUrl:"https://example.supabase.co", supabaseAnonKey:"anon"},
   location:{origin:"https://intmed.example", pathname:"/", search:"", hash:""},
   history:{replaceState:() => { window.location.hash = ""; }}
 };
@@ -47,6 +48,8 @@ vm.runInContext(fs.readFileSync(new URL("../docs/js/intmed-backend.js", import.m
 assert.equal(window.IntMedBackend.isConfigured(), true);
 const result = await window.IntMedBackend.signIn("doctor@example.com", "correct horse battery staple");
 assert.equal(result.session.user.id, userId);
+assert.ok(gatewayAttempts > 0);
+assert.ok(calls.some(call => call.url.startsWith("https://example.supabase.co/auth/v1/token")));
 assert.equal(window.IntMedBackend.session().access_token, "access");
 const profileCall = calls.find(call => call.url.includes("/rest/v1/profiles"));
 assert.equal(profileCall.options.headers.Authorization, "Bearer access");

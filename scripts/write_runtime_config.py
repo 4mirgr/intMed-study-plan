@@ -37,6 +37,7 @@ def render(url: str, anon_key: str, browser_url: str | None = None) -> str:
         browser_url = url
     config = {
         "supabaseUrl": browser_url,
+        "supabaseFallbackUrl": url if browser_url != url else "",
         "supabaseAnonKey": anon_key,
         "allowLegacyDemo": False,
         "legacyAdminWhatsapp": "",

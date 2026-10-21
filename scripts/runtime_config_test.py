@@ -17,12 +17,15 @@ class RuntimeConfigTest(unittest.TestCase):
         self.assertIsNotNone(payload)
         config = json.loads(payload.group(1))
         self.assertEqual(config["supabaseUrl"], "https://sample.supabase.co")
+        self.assertEqual(config["supabaseFallbackUrl"], "")
         self.assertFalse(config["allowLegacyDemo"])
 
     def test_render_uses_public_gateway_for_production(self) -> None:
         output = render("https://sample.supabase.co", "a" * 32, DEFAULT_PUBLIC_API_URL)
         payload = re.search(r"window\.INTMED_CONFIG = (\{.*\});", output)
-        self.assertEqual(json.loads(payload.group(1))["supabaseUrl"], DEFAULT_PUBLIC_API_URL)
+        config = json.loads(payload.group(1))
+        self.assertEqual(config["supabaseUrl"], DEFAULT_PUBLIC_API_URL)
+        self.assertEqual(config["supabaseFallbackUrl"], "https://sample.supabase.co")
 
     def test_rejects_blank_values(self) -> None:
         with self.assertRaises(ValueError):
