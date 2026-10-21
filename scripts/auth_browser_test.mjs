@@ -11,8 +11,12 @@ try{
  await page.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');
  await page.waitForFunction(()=>document.getElementById('loginErr').textContent.includes('ورود حساب تأیید نشد'));
  if(await page.locator('#appRoot').isVisible())throw Error('Unapproved persisted session bypassed gate');
- approved=true;await page.reload();await page.waitForFunction(()=>document.getElementById('appRoot').style.display==='');
+ approved=true;await page.evaluate(()=>sessionStorage.setItem('intmed_show_account_provider_notice','1'));await page.reload();await page.waitForFunction(()=>document.getElementById('appRoot').style.display==='');
  if(!await page.locator('#appRoot').isVisible())throw Error('Approved session blocked');
+ await page.locator('#accountProviderNotice').waitFor({state:'visible'});
+ if(!await page.locator('#accountProviderNoticeText').textContent().then(text=>text.includes('Supabase')&&text.includes('معتبر و امن')))throw Error('Account provider notice is incomplete');
+ await page.locator('#accountProviderNoticeClose').click();if(await page.locator('#accountProviderNotice').isVisible())throw Error('Account provider notice did not close');
+ if(await page.evaluate(()=>sessionStorage.getItem('intmed_show_account_provider_notice'))!==null)throw Error('Account provider notice flag was not consumed');
  if(await page.evaluate(()=>localStorage.getItem('bp_user_id'))!==id)throw Error('Legacy user id not replaced by authenticated id');
  await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
  if(await page.locator('#ghConnectBtn').isVisible())throw Error('GitHub connect button exposed in private mode');

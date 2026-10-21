@@ -36,9 +36,29 @@
   }
   var gateEl = document.getElementById("loginGate");
   var appEl = document.getElementById("appRoot");
+  var accountProviderNotice = document.getElementById("accountProviderNotice");
+  var accountProviderNoticeClose = document.getElementById("accountProviderNoticeClose");
+  function showAccountProviderNotice(){
+    var shouldShow = false;
+    try{
+      shouldShow = sessionStorage.getItem("intmed_show_account_provider_notice") === "1";
+      sessionStorage.removeItem("intmed_show_account_provider_notice");
+    }catch(e){}
+    if(!shouldShow || !accountProviderNotice) return;
+    accountProviderNotice.style.display = "flex";
+    if(accountProviderNoticeClose) accountProviderNoticeClose.focus();
+  }
+  function closeAccountProviderNotice(){
+    if(accountProviderNotice) accountProviderNotice.style.display = "none";
+  }
+  if(accountProviderNoticeClose) accountProviderNoticeClose.addEventListener("click", closeAccountProviderNotice);
+  if(accountProviderNotice) accountProviderNotice.addEventListener("keydown", function(ev){
+    if(ev.key === "Escape") closeAccountProviderNotice();
+  });
   function revealApp(){
     gateEl.style.display = "none";
     appEl.style.display = "";
+    showAccountProviderNotice();
   }
   function fnv1aHex(str){
     // Plain synchronous JS hash — deliberately not crypto.subtle, which needs
@@ -122,7 +142,11 @@
     });
   });
   function doLogin(userId){
-    try{ localStorage.setItem("bp_authed", "1"); localStorage.setItem("bp_user_id", userId); }catch(e){}
+    try{
+      localStorage.setItem("bp_authed", "1");
+      localStorage.setItem("bp_user_id", userId);
+      sessionStorage.setItem("intmed_show_account_provider_notice", "1");
+    }catch(e){}
     // Full reload (not just revealApp()) because the main app script below
     // already ran and fixed CURRENT_USER_ID from localStorage as it was
     // *before* this login — without a reload, a fresh login would keep
