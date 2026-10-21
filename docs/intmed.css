@@ -1014,3 +1014,47 @@
 @media(max-width:600px){.signup-grid{grid-template-columns:1fr;gap:10px}#signupForm{padding:20px 14px}.signup-field{padding:10px}.tab-btn{font-size:.75rem;padding-inline:12px!important}}
 
 .signup-field:last-child{grid-column:1/-1}
+
+/* Authentication feedback and compact mobile navigation. */
+.login-card button:disabled{cursor:wait;opacity:.82}
+.login-card button[type="submit"]:disabled::before{
+  content:"";display:inline-block;width:16px;height:16px;margin-inline-end:8px;
+  border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;
+  vertical-align:-3px;animation:auth-spin .75s linear infinite;
+}
+@keyframes auth-spin{to{transform:rotate(360deg)}}
+.signup-recovery-guide{margin-top:10px;padding:12px;border:1px solid var(--warn);border-radius:12px;background:var(--warn-soft);color:var(--ink);font-size:.8rem;line-height:1.9}
+.signup-recovery-guide[hidden]{display:none}
+.signup-recovery-guide .secondary-action{width:100%;margin-top:8px;background:var(--surface-strong);color:var(--accent-ink)}
+
+@media(max-width:600px){
+  .app{padding:6px 8px 48px}
+  header.top{top:calc(env(safe-area-inset-top,0px) + 4px);padding:8px 10px 10px;margin-bottom:12px;border-radius:16px}
+  header.top.collapsed{padding:6px 9px}
+  .title-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center}
+  .title-row>.brand{min-width:0;gap:6px;flex-wrap:nowrap}
+  .title-row>.brand .logo-badge{width:42px;height:42px}
+  .title-row>.brand .logo-badge::before{inset:-3px;filter:blur(4px)}
+  .title-row>.brand h1{font-size:.94rem}
+  .header-clock{display:none}
+  .title-row-right{display:contents}
+  .header-collapse-btn{grid-column:2;grid-row:1;width:38px;height:38px;margin:0}
+  .title-row-extras{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%}
+  .title-row-extras .conn{display:flex;align-items:center;justify-content:center;min-width:0;min-height:34px;padding:5px 7px;text-align:center;overflow-wrap:anywhere}
+  .title-row-extras .theme-toggle-btn,.title-row-extras .gh-connect-btn{width:100%;height:auto;min-height:38px;margin:0}
+  .header-collapsible .progress-wrap{margin-top:9px;gap:8px}
+  .header-collapsible .tabbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:9px;padding:4px;border-radius:14px}
+  .header-collapsible .tab-btn{min-width:0;min-height:40px;padding:8px 6px!important;line-height:1.5;white-space:normal}
+  .header-collapsible .tab-btn:not([hidden]):last-child:nth-child(odd){grid-column:1/-1}
+  .dashboard-fold>summary{padding:13px 14px}
+  .section-heading{align-items:stretch}
+  .section-heading>.secondary-action,.admin-account-actions button{flex:1 1 140px}
+  .newsletter-preference{padding:12px;margin:14px 0}
+}
+@media(max-width:420px){
+  .metric-grid{grid-template-columns:1fr}
+  .metric-card{min-height:108px}
+  .study-hero{padding:14px}
+  .hero-orbit{width:44px;height:44px;font-size:1.45rem}
+}
+@media(prefers-reduced-motion:reduce){.login-card button[type="submit"]:disabled::before{animation:none}}

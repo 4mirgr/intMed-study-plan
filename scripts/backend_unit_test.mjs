@@ -18,6 +18,7 @@ function fetchMock(url, options = {}){
   if(url.includes("grant_type=refresh_token") && refreshMode === "network") return Promise.reject(new Error("offline"));
   if(url.includes("grant_type=refresh_token") && refreshMode === "invalid") return reply({message:"Invalid refresh"},400);
   if(url.includes("grant_type=refresh_token")) return reply({access_token:"refreshed", refresh_token:"refresh-2", user:{id:userId}});
+  if(url.includes("/auth/v1/signup")) return reply({user:{id:"duplicate",identities:[]}});
   if(url.includes("/auth/v1/token")) return reply({access_token:"access", refresh_token:"refresh", user:{id:userId}});
   if(url.includes("/auth/v1/user")) return reply({id:userId});
   if(url.includes("/rest/v1/profiles?id=eq.") && expired && options.headers.Authorization !== "Bearer refreshed") return reply({message:"Expired"},401);
@@ -51,6 +52,7 @@ const profileCall = calls.find(call => call.url.includes("/rest/v1/profiles"));
 assert.equal(profileCall.options.headers.Authorization, "Bearer access");
 await window.IntMedBackend.signOut();
 assert.equal(window.IntMedBackend.session(), null);
+await assert.rejects(window.IntMedBackend.signUp("doctor@example.com", "password123", {}), error => error.code === "duplicate_email" && error.message === "این ایمیل قبلاً ثبت شده است.");
 window.location.hash = "#type=recovery&access_token=recovery-access&refresh_token=recovery-refresh&expires_in=3600";
 assert.equal(window.IntMedBackend.captureRecoverySession(), true);
 assert.equal(window.IntMedBackend.session().recovery, true);

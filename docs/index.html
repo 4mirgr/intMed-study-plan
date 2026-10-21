@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://api.drgerami-md.ir https://upwbktvnybsjugdegjji.supabase.co; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=93ba1dcccb9a331c">
+<link rel="stylesheet" href="intmed.css?v=72a08404d50a1b6a">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
@@ -80,6 +80,10 @@
     <input type="email" id="signupEmail" autocomplete="email" placeholder="ایمیل" required>
 </div></div>    <button type="submit">ثبت‌نام</button>
     <div class="login-err" id="signupErr">نام و نام خانوادگی، نام کاربری، رمز عبور، مدرک تحصیلی و ایمیل الزامی‌اند.</div>
+    <div class="signup-recovery-guide" id="signupRecoveryGuide" hidden>
+      <span>این ایمیل قبلاً ثبت شده است. اگر رمز را به خاطر ندارید، از بازیابی رمز عبور استفاده کنید.</span>
+      <button type="button" id="signupRecoveryLink" class="secondary-action">بازیابی رمز عبور</button>
+    </div>
     <div class="login-switch"><a href="#" id="showLoginLink">بازگشت به ورود</a></div>
   </form>
 
@@ -203,7 +207,7 @@
         <button type="button" id="accountSave" class="profile-save-btn">ذخیره اطلاعات حساب</button><button type="button" id="accountRecovery" class="secondary-action">دریافت لینک تغییر رمز</button>
         <p id="accountStatus" role="status" class="section-caption"></p>
       </details>
-      <div class="newsletter-preference"><label><input type="checkbox" id="newsletterOptIn"> مایلم خبرنامهٔ تغییرات سایت را در ایمیل تأییدشدهٔ حسابم دریافت کنم.</label><p id="newsletterPreferenceStatus" role="status" class="section-caption"></p></div>
+      <div class="newsletter-preference"><label><input type="checkbox" id="newsletterOptIn"> خبرنامه</label><p id="newsletterPreferenceStatus" role="status" class="section-caption"></p></div>
       <div class="profile-favorites"><h3>مباحث مورد علاقهٔ من</h3><div id="profileFavorites" class="favorite-list"></div></div>
       <div class="ticket-box">
         <label for="ticketMessage">ارسال پیام یا تیکت به مدیر</label>
@@ -307,13 +311,13 @@
   </footer>
 </div>
 
-<script src="config.js?v=e1c325a52a905cce"></script>
-<script src="js/intmed-backend.js?v=6901c6e3ab5e027c"></script>
+<script src="config.js?v=5f48a99e989da9ef"></script>
+<script src="js/intmed-backend.js?v=e01f0e87d5898156"></script>
 <script src="js/intmed-theme.js?v=10cbe508c7ceb533"></script>
-<script src="js/intmed-registration.js?v=e99cd781859901dd"></script>
-<script src="js/intmed-login.js?v=24a3f67d9b49fb9f"></script>
+<script src="js/intmed-registration.js?v=5d2e004281bbb0f3"></script>
+<script src="js/intmed-login.js?v=306c3cab2b783056"></script>
 <script src="js/intmed-exams.js?v=e47f2f76f0d62b96"></script>
-<script src="js/intmed-dashboard.js?v=4d88d0bab289fbd8"></script>
+<script src="js/intmed-dashboard.js?v=cf5abe1d8f4d1365"></script>
 <script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
 <script src="js/intmed-motion.js?v=ea46b287e6f400c4"></script>
 <script src="js/intmed-app.js?v=2d3d93e8f4932677"></script>

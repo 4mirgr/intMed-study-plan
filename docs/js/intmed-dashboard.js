@@ -77,7 +77,7 @@
   function renderNewsletter(){
     var b=bucket(),email=(b.profile||{}).email||'',sub=(b.itemState||{})['newsletter:subscription']||{},checkbox=document.getElementById('newsletterOptIn');
     checkbox.checked=sub.subscribed===true&&sub.email===email;checkbox.disabled=!api.ready()||!email;
-    document.getElementById('newsletterPreferenceStatus').textContent=!email?'برای عضویت، ابتدا ایمیل تأییدشدهٔ حساب را تکمیل کنید.':checkbox.checked?'عضویت شما ثبت شده است؛ برای لغو، تیک را بردارید.':'عضویت اختیاری است؛ بدون انتخاب شما عضو خبرنامه نمی‌شوید.';
+    document.getElementById('newsletterPreferenceStatus').textContent=!email?'برای عضویت، ابتدا ایمیل تأییدشدهٔ حساب را تکمیل کنید.':checkbox.checked?'عضویت شما ثبت شده است؛ برای لغو، تیک را بردارید.':'از جدید ترین تغییرات و آپدیت ها و قابلیت های پروژه باخبر شوید.';
     if(b.backendRole==='admin')document.getElementById('newsletterAdminStatus').textContent=number(subscribers().length)+' مشترک فعال با رضایت ثبت‌شده و ایمیل منطبق با حساب فعلی';
   }
   function exportSubscribers(){if(bucket().backendRole!=='admin'||!api.ready())return;var rows=[['نام','نام کاربری','ایمیل','زمان رضایت']].concat(subscribers().map(function(id){var b=api.state().users[id],sub=b.itemState['newsletter:subscription'];return [(b.profile||{}).fullName||'',b.backendUsername||'',sub.email,sub.consentedAt||sub.updatedAt||''];}));var csv='\uFEFF'+rows.map(function(row){return row.map(function(value){return '"'+String(value).replace(/^([=+@-])/,'\'$1').replace(/"/g,'""')+'"';}).join(',');}).join('\r\n');var url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='intmed-newsletter-subscribers.csv';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);}

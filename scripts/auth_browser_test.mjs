@@ -4,7 +4,7 @@ const executable=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 const browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{})});
 const page=await browser.newPage();const id='11111111-1111-4111-8111-111111111111';let approved=false,github=0, failState=false;
 await page.addInitScript(({id})=>{localStorage.setItem('bp_authed','1');localStorage.setItem('bp_user_id','amir');localStorage.setItem('intmed_supabase_session',JSON.stringify({access_token:'test-only',user:{id}}));},{id});
-await page.route('**/*.supabase.co/**',route=>{const u=new URL(route.request().url());if(u.pathname==='/rest/v1/profiles'&&u.searchParams.has('id'))return route.fulfill({json:{id,username:'qa',role:'user',approved,rejected:false}});if(u.pathname==='/rest/v1/profiles')return route.fulfill({json:[{id,username:'qa',role:'user',approved,rejected:false}]});if(failState && u.pathname==='/rest/v1/study_state')return route.fulfill({status:503,json:{message:'Temporary outage'}});if(route.request().method()==='POST')return route.fulfill({json:[{}]});return route.fulfill({json:[]});});
+await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,route=>{const u=new URL(route.request().url());if(u.pathname==='/rest/v1/profiles'&&u.searchParams.has('id'))return route.fulfill({json:{id,username:'qa',role:'user',approved,rejected:false}});if(u.pathname==='/rest/v1/profiles')return route.fulfill({json:[{id,username:'qa',role:'user',approved,rejected:false}]});if(failState && u.pathname==='/rest/v1/study_state')return route.fulfill({status:503,json:{message:'Temporary outage'}});if(route.request().method()==='POST')return route.fulfill({json:[{}]});return route.fulfill({json:[]});});
 await page.route('https://api.github.com/**',route=>{github++;return route.abort()});
 await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));
 try{
@@ -27,7 +27,7 @@ try{
  if(await page.locator('#ghModal').isVisible())throw Error('Private retry opened token modal');
  if(github)throw Error('Private mode contacted GitHub state');
  const probe=await browser.newPage();let reachable=false;
- await probe.route('**/*.supabase.co/**',r=>reachable&&r.request().url().includes('/auth/v1/health')?r.fulfill({json:{name:'GoTrue'}}):r.abort('failed'));
+ await probe.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,r=>reachable&&r.request().url().includes('/auth/v1/health')?r.fulfill({json:{name:'GoTrue'}}):r.abort('failed'));
  await probe.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');await probe.locator('#loginUser').fill('network_qa');await probe.locator('#loginPass').fill('synthetic-password');await probe.locator('#loginForm button[type=submit]').click();await probe.waitForFunction(()=>document.getElementById('loginErr').textContent.includes('ارتباط مرورگر'));await probe.locator('#checkLoginConnection').click();await probe.waitForFunction(()=>document.getElementById('loginConnectionStatus').textContent.includes('دسترسی ندارد'));reachable=true;await probe.locator('#checkLoginConnection').click();await probe.waitForFunction(()=>document.getElementById('loginConnectionStatus').textContent.includes('برقرار است'));await probe.close();
  console.log('Auth browser passed: stored-session approval rechecked, forged legacy identity ignored, approved account allowed, no GitHub state requests.');
 }finally{await browser.close()}

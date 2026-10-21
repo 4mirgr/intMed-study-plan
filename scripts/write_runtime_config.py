@@ -10,6 +10,8 @@ import re
 from pathlib import Path
 from urllib.parse import urlparse
 
+DEFAULT_PUBLIC_API_URL = "https://api.drgerami-md.ir"
+
 
 def validate(url: str, anon_key: str) -> tuple[str, str]:
     url = url.strip().rstrip("/")
@@ -17,20 +19,24 @@ def validate(url: str, anon_key: str) -> tuple[str, str]:
     parsed = urlparse(url)
     if parsed.scheme != "https" or not parsed.netloc or parsed.path not in ("", "/"):
         raise ValueError("INTMED_SUPABASE_URL must be an HTTPS project root URL")
-    allowed_gateway = parsed.hostname == "api.drgerami-md.ir"
-    if not parsed.hostname or not (parsed.hostname.endswith(".supabase.co") or allowed_gateway):
-        raise ValueError(
-            "INTMED_SUPABASE_URL must use the IntMed gateway or a *.supabase.co host"
-        )
+    if not parsed.hostname or not (
+        parsed.hostname.endswith(".supabase.co")
+        or parsed.hostname == "api.drgerami-md.ir"
+    ):
+        raise ValueError("API URL must use the IntMed gateway or a *.supabase.co host")
     if len(anon_key) < 20 or any(char.isspace() for char in anon_key):
         raise ValueError("INTMED_SUPABASE_ANON_KEY is missing or malformed")
     return url, anon_key
 
 
-def render(url: str, anon_key: str) -> str:
+def render(url: str, anon_key: str, browser_url: str | None = None) -> str:
     url, anon_key = validate(url, anon_key)
+    if browser_url:
+        browser_url, _ = validate(browser_url, anon_key)
+    else:
+        browser_url = url
     config = {
-        "supabaseUrl": url,
+        "supabaseUrl": browser_url,
         "supabaseAnonKey": anon_key,
         "allowLegacyDemo": False,
         "legacyAdminWhatsapp": "",
@@ -54,24 +60,18 @@ def main() -> int:
     args = parser.parse_args()
     url = os.environ.get("INTMED_SUPABASE_URL", "")
     anon_key = os.environ.get("INTMED_SUPABASE_ANON_KEY", "")
-    if args.allow_existing and (not url or not anon_key):
+    browser_url = os.environ.get("INTMED_PUBLIC_API_URL", DEFAULT_PUBLIC_API_URL)
+    if args.allow_existing and not url and not anon_key:
         existing = args.output.read_text(encoding="utf-8")
         match = re.search(r"window\.INTMED_CONFIG\s*=\s*(\{.*\});", existing, re.S)
         if not match:
             parser.error("existing runtime config is not a generated JSON assignment")
         config = json.loads(match.group(1))
-        url = url or config.get("supabaseUrl", "")
-        anon_key = anon_key or config.get("supabaseAnonKey", "")
-        # When neither deployment value is supplied, validation alone avoids
-        # rewriting the checked-in fallback configuration.
-        if not os.environ.get("INTMED_SUPABASE_URL") and not os.environ.get(
-            "INTMED_SUPABASE_ANON_KEY"
-        ):
-            validate(url, anon_key)
-            print("existing production configuration is valid")
-            return 0
+        validate(config.get("supabaseUrl", ""), config.get("supabaseAnonKey", ""))
+        print("existing production configuration is valid")
+        return 0
     try:
-        output = render(url, anon_key)
+        output = render(url, anon_key, browser_url)
     except ValueError as exc:
         parser.error(str(exc))
 

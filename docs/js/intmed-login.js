@@ -6,6 +6,14 @@
   if(window.ResizeObserver)new ResizeObserver(measureHeader).observe(topHeader);
   else window.addEventListener("resize",measureHeader);
   measureHeader();
+  if(window.matchMedia && window.matchMedia("(max-width: 600px)").matches){
+    topHeader.classList.add("collapsed");
+    collapseBtn.setAttribute("aria-expanded", "false");
+    collapseBtn.setAttribute("aria-label", "بازکردن نوار بالا");
+    collapseBtn.title = "بازکردن نوار بالا";
+    var initialRegion=document.getElementById("headerCollapsible");
+    if(initialRegion) initialRegion.inert=true;
+  }
   collapseBtn.addEventListener("click", function(){
     var collapsed = topHeader.classList.toggle("collapsed");
     collapseBtn.setAttribute("aria-expanded", collapsed ? "false" : "true");
@@ -218,6 +226,7 @@
   var signupForm = document.getElementById("signupForm");
   var signupErr = document.getElementById("signupErr");
   var signupSuccessBox = document.getElementById("signupSuccessBox");
+  var signupRecoveryGuide = document.getElementById("signupRecoveryGuide");
   var lastSignupInfo = null;
 
   var forgotForm = document.getElementById("forgotForm");
@@ -225,6 +234,7 @@
     ev.preventDefault();
     loginForm.style.display = "none";
     signupForm.style.display = "";
+    signupRecoveryGuide.hidden = true;
     signupSuccessBox.style.display = "none";
     forgotForm.style.display = "none";
   });
@@ -247,6 +257,13 @@
     ev.preventDefault();
     forgotForm.style.display = "none";
     loginForm.style.display = "";
+  });
+  document.getElementById("signupRecoveryLink").addEventListener("click", function(){
+    var email=document.getElementById("signupEmail").value.trim();
+    signupForm.style.display="none";
+    forgotForm.style.display="";
+    document.getElementById("forgotUser").value=email;
+    document.getElementById("forgotUser").focus();
   });
   forgotForm.addEventListener("submit", function(ev){
     ev.preventDefault();
@@ -276,6 +293,7 @@
     var idNumber = document.getElementById("signupIdNumber").value.trim();
     var mobile = normalizeDigits(document.getElementById("signupMobile").value).trim();
     var email = document.getElementById("signupEmail").value.trim();
+    signupRecoveryGuide.hidden = true;
     if(!username || !password || !fullName || !degree){
       signupErr.classList.add("show");
       return;
@@ -299,7 +317,13 @@
         lastSignupInfo = {username:username, fullName:fullName, degree:degree, idNumber:idNumber, mobile:mobile, email:email};
         signupForm.style.display = "none";
         signupSuccessBox.style.display = "";
-      }).catch(function(error){ signupErr.textContent = error.message || "ثبت‌نام ناموفق بود."; signupErr.classList.add("show"); }).finally(function(){ signupButton.disabled = false; });
+      }).catch(function(error){
+        if(error.code === "duplicate_email"){
+          signupErr.textContent = "این ایمیل قبلاً ثبت شده است.";
+          signupRecoveryGuide.hidden = false;
+        } else signupErr.textContent = error.message || "ثبت‌نام ناموفق بود.";
+        signupErr.classList.add("show");
+      }).finally(function(){ signupButton.disabled = false; });
       return;
     }
     if(!legacyDemoAllowed()){

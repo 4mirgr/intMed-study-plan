@@ -9,7 +9,7 @@ const states={[owner]:{itemState:{[topic]:{note:'یادداشت قبلی',status
 const page=await browser.newPage({viewport:{width:390,height:844}});await page.clock.install();
 await page.addInitScript(id=>localStorage.setItem('intmed_supabase_session',JSON.stringify({access_token:'test-token',user:{id,email:'owner@example.com'}})),owner);
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
-await page.route('**/*.supabase.co/**',async route=>{
+await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,async route=>{
  const req=route.request(),u=new URL(req.url()),method=req.method();
  if(u.pathname==='/rest/v1/profiles'){
   if(method==='PATCH'){profileWrites++;Object.assign(profiles[0],req.postDataJSON());return route.fulfill({status:204,body:''});}
@@ -29,6 +29,7 @@ await page.route('**/*.supabase.co/**',async route=>{
 await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));
 try{
  await page.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
+ assert.equal(await page.locator('header.top').evaluate(e=>e.classList.contains('collapsed')),true,'Mobile header should start collapsed');assert.ok(await page.locator('header.top').evaluate(e=>e.getBoundingClientRect().height)<80,'Collapsed mobile header is too tall');await page.locator('#headerCollapseBtn').click();assert.ok(await page.locator('header.top').evaluate(e=>e.getBoundingClientRect().height)<340,'Expanded mobile header takes too much of the viewport');
  const row=page.locator('.topic-item').filter({hasText:'خواندن و تفسیر ECG'});await row.evaluate(e=>e.closest('.topic-cat').classList.add('open'));await row.locator('.topic-open-btn').click();
  await row.locator('.topic-tags summary').click();await row.locator('[data-study-tag="مطالعه‌شده"]').click();await row.locator('[data-study-tag="مهم"]').click();await row.locator('.topic-favorite').click();
  await page.waitForTimeout(300);assert.equal(await row.locator('.topic-favorite').evaluate(e=>getComputedStyle(e).color),'rgb(233, 77, 157)');
@@ -45,7 +46,7 @@ try{
  await page.locator('#profileEditor summary').first().click();await page.locator('#profileInput-fullName').fill('نام ویرایش‌شده');await page.locator('#profileInput-province').fill('فار');await page.locator('#profile-options-province [role=option]').filter({hasText:'فارس'}).click();assert.equal(await page.locator('#profileInput-province').inputValue(),'فارس');await page.locator('#profileSaveBtn').click();await page.waitForFunction(()=>document.getElementById('profileSavedNote').textContent.includes('مشخصات ذخیره شد'));
  assert.equal(profileWrites,1);assert.equal(stateWrites,previousStateWrites,'Profile edit rewrote study state');assert.equal(JSON.stringify(states[owner]),preserved);assert.equal(profiles[0].full_name,'نام ویرایش‌شده');assert.equal(await page.locator('#profileInput-email').getAttribute('readonly'),'');
  await page.locator('.account-security summary').click();await page.locator('#accountUsername').fill('new_username');await page.locator('#accountSave').click();await page.waitForFunction(()=>document.getElementById('accountStatus').textContent.includes('اطلاعات حساب ذخیره شد'));assert.equal(profiles[0].username,'new_username');assert.equal(states[owner].highlights[topic][0].id,'stable-hl');
- admin=true;await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnManagement').click();
+ admin=true;await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#headerCollapseBtn').click();await page.locator('#tabBtnManagement').click();
  assert.equal(await page.locator('#adminPanelCard').isVisible(),true);assert.equal(await page.locator('#studyMetrics').isVisible(),false);assert.ok((await page.locator('#managementBadge').textContent()).includes('۱'));assert.ok((await page.locator('#adminOverview').textContent()).includes('منتظر تأیید'));assert.ok((await page.locator('#adminReadChart').textContent()).includes('خواندن و تفسیر ECG'));
  await page.locator('#analyticsMetric').selectOption('completed');assert.ok((await page.locator('#adminReadChart').textContent()).includes('۱ کاربر'));await page.locator('#analyticsMetric').selectOption('readers');assert.ok((await page.locator('#adminReadChart').textContent()).includes('۲ کاربر'));
  await page.locator('[data-user-toggle="'+other+'"]').click();const otherBefore=JSON.stringify(states[other]);page.once('dialog',dialog=>dialog.accept());await page.locator('[data-account-approval="'+other+'"]').click();await page.waitForFunction(()=>document.getElementById('adminOverview').textContent.includes('دسترسی معلق'));

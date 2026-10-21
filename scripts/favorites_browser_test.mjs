@@ -6,7 +6,7 @@ let admin=false;const profiles=[{id:owner,username:'qa',full_name:'پزشک آز
 const states={[owner]:{itemState:{},highlights:{},meta:{}},[other]:{itemState:{['favorite:'+topic]:{favorite:true}},meta:{},highlights:{}}};
 const context=await browser.newContext({viewport:{width:390,height:844}});
 await context.addInitScript(id=>localStorage.setItem('intmed_supabase_session',JSON.stringify({access_token:id,user:{id}})),owner);
-await context.route('**/*.supabase.co/**',async route=>{
+await context.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,async route=>{
  const req=route.request(),url=new URL(req.url()),uid=(req.headers().authorization||'').replace('Bearer ','')||owner;
  if(url.pathname==='/rest/v1/profiles'){
   const list=(admin?profiles:profiles.filter(p=>p.id===uid)).map(p=>p.id===owner?{...p,role:admin?'admin':'user'}:p);

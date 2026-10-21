@@ -2,7 +2,7 @@ import {createRequire} from 'node:module';import assert from 'node:assert/strict
 const {chromium}=createRequire(import.meta.url)('playwright'),exe=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 const browser=await chromium.launch({headless:true,...(exe?{executablePath:exe}:{})});
 const page=await browser.newPage({viewport:{width:390,height:844}});let fail=false,sent=0,updateBody,requested;
-await page.route('**/*.supabase.co/**',async route=>{
+await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,async route=>{
  const req=route.request(),url=new URL(req.url());
  if(url.pathname==='/auth/v1/recover'){
   sent++;requested={url,body:req.postDataJSON()};

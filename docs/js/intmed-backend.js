@@ -38,6 +38,7 @@
           if(!response.ok){
             var error = new Error((body && (body.msg || body.message || body.error_description)) || ("HTTP " + response.status));
             error.status = response.status;
+            error.code = body && (body.error_code || body.code);
             throw error;
           }
           return body;
@@ -89,7 +90,22 @@
     return refreshPromise;
   }
   function signUp(email, password, metadata){
-    return auth("signup", {email:email, password:password, data:metadata || {}});
+    return auth("signup", {email:email, password:password, data:metadata || {}}).then(function(value){
+      // With email-enumeration protection, Supabase may answer 200 for an
+      // existing confirmed email but return a user with no new identity.
+      if(value && value.user && Array.isArray(value.user.identities) && value.user.identities.length === 0){
+        var duplicate = new Error("این ایمیل قبلاً ثبت شده است.");
+        duplicate.code = "duplicate_email";
+        throw duplicate;
+      }
+      return value;
+    }).catch(function(error){
+      if(error.code === "user_already_exists" || /already registered|already exists|email.*registered|ایمیل.*ثبت/i.test(error.message || "")){
+        error.code = "duplicate_email";
+        error.message = "این ایمیل قبلاً ثبت شده است.";
+      }
+      throw error;
+    });
   }
   function resetPassword(email){
     if(email.indexOf('@')===-1)return request('/functions/v1/intmed-recovery',{method:'POST',authenticated:false,body:JSON.stringify({action:'recover',identity:email})});
@@ -147,7 +163,7 @@
     state.loginLog = state.loginLog || [];
     state.profile = {
       fullName:p.full_name || "", degree:p.degree || "", idNumber:p.id_number || "",
-      phone:p.phone || "", email:p.email || "", specialty:p.specialty || "", province:p.province || "", updatedAt:p.updated_at || ""
+      phone:p.phone || "", email:p.email || "", specialty:p.specialty === "پزشکی داخلی" ? "بیماری های داخلی" : (p.specialty || ""), province:p.province || "", updatedAt:p.updated_at || ""
     };
     state.backendRole = p.role || "user";
     state.backendUsername = p.username || "";

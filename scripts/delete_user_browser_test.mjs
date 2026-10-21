@@ -8,7 +8,7 @@ let calls=0,fail=true,ownerRole='admin';
 let profiles=[{id:owner,username:'owner',full_name:'مدیر',role:'admin',approved:true},{id:otherAdmin,username:'admin2',role:'admin',approved:true},{id:victim,username:'test_user',full_name:'کاربر آزمایشی',role:'user',approved:true},{id:member,username:'member',role:'user',approved:true}];
 let rows=profiles.map(p=>({user_id:p.id,state:{},updated_at:'2026-10-20T10:00:00Z'}));
 await page.addInitScript(id=>localStorage.setItem('intmed_supabase_session',JSON.stringify({access_token:'test',user:{id}})),owner);
-await page.route('**/*.supabase.co/**',async route=>{
+await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,async route=>{
  const req=route.request(),u=new URL(req.url()),method=req.method();
  if(u.pathname==='/rest/v1/rpc/delete_intmed_user'){
   calls++;assert.deepEqual(req.postDataJSON(),{target_user:victim});
