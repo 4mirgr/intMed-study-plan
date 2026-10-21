@@ -196,3 +196,12 @@ figure credits and source links. Option explanations are shown only after answer
 are authored practice questions, not claimed copies of official examinations. Source and
 visual checks are recorded in `content/cardio/ECG_IMAGE_REVIEW.md`; clinical accuracy still
 needs the teacher's final review under the content protocol.
+
+## Study workspace and security review
+
+See [persistent exams/planning](exams-and-planning.md) for stable round/answer keys,
+KF self-assessment, restart history, CAS rules and the animated workspace UI. The
+[security assessment](security/assessment-2026-10-21.md) records read-only production
+checks, a main-app meta CSP and the remaining private-content/hosting work. The
+optional `setup_services.sql` bundle is generated separately; its owner-only browser
+state-write policy still requires installation in the existing Supabase project.

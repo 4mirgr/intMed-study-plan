@@ -37,7 +37,7 @@ try{
  await page.locator('#annotationSearch').fill('توضیح');assert.equal(await page.locator('#personalNotes .annotation-card').count(),1);assert.equal(await page.locator('#personalHighlights .annotation-card').count(),0);await page.locator('#annotationSearch').fill('');
  await page.locator('#dashboardFavorites [data-remove-favorite]').click();await page.waitForTimeout(900);
  assert.equal(states[owner].itemState['favorite:'+topic].favorite,false);assert.equal(states[other].itemState['favorite:'+topic].favorite,true);assert.equal(states[owner].itemState[topic].note,'نوشته شخصی من');
- await page.locator('#personalHighlights .annotation-open').click();await page.locator('mark[data-hl-id="own-highlight"]').waitFor({state:'visible'});assert.equal(await page.locator('mark[data-hl-id="own-highlight"]').evaluate(e=>e===document.activeElement),true);
+ await page.locator('#personalHighlightsFold > summary').click();await page.locator('#personalHighlights .annotation-open').click();await page.locator('mark[data-hl-id="own-highlight"]').waitFor({state:'visible'});assert.equal(await page.locator('mark[data-hl-id="own-highlight"]').evaluate(e=>e===document.activeElement),true);
  await page.locator('#tabBtnDashboard').click();await page.locator('#personalNotes .annotation-card').filter({hasText:'نوشته شخصی من'}).locator('button').click();assert.equal(await page.locator('.topic-note:focus').inputValue(),'نوشته شخصی من');
  await page.evaluate(()=>{localStorage.setItem('bp_theme','light');dispatchEvent(new StorageEvent('storage',{key:'bp_theme',newValue:'light'}));});
  for(const mode of ['dark','night-shift','light']){await page.locator('#themeToggleBtn').click();assert.equal(await page.locator('html').getAttribute('data-theme'),mode);}
@@ -48,7 +48,7 @@ try{
  await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnDashboard').click();assert.equal(await page.locator('#dashboardFavorites [data-remove-favorite]').count(),0);assert.equal(await page.locator('#personalHighlights .annotation-card').count(),1);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  const fc=payload.flashcards[0];states[owner].highlights[topic].push({id:'answer-highlight',loc:'fc:'+fc.id,quote:fc.back,occurrence:0,color:'blue'});
  await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnDashboard').click();
- await page.locator('#personalHighlights .annotation-card').filter({hasText:fc.back}).locator('button').click();await page.locator('mark[data-hl-id="answer-highlight"]').waitFor({state:'visible'});assert.equal(await page.locator('.fc-back').first().evaluate(e=>getComputedStyle(e).display),'block');
+ await page.locator('#personalHighlightsFold > summary').click();await page.locator('#personalHighlights .annotation-card').filter({hasText:fc.back}).locator('button').click();await page.locator('mark[data-hl-id="answer-highlight"]').waitFor({state:'visible'});assert.equal(await page.locator('.fc-back').first().evaluate(e=>getComputedStyle(e).display),'block');
  await page.locator('#tabBtnDashboard').click();
  await page.screenshot({path:'/tmp/intmed-annotations-night-shift.png',fullPage:true});assert.deepEqual(errors,[]);console.log('Annotations/themes passed: private lists, searchable source links, precise highlight focus, unlike persistence, three saved palettes, dark contrast and mobile layout.');
 }finally{await browser.close()}

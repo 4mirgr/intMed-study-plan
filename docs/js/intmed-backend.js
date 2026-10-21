@@ -205,6 +205,7 @@
     return result;
   }
   function mergeStudyDelta(remote, before, after){
+    remote=remote||{};before=before||{};after=after||{};
     var result = Object.assign({}, remote || {});
     result.itemState = mergeChangedKeys(result.itemState, before.itemState, after.itemState);
     // Activity counters use additive deltas so two devices do not overwrite
@@ -223,6 +224,13 @@
       if(key.indexOf("quiz:")!==0)return;
       var latest=(remote.itemState||{})[key],next=after.itemState[key];
       if(latest && next && latest.answeredAt && next.answeredAt && latest.answeredAt<next.answeredAt)result.itemState[key]=latest;
+    });
+    Object.keys(after.itemState||{}).forEach(function(key){
+      var latest=(remote.itemState||{})[key],next=after.itemState[key],prior=(before.itemState||{})[key];
+      if(!latest||!next||equal(prior,next))return;
+      if(key.indexOf("exam-answer:")===0&&latest.answeredAt&&next.answeredAt&&latest.answeredAt<=next.answeredAt)result.itemState[key]=latest;
+      if(key.indexOf("exam-grade:")===0&&latest.gradedAt&&next.gradedAt&&latest.gradedAt<=next.gradedAt)result.itemState[key]=latest;
+      if(key.indexOf("exam-draft:")===0&&latest.updatedAt&&next.updatedAt&&latest.updatedAt>next.updatedAt)result.itemState[key]=latest;
     });
     result.meta = mergeChangedKeys(result.meta, before.meta, after.meta);
     result.highlights = Object.assign({}, result.highlights || {});

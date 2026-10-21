@@ -29,7 +29,7 @@ await page.route('**/*.supabase.co/**',async route=>{
 try{
  await page.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
  const row=page.locator('.topic-item').filter({hasText:'خواندن و تفسیر ECG'});await row.evaluate(e=>e.closest('.topic-cat').classList.add('open'));await row.locator('.topic-open-btn').click();
- await row.locator('[data-study-tag="مطالعه‌شده"]').click();await row.locator('[data-study-tag="مهم"]').click();await row.locator('.topic-favorite').click();
+ await row.locator('.topic-tags summary').click();await row.locator('[data-study-tag="مطالعه‌شده"]').click();await row.locator('[data-study-tag="مهم"]').click();await row.locator('.topic-favorite').click();
  await page.waitForTimeout(300);assert.equal(await row.locator('.topic-favorite').evaluate(e=>getComputedStyle(e).color),'rgb(233, 77, 157)');
  await row.locator('.learn-btn').filter({hasText:'درسنامه'}).click();await row.locator('.lesson-section').first().waitFor({state:'attached'});await page.waitForTimeout(700);
  assert.equal(states[owner].itemState['activity:'+topic+':'+today].opens,1);assert.equal(states[owner].itemState['tag:'+topic].tags.length,2);

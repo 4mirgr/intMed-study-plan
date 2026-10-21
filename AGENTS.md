@@ -34,3 +34,8 @@ Run `node scripts/backend_state_test.mjs` for persistence conflict/isolation che
 
 Dashboard/analytics UI lives in `docs/js/intmed-dashboard.js`. After changing dashboard
 SQL source files, run `python3 scripts/build_dashboard_setup.py`; never add bot tokens.
+
+Persisted practice rounds/planning are documented in `docs/exams-and-planning.md`; the
+exam engine is `docs/js/intmed-exams.js`. Run `node scripts/exams_unit_test.mjs` and the
+workspace browser test after exam changes. Optional notification/security SQL is bundled
+with `python3 scripts/build_services_setup.py` (checked in CI).

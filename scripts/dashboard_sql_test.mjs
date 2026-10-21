@@ -7,7 +7,7 @@ try{
  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  create table public.test_network_events(body jsonb);
  create function net.http_post(url text,body jsonb default '{}',params jsonb default '{}',headers jsonb default '{}',timeout_milliseconds integer default 5000) returns bigint language plpgsql as $$ begin insert into public.test_network_events values(body);return 1;end;$$;`);
- for(const file of ['schema.sql','registration_upgrade.sql','delete_user.sql','dashboard_upgrade.sql','telegram_notifications.sql']){
+ for(const file of ['schema.sql','registration_upgrade.sql','delete_user.sql','dashboard_upgrade.sql','telegram_notifications.sql','newsletter.sql','security_hardening.sql','setup_services.sql']){
   await db.exec(fs.readFileSync('backend/supabase/'+file,'utf8').replace(/create extension if not exists [^;]+;/g,''));
  }
  for(const [id,username] of [[owner,'old-owner'],[member,'member']])await db.query('insert into auth.users(id,email,raw_user_meta_data) values($1,$2,$3)',[id,username+'@example.com',JSON.stringify({username})]);

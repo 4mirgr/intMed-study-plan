@@ -47,8 +47,10 @@
       try{ localStorage.removeItem("bp_authed"); localStorage.removeItem("bp_user_id"); }catch(e){}
       location.reload();
     };
-    if(window.IntMedBackend && window.IntMedBackend.isConfigured()) window.IntMedBackend.signOut().then(finish, finish);
-    else finish();
+    if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
+      var button=this;button.disabled=true;
+      waitForPendingWrites().then(function(){return window.IntMedBackend.signOut();}).then(finish).catch(function(error){button.disabled=false;if(confirm(error.message+" با خروج ممکن است تغییرات ذخیره‌نشده از دست برود. باز هم خارج شوید؟"))window.IntMedBackend.signOut().then(finish,finish);});
+    }else finish();
   });
 
   // ---------------------------------------------------------------
@@ -375,11 +377,12 @@
         });
       });
       detail.appendChild(note);
+      var tagMenu=document.createElement("details");tagMenu.className="topic-tags";
+      var tagSummary=document.createElement("summary");tagSummary.className="topic-tag-pill";tagSummary.setAttribute("aria-label","برچسب‌های مطالعهٔ "+sub.label);tagSummary.textContent="◇ برچسب";
       var tagBox=document.createElement("div");tagBox.className="study-tag-controls";tagBox.dataset.tagTopic=sub.id;
       ["مهم","نیاز به مرور","مطالعه‌شده"].forEach(function(tag){
-        var button=document.createElement("button");button.type="button";button.className="study-tag-button";button.textContent=tag;button.dataset.studyTag=tag;button.setAttribute("aria-pressed","false");
-        button.addEventListener("click",function(){window.IntMedDashboard.toggleTag(sub.id,tag);});tagBox.appendChild(button);
-      });detail.appendChild(tagBox);
+        var button=document.createElement("button");button.type="button";button.className="study-tag-button";button.textContent=tag;button.dataset.studyTag=tag;button.setAttribute("aria-pressed","false");button.addEventListener("click",function(){window.IntMedDashboard.toggleTag(sub.id,tag);});tagBox.appendChild(button);
+      });tagMenu.append(tagSummary,tagBox);tagMenu.addEventListener("click",function(e){e.stopPropagation();});listBtn.insertBefore(tagMenu,favorite);
 
       var learnRow = document.createElement("div");
       learnRow.className = "learn-row";
@@ -681,7 +684,8 @@
 
   function setConn(kind){
     var el = document.getElementById("connStatus");
-    if(kind === "online"){ el.textContent = "آنلاین ✓"; el.className = "conn num ok"; }
+    if(kind === "saving"){ el.textContent="در حال ذخیره…";el.className="conn num"; }
+    else if(kind === "online"){ el.textContent = "آنلاین ✓"; el.className = "conn num ok"; }
     else if(kind === "connecting"){ el.textContent = "در حال اتصال..."; el.className = "conn num"; }
     else if(kind === "nopat"){ el.textContent = "برای ذخیره‌سازی وصل نیست"; el.className = "conn num bad"; }
     else if(kind === "error"){ el.textContent = "خطا در همگام‌سازی"; el.className = "conn num bad"; }
@@ -723,17 +727,17 @@
   function doFlush(){
     if(!hasPersistenceCredentials()) return;
     if(flushing){ flushQueued = true; return; }
+    if(flushTimer){clearTimeout(flushTimer);flushTimer=null;}
     flushing = true;
-    dirty = false;
+    dirty = false;setConn("saving");
     ghSaveState(cleanedStateForSave()).then(function(){
       flushing = false;
-      setConn("online");
-      if(flushQueued){ flushQueued = false; scheduleFlush(200); }
+      if(dirty||flushQueued||flushTimer){flushQueued=false;scheduleFlush(100);}else setConn("online");
     }).catch(function(err){
       flushing = false;
       var isAuth = err && (err.message === "auth" || err.status === 401);
       var isConflict = err && err.message === "conflict";
-      setConn(isAuth ? "auth" : "error");
+      dirty=true;setConn(isAuth ? "auth" : "error");
       // Bug fixed 2026-10-05: this used to just set the red "error" status and
       // stop — dirty was already cleared above, so nothing retried it until the
       // user happened to make an unrelated new edit. A real token problem (auth)
@@ -741,15 +745,15 @@
       // saved first) or a plain network hiccup should retry on their own —
       // scheduleFlush() re-marks dirty and requeues, quickly for a conflict
       // (the next attempt's fresh sha just works), a bit slower for anything else.
-      if(!isAuth) scheduleFlush(isConflict ? 2500 : 8000);
+      if(!isAuth){scheduleFlush(isConflict ? 2500 : 8000);setConn("error");}
     });
   }
   function waitForPendingWrites(){
     return new Promise(function(resolve,reject){
       var started=Date.now();
       function check(){
-        if(Date.now()-started>15000){reject(new Error("همگام‌سازی هنوز تمام نشده است؛ پس از برقراری اتصال دوباره حذف را امتحان کنید."));return;}
-        if(flushing){setTimeout(check,100);return;}
+        if(Date.now()-started>15000){reject(new Error("همگام‌سازی هنوز تمام نشده است؛ پس از برقراری اتصال دوباره تلاش کنید."));return;}
+        if(flushing||(noteTimers&&Object.keys(noteTimers).length)){setTimeout(check,100);return;}
         if(dirty || flushQueued){
           if(!flushTimer){flushQueued=false;doFlush();}
           setTimeout(check,100);return;
@@ -761,7 +765,7 @@
   }
   function scheduleFlush(delay){
     if(!hasPersistenceCredentials()) return;
-    dirty = true;
+    dirty = true;setConn("saving");
     if(flushTimer) clearTimeout(flushTimer);
     flushTimer = setTimeout(function(){ flushTimer = null; doFlush(); }, delay == null ? 400 : delay);
   }
@@ -775,8 +779,11 @@
   var noteTimers = {};
   function scheduleNoteWrite(id, fn){
     if(noteTimers[id]) clearTimeout(noteTimers[id]);
-    noteTimers[id] = setTimeout(fn, 600);
+    if(hasPersistenceCredentials())setConn("saving");
+    noteTimers[id] = setTimeout(function(){delete noteTimers[id];fn();}, 600);
   }
+
+  window.addEventListener("beforeunload",function(event){if(dirty||flushing||flushQueued||flushTimer||Object.keys(noteTimers).length){event.preventDefault();event.returnValue="";}});
 
   function writeItemState(id, data){
     myBucket().itemState[id] = data;
@@ -819,7 +826,7 @@
     allTopicIds.forEach(function(tid){
       updateLearnCounts(tid);
       var te = topicEls[tid];
-      if(te && te.openType) renderLearnPanel(tid, te.openType);
+      if(te && te.openType){var focused=document.activeElement,toolbar=te.learnPanel.querySelector("[data-exam-attempt]"),attempt=window.IntMedExams&&window.IntMedExams.current(tid,te.openType);if(!(focused&&focused.matches("textarea,input")&&te.learnPanel.contains(focused)&&attempt&&toolbar&&toolbar.dataset.examAttempt===attempt.id))renderLearnPanel(tid,te.openType);}
     });
   }
 
@@ -2206,10 +2213,13 @@
 
     if(type === "mcq"){
       panel.innerHTML = "";
+      var exams=window.IntMedExams,questions=exams.catalogue(type,contentMap[topicId]),attempt=exams.start(topicId,type,questions);
+      exams.toolbar(panel,attempt,topicId,type,questions);
       data.forEach(function(q, qIdx){
         var block = document.createElement("div");
         block.className = "mcq-block";block.dataset.questionId=q.id||String(qIdx);
-        var qKey = q.id || qIdx;
+        var qKey = String(q.id || qIdx),saved=exams.response(attempt,qKey),snapshot=attempt&&attempt.questions.find(function(item){return item.id===qKey;}),changed=snapshot&&(snapshot.label!==q.stem||snapshot.correctIndex!==q.correctIndex||JSON.stringify(snapshot.options)!==JSON.stringify(q.options));
+        if(changed){var warning=document.createElement("p");warning.className="section-caption";warning.textContent="نسخهٔ این سؤال تغییر کرده است؛ نتیجهٔ قبلی محفوظ است. برای پاسخ به نسخهٔ تازه، نوبت جدید بسازید.";block.appendChild(warning);}
         var stem = document.createElement("div");
         stem.className = "mcq-stem";
         var stemLocKey = "mcq:" + qKey + ":stem";
@@ -2232,25 +2242,19 @@
         var feedback=document.createElement("p");feedback.className="mcq-feedback";feedback.setAttribute("role","status");feedback.hidden=true;
         var sources=document.createElement("div");sources.className="question-sources";sources.hidden=true;
         (q.sourceRefs||[]).forEach(function(ref){var source=((contentMap[topicId]||{}).sources||[]).find(function(s){return s.id===ref.sourceId;});if(source&&/^https?:\/\//.test(source.url||"")){var anchor=document.createElement("a");anchor.href=source.url;anchor.target="_blank";anchor.rel="noopener noreferrer";anchor.textContent=source.title;sources.appendChild(anchor);}});
+        function showResult(result){
+          block.querySelectorAll(".mcq-opt").forEach(function(button,index){button.disabled=true;if(!changed){button.classList.toggle("correct",index===q.correctIndex);button.classList.toggle("incorrect",index===result.selectedIndex&&!result.correct);button.classList.toggle("chosen",index===result.selectedIndex);}});
+          feedback.hidden=false;feedback.classList.toggle("correct",result.correct===true);feedback.classList.toggle("incorrect",result.correct!==true);feedback.textContent=(result.correct?"✓ پاسخ درست ثبت شده است. ":"✕ پاسخ نادرست ثبت شده است. ")+(changed?"صورت یا گزینه‌های سؤال تغییر کرده‌اند؛ برای تمرین تازه نوبت جدید بسازید.":(q.optionExplanations&&q.optionExplanations[result.selectedIndex]||""));
+          explain.classList.add("show");sources.hidden=false;var details=block.querySelector(".option-reasons");if(details)details.hidden=false;
+        }
         (q.options||[]).forEach(function(opt, idx){
-          var ob = document.createElement("button");
-          ob.type = "button"; ob.className = "mcq-opt"; ob.textContent = opt;
-          ob.addEventListener("click", function(){
-            if(window.IntMedDashboard)window.IntMedDashboard.answer(topicId,qKey,idx===q.correctIndex);
-            block.querySelectorAll(".mcq-opt").forEach(function(x){ x.disabled = true; });
-            ob.classList.add(idx === q.correctIndex ? "correct" : "incorrect");
-            if(idx !== q.correctIndex){
-              var correctBtn = block.querySelectorAll(".mcq-opt")[q.correctIndex];
-              if(correctBtn) correctBtn.classList.add("correct");
-            }
-            feedback.hidden=false;feedback.classList.add(idx===q.correctIndex?"correct":"incorrect");feedback.textContent=(idx===q.correctIndex?"✓ پاسخ درست است. ":"✕ پاسخ انتخابی نادرست است. ")+(q.optionExplanations&&q.optionExplanations[idx]||"");
-            explain.classList.add("show");sources.hidden=false;
-          });
-          block.appendChild(ob);
+          var ob=document.createElement("button");ob.type="button";ob.className="mcq-opt";ob.textContent=opt;ob.disabled=!!saved||!!changed||!exams.canAnswer(attempt,qKey);
+          ob.addEventListener("click",function(){if(!exams.answer(attempt,qKey,idx,idx===q.correctIndex))return;if(window.IntMedDashboard)window.IntMedDashboard.answer(topicId,qKey,idx===q.correctIndex);showResult(exams.response(attempt,qKey));});block.appendChild(ob);
         });
         block.appendChild(feedback);block.appendChild(explain);
         if(q.optionExplanations){var reasons=document.createElement("details");reasons.className="option-reasons";var summary=document.createElement("summary");summary.textContent="تحلیل تمام گزینه‌ها";reasons.appendChild(summary);q.optionExplanations.forEach(function(reason,i){var paragraph=document.createElement("p");paragraph.textContent=faDigits(i+1)+". "+reason;reasons.appendChild(paragraph);});reasons.hidden=true;block.appendChild(reasons);block.querySelectorAll(".mcq-opt").forEach(function(button){button.addEventListener("click",function(){reasons.hidden=false;});});}
         block.appendChild(sources);
+        if(saved)showResult(saved);
         panel.appendChild(block);
       });
       return;
@@ -2258,6 +2262,7 @@
 
     if(type === "kfPmp"){
       panel.innerHTML = "";
+      var exams=window.IntMedExams,questions=exams.catalogue(type,contentMap[topicId]),attempt=exams.start(topicId,type,questions);exams.toolbar(panel,attempt,topicId,type,questions);
       data.forEach(function(kf, kfIdx){
         var kfKey = kf.id || kfIdx;
         var legacyKfKey = kf.legacyKey != null ? kf.legacyKey : kfKey;
@@ -2306,7 +2311,14 @@
             ans.classList.toggle("show", !showing);
             btn.textContent = showing ? "نمایش پاسخ" : "مخفی کردن";
           });
-          stepEl.appendChild(prompt); appendQuestionFigure(stepEl, step); stepEl.appendChild(btn); stepEl.appendChild(ans);
+          var answerId=String(kfKey)+":"+String(stepKey),saved=exams.response(attempt,answerId),draft=exams.draft(attempt,answerId),input=document.createElement("textarea");input.className="kfp-response";input.setAttribute("aria-label","پاسخ تشریحی شما: "+step.prompt);input.placeholder="پاسخ خودتان را بنویسید…";input.maxLength=20000;input.value=saved?saved.written:(draft.text||"");input.disabled=!!saved||!exams.canAnswer(attempt,answerId);
+          input.addEventListener("input",function(){exams.saveDraft(attempt,answerId,input.value);});
+          var submit=document.createElement("button");submit.type="button";submit.className="kfp-submit secondary-action";submit.textContent=saved?"پاسخ ثبت شده است":"ثبت پاسخ و مشاهدهٔ پاسخ مرجع";submit.disabled=!!saved||!exams.canAnswer(attempt,answerId);
+          var self=document.createElement("div");self.className="kf-self-assessment";self.hidden=!saved;var label=document.createElement("small");label.textContent="پس از مقایسه با پاسخ مرجع، خودتان ارزیابی کنید (نمرهٔ خودکار نیست):";self.appendChild(label);
+          [[1,"درست"],[.5,"ناقص"],[0,"نادرست"]].forEach(function(pair){var gradeButton=document.createElement("button");gradeButton.type="button";gradeButton.className="self-grade";gradeButton.textContent=pair[1];gradeButton.dataset.grade=String(pair[0]);var existing=exams.grade(attempt,answerId);gradeButton.disabled=!!existing;gradeButton.classList.toggle("selected",!!existing&&existing.value===pair[0]);gradeButton.addEventListener("click",function(){if(exams.assess(attempt,answerId,pair[0]))self.querySelectorAll("button").forEach(function(button){button.disabled=true;button.classList.toggle("selected",button===gradeButton);});});self.appendChild(gradeButton);});
+          submit.addEventListener("click",function(){if(!input.value.trim()){input.focus();return;}if(exams.answer(attempt,answerId,null,null,input.value)){input.disabled=true;submit.disabled=true;submit.textContent="پاسخ ثبت شده است";ans.classList.add("show");btn.textContent="مخفی کردن";self.hidden=false;}});
+          if(saved){ans.classList.add("show");btn.textContent="مخفی کردن";}
+          stepEl.appendChild(prompt);appendQuestionFigure(stepEl,step);stepEl.append(input,submit,btn,ans,self);
           block.appendChild(stepEl);
         });
         panel.appendChild(block);
@@ -2527,5 +2539,6 @@
     ready:function(){return stateLoaded;},goto:goToTopic,annotation:openAnnotation,phases:function(){return PHASES;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},
     flush:doFlush,wait:waitForPendingWrites
   });
+  if(window.IntMedExams)window.IntMedExams.init({state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},topics:function(){return topicEls;},ready:function(){return stateLoaded;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},flush:doFlush,load:ensureTopicLoaded,dashboard:renderStudyDashboard,open:function(id,type){goToTopic(id);return ensureTopicLoaded(id).then(function(){var t=topicEls[id];t.openType=type;Object.keys(t.learnBtns).forEach(function(key){t.learnBtns[key].classList.toggle("active",key===type);});t.learnPanel.classList.add("open");renderLearnPanel(id,type);window.IntMedDashboard.open(id,type);}).catch(function(){document.getElementById("examReportStatus").textContent="بارگذاری آزمون انجام نشد؛ دوباره تلاش کنید.";});},refresh:function(id,type){var t=topicEls[id];if(t&&t.openType===type)renderLearnPanel(id,type);}});
   refreshAll();
 })();

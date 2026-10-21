@@ -40,6 +40,9 @@ jobs:
       - run: node scripts/check_inline_js.mjs
       - run: node scripts/backend_unit_test.mjs
       - run: node scripts/backend_state_test.mjs
+      - run: node scripts/exams_unit_test.mjs
+      - run: node scripts/security_hardening_test.mjs
+      - run: python3 scripts/build_services_setup.py --check
       - run: node scripts/username_login_test.mjs
       - run: node scripts/delete_user_sql_test.mjs
       - run: python3 scripts/build_dashboard_setup.py --check
@@ -62,6 +65,7 @@ jobs:
           node scripts/dashboard_browser_test.mjs
           node scripts/annotations_theme_browser_test.mjs
           node scripts/pdf_ecg_browser_test.mjs
+          node scripts/study_workspace_browser_test.mjs
       - name: Build secure production configuration
         if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
         env:

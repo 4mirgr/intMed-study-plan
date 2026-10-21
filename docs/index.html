@@ -1,9 +1,11 @@
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IntMed</title>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://upwbktvnybsjugdegjji.supabase.co; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=764fdcfd3fb91ea4">
+<link rel="stylesheet" href="intmed.css?v=621cb279fde8ca57">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
@@ -170,18 +172,19 @@
       <section class="neon-panel"><div class="section-heading"><h3>برچسب‌های من</h3><select id="studyTagFilter" aria-label="فیلتر برچسب"><option value="همه">همه</option><option>مهم</option><option>نیاز به مرور</option><option>مطالعه‌شده</option></select></div><div id="studyTagged" class="insight-list"></div></section>
     </div>
 
-    <section class="neon-panel quiz-summary-panel"><div class="section-heading"><h3>کارنامهٔ تمرین تستی</h3><strong id="studyQuizSummary"></strong></div><div id="studyQuizChart" class="analytics-bars"></div><p class="section-caption">ملاک، نخستین پاسخ ثبت‌شدهٔ هر سؤال است؛ تمرین تکراری تعداد سؤال‌ها را افزایش نمی‌دهد. این آمار نمرهٔ آزمون رسمی نیست.</p></section>
+    <section class="neon-panel quiz-summary-panel" data-panel-color="blue"><div class="section-heading"><h3>کارنامهٔ تمرین تستی</h3><strong id="studyQuizSummary"></strong></div><div id="studyQuizChart" class="analytics-bars"></div><p class="section-caption">خلاصهٔ چهارگزینه‌ای‌ها در بالا و جزئیات نوبت‌های هر مبحث در پایین نمایش داده می‌شود. نتیجهٔ KF/PMP خودارزیابی است؛ این نتایج نمرهٔ آزمون رسمی نیستند.</p><strong id="examTotals"></strong><div id="examReports"></div><p id="examReportStatus" role="status"></p></section>
 
     <section class="callout favorites-card" id="favoritesCard" tabindex="-1">
       <div class="section-heading"><h2>علاقه‌مندی‌های من <span id="favoriteCount" class="neon-count">۰</span></h2><span class="section-caption">مسیر کوتاه به مباحث محبوب شما</span></div>
       <div id="dashboardFavorites" class="favorite-list"></div>
     </section>
 
+    <section class="neon-panel study-planner" data-panel-color="green"><div class="section-heading"><h3>برنامهٔ شخصی مطالعه</h3><label>هدف روزانه <input type="number" id="studyGoalMinutes" min="5" max="720" step="5" value="60" aria-label="هدف روزانه به دقیقه"> دقیقه</label><button type="button" id="saveStudyGoal" class="secondary-action">ثبت هدف</button></div><p id="studyGoalStatus" role="status" class="section-caption"></p><progress id="dailyGoalProgress" max="60" value="0" aria-label="پیشرفت هدف روزانه"></progress><form id="studyPlanForm" class="study-plan-form"><label>مبحث <input id="planTopic" list="planTopicOptions" placeholder="جست‌وجوی مبحث…" required autocomplete="off"><datalist id="planTopicOptions"></datalist></label><label>تاریخ <input type="date" id="planDate" required></label><label>زمان (دقیقه) <input type="number" id="planMinutes" min="5" max="720" step="5" value="30" required></label><button type="submit" class="secondary-action">افزودن به برنامه</button></form><p id="studyPlanStatus" role="status" class="section-caption"></p><div id="studyPlanTasks"></div></section>
     <div class="annotation-toolbar"><h2>دفتر مطالعهٔ من</h2><input type="search" id="annotationSearch" placeholder="جست‌وجو در نوشته‌ها، هایلایت‌ها و مباحث" aria-label="جست‌وجو در نوشته‌ها و هایلایت‌های شخصی"></div>
     <div class="notebook-export-controls"><label>خروجی دفتر من <select id="personalExportKind"><option value="all">یادداشت‌ها و هایلایت‌ها</option><option value="notes">فقط یادداشت‌ها</option><option value="highlights">فقط هایلایت‌ها</option></select></label><button type="button" id="personalExportPdf" class="secondary-action">خروجی PDF</button><small id="personalExportStatus" role="status"></small></div>
     <div class="annotation-grid">
-      <section class="neon-panel"><div class="section-heading"><h3>یادداشت‌های من</h3><span id="personalNotesCount" class="neon-count">۰</span></div><div id="personalNotes" class="annotation-list"></div></section>
-      <section class="neon-panel"><div class="section-heading"><h3>هایلایت‌های من</h3><span id="personalHighlightsCount" class="neon-count">۰</span></div><div id="personalHighlights" class="annotation-list"></div></section>
+      <details class="neon-panel notebook-fold" id="personalNotesFold"><summary><span>یادداشت‌های من</span><span id="personalNotesCount" class="neon-count">۰</span><span class="fold-chevron" aria-hidden="true">⌄</span></summary><div id="personalNotes" class="annotation-list"></div></details>
+      <details class="neon-panel notebook-fold" id="personalHighlightsFold"><summary><span>هایلایت‌های من</span><span id="personalHighlightsCount" class="neon-count">۰</span><span class="fold-chevron" aria-hidden="true">⌄</span></summary><div id="personalHighlights" class="annotation-list"></div></details>
     </div>
 
     <section class="callout" id="userProfileCard" style="display:none">
@@ -209,9 +212,10 @@
       </div></details>
     </section>
 
-    <section class="callout" id="adminPanelCard" style="display:none">
+    <section class="callout dashboard-admin" id="adminPanelCard" style="display:none">
       <div class="section-heading"><h2>مرکز مدیریت</h2><button type="button" id="adminExportStats" class="stats-refresh">خروجی CSV آمار مباحث</button></div>
       <details class="notification-panel"><summary>خبرنامهٔ ایمیلی به‌روزرسانی سایت</summary><p id="newsletterAdminStatus" class="section-caption"></p><p class="section-caption">عضویت اختیاری است و کاربر هر زمان می‌تواند آن را لغو کند. پیش از اولین ارسال، سرویس ایمیل را متصل و ارسال آزمایشی را بررسی کنید. هر نوبت حداکثر ۲۰ نفر از مشترکان واجد شرایط را پوشش می‌دهد.</p><div class="newsletter-composer"><label for="newsletterSubject">عنوان خبرنامه</label><input id="newsletterSubject" maxlength="160" placeholder="مثلاً: آزمون‌های تصویری قلب اضافه شد"><label for="newsletterBody">متن خبرنامه</label><textarea id="newsletterBody" maxlength="12000" rows="6" placeholder="تغییرات جدید و لینک مباحث را بنویسید."></textarea><div class="admin-account-actions"><button type="button" data-newsletter-action="status">بررسی اتصال ایمیل</button><button type="button" data-newsletter-action="preview">پیش‌نمایش و تعداد گیرندگان</button><button type="button" data-newsletter-action="test">ارسال آزمایشی فقط به مدیر</button><button type="button" data-newsletter-action="send" id="newsletterSend" disabled>ارسال به حداکثر ۲۰ مشترک بعدی</button><button type="button" id="newsletterNew">خبرنامهٔ جدید</button></div><p id="newsletterDeliveryStatus" role="status" class="section-caption"></p><pre id="newsletterPreview"></pre></div><button type="button" id="newsletterExport" class="secondary-action">خروجی CSV مشترکان فعال</button></details>
+      <section class="neon-panel integration-setup" data-panel-color="blue"><h3>راه‌اندازی اعلان‌ها · تنظیمات سرور لازم است</h3><div class="integration-status-row"><span id="telegramSetupBadge" class="setup-status">تلگرام: بررسی نشده</span><span id="newsletterSetupBadge" class="setup-status">ایمیل: بررسی نشده</span><button type="button" id="checkServiceConnections" class="secondary-action">بررسی هر دو اتصال</button></div><p class="section-caption">در بررسی ۲۹ مهر ۱۴۰۵، تابع‌های تلگرام و خبرنامه نصب نبودند (404). تا تکمیل مراحل زیر ارسال فعال نمی‌شود. رمز یا کلید را در چت یا کد سایت وارد نکنید.</p><ol><li>در پروژهٔ خودتان در <a href="https://supabase.com/dashboard/project/upwbktvnybsjugdegjji/functions" target="_blank" rel="noopener noreferrer">Supabase → Edge Functions</a> تابع مربوط را نصب کنید.</li><li>توکن بات یا کلید Resend را فقط در Edge Functions → Secrets ذخیره کنید و فایل آمادهٔ setup_services.sql را یک‌بار در SQL Editor اجرا کنید.</li><li>در بخش تلگرام «بررسی اتصال»، «پیداکردن گفت‌وگو» و سپس «اعلان آزمایشی» را بزنید؛ برای ایمیل ابتدا اتصال و ارسال آزمایشی فقط به مدیر را بررسی کنید.</li></ol><p><a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/TELEGRAM_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم تلگرام</a> · <a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/NEWSLETTER_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم ایمیل</a></p><p><a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/SETUP_SERVICES_FA.md" target="_blank" rel="noopener noreferrer">شروع از اینجا: نصب سادهٔ سرویس‌ها</a> · <a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/setup_services.sql" target="_blank" rel="noopener noreferrer">فایل یک‌جای نصب SQL اعلان‌ها و سخت‌گیری دسترسی</a> · <a href="security/assessment-fa.md" target="_blank" rel="noopener noreferrer">گزارش بررسی امنیت و حفاظت محتوا</a></p><p class="section-caption">این یادداشت نتیجهٔ بررسی اولیه است؛ نتیجهٔ دکمهٔ بررسی اتصال، وضعیت تازهٔ هر سرویس را نشان می‌دهد.</p></section>
       <div id="adminOverview" class="metric-grid"></div>
       <details class="notification-panel"><summary>خروجی PDF دفتر مطالعهٔ کاربران</summary><div class="notebook-export-controls"><label>کاربر <select id="notebookExportUser"></select></label><label>محتوا <select id="notebookExportKind"><option value="all">یادداشت‌ها و هایلایت‌ها</option><option value="notes">فقط یادداشت‌ها</option><option value="highlights">فقط هایلایت‌ها</option></select></label><button type="button" id="adminExportNotebook" class="secondary-action">آماده‌سازی PDF</button><small id="notebookExportStatus" role="status"></small></div><p class="section-caption">فقط اطلاعات کاربر انتخاب‌شده در خروجی قرار می‌گیرد. در پنجرهٔ چاپ، Save as PDF را انتخاب کنید.</p></details>
       <details class="notification-panel"><summary>اعلان ثبت‌نام در تلگرام</summary><p class="section-caption">پس از راه‌اندازی یک‌باره، درخواست‌های جدید به بات تلگرام شما ارسال می‌شوند؛ دریافت اعلان روی آیفون به فعال‌بودن اعلان‌های Telegram بستگی دارد.</p>
@@ -301,9 +305,11 @@
 </div>
 
 <script src="config.js?v=e1c325a52a905cce"></script>
-<script src="js/intmed-backend.js?v=3678437c96b9ed2d"></script>
+<script src="js/intmed-backend.js?v=200672286e6f2550"></script>
 <script src="js/intmed-theme.js?v=10cbe508c7ceb533"></script>
 <script src="js/intmed-registration.js?v=86cbba87cc94b74f"></script>
 <script src="js/intmed-login.js?v=22cbc4f112546887"></script>
-<script src="js/intmed-dashboard.js?v=1a6d666ed3f9724d"></script>
-<script src="js/intmed-app.js?v=940b91e32f0224d8"></script>
+<script src="js/intmed-exams.js?v=e47f2f76f0d62b96"></script>
+<script src="js/intmed-dashboard.js?v=1a0a2d034dc1090b"></script>
+<script src="js/intmed-motion.js?v=ea46b287e6f400c4"></script>
+<script src="js/intmed-app.js?v=f299abc9cfa9c2ef"></script>
