@@ -45,6 +45,7 @@ jobs:
       - run: python3 scripts/build_services_setup.py --check
       - run: node scripts/username_login_test.mjs
       - run: node scripts/recovery_support_test.mjs
+      - run: node scripts/cloudflare_proxy_test.mjs
       - run: node scripts/delete_user_sql_test.mjs
       - run: python3 scripts/build_dashboard_setup.py --check
       - run: node scripts/dashboard_sql_test.mjs
