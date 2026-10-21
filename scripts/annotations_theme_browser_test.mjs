@@ -30,7 +30,7 @@ try{
  states[owner].itemState['favorite:'+topic]={favorite:true};
  states[owner].highlights[topic]=[{id:'own-highlight',loc:'lesson:'+section.id+':'+paragraph.id,quote:paragraph.text,occurrence:0,color:'pink',note:'توضیح هایلایت من'}];
  states[other].itemState[topic]={note:'نباید در دفتر من دیده شود'};
- await page.goto(base);await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnDashboard').click();
+ await page.goto(base);await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#headerCollapseBtn').click();await page.locator('#tabBtnDashboard').click();
  assert.equal(await page.locator('#personalNotes .annotation-card').count(),2);
  assert.equal(await page.locator('#personalHighlights .annotation-card').count(),1);
  assert.ok((await page.locator('#personalNotes').textContent()).includes('خواندن و تفسیر ECG'));
@@ -46,9 +46,9 @@ try{
  await page.locator('#themeToggleBtn').click();
  const contrasts=await page.evaluate(()=>{function lum(rgb){return rgb.match(/\d+/g).slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);}return ['yellow','green','pink','blue','purple','orange'].map(color=>{const mark=document.createElement('mark');mark.className='hl hl-'+color;document.body.append(mark);const s=getComputedStyle(mark),ratio=(lum(s.color)+.05)/(lum(s.backgroundColor)+.05);mark.remove();return ratio;});});assert.ok(contrasts.every(v=>v>=4.5),JSON.stringify(contrasts));
  await page.locator('#themeToggleBtn').click();await page.reload();assert.equal(await page.locator('html').getAttribute('data-theme'),'night-shift');await page.emulateMedia({colorScheme:'dark'});assert.equal(await page.locator('html').getAttribute('data-theme'),'night-shift');
- await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnDashboard').click();assert.equal(await page.locator('#dashboardFavorites [data-remove-favorite]').count(),0);assert.equal(await page.locator('#personalHighlights .annotation-card').count(),1);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#headerCollapseBtn').click();await page.locator('#tabBtnDashboard').click();assert.equal(await page.locator('#dashboardFavorites [data-remove-favorite]').count(),0);assert.equal(await page.locator('#personalHighlights .annotation-card').count(),1);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  const fc=payload.flashcards[0];states[owner].highlights[topic].push({id:'answer-highlight',loc:'fc:'+fc.id,quote:fc.back,occurrence:0,color:'blue'});
- await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#tabBtnDashboard').click();
+ await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#headerCollapseBtn').click();await page.locator('#tabBtnDashboard').click();
  await page.locator('#personalHighlightsFold > summary').click();await page.locator('#personalHighlights .annotation-card').filter({hasText:fc.back}).locator('button').click();await page.locator('mark[data-hl-id="answer-highlight"]').waitFor({state:'visible'});assert.equal(await page.locator('.fc-back').first().evaluate(e=>getComputedStyle(e).display),'block');
  await page.locator('#tabBtnDashboard').click();
  await page.screenshot({path:'/tmp/intmed-annotations-night-shift.png',fullPage:true});assert.deepEqual(errors,[]);console.log('Annotations/themes passed: private lists, searchable source links, precise highlight focus, unlike persistence, three saved palettes, dark contrast and mobile layout.');
