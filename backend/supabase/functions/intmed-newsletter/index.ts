@@ -18,25 +18,22 @@ Deno.serve(async req=>{
  async function signingKey(){if(!secret||secret.length<32)throw Error('signing');return crypto.subtle.importKey('raw',encoder.encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign','verify']);}
  async function tokenFor(id,email){const payload=encode(encoder.encode(JSON.stringify({id,email,exp:Math.floor(Date.now()/1000)+180*86400})));return payload+'.'+encode(new Uint8Array(await crypto.subtle.sign('HMAC',await signingKey(),encoder.encode(payload))));}
  async function verifyToken(token){try{if(token.length>2048)return null;const [payload,signature,...rest]=token.split('.');if(rest.length||!signature)return null;if(!await crypto.subtle.verify('HMAC',await signingKey(),decode(signature),encoder.encode(payload)))return null;const data=JSON.parse(new TextDecoder().decode(decode(payload)));return uuid.test(data.id)&&typeof data.email==='string'&&data.exp>Date.now()/1000?data:null;}catch{return null;}}
- function html(message,form=''){return new Response('<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>خبرنامه IntMed</title><body><h1>خبرنامه IntMed</h1><p>'+message+'</p>'+form+'<p><a href="'+SITE+'">بازگشت به سایت</a></p></body></html>',{headers:{'Content-Type':'text/html;charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"}});}
  try{
-  // GET only displays confirmation: email scanners cannot silently unsubscribe a member.
-  if(url.searchParams.get('unsubscribe')){
-   const token=url.searchParams.get('unsubscribe')||'',signed=await verifyToken(token);if(!signed)return html('لینک معتبر نیست یا منقضی شده است. از تنظیمات حساب نیز می‌توانید عضویت را لغو کنید.');
-   if(req.method==='GET')return html('برای لغو دریافت خبرنامه روی دکمهٔ زیر بزنید.','<form method="post"><button type="submit">تأیید لغو عضویت</button></form>');
-   if(req.method!=='POST')return reply(405,{message:'Method not allowed'});
-   for(let attempt=0;attempt<4;attempt++){
-    const rows=await db('study_state?user_id=eq.'+signed.id+'&select=state,updated_at');if(!rows.length)return html('عضویت غیرفعال است.');const row=rows[0],state=row.state||{},sub=(state.itemState||{})['newsletter:subscription'];
-    if(!sub||sub.email!==signed.email||!sub.subscribed)return html('عضویت غیرفعال است.');
-    const patched={...state,itemState:{...(state.itemState||{}),'newsletter:subscription':{...sub,subscribed:false,updatedAt:new Date().toISOString()}}};
-    const saved=await db('study_state?user_id=eq.'+signed.id+'&updated_at=eq.'+encodeURIComponent(row.updated_at),'PATCH',{state:patched,updated_at:new Date(Math.max(Date.now(),Date.parse(row.updated_at)+1)).toISOString()},{Prefer:'return=representation'});if(saved.length)return html('دریافت خبرنامه لغو شد. یادداشت‌ها و هایلایت‌های شما حفظ شده‌اند.');
-   }return html('ذخیره انجام نشد؛ لطفاً دوباره تلاش کنید یا از تنظیمات حساب عضویت را لغو کنید.');
-  }
   if(req.method!=='POST'||(origin&&!allowed.includes(origin)))return reply(403,{message:'Forbidden'});
+  const body=await req.json();
+  // The public confirmation page lives on SITE. GET never changes consent.
+  if(body.action==='unsubscribe'){
+   const signed=await verifyToken(typeof body.token==='string'?body.token:'');if(!signed)return reply(400,{message:'لینک معتبر نیست یا منقضی شده است.'});
+   for(let attempt=0;attempt<4;attempt++){
+    const rows=await db('study_state?user_id=eq.'+signed.id+'&select=state,updated_at');if(!rows.length)return reply(200,{message:'عضویت غیرفعال است.'});const row=rows[0],state=row.state||{},sub=(state.itemState||{})['newsletter:subscription'];
+    if(!sub||sub.email!==signed.email||!sub.subscribed)return reply(200,{message:'عضویت غیرفعال است.'});
+    const patched={...state,itemState:{...(state.itemState||{}),'newsletter:subscription':{...sub,subscribed:false,updatedAt:new Date().toISOString()}}};
+    const saved=await db('study_state?user_id=eq.'+signed.id+'&updated_at=eq.'+encodeURIComponent(row.updated_at),'PATCH',{state:patched,updated_at:new Date(Math.max(Date.now(),Date.parse(row.updated_at)+1)).toISOString()},{Prefer:'return=representation'});if(saved.length)return reply(200,{message:'دریافت خبرنامه لغو شد. یادداشت‌ها و هایلایت‌های شما حفظ شده‌اند.'});
+   }return reply(409,{message:'ذخیره انجام نشد؛ لطفاً دوباره تلاش کنید.'});
+  }
   const bearer=req.headers.get('authorization');if(!bearer)return reply(401,{message:'Unauthorized'});
   const auth=await fetch(base+'/auth/v1/user',{headers:{apikey:anon,Authorization:bearer}});if(!auth.ok)return reply(401,{message:'Unauthorized'});const user=await auth.json();
   const admins=await db('profiles?id=eq.'+encodeURIComponent(user.id)+'&select=role,approved,rejected');if(admins.length!==1||admins[0].role!=='admin'||!admins[0].approved||admins[0].rejected)return reply(403,{message:'Forbidden'});
-  const body=await req.json();
   if(body.action==='status'){let installed=true;try{await db('intmed_newsletter_deliveries?select=campaign_id&limit=1');}catch{installed=false;}return reply(200,{configured:!!key&&!!sender&&!!secret&&secret.length>=32&&installed,provider:!!key,sender:!!sender,signing:!!secret&&secret.length>=32,installed});}
   if(!['preview','send','test'].includes(body.action))return reply(400,{message:'Unknown action'});
   const subject=typeof body.subject==='string'?body.subject.trim():'',text=typeof body.text==='string'?body.text.trim():'';
@@ -47,7 +44,7 @@ Deno.serve(async req=>{
   if(body.action==='preview')return reply(200,{recipients:members.length,subject,text});
   if(!key||!sender||!secret||secret.length<32)return reply(503,{message:'ابتدا سرویس ارسال و کلید امضای لغو عضویت را تنظیم کنید.'});
   async function confirmed(member){const r=await fetch(base+'/auth/v1/admin/users/'+member.id,{headers:sh});if(!r.ok)return false;const auth=await r.json();return !!auth.email_confirmed_at&&String(auth.email||'').toLowerCase()===String(member.email||'').toLowerCase();}
-  async function send(member,idempotency){const link=base+'/functions/v1/intmed-newsletter?unsubscribe='+encodeURIComponent(await tokenFor(member.id,member.email));return fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':idempotency},body:JSON.stringify({from:sender,to:[member.email],subject:body.action==='test'?'[آزمایشی] '+subject:subject,text:text+'\n\nIntMed — '+SITE+'\nلغو عضویت: '+link})});}
+  async function send(member,idempotency){const link=SITE+'/newsletter.html#token='+encodeURIComponent(await tokenFor(member.id,member.email));return fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':idempotency},body:JSON.stringify({from:sender,to:[member.email],subject:body.action==='test'?'[آزمایشی] '+subject:subject,text:text+'\n\nIntMed — '+SITE+'\nلغو عضویت: '+link})});}
   if(body.action==='test'){const own=await db('profiles?id=eq.'+user.id+'&select=id,email');if(!own[0]?.email||!await confirmed(own[0]))return reply(400,{message:'ایمیل تأییدشدهٔ مدیر لازم است.'});const r=await send(own[0],'intmed-test-'+crypto.randomUUID());if(!r.ok)return reply(503,{message:'ارسال آزمایشی موفق نشد؛ دامنه و فرستنده را بررسی کنید.'});return reply(200,{sent:1});}
   if(!uuid.test(body.campaignId||''))return reply(400,{message:'Invalid campaign'});
   let logs=[],logOffset=0;while(true){const part=await db('intmed_newsletter_deliveries?campaign_id=eq.'+body.campaignId+'&select=user_id,status,body_hash&limit=500&offset='+logOffset);logs.push(...part);if(part.length<500)break;logOffset+=500;}if(logs.some(log=>log.body_hash!==digest))return reply(409,{message:'متن این نوبت ارسال تغییر کرده است؛ یک خبرنامهٔ جدید بسازید.'});

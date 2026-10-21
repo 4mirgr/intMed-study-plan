@@ -186,7 +186,7 @@ Edge Function validates the real Auth user plus active admin role for preview/te
 rechecks consent and the Auth-confirmed recipient email before each message, sends to one
 recipient, and claims a private unique campaign/user delivery record before contacting the
 provider. It never automatically retries uncertain or failed delivery. Signed unsubscribe
-links show a confirmation on GET; POST changes only the newsletter key using CAS, preserving
+links open `newsletter.html` on the site with a fragment token. That page makes no API call until explicit confirmation; POST changes only the newsletter key using CAS, preserving
 concurrent study edits. Admin draft campaign IDs survive refresh in the same browser tab;
 use New newsletter intentionally for a new send. Subject/body changes after a campaign
 starts are rejected. There is no automatic publication-triggered emailing or scheduler.

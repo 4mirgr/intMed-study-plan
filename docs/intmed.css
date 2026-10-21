@@ -980,3 +980,4 @@
 .newsletter-preference{padding:14px;border:1px solid var(--border);border-radius:12px;margin:18px 0;background:var(--surface-2)}.newsletter-preference label{font-size:.82rem;line-height:1.9;cursor:pointer}.newsletter-preference input{accent-color:var(--accent);vertical-align:middle}
 
 .newsletter-composer{display:grid;gap:8px}.newsletter-composer input,.newsletter-composer textarea{font:inherit;direction:rtl;color:var(--ink);background:var(--surface-solid);border:1px solid var(--border);border-radius:8px;padding:10px;max-width:100%;box-sizing:border-box}.newsletter-composer pre{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem}
+.unsubscribe-page{padding:24px;box-sizing:border-box}.unsubscribe-page main{max-width:680px;margin:8vh auto}.unsubscribe-page h1{font-size:1.4rem}.unsubscribe-page p{line-height:2;overflow-wrap:anywhere}
