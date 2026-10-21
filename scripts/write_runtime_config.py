@@ -54,15 +54,22 @@ def main() -> int:
     args = parser.parse_args()
     url = os.environ.get("INTMED_SUPABASE_URL", "")
     anon_key = os.environ.get("INTMED_SUPABASE_ANON_KEY", "")
-    if args.allow_existing and not url and not anon_key:
+    if args.allow_existing and (not url or not anon_key):
         existing = args.output.read_text(encoding="utf-8")
         match = re.search(r"window\.INTMED_CONFIG\s*=\s*(\{.*\});", existing, re.S)
         if not match:
             parser.error("existing runtime config is not a generated JSON assignment")
         config = json.loads(match.group(1))
-        validate(config.get("supabaseUrl", ""), config.get("supabaseAnonKey", ""))
-        print("existing production configuration is valid")
-        return 0
+        url = url or config.get("supabaseUrl", "")
+        anon_key = anon_key or config.get("supabaseAnonKey", "")
+        # When neither deployment value is supplied, validation alone avoids
+        # rewriting the checked-in fallback configuration.
+        if not os.environ.get("INTMED_SUPABASE_URL") and not os.environ.get(
+            "INTMED_SUPABASE_ANON_KEY"
+        ):
+            validate(url, anon_key)
+            print("existing production configuration is valid")
+            return 0
     try:
         output = render(url, anon_key)
     except ValueError as exc:
