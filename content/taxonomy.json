@@ -483,6 +483,10 @@
         {
           "id": "heme-cancer-infection",
           "label": "عفونت در بیماران مبتلا به کنسر"
+        },
+        {
+          "id": "heme-lung-cancer",
+          "label": "نئوپلاسم‌های ریه (سرطان ریه)"
         }
       ]
     },
