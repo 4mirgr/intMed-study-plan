@@ -23,7 +23,7 @@ try {
   await page.waitForSelector(".topic-item", {state:"attached"});
   const categories = await page.locator(".topic-cat").count();
   const topics = await page.locator(".topic-item").count();
-  if (categories !== 12 || topics !== 140) throw new Error(`unexpected taxonomy DOM: ${categories}/${topics}`);
+  if (categories !== 12 || topics !== 141) throw new Error(`unexpected taxonomy DOM: ${categories}/${topics}`);
   if (requested.some(url => url.includes("content-bundle.json"))) throw new Error("legacy bundle was requested");
   if (requested.some(url => /content\/topics\/.+\.json/.test(url))) throw new Error("topic payload fetched eagerly");
 
