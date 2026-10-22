@@ -4,6 +4,9 @@
   var config = global.INTMED_CONFIG || {};
   var sessionKey = "intmed_supabase_session";
   var activeOrigin = "";
+  // Each origin gets a hard timeout so a hung connection (common on restricted
+  // mobile networks) falls over to the next candidate instead of waiting forever.
+  var REQUEST_TIMEOUT_MS = 7000;
 
   function configured(){ return /^https:\/\//.test(config.supabaseUrl || config.supabaseFallbackUrl || "") && !!config.supabaseAnonKey; }
   function session(){
@@ -22,11 +25,19 @@
     Object.keys(extra || {}).forEach(function(key){ result[key] = extra[key]; });
     return result;
   }
+  function isNetworkOrTimeoutError(error){
+    if(!error || error.status) return false;
+    var msg = (error.message || "") + "";
+    return error.name === "AbortError" ||
+      /fetch|network|load failed|offline|aborted|failed to fetch|timeout/i.test(msg);
+  }
   function request(path, options){
     options = options || {};
     var authenticated = options.authenticated !== false;
     function origins(){
-      var values=[activeOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
+      var values=[activeOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){
+        return /^https:\/\//.test(value||"") && list.indexOf(value)===index;
+      });
       return values;
     }
     function perform(retried){
@@ -34,31 +45,63 @@
       Object.keys(options).forEach(function(key){ if(key !== "authenticated" && key !== "headers") requestOptions[key] = options[key]; });
       requestOptions.headers = headers(options.headers, authenticated);
       var candidates=origins();
-      function send(index,firstNetworkError){
-        var origin=candidates[index];
-        return fetch(origin.replace(/\/$/, "") + path, requestOptions).then(function(response){
-        activeOrigin=origin;
-        if(response.status === 401 && authenticated && !retried){
-          return response.text().then(function(){ return refreshSession(); }).then(function(){ return perform(true); });
-        }
-        if(response.status === 204) return null;
-        return response.text().then(function(text){
-          var body = text ? JSON.parse(text) : null;
-          if(!response.ok){
-            var error = new Error((body && (body.msg || body.message || body.error_description)) || ("HTTP " + response.status));
-            error.status = response.status;
-            error.code = body && (body.error_code || body.code);
-            throw error;
+      function send(index, firstNetworkError){
+        if(index >= candidates.length){
+          if(firstNetworkError){
+            if(isNetworkOrTimeoutError(firstNetworkError)){
+              firstNetworkError.message =
+                "ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ «بررسی اتصال به سرور ورود» را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
+            }
+            throw firstNetworkError;
           }
-          return body;
-        });
+          return Promise.reject(new Error("Backend is not configured"));
+        }
+        var origin = candidates[index];
+        var controller = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        var timer = null;
+        var opts = {};
+        Object.keys(requestOptions).forEach(function(k){ opts[k] = requestOptions[k]; });
+        if(controller){
+          opts.signal = controller.signal;
+          timer = setTimeout(function(){ try{ controller.abort(); }catch(e){} }, REQUEST_TIMEOUT_MS);
+        }
+        return fetch(origin.replace(/\/$/, "") + path, opts).then(function(response){
+          if(timer) clearTimeout(timer);
+          activeOrigin = origin;
+          if(response.status === 401 && authenticated && !retried){
+            return response.text().then(function(){ return refreshSession(); }).then(function(){ return perform(true); });
+          }
+          if(response.status === 204) return null;
+          return response.text().then(function(text){
+            var body = text ? JSON.parse(text) : null;
+            if(!response.ok){
+              var error = new Error((body && (body.msg || body.message || body.error_description)) || ("HTTP " + response.status));
+              error.status = response.status;
+              error.code = body && (body.error_code || body.code);
+              throw error;
+            }
+            return body;
+          });
         }).catch(function(error){
-          if(!error.status && index+1<candidates.length)return send(index+1,firstNetworkError||error);
-          if(!error.status&&firstNetworkError)throw firstNetworkError;
+          if(timer) clearTimeout(timer);
+          if(isNetworkOrTimeoutError(error) && index + 1 < candidates.length){
+            return send(index + 1, firstNetworkError || error);
+          }
+          if(isNetworkOrTimeoutError(error) && firstNetworkError){
+            if(isNetworkOrTimeoutError(firstNetworkError)){
+              firstNetworkError.message =
+                "ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ «بررسی اتصال به سرور ورود» را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
+            }
+            throw firstNetworkError;
+          }
+          if(isNetworkOrTimeoutError(error)){
+            error.message =
+              "ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ «بررسی اتصال به سرور ورود» را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
+          }
           throw error;
         });
       }
-      if(!candidates.length)return Promise.reject(new Error("Backend is not configured"));
+      if(!candidates.length) return Promise.reject(new Error("Backend is not configured"));
       return send(0);
     }
     return perform(false);
@@ -73,7 +116,9 @@
       ? auth("token?grant_type=password", {email:username, password:password})
       : request("/functions/v1/intmed-login", {method:"POST", authenticated:false, body:JSON.stringify({username:username,password:password})});
     return login.catch(function(error){
-      if(!error.status && /fetch|network|load failed|offline/i.test(error.message||""))error.message="ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ بررسی اتصال را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
+      if(!error.status && isNetworkOrTimeoutError(error)){
+        error.message="ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ بررسی اتصال را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
+      }
       if(error.status === 404) error.message = "ورود با نام کاربری هنوز در سرور فعال نشده است؛ تا تکمیل راه‌اندازی از ایمیل حساب استفاده کنید.";
       throw error;
     }).then(function(value){
@@ -120,7 +165,7 @@
         error.code = "duplicate_email";
         error.message = "این ایمیل قبلاً ثبت شده است.";
       }
-      if(!error.status && /fetch|network|load failed|offline/i.test(error.message||""))error.message="ارتباط با سرور ثبت‌نام برقرار نشد. اینترنت یا VPN را تغییر دهید و دوباره تلاش کنید.";
+      if(!error.status && isNetworkOrTimeoutError(error))error.message="ارتباط با سرور ثبت‌نام برقرار نشد. اینترنت یا VPN را تغییر دهید و دوباره تلاش کنید.";
       throw error;
     });
   }
