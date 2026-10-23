@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://api.drgerami-md.ir https://upwbktvnybsjugdegjji.supabase.co; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=93e3af2f3be749ef">
+<link rel="stylesheet" href="intmed.css?v=1cd077cee2e520fe">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
@@ -15,6 +15,8 @@
     </span>
     <input type="text" id="loginUser" placeholder="نام کاربری" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+    <label class="trusted-device"><input type="checkbox" id="trustedDevice"> این دستگاه شخصی من است</label>
+    <small class="trusted-device-help">در دستگاه‌های عمومی مانند بیمارستان انتخاب نکنید؛ نشست با بستن مرورگر پایان می‌یابد.</small>
     <button type="submit">ورود</button>
     <div class="login-err" id="loginErr">نام کاربری یا رمز عبور اشتباه است.</div>
     <button type="button" id="checkLoginConnection" class="secondary-action">بررسی اتصال به سرور ورود</button><p id="loginConnectionStatus" class="auth-status" role="status" aria-live="polite"></p>
@@ -93,7 +95,7 @@
     <div class="signup-success-icon">✓</div>
     <div class="signup-success-text">
       <b>ثبت‌نام شما دریافت شد.</b>
-      پس از تأیید ایمیل و تأیید مدیر، با نام کاربری و رمز حساب خود وارد شوید.
+      پس از تأیید ایمیل، با نام کاربری و رمز حساب خود وارد شوید.
     </div>
     <div class="signup-success-actions">
       <button type="button" id="signupSendWhatsapp">ارسال به مدیر (واتساپ)</button>
@@ -148,6 +150,10 @@
         <span class="header-clock" id="headerClock"></span>
       </span>
       <span class="title-row-right">
+        <span class="header-quick-actions" aria-label="دسترسی سریع">
+          <button type="button" class="header-icon-btn" id="accountQuickBtn" aria-label="پنل کاربری" title="پنل کاربری"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button>
+          <button type="button" class="header-icon-btn" id="messagesQuickBtn" aria-label="پیام‌ها" title="پیام‌ها"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H8l-4 4Z"/><path d="M8 9h8M8 13h5"/></svg><span id="messagesBadge" class="quick-badge" hidden></span></button>
+        </span>
         <span class="title-row-extras" id="titleRowExtras">
           <span class="conn num" id="userLabel"></span>
           <span class="conn num" id="connStatus">در حال اتصال...</span>
@@ -183,7 +189,7 @@
     <section class="study-hero"><div><p class="eyebrow">فضای شخصی مطالعه</p><h2 id="studyGreeting">مسیر یادگیری من</h2><p>قدم‌های کوچک، مرور هدفمند و پیشرفت قابل مشاهده</p></div><span class="hero-orbit" aria-hidden="true">✦</span></section>
     <section id="studyMetrics" class="metric-grid" aria-label="آمار شخصی مطالعه"></section>
     <div class="dashboard-grid">
-      <section class="neon-panel"><h3>فعالیت هفت روز اخیر</h3><div id="studyWeekChart" class="week-chart"></div><p class="section-caption">زمان فعال محتوا؛ زمانِ تب پنهان یا بی‌فعالیتی طولانی محاسبه نمی‌شود.</p></section>
+      <section class="neon-panel"><h3>فعالیت هفتهٔ جاری؛ شنبه تا جمعه</h3><div id="studyWeekChart" class="week-chart"></div><p class="section-caption">زمان فعال محتوا؛ زمانِ تب پنهان یا بی‌فعالیتی طولانی محاسبه نمی‌شود.</p></section>
       <section class="neon-panel"><h3>ادامهٔ مسیر</h3><div id="studyRecent" class="insight-list"></div></section>
       <section class="neon-panel"><h3>مرور پیشنهادی</h3><div id="studySuggestions" class="insight-list"></div></section>
       <section class="neon-panel"><div class="section-heading"><h3>برچسب‌های من</h3><select id="studyTagFilter" aria-label="فیلتر برچسب"><option value="همه">همه</option><option>مهم</option><option>نیاز به مرور</option><option>مطالعه‌شده</option></select></div><div id="studyTagged" class="insight-list"></div></section>
@@ -196,7 +202,7 @@
       <div id="dashboardFavorites" class="favorite-list"></div>
     </section>
 
-    <section class="neon-panel study-planner" data-panel-color="green"><div class="section-heading"><h3>برنامهٔ شخصی مطالعه</h3><label>هدف روزانه <input type="number" id="studyGoalMinutes" min="5" max="720" step="5" value="60" aria-label="هدف روزانه به دقیقه"> دقیقه</label><button type="button" id="saveStudyGoal" class="secondary-action">ثبت هدف</button></div><p id="studyGoalStatus" role="status" class="section-caption"></p><progress id="dailyGoalProgress" max="60" value="0" aria-label="پیشرفت هدف روزانه"></progress><form id="studyPlanForm" class="study-plan-form"><label>مبحث <input id="planTopic" list="planTopicOptions" placeholder="جست‌وجوی مبحث…" required autocomplete="off"><datalist id="planTopicOptions"></datalist></label><label>تاریخ <input type="date" id="planDate" required></label><label>زمان (دقیقه) <input type="number" id="planMinutes" min="5" max="720" step="5" value="30" required></label><button type="submit" class="secondary-action">افزودن به برنامه</button></form><p id="studyPlanStatus" role="status" class="section-caption"></p><div id="studyPlanTasks"></div></section>
+    <section class="neon-panel study-planner" data-panel-color="green"><div class="section-heading"><h3>برنامهٔ شخصی مطالعه</h3><label>هدف روزانه <input type="number" id="studyGoalMinutes" min="5" max="720" step="5" value="60" aria-label="هدف روزانه به دقیقه"> دقیقه</label><button type="button" id="saveStudyGoal" class="secondary-action">ثبت هدف</button></div><p id="studyGoalStatus" role="status" class="section-caption"></p><progress id="dailyGoalProgress" max="60" value="0" aria-label="پیشرفت هدف روزانه"></progress><form id="studyPlanForm" class="study-plan-form"><label>مبحث <input id="planTopic" list="planTopicOptions" placeholder="جست‌وجوی مبحث…" required autocomplete="off"><datalist id="planTopicOptions"></datalist></label><label>تاریخ شمسی <input type="text" id="planDate" inputmode="numeric" placeholder="۱۴۰۵/۰۸/۰۱" pattern="[۰-۹0-9]{4}/[۰-۹0-9]{1,2}/[۰-۹0-9]{1,2}" required></label><label>ساعت شروع <input type="time" id="planStartTime" value="09:00" required></label><label>مدت (دقیقه) <input type="number" id="planMinutes" min="5" max="720" step="5" value="30" required></label><button type="submit" class="secondary-action">ثبت برنامه و ارسال یادآوری</button></form><p id="studyPlanStatus" role="status" class="section-caption"></p><div id="studyPlanTasks"></div></section>
     <div class="annotation-toolbar"><h2>دفتر مطالعهٔ من</h2><input type="search" id="annotationSearch" placeholder="جست‌وجو در نوشته‌ها، هایلایت‌ها و مباحث" aria-label="جست‌وجو در نوشته‌ها و هایلایت‌های شخصی"></div>
     <div class="notebook-export-controls"><label>خروجی دفتر من <select id="personalExportKind"><option value="all">یادداشت‌ها و هایلایت‌ها</option><option value="notes">فقط یادداشت‌ها</option><option value="highlights">فقط هایلایت‌ها</option></select></label><button type="button" id="personalExportPdf" class="secondary-action">خروجی PDF</button><small id="personalExportStatus" role="status"></small></div>
     <div class="annotation-grid">
@@ -265,6 +271,8 @@
     </div>
   </div>
 
+  <div class="tab-panel account-panel" id="tabPanelAccount" aria-label="پنل کاربری"></div>
+
   <div class="tab-panel" id="tabPanelManagement">    <section class="callout dashboard-admin" id="adminPanelCard" style="display:none">
       <div class="section-heading"><h2>مرکز مدیریت</h2><a class="secondary-action" target="_blank" rel="noopener noreferrer" href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/ACCOUNT_UI_SETUP_FA.md">راهنمای فعال‌سازی نام مدیر، بازیابی و تیکت</a><button type="button" id="adminExportStats" class="stats-refresh">خروجی CSV آمار مباحث</button></div>
       <details class="notification-panel"><summary>خبرنامهٔ ایمیلی به‌روزرسانی سایت</summary><p id="newsletterAdminStatus" class="section-caption"></p><p class="section-caption">عضویت اختیاری است و کاربر هر زمان می‌تواند آن را لغو کند. پیش از اولین ارسال، سرویس ایمیل را متصل و ارسال آزمایشی را بررسی کنید. هر نوبت حداکثر ۲۰ نفر از مشترکان واجد شرایط را پوشش می‌دهد.</p><div class="newsletter-composer"><label for="newsletterSubject">عنوان خبرنامه</label><input id="newsletterSubject" maxlength="160" placeholder="مثلاً: آزمون‌های تصویری قلب اضافه شد"><label for="newsletterBody">متن خبرنامه</label><textarea id="newsletterBody" maxlength="12000" rows="6" placeholder="تغییرات جدید و لینک مباحث را بنویسید."></textarea><div class="admin-account-actions"><button type="button" data-newsletter-action="status">بررسی اتصال ایمیل</button><button type="button" data-newsletter-action="preview">پیش‌نمایش و تعداد گیرندگان</button><button type="button" data-newsletter-action="test">ارسال آزمایشی فقط به مدیر</button><button type="button" data-newsletter-action="send" id="newsletterSend" disabled>ارسال به حداکثر ۲۰ مشترک بعدی</button><button type="button" id="newsletterNew">خبرنامهٔ جدید</button></div><p id="newsletterDeliveryStatus" role="status" class="section-caption"></p><pre id="newsletterPreview"></pre></div><button type="button" id="newsletterExport" class="secondary-action">خروجی CSV مشترکان فعال</button></details>
@@ -323,12 +331,13 @@
 </div>
 
 <script src="config.js?v=066d4f9726ed485f"></script>
-<script src="js/intmed-backend.js?v=5ea61e450dc938b8"></script>
-<script src="js/intmed-theme.js?v=10cbe508c7ceb533"></script>
+<script src="js/intmed-backend.js?v=85e913e39079cb41"></script>
+<script src="js/intmed-theme.js?v=80b0ae7cb5f443ff"></script>
 <script src="js/intmed-registration.js?v=48c353ccb8e01649"></script>
-<script src="js/intmed-login.js?v=2bda11da19657d69"></script>
-<script src="js/intmed-exams.js?v=e47f2f76f0d62b96"></script>
-<script src="js/intmed-dashboard.js?v=cf5abe1d8f4d1365"></script>
+<script src="js/intmed-login.js?v=d3cc34fa9bfd65e9"></script>
+<script src="js/intmed-datetime.js?v=0edec7c600760ebc"></script>
+<script src="js/intmed-exams.js?v=ca47a29078613b9c"></script>
+<script src="js/intmed-dashboard.js?v=2e5c8e183b10830c"></script>
 <script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
-<script src="js/intmed-motion.js?v=ea46b287e6f400c4"></script>
-<script src="js/intmed-app.js?v=2f0210a7d4da4d28"></script>
+<script src="js/intmed-motion.js?v=5185491e3eeace42"></script>
+<script src="js/intmed-app.js?v=da703f6fc0fdef1b"></script>

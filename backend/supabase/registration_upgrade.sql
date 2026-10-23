@@ -32,12 +32,13 @@ begin
       raise exception 'Invalid IntMed signup profile';
     end if;
   end if;
-  insert into public.profiles(id,username,email,full_name,degree,id_number,phone,specialty,province)
+  insert into public.profiles(id,username,email,full_name,degree,id_number,phone,specialty,province,approved,rejected)
   values(new.id,
     coalesce(nullif(new.raw_user_meta_data->>'username',''),split_part(new.email,'@',1)||'-'||left(new.id::text,6)),
     new.email,new.raw_user_meta_data->>'fullName',new.raw_user_meta_data->>'degree',
     new.raw_user_meta_data->>'idNumber',new.raw_user_meta_data->>'phone',
-    new.raw_user_meta_data->>'specialty',new.raw_user_meta_data->>'province')
+    new.raw_user_meta_data->>'specialty',new.raw_user_meta_data->>'province',
+    new.raw_user_meta_data->>'app'='intmed',false)
   on conflict(id) do nothing;
   insert into public.study_state(user_id) values(new.id) on conflict(user_id) do nothing;
   return new;

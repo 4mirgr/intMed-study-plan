@@ -45,6 +45,40 @@ revoke all on function public.set_intmed_user_approval(uuid,boolean) from public
 grant execute on function public.set_intmed_user_approval(uuid,boolean) to authenticated;
 commit;
 
+-- SOURCE: automatic_access.sql
+-- Temporarily remove manual manager approval for new IntMed registrations.
+-- Email confirmation remains controlled by Supabase Auth and should stay enabled.
+create or replace function public.handle_intmed_user()
+returns trigger language plpgsql security definer set search_path=public
+as $$
+begin
+  if new.raw_user_meta_data->>'app'='intmed' then
+    if coalesce(new.raw_user_meta_data->>'username','') !~ '^[a-z0-9_.-]{3,64}$'
+      or length(trim(coalesce(new.raw_user_meta_data->>'fullName','')))=0
+      or coalesce(new.raw_user_meta_data->>'degree','') not in
+        ('دانشجوی پزشکی','اینترن','پزشکی عمومی','رزیدنت','متخصص','فلوشیپ','فوق تخصص') then
+      raise exception 'Invalid IntMed signup profile';
+    end if;
+  end if;
+  insert into public.profiles(id,username,email,full_name,degree,id_number,phone,specialty,province,approved,rejected)
+  values(new.id,
+    coalesce(nullif(new.raw_user_meta_data->>'username',''),split_part(new.email,'@',1)||'-'||left(new.id::text,6)),
+    new.email,new.raw_user_meta_data->>'fullName',new.raw_user_meta_data->>'degree',
+    new.raw_user_meta_data->>'idNumber',new.raw_user_meta_data->>'phone',
+    new.raw_user_meta_data->>'specialty',new.raw_user_meta_data->>'province',
+    new.raw_user_meta_data->>'app'='intmed',false)
+  on conflict(id) do nothing;
+  insert into public.study_state(user_id) values(new.id) on conflict(user_id) do nothing;
+  return new;
+end;
+$$;
+
+-- Activate only older IntMed registrations that were never rejected by a manager.
+update public.profiles p set approved=true,updated_at=now()
+from auth.users u
+where u.id=p.id and u.raw_user_meta_data->>'app'='intmed'
+  and not p.approved and not p.rejected;
+
 -- SOURCE: telegram_notifications.sql
 -- Install after dashboard_upgrade.sql. No Telegram secret is stored here.
 -- This is the SAME PUBLIC anon key used by the website, not a service key.
@@ -65,7 +99,7 @@ grant all on public.intmed_notification_settings,public.intmed_signup_alerts to 
 create or replace function public.claim_intmed_signup_alert(target_user uuid)
 returns boolean language plpgsql security definer set search_path=public
 as $$ declare claimed uuid; begin
- if not exists(select 1 from public.profiles where id=target_user and not approved and not rejected) then return false; end if;
+ if not exists(select 1 from public.profiles where id=target_user and not rejected) then return false; end if;
  update public.intmed_signup_alerts set status='processing',attempts=attempts+1,updated_at=now()
  where user_id=target_user and (status in ('pending','error') or (status='processing' and updated_at<now()-interval '2 minutes'))
  returning user_id into claimed;
@@ -76,7 +110,7 @@ grant execute on function public.claim_intmed_signup_alert(uuid) to service_role
 create or replace function public.queue_intmed_signup_notification()
 returns trigger language plpgsql security definer set search_path=public
 as $$ declare public_anon text := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwd2JrdHZueWJzanVnZGVnamppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MDU0MDgsImV4cCI6MjEwODA4MTQwOH0.4IPs739cff9qFV6MFy84s37FhBPC66Gh8dKxhB5YV34'; begin
- if new.approved or new.rejected or not exists(select 1 from auth.users where id=new.id and raw_user_meta_data->>'app'='intmed') then return new; end if;
+ if new.rejected or not exists(select 1 from auth.users where id=new.id and raw_user_meta_data->>'app'='intmed') then return new; end if;
  insert into public.intmed_signup_alerts(user_id) values(new.id) on conflict do nothing;
  -- pg_net dispatches AFTER commit; provider/network failure cannot roll back signup.
  begin
@@ -111,6 +145,22 @@ alter table public.intmed_newsletter_deliveries enable row level security;
 revoke all on public.intmed_newsletter_deliveries from public, anon, authenticated;
 grant select,insert,update,delete on public.intmed_newsletter_deliveries to service_role;
 commit;
+
+-- SOURCE: calendar_events.sql
+-- Private idempotency ledger for study-plan reminder emails.
+create table if not exists public.intmed_calendar_deliveries(
+  user_id uuid not null references auth.users(id) on delete cascade,
+  plan_id text not null,
+  event_hash text not null,
+  status text not null default 'processing' check(status in ('processing','sent','error','uncertain')),
+  provider_id text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key(user_id,plan_id,event_hash)
+);
+alter table public.intmed_calendar_deliveries enable row level security;
+revoke all on public.intmed_calendar_deliveries from public,anon,authenticated;
+grant all on public.intmed_calendar_deliveries to service_role;
 
 -- SOURCE: security_hardening.sql
 -- IntMed least-privilege update. No user/state content is deleted or rewritten.

@@ -16,9 +16,9 @@
     if(!el) return;
     try{
       var now = new Date();
-      var weekday = new Intl.DateTimeFormat("fa-IR", {weekday:"long"}).format(now);
-      var dateStr = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {year:"numeric", month:"long", day:"numeric"}).format(now);
-      var timeStr = new Intl.DateTimeFormat("fa-IR", {hour:"2-digit", minute:"2-digit"}).format(now);
+      var weekday = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {weekday:"long",timeZone:"Asia/Tehran"}).format(now);
+      var dateStr = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {year:"numeric", month:"long", day:"numeric",timeZone:"Asia/Tehran"}).format(now);
+      var timeStr = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {hour:"2-digit", minute:"2-digit",timeZone:"Asia/Tehran"}).format(now);
       el.textContent = weekday + "، " + dateStr + " — ساعت " + timeStr;
     }catch(e){}
   }
@@ -36,7 +36,7 @@
     if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
       var session=window.IntMedBackend.session();return session && session.user ? session.user.id : "unauthenticated";
     }
-    try{ return localStorage.getItem("bp_user_id") || "amir"; }catch(e){ return "amir"; }
+    try{ return sessionStorage.getItem("bp_user_id") || localStorage.getItem("bp_user_id") || "amir"; }catch(e){ return "amir"; }
   })();
   (function(){
     var el = document.getElementById("userLabel");
@@ -44,7 +44,7 @@
   })();
   document.getElementById("logoutBtn").addEventListener("click", function(){
     var finish = function(){
-      try{ localStorage.removeItem("bp_authed"); localStorage.removeItem("bp_user_id"); }catch(e){}
+      try{[localStorage,sessionStorage].forEach(function(store){store.removeItem("bp_authed");store.removeItem("bp_user_id");store.removeItem("intmed_session_started");store.removeItem("intmed_last_activity");});}catch(e){}
       location.reload();
     };
     if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
@@ -1022,8 +1022,8 @@
   function formatFaDateTime(iso){
     try{
       var d = new Date(iso);
-      var dateStr = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {year:"numeric", month:"short", day:"numeric"}).format(d);
-      var timeStr = new Intl.DateTimeFormat("fa-IR", {hour:"2-digit", minute:"2-digit"}).format(d);
+      var dateStr = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {year:"numeric", month:"short", day:"numeric",timeZone:"Asia/Tehran"}).format(d);
+      var timeStr = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {hour:"2-digit", minute:"2-digit",timeZone:"Asia/Tehran"}).format(d);
       return dateStr + "، " + timeStr;
     }catch(e){ return ""; }
   }
@@ -1916,6 +1916,7 @@
     '<button type="button" class="hl-swatch hl-orange" data-color="orange" title="نارنجی"></button>' +
     '<button type="button" class="hl-note-btn" id="hlNoteBtn">+ یادداشت</button>';
   document.body.appendChild(hlToolbar);
+  hlToolbar.addEventListener('pointerdown',function(event){event.preventDefault();});
 
   var pendingSelection = null;
   function hideToolbar(){ hlToolbar.style.display = "none"; pendingSelection = null; }
@@ -1949,8 +1950,12 @@
         occurrence: countOccurrencesBefore(fullText, quote, startOff)
       };
       var rect = range.getBoundingClientRect();
-      hlToolbar.style.left = Math.max(4, rect.left + window.scrollX) + "px";
-      hlToolbar.style.top = Math.max(4, rect.top + window.scrollY - 38) + "px";
+      var coarse=window.matchMedia&&window.matchMedia('(pointer: coarse)').matches;
+      if(!coarse){
+        hlToolbar.style.position='fixed';
+        var width=Math.min(hlToolbar.scrollWidth||260,window.innerWidth-8),left=Math.min(Math.max(4,rect.left),window.innerWidth-width-4),below=rect.bottom+10;
+        hlToolbar.style.left=left+'px';hlToolbar.style.top=(below+50<window.innerHeight?below:Math.max(4,rect.top-50))+'px';
+      }
       hlToolbar.style.display = "flex";
     }, 180);
   });
@@ -1977,6 +1982,9 @@
   hlPopover.className = "hl-popover";
   hlPopover.innerHTML =
     '<div class="hl-popover-note" id="hlPopoverNote"></div>' +
+    '<div class="hl-popover-colors" aria-label="تغییر رنگ هایلایت">' +
+      '<button type="button" class="hl-swatch hl-yellow" data-existing-color="yellow" title="زرد"></button><button type="button" class="hl-swatch hl-green" data-existing-color="green" title="سبز"></button><button type="button" class="hl-swatch hl-pink" data-existing-color="pink" title="صورتی"></button><button type="button" class="hl-swatch hl-blue" data-existing-color="blue" title="آبی"></button><button type="button" class="hl-swatch hl-purple" data-existing-color="purple" title="بنفش"></button><button type="button" class="hl-swatch hl-orange" data-existing-color="orange" title="نارنجی"></button>'+
+    '</div>'+
     '<div class="hl-popover-actions">' +
       '<button type="button" id="hlPopoverEdit">ویرایش یادداشت</button>' +
       '<button type="button" id="hlPopoverDelete">حذف هایلایت</button>' +
@@ -1999,6 +2007,7 @@
     return null;
   }
   document.getElementById("hlPopoverClose").addEventListener("click", closeHlPopover);
+  hlPopover.querySelectorAll('[data-existing-color]').forEach(function(button){button.addEventListener('click',function(){if(!popoverCtx)return;var h=findHl(popoverCtx.topicId,popoverCtx.hlId);if(!h)return;h.color=button.dataset.existingColor;applyHighlightsToContainer(popoverCtx.container,popoverCtx.topicId,popoverCtx.locKey);scheduleFlush(400);refreshHighlightsListIfOpen(popoverCtx.topicId);closeHlPopover();});});
   document.getElementById("hlPopoverEdit").addEventListener("click", function(){
     if(!popoverCtx) return;
     var h = findHl(popoverCtx.topicId, popoverCtx.hlId);
@@ -2523,6 +2532,11 @@
     }
   }
 
+  var notebookShell=document.createElement('section');notebookShell.className='study-notebook-shell';notebookShell.setAttribute('aria-labelledby','studyNotebookTitle');
+  var notebookTitle=document.querySelector('.annotation-toolbar h2');if(notebookTitle)notebookTitle.id='studyNotebookTitle';
+  ['.annotation-toolbar','.notebook-export-controls','.annotation-grid'].forEach(function(selector){var node=document.querySelector('#tabPanelDashboard '+selector);if(node)notebookShell.appendChild(node);});
+  var studyMetrics=document.getElementById('studyMetrics');if(studyMetrics&&notebookShell.children.length)studyMetrics.after(notebookShell);
+  var accountPanel=document.getElementById('tabPanelAccount'),profileCard=document.getElementById('userProfileCard');if(accountPanel&&profileCard)accountPanel.appendChild(profileCard);
   document.querySelectorAll('#tabPanelDashboard section.neon-panel, #tabPanelDashboard section.favorites-card').forEach(function(section){
     var heading=section.querySelector('h2,h3');if(!heading)return;
     var fold=document.createElement('details');fold.className='dashboard-fold';fold.open=true;
@@ -2539,25 +2553,43 @@
   function setTab(name){
     if(name==='management' && (usesPrivateBackend()?myBucket().backendRole!=='admin':CURRENT_USER_ID!=='amir'))name='dashboard';
     if(name!=='education' && window.IntMedDashboard)window.IntMedDashboard.stop();
-    ['dashboard','education','management'].forEach(function(key){
+    ['dashboard','education','account','management'].forEach(function(key){
       var suffix=key[0].toUpperCase()+key.slice(1),button=document.getElementById('tabBtn'+suffix),panel=document.getElementById('tabPanel'+suffix);
       if(button){button.classList.toggle('active',key===name);button.setAttribute('aria-pressed',String(key===name));}
       if(panel)panel.classList.toggle('active',key===name);
     });
     if(name==='dashboard')renderStudyDashboard();
+    if(name==='account')renderUserPanel();
     if(name==='management')renderUserPanel();
   }
   document.getElementById('tabBtnManagement').addEventListener('click',function(){setTab('management');});
   var recoveryPending=0;window.addEventListener('intmed-support-count',function(e){recoveryPending=Number(e.detail)||0;updateManagementBadge();});
   function updateManagementBadge(){
     var pending=Object.keys(STATE.users||{}).filter(function(id){var u=STATE.users[id];return u.backendApproved===false&&!u.backendRejected;}).length;
-    var tickets=(STATE.tickets||[]).filter(function(t){return !t.fromAdmin&&!t.reply;}).length;
+    var tickets=(STATE.tickets||[]).filter(function(t){return !t.fromAdmin&&!t.read;}).length;
     var count=pending+tickets+(recoveryPending||0),badge=document.getElementById('managementBadge');
     if(badge){badge.textContent=faDigits(count);badge.hidden=!count;}
     var button=document.getElementById('tabBtnManagement');if(button)button.classList.toggle('needs-attention',count>0);
+    var ownUnread=(STATE.tickets||[]).filter(function(t){return t.userId===CURRENT_USER_ID&&((t.fromAdmin&&!t.userReadAt)||(t.reply&&(!t.replyReadAt||String(t.replyReadAt)<String(t.replyAt||''))));}).length;
+    var quickCount=myBucket().backendRole==='admin'?tickets+(recoveryPending||0):ownUnread,quick=document.getElementById('messagesBadge');if(quick){quick.textContent=faDigits(quickCount);quick.hidden=!quickCount;}
+  }
+  function markOwnMessagesRead(){
+    var changed=false,now=new Date().toISOString();(STATE.tickets||[]).forEach(function(t){if(t.userId!==CURRENT_USER_ID)return;if(t.fromAdmin&&!t.userReadAt){t.userReadAt=now;changed=true;}if(t.reply&&(!t.replyReadAt||String(t.replyReadAt)<String(t.replyAt||''))){t.replyReadAt=now;changed=true;}});if(changed)scheduleFlush(200);updateManagementBadge();
   }
   tabBtnDashboard.addEventListener("click", function(){ setTab("dashboard"); });
   tabBtnEducation.addEventListener("click", function(){ setTab("education"); });
+  var accountQuick=document.getElementById('accountQuickBtn'),messagesQuick=document.getElementById('messagesQuickBtn');
+  if(accountQuick)accountQuick.addEventListener('click',function(){setTab('account');});
+  if(messagesQuick)messagesQuick.addEventListener('click',function(){
+    if(myBucket().backendRole==='admin'){setTab('management');if(adminTabTickets)adminTabTickets.click();var panel=document.getElementById('adminTicketsPanel');if(panel)panel.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
+    markOwnMessagesRead();setTab('account');renderTicketHistory();var history=document.getElementById('ticketHistoryList');if(history)history.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  });
+  function refreshMessageNotifications(){
+    if(!usesPrivateBackend()||!stateLoaded||dirty||flushing||document.visibilityState==='hidden'||!window.IntMedBackend.loadTickets)return;
+    window.IntMedBackend.loadTickets().then(function(tickets){STATE.tickets=tickets;updateManagementBadge();if(document.getElementById('tabPanelAccount').classList.contains('active'))renderTicketHistory();if(document.getElementById('tabPanelManagement').classList.contains('active'))renderAdminTickets();}).catch(function(){});
+  }
+  setInterval(refreshMessageNotifications,45000);
+  window.addEventListener('focus',refreshMessageNotifications);
 
   if(window.IntMedDashboard)window.IntMedDashboard.init({
     state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},topics:function(){return topicEls;},

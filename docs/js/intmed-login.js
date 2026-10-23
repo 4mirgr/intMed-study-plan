@@ -60,6 +60,18 @@
     appEl.style.display = "";
     showAccountProviderNotice();
   }
+  function sessionStore(){return window.IntMedBackend&&window.IntMedBackend.isSessionPersistent&&window.IntMedBackend.isSessionPersistent()?localStorage:sessionStorage;}
+  function markSessionActivity(force){
+    try{var store=sessionStore(),now=Date.now(),last=Number(store.getItem('intmed_last_activity')||0);if(force||now-last>30000)store.setItem('intmed_last_activity',String(now));}catch(e){}
+  }
+  function clearUiSession(){
+    try{['bp_authed','bp_user_id','intmed_session_started','intmed_last_activity'].forEach(function(key){localStorage.removeItem(key);sessionStorage.removeItem(key);});}catch(e){}
+  }
+  function enforceSessionAge(){
+    try{var store=sessionStore(),started=Number(store.getItem('intmed_session_started')||Date.now()),active=Number(store.getItem('intmed_last_activity')||started),now=Date.now();if(now-started>12*60*60*1000||now-active>2*60*60*1000){clearUiSession();window.IntMedBackend.signOut().finally(function(){location.reload();});}}catch(e){}
+  }
+  ['pointerdown','keydown','touchstart'].forEach(function(name){document.addEventListener(name,function(){markSessionActivity(false);},{passive:true});});
+  setInterval(enforceSessionAge,60000);
   function fnv1aHex(str){
     // Plain synchronous JS hash — deliberately not crypto.subtle, which needs
     // a secure context (https) and is unavailable in some mobile in-app
@@ -90,13 +102,12 @@
     var backendSession = window.IntMedBackend && window.IntMedBackend.isConfigured() && window.IntMedBackend.session();
     if(!recovering && backendSession && backendSession.user){
       window.IntMedBackend.profile().then(function(profile){
-        if(!profile || !profile.approved || profile.rejected) throw new Error("حساب هنوز فعال نیست.");
-        localStorage.setItem("bp_authed", "1");
-        localStorage.setItem("bp_user_id", backendSession.user.id);
+        if(!profile || !profile.approved || profile.rejected) throw new Error("حساب فعال نیست.");
+        var store=sessionStore();store.setItem("bp_authed", "1");store.setItem("bp_user_id", backendSession.user.id);if(!store.getItem('intmed_session_started'))store.setItem('intmed_session_started',String(Date.now()));markSessionActivity(true);
         revealApp();
       }).catch(function(){
         appEl.style.display="none"; gateEl.style.display="";
-        var error=document.getElementById("loginErr");error.textContent="ورود حساب تأیید نشد؛ نام کاربری، تأیید مدیر و اتصال را بررسی کنید.";error.classList.add("show");
+        var error=document.getElementById("loginErr");error.textContent="ورود حساب تأیید نشد؛ تأیید ایمیل، وضعیت حساب و اتصال را بررسی کنید.";error.classList.add("show");
       });
     } else if(legacyDemoAllowed() && localStorage.getItem("bp_authed") === "1"){
       // Backfill for sessions authenticated before multi-user support existed.
@@ -113,7 +124,7 @@
     var forgotHelp = document.querySelector("#forgotForm p");
     if(forgotHelp) forgotHelp.textContent = "ایمیل یا نام کاربری را وارد کنید؛ لینک تغییر رمز فقط به ایمیل تأییدشدهٔ حساب ارسال می‌شود.";
     var successText = document.querySelector("#signupSuccessBox .signup-success-text");
-    if(successText) successText.innerHTML = "<b>ثبت‌نام شما دریافت شد.</b> پس از تأیید ایمیل و تأیید مدیر می‌توانید با نام کاربری و رمز خود وارد شوید.";
+    if(successText) successText.innerHTML = "<b>ثبت‌نام شما دریافت شد.</b> پس از تأیید ایمیل می‌توانید بلافاصله با نام کاربری و رمز خود وارد شوید.";
     var successActions = document.querySelector("#signupSuccessBox .signup-success-actions");
     if(successActions) successActions.style.display = "none";
     if(recovering){
@@ -143,8 +154,7 @@
   });
   function doLogin(userId){
     try{
-      localStorage.setItem("bp_authed", "1");
-      localStorage.setItem("bp_user_id", userId);
+      var store=sessionStore();store.setItem("bp_authed", "1");store.setItem("bp_user_id", userId);store.setItem('intmed_session_started',String(Date.now()));store.setItem('intmed_last_activity',String(Date.now()));
       sessionStorage.setItem("intmed_show_account_provider_notice", "1");
     }catch(e){}
     // Full reload (not just revealApp()) because the main app script below
@@ -167,8 +177,7 @@
 
   document.getElementById('checkLoginConnection').addEventListener('click',function(){
     var button=this,status=document.getElementById('loginConnectionStatus');button.disabled=true;status.textContent='در حال بررسی اتصال امن…';
-    var timer=setTimeout(function(){status.textContent='پاسخی دریافت نشد. روی همین دستگاه اینترنت دیگری یا وضعیت دیگر VPN را امتحان کنید و آدرس https://drgerami-md.ir را باز کنید.';button.disabled=false;},12000);
-    window.IntMedBackend.checkAuthConnection().then(function(){status.textContent='ارتباط با سرویس حساب برقرار است. دوباره ورود را امتحان کنید؛ اگر خطا باقی ماند، متن دقیق خطای جدید را ارسال کنید.';}).catch(function(e){status.textContent=e.status?'سرور پاسخ داد، اما خطای '+e.status+' دارد. این کد را به مدیریت گزارش کنید.':'این مرورگر به سرور حساب دسترسی ندارد. با اینترنت دیگر یا تغییر وضعیت VPN دوباره بررسی کنید؛ افزونهٔ مسدودکننده نیز ممکن است مانع اتصال باشد.';}).finally(function(){clearTimeout(timer);button.disabled=false;});
+    window.IntMedBackend.checkAuthConnection().then(function(){status.textContent='ارتباط با سرویس حساب برقرار است. دوباره ورود را امتحان کنید؛ اگر خطا باقی ماند، متن دقیق خطای جدید را ارسال کنید.';}).catch(function(e){status.textContent=e.status?'سرور حساب پاسخ داد، اما خطای '+e.status+' دارد. این کد را به مدیریت گزارش کنید.':'هیچ‌کدام از دو مسیر امن ورود پاسخ ندادند. این مشکل از مسیر شبکه یا سرویس حساب است؛ کمی بعد دوباره بررسی کنید.';}).finally(function(){button.disabled=false;});
   });
   loginForm.addEventListener("submit", function(ev){
     ev.preventDefault();
@@ -178,6 +187,7 @@
       loginErr.classList.remove("show");
       var secureLoginBtn = loginForm.querySelector("button[type=submit]");
       secureLoginBtn.disabled = true; secureLoginBtn.textContent = "در حال بررسی...";
+      window.IntMedBackend.setSessionPersistence(!!document.getElementById('trustedDevice').checked);
       window.IntMedBackend.signIn(u, p).then(function(result){
         doLogin(result.session.user.id);
       }).catch(function(error){

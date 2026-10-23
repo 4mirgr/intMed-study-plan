@@ -14,7 +14,7 @@ Deno.serve(async req=>{
   async function setting(){const rows=await db('intmed_notification_settings?key=eq.telegram&select=chat_id');return rows[0]&&rows[0].chat_id;}
   async function deliver(id){
     const profiles=await db('profiles?id=eq.'+encodeURIComponent(id)+'&select=id,username,approved,rejected');
-    if(profiles.length!==1||profiles[0].approved||profiles[0].rejected){await db('intmed_signup_alerts?user_id=eq.'+encodeURIComponent(id),'PATCH',{status:'dismissed',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});return {skipped:true};}
+    if(profiles.length!==1||profiles[0].rejected){await db('intmed_signup_alerts?user_id=eq.'+encodeURIComponent(id),'PATCH',{status:'dismissed',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});return {skipped:true};}
     const auth=await fetch(url+'/auth/v1/admin/users/'+encodeURIComponent(id),{headers:sh});if(!auth.ok)throw Error('Identity check failed');
     if((await auth.json()).user_metadata?.app!=='intmed')return {skipped:true};
     const chat=await setting();if(!token||!chat)throw Error('Telegram is not connected');

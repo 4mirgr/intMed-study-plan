@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+
+const context={window:{},Intl,Date,URL,URLSearchParams,Blob,crypto:globalThis.crypto,setTimeout,clearTimeout};
+vm.createContext(context);
+vm.runInContext(fs.readFileSync(new URL('../docs/js/intmed-datetime.js',import.meta.url),'utf8'),context);
+const dt=context.window.IntMedDateTime;
+assert.equal(dt.TIME_ZONE,'Asia/Tehran');
+assert.equal(dt.parsePersianDate('۱۴۰۵/۰۸/۰۱'),'2026-10-23');
+assert.equal(dt.parsePersianDate('1403/01/01'),'2024-03-20');
+assert.equal(dt.parsePersianDate('۱۴۰۳/۱۳/۰۱'),null);
+assert.match(dt.inputDate('2026-10-23'),/^۱۴۰۵\/۰۸\/۰۱$/);
+const week=dt.currentWeekKeys(new Date('2026-10-23T12:00:00Z'));
+assert.deepEqual(Array.from(week),['2026-10-17','2026-10-18','2026-10-19','2026-10-20','2026-10-21','2026-10-22','2026-10-23']);
+const plan={id:'plan:123',dueDate:'2026-10-24',startTime:'09:00',minutes:30};
+assert.match(dt.googleCalendarUrl(plan,'مرور قلب'),/calendar\/render\?/);
+assert.match(dt.ics(plan,'مرور, قلب'),/DTSTART:20261024T053000Z/);
+assert.match(dt.ics(plan,'مرور, قلب'),/SUMMARY:مرور\\, قلب/);
+console.log('datetime_unit_test: ok');

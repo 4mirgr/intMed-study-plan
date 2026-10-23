@@ -5,7 +5,7 @@ const owner='11111111-1111-4111-8111-111111111111', other='22222222-2222-4222-82
 const bucket={itemState:{old:{note:'old'},'activity:cardio-ecg:2026-10-21':{opens:1,seconds:10,types:{lesson:1},lastOpenedAt:'2026-10-21T10:00:00Z'}},meta:{},highlights:{},loginLog:[]};
 let remote={state:structuredClone(bucket),updated_at:'2026-10-20T10:00:00.000Z'}, conflict=true;
 let missingState=false;
-const calls=[],store=new Map([['intmed_supabase_session',JSON.stringify({access_token:'fake-test',user:{id:owner}})]]);
+const calls=[],store=new Map([['intmed_supabase_session',JSON.stringify({access_token:'fake-test',user:{id:owner}})]]),tabStore=new Map();
 const response=(body,status=200)=>Promise.resolve({ok:status>=200&&status<300,status,text:()=>Promise.resolve(body==null?'':JSON.stringify(body))});
 function fetchMock(url,options={}){
  calls.push({url,options});const path=new URL(url).pathname;
@@ -23,7 +23,7 @@ function fetchMock(url,options={}){
  throw Error('Unexpected endpoint '+url);
 }
 const window={INTMED_CONFIG:{supabaseUrl:'https://test.supabase.co',supabaseAnonKey:'public-test'}};
-const context=vm.createContext({window,fetch:fetchMock,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},JSON,Promise,Set,Date,URLSearchParams,encodeURIComponent,console});
+const context=vm.createContext({window,fetch:fetchMock,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},sessionStorage:{getItem:k=>tabStore.get(k)||null,setItem:(k,v)=>tabStore.set(k,v),removeItem:k=>tabStore.delete(k)},JSON,Promise,Set,Date,URLSearchParams,encodeURIComponent,setTimeout,clearTimeout,AbortController,console});
 vm.runInContext(fs.readFileSync(new URL('../docs/js/intmed-backend.js',import.meta.url),'utf8'),context);
 const state=await window.IntMedBackend.loadLegacyState();state.users[owner].itemState['activity:cardio-ecg:2026-10-21']={opens:2,seconds:15,types:{lesson:2},lastOpenedAt:'2026-10-21T10:30:00Z'};state.users[owner].itemState.newNote={note:'my update'};state.users[owner].itemState['favorite:cardio-ecg']={favorite:true};
 await window.IntMedBackend.saveLegacyState(state);

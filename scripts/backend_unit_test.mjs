@@ -5,6 +5,7 @@ import vm from "node:vm";
 let refreshMode = "ok", expired = false, gatewayAttempts = 0;
 const calls = [];
 const store = new Map();
+const tabStore = new Map();
 const userId = "11111111-1111-4111-8111-111111111111";
 function reply(body, status = 200){
   return Promise.resolve({
@@ -15,7 +16,7 @@ function reply(body, status = 200){
 }
 function fetchMock(url, options = {}){
   calls.push({url, options});
-  if(url.startsWith("https://api.drgerami-md.ir")){ gatewayAttempts++; return Promise.reject(new Error("Load failed")); }
+  if(url.startsWith("https://api.drgerami-md.ir")){ gatewayAttempts++; return new Promise(() => {}); }
   if(url.includes("grant_type=refresh_token") && refreshMode === "network") return Promise.reject(new Error("offline"));
   if(url.includes("grant_type=refresh_token") && refreshMode === "invalid") return reply({message:"Invalid refresh"},400);
   if(url.includes("grant_type=refresh_token")) return reply({access_token:"refreshed", refresh_token:"refresh-2", user:{id:userId}});
@@ -29,7 +30,7 @@ function fetchMock(url, options = {}){
 }
 
 const window = {
-  INTMED_CONFIG:{supabaseUrl:"https://api.drgerami-md.ir", supabaseFallbackUrl:"https://example.supabase.co", supabaseAnonKey:"anon"},
+  INTMED_CONFIG:{supabaseUrl:"https://api.drgerami-md.ir", supabaseFallbackUrl:"https://example.supabase.co", supabaseAnonKey:"anon", authPrimaryTimeoutMs:20, authFallbackTimeoutMs:50},
   location:{origin:"https://intmed.example", pathname:"/", search:"", hash:""},
   history:{replaceState:() => { window.location.hash = ""; }}
 };
@@ -37,10 +38,14 @@ const context = vm.createContext({
   window,
   fetch:fetchMock,
   localStorage:{getItem:key => store.get(key) || null, setItem:(key,value) => store.set(key,value), removeItem:key => store.delete(key)},
+  sessionStorage:{getItem:key => tabStore.get(key) || null, setItem:(key,value) => tabStore.set(key,value), removeItem:key => tabStore.delete(key)},
   JSON,
   Promise,
   URLSearchParams,
   encodeURIComponent,
+  setTimeout,
+  clearTimeout,
+  AbortController,
   console
 });
 vm.runInContext(fs.readFileSync(new URL("../docs/js/intmed-backend.js", import.meta.url), "utf8"), context);
@@ -74,7 +79,7 @@ assert.equal(window.IntMedBackend.session().refresh_token,"refresh");
 refreshMode="ok";
 await window.IntMedBackend.profile();
 assert.equal(window.IntMedBackend.session().access_token,"refreshed");
-store.set("intmed_supabase_session",JSON.stringify({access_token:"expired",refresh_token:"revoked",user:{id:userId}}));
+tabStore.set("intmed_supabase_session",JSON.stringify({access_token:"expired",refresh_token:"revoked",user:{id:userId}}));
 refreshMode="invalid";
 await assert.rejects(window.IntMedBackend.profile(), /auth/);
 assert.equal(window.IntMedBackend.session(),null);

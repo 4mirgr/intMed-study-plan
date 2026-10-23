@@ -3,21 +3,24 @@
 
   var config = global.INTMED_CONFIG || {};
   var sessionKey = "intmed_supabase_session";
+  var persistenceKey = "intmed_session_persistent";
   var activeOrigin = "";
-  // Each origin gets a hard timeout so a hung connection (common on restricted
-  // mobile networks) falls over to the next candidate instead of waiting forever.
-  var REQUEST_TIMEOUT_MS = 7000;
 
   function configured(){ return /^https:\/\//.test(config.supabaseUrl || config.supabaseFallbackUrl || "") && !!config.supabaseAnonKey; }
   function session(){
-    try{ return JSON.parse(localStorage.getItem(sessionKey) || "null"); }catch(e){ return null; }
+    try{var tab=sessionStorage.getItem(sessionKey),saved=localStorage.getItem(sessionKey);if(!tab&&saved&&localStorage.getItem(persistenceKey)===null)localStorage.setItem(persistenceKey,"1");return JSON.parse(tab||saved||"null");}catch(e){return null;}
   }
   function saveSession(value){
     try{
-      if(value) localStorage.setItem(sessionKey, JSON.stringify(value));
-      else localStorage.removeItem(sessionKey);
+      var persistent=localStorage.getItem(persistenceKey)==="1",target=persistent?localStorage:sessionStorage,other=persistent?sessionStorage:localStorage;
+      if(value){target.setItem(sessionKey,JSON.stringify(value));other.removeItem(sessionKey);}
+      else{localStorage.removeItem(sessionKey);sessionStorage.removeItem(sessionKey);}
     }catch(e){}
   }
+  function setSessionPersistence(persistent){
+    try{localStorage.setItem(persistenceKey,persistent?"1":"0");var current=session();if(current)saveSession(current);}catch(e){}
+  }
+  function isSessionPersistent(){try{return localStorage.getItem(persistenceKey)==="1";}catch(e){return false;}}
   function headers(extra, authenticated){
     var result = {apikey:config.supabaseAnonKey, "Content-Type":"application/json"};
     var current = session();
@@ -25,19 +28,30 @@
     Object.keys(extra || {}).forEach(function(key){ result[key] = extra[key]; });
     return result;
   }
-  function isNetworkOrTimeoutError(error){
-    if(!error || error.status) return false;
-    var msg = (error.message || "") + "";
-    return error.name === "AbortError" ||
-      /fetch|network|load failed|offline|aborted|failed to fetch|timeout/i.test(msg);
+  function fetchWithDeadline(url, requestOptions, timeoutMs){
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    var optionsWithSignal = {};
+    Object.keys(requestOptions).forEach(function(key){ optionsWithSignal[key] = requestOptions[key]; });
+    if(controller) optionsWithSignal.signal = controller.signal;
+    var timer;
+    var timeout = new Promise(function(resolve, reject){
+      timer = setTimeout(function(){
+        if(controller) controller.abort();
+        var error = new Error("مهلت پاسخ مسیر ورود تمام شد.");
+        error.code = "network_timeout";
+        reject(error);
+      }, timeoutMs);
+    });
+    return Promise.race([fetch(url, optionsWithSignal), timeout]).finally(function(){ clearTimeout(timer); });
+  }
+  function canTryNextOrigin(error){
+    return !error.status || error.status === 404 || error.status === 408 || error.status === 425 || error.status === 502 || error.status === 503 || error.status === 504;
   }
   function request(path, options){
     options = options || {};
     var authenticated = options.authenticated !== false;
     function origins(){
-      var values=[activeOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){
-        return /^https:\/\//.test(value||"") && list.indexOf(value)===index;
-      });
+      var values=[activeOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
       return values;
     }
     function perform(retried){
@@ -45,63 +59,36 @@
       Object.keys(options).forEach(function(key){ if(key !== "authenticated" && key !== "headers") requestOptions[key] = options[key]; });
       requestOptions.headers = headers(options.headers, authenticated);
       var candidates=origins();
-      function send(index, firstNetworkError){
-        if(index >= candidates.length){
-          if(firstNetworkError){
-            if(isNetworkOrTimeoutError(firstNetworkError)){
-              firstNetworkError.message =
-                "ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ «بررسی اتصال به سرور ورود» را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
-            }
-            throw firstNetworkError;
-          }
-          return Promise.reject(new Error("Backend is not configured"));
+      function send(index,firstNetworkError){
+        var origin=candidates[index];
+        // A browser fetch has no built-in timeout. Without a real deadline a
+        // filtered or half-open route can leave login pending forever and the
+        // known-good fallback is never attempted.
+        var configuredDeadline = index === 0 && candidates.length > 1 ? config.authPrimaryTimeoutMs : config.authFallbackTimeoutMs;
+        var deadline = Math.max(1, Number(configuredDeadline) || 7000);
+        return fetchWithDeadline(origin.replace(/\/$/, "") + path, requestOptions, deadline).then(function(response){
+        activeOrigin=origin;
+        if(response.status === 401 && authenticated && !retried){
+          return response.text().then(function(){ return refreshSession(); }).then(function(){ return perform(true); });
         }
-        var origin = candidates[index];
-        var controller = (typeof AbortController !== "undefined") ? new AbortController() : null;
-        var timer = null;
-        var opts = {};
-        Object.keys(requestOptions).forEach(function(k){ opts[k] = requestOptions[k]; });
-        if(controller){
-          opts.signal = controller.signal;
-          timer = setTimeout(function(){ try{ controller.abort(); }catch(e){} }, REQUEST_TIMEOUT_MS);
-        }
-        return fetch(origin.replace(/\/$/, "") + path, opts).then(function(response){
-          if(timer) clearTimeout(timer);
-          activeOrigin = origin;
-          if(response.status === 401 && authenticated && !retried){
-            return response.text().then(function(){ return refreshSession(); }).then(function(){ return perform(true); });
+        if(response.status === 204) return null;
+        return response.text().then(function(text){
+          var body = text ? JSON.parse(text) : null;
+          if(!response.ok){
+            var error = new Error((body && (body.msg || body.message || body.error_description)) || ("HTTP " + response.status));
+            error.status = response.status;
+            error.code = body && (body.error_code || body.code);
+            throw error;
           }
-          if(response.status === 204) return null;
-          return response.text().then(function(text){
-            var body = text ? JSON.parse(text) : null;
-            if(!response.ok){
-              var error = new Error((body && (body.msg || body.message || body.error_description)) || ("HTTP " + response.status));
-              error.status = response.status;
-              error.code = body && (body.error_code || body.code);
-              throw error;
-            }
-            return body;
-          });
+          return body;
+        });
         }).catch(function(error){
-          if(timer) clearTimeout(timer);
-          if(isNetworkOrTimeoutError(error) && index + 1 < candidates.length){
-            return send(index + 1, firstNetworkError || error);
-          }
-          if(isNetworkOrTimeoutError(error) && firstNetworkError){
-            if(isNetworkOrTimeoutError(firstNetworkError)){
-              firstNetworkError.message =
-                "ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ «بررسی اتصال به سرور ورود» را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
-            }
-            throw firstNetworkError;
-          }
-          if(isNetworkOrTimeoutError(error)){
-            error.message =
-              "ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ «بررسی اتصال به سرور ورود» را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
-          }
+          if(canTryNextOrigin(error) && index+1<candidates.length)return send(index+1,firstNetworkError||error);
+          if(!error.status&&firstNetworkError)throw firstNetworkError;
           throw error;
         });
       }
-      if(!candidates.length) return Promise.reject(new Error("Backend is not configured"));
+      if(!candidates.length)return Promise.reject(new Error("Backend is not configured"));
       return send(0);
     }
     return perform(false);
@@ -116,15 +103,13 @@
       ? auth("token?grant_type=password", {email:username, password:password})
       : request("/functions/v1/intmed-login", {method:"POST", authenticated:false, body:JSON.stringify({username:username,password:password})});
     return login.catch(function(error){
-      if(!error.status && isNetworkOrTimeoutError(error)){
-        error.message="ارتباط مرورگر با سرور حساب برقرار نشد. دکمهٔ بررسی اتصال را بزنید؛ سپس با اینترنت دیگر یا تغییر وضعیت VPN دوباره امتحان کنید. این خطا به معنی اشتباه بودن رمز نیست.";
-      }
+      if(!error.status && (error.code === "network_timeout" || /fetch|network|load failed|offline|abort/i.test(error.message||"")))error.message="هیچ‌کدام از مسیرهای امن ورود پاسخ ندادند. این مشکل از مسیر شبکه یا سرویس حساب است و به معنی اشتباه بودن رمز نیست؛ کمی بعد دوباره تلاش کنید.";
       if(error.status === 404) error.message = "ورود با نام کاربری هنوز در سرور فعال نشده است؛ تا تکمیل راه‌اندازی از ایمیل حساب استفاده کنید.";
       throw error;
     }).then(function(value){
       saveSession(value);
       return profile().then(function(p){
-        if(!p || !p.approved || p.rejected){ saveSession(null); throw new Error("حساب هنوز توسط مدیر تأیید نشده است."); }
+        if(!p || !p.approved || p.rejected){ saveSession(null); throw new Error("حساب فعال نیست یا دسترسی آن معلق شده است."); }
         return {session:value, profile:p};
       });
     });
@@ -165,7 +150,7 @@
         error.code = "duplicate_email";
         error.message = "این ایمیل قبلاً ثبت شده است.";
       }
-      if(!error.status && isNetworkOrTimeoutError(error))error.message="ارتباط با سرور ثبت‌نام برقرار نشد. اینترنت یا VPN را تغییر دهید و دوباره تلاش کنید.";
+      if(!error.status && (error.code === "network_timeout" || /fetch|network|load failed|offline|abort/i.test(error.message||"")))error.message="هیچ‌کدام از مسیرهای امن ثبت‌نام پاسخ ندادند. کمی بعد دوباره تلاش کنید؛ مشکل از رمز یا اطلاعات فرم نیست.";
       throw error;
     });
   }
@@ -414,10 +399,14 @@
   }
 
   function newsletterAction(payload){return request("/functions/v1/intmed-newsletter",{method:"POST",body:JSON.stringify(payload)});}
+  function studyEventAction(payload){return request("/functions/v1/intmed-study-event",{method:"POST",body:JSON.stringify(payload)});}
   function notificationAction(action,chatId){return request("/functions/v1/intmed-signup-notify",{method:"POST",body:JSON.stringify({action:action,chatId:chatId})});}
+  function loadTickets(){return select("tickets?select=id,user_id,payload,updated_at").then(function(rows){return (rows||[]).map(function(row){var ticket=Object.assign({},row.payload||{});ticket.id=row.id;ticket.userId=row.user_id;ticket.updatedAt=row.updated_at;return ticket;});});}
   global.IntMedBackend = {
     isConfigured:configured,
     session:session,
+    setSessionPersistence:setSessionPersistence,
+    isSessionPersistent:isSessionPersistent,
     signIn:signIn,
     checkAuthConnection:function(){return request("/auth/v1/health",{authenticated:false});},
     signUp:signUp,
@@ -430,6 +419,6 @@
     loadLegacyState:loadLegacyState,
     saveLegacyState:saveLegacyState,
     approveUser:approveUser,
-    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,adminUpdateUser:adminUpdateUser,notificationAction:notificationAction,newsletterAction:newsletterAction
+    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,adminUpdateUser:adminUpdateUser,notificationAction:notificationAction,newsletterAction:newsletterAction,studyEventAction:studyEventAction,loadTickets:loadTickets
   };
 })(window);
