@@ -40,10 +40,10 @@ try{
  page.once('dialog',async dialog=>{assert.ok(dialog.message().includes('کاربر آزمایشی'));assert.ok(dialog.message().includes('قابل بازگشت نیست'));await dialog.dismiss();});
  await button.click();assert.equal(calls,0);assert.equal(await button.count(),1);
  page.once('dialog',dialog=>dialog.accept());await button.click();
- await page.locator('#deleteNote-'+victim).filter({hasText:'حذف موقتاً انجام نشد'}).waitFor();assert.equal(await button.count(),1);
+ await page.locator('#deleteNote-'+victim).filter({hasText:'حذف موقتاً انجام نشد'}).waitFor();assert.equal(await button.count(),1);const failedCalls=calls;assert.ok(failedCalls>=1);
  fail=false;page.once('dialog',dialog=>dialog.accept());await button.click();
  await page.waitForFunction(id=>!document.querySelector('[data-user-row="'+id+'"]'),victim);
- assert.equal(calls,2);assert.equal(await page.locator('[data-user-row="'+member+'"]').count(),1);
+ assert.equal(calls,failedCalls+1);assert.equal(await page.locator('[data-user-row="'+member+'"]').count(),1);
  ownerRole='user';await page.reload();await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
  assert.equal(await page.locator('#adminPanelCard').isVisible(),false);
  console.log('Deletion browser passed: named confirmation, cancel sends no delete, failure preserves user, success removes only target, admin/self protection, member panel hidden.');

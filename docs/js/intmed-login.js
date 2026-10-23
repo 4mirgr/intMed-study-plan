@@ -175,10 +175,6 @@
     });
   }
 
-  document.getElementById('checkLoginConnection').addEventListener('click',function(){
-    var button=this,status=document.getElementById('loginConnectionStatus');button.disabled=true;status.textContent='در حال بررسی اتصال امن…';
-    window.IntMedBackend.checkAuthConnection().then(function(){status.textContent='ارتباط با سرویس حساب برقرار است. دوباره ورود را امتحان کنید؛ اگر خطا باقی ماند، متن دقیق خطای جدید را ارسال کنید.';}).catch(function(e){status.textContent=e.status?'سرور حساب پاسخ داد، اما خطای '+e.status+' دارد. این کد را به مدیریت گزارش کنید.':'هیچ‌کدام از دو مسیر امن ورود پاسخ ندادند. این مشکل از مسیر شبکه یا سرویس حساب است؛ کمی بعد دوباره بررسی کنید.';}).finally(function(){button.disabled=false;});
-  });
   loginForm.addEventListener("submit", function(ev){
     ev.preventDefault();
     var u = normalizeDigits(document.getElementById("loginUser").value).toLowerCase();
@@ -187,7 +183,9 @@
       loginErr.classList.remove("show");
       var secureLoginBtn = loginForm.querySelector("button[type=submit]");
       secureLoginBtn.disabled = true; secureLoginBtn.textContent = "در حال بررسی...";
-      window.IntMedBackend.setSessionPersistence(!!document.getElementById('trustedDevice').checked);
+      // The login screen intentionally defaults to a tab-scoped session so
+      // accounts are not left accessible on shared hospital computers.
+      window.IntMedBackend.setSessionPersistence(false);
       window.IntMedBackend.signIn(u, p).then(function(result){
         doLogin(result.session.user.id);
       }).catch(function(error){

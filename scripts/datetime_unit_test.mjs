@@ -11,6 +11,8 @@ assert.equal(dt.parsePersianDate('۱۴۰۵/۰۸/۰۱'),'2026-10-23');
 assert.equal(dt.parsePersianDate('1403/01/01'),'2024-03-20');
 assert.equal(dt.parsePersianDate('۱۴۰۳/۱۳/۰۱'),null);
 assert.match(dt.inputDate('2026-10-23'),/^۱۴۰۵\/۰۸\/۰۱$/);
+assert.deepEqual({...dt.persianMonth(1405,8)},{year:1405,month:8,first:'2026-10-23',days:30,offset:6});
+assert.deepEqual({...dt.persianMonth(1403,12)},{year:1403,month:12,first:'2025-02-19',days:30,offset:4});
 const week=dt.currentWeekKeys(new Date('2026-10-23T12:00:00Z'));
 assert.deepEqual(Array.from(week),['2026-10-17','2026-10-18','2026-10-19','2026-10-20','2026-10-21','2026-10-22','2026-10-23']);
 const plan={id:'plan:123',dueDate:'2026-10-24',startTime:'09:00',minutes:30};

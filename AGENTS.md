@@ -13,6 +13,8 @@ session history is not required for routine work.
 - `docs/content/`: generated educational payloads. Other `docs/` files are site sources.
 - `scripts/content_pipeline.py`: initialize, migrate, validate, extract, and build content.
 - `docs/content-protocol.md`: complete chapter-production and medical-content rules.
+- `docs/AGENTIC_CONTENT.md`: low-token multi-agent/PDF production and review workflow.
+- `docs/PROJECT_STATE.md`: current decisions, production blockers, and prioritized backlog.
 - `docs/architecture.md`: application, persistence, deployment, and migration design.
 - `docs/archive/CLAUDE-history.md`: historical session notes; consult only for archaeology.
 
@@ -24,6 +26,10 @@ session history is not required for routine work.
 4. Run `python3 scripts/content_pipeline.py build` after content or taxonomy changes.
 5. Run `python3 scripts/content_pipeline.py check` before committing/publishing.
 6. Do not hand-edit generated files under `docs/content/`.
+
+For a large request, the coordinator divides work by non-overlapping file ownership. Worker
+agents never commit or publish. The coordinator validates and publishes a coherent checkpoint
+before starting the next risky tranche; details are in `docs/AGENTIC_CONTENT.md`.
 
 Do not put credentials, personal access tokens, raw passwords, or private user data in the
 repository. User accounts and personal state belong in the private backend described in

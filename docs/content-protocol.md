@@ -3,6 +3,9 @@
 This is the active, reusable protocol for creating or revising a topic. It intentionally
 contains rules, not session history.
 
+For multi-agent source ingestion, figure quality, question-design gates, and publish checkpoints,
+also follow `AGENTIC_CONTENT.md`.
+
 ## Language and teaching rules
 
 - In Persian medical prose use «کبد», never «جگر» for the liver. Proper names such as

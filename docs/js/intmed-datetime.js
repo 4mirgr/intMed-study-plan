@@ -45,6 +45,19 @@
     }
     return null;
   }
+  function persianParts(value){
+    return parts(/^\d{4}-\d{2}-\d{2}$/.test(String(value))?new Date(String(value)+'T12:00:00Z'):new Date(value==null?Date.now():value),'persian');
+  }
+  function shiftPersianMonth(year,month,amount){
+    var index=year*12+(month-1)+amount;
+    return {year:Math.floor(index/12),month:(index%12+12)%12+1};
+  }
+  function persianMonth(year,month){
+    var first=parsePersianDate(year+'/'+month+'/1');if(!first)return null;
+    var next=shiftPersianMonth(year,month,1),nextFirst=parsePersianDate(next.year+'/'+next.month+'/1');if(!nextFirst)return null;
+    var count=Math.round((Date.parse(nextFirst+'T12:00:00Z')-Date.parse(first+'T12:00:00Z'))/DAY);
+    return {year:year,month:month,first:first,days:count,offset:(new Date(first+'T12:00:00Z').getUTCDay()+1)%7};
+  }
   function currentWeekKeys(value){
     var key=dayKey(value),anchor=new Date(key+'T12:00:00Z'),daysSinceSaturday=(anchor.getUTCDay()+1)%7,start=anchor.getTime()-daysSinceSaturday*DAY,result=[];
     for(var i=0;i<7;i++)result.push(dayKey(start+i*DAY));
@@ -81,5 +94,33 @@
     var data=ics(plan,title);if(!data)return false;
     var url=URL.createObjectURL(new Blob([data],{type:'text/calendar;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='intmed-study.ics';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);return true;
   }
-  global.IntMedDateTime={TIME_ZONE:TIME_ZONE,latin:latin,dayKey:dayKey,formatDate:formatDate,formatDateTime:formatDateTime,inputDate:inputDate,parsePersianDate:parsePersianDate,currentWeekKeys:currentWeekKeys,googleCalendarUrl:googleCalendarUrl,ics:ics,downloadIcs:downloadIcs};
+  function attachPersianDatePicker(input,openButton){
+    if(!input||input.dataset.persianPickerReady==='true'||!global.document)return null;
+    input.dataset.persianPickerReady='true';
+    var selected=parsePersianDate(input.value)||dayKey(),view=persianParts(selected),doc=global.document;
+    var popup=doc.createElement('div');popup.id=input.getAttribute('aria-controls')||input.id+'Calendar';popup.className='persian-calendar';popup.hidden=true;popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','false');popup.setAttribute('aria-label','انتخاب تاریخ شمسی');popup.dir='rtl';
+    var header=doc.createElement('div');header.className='persian-calendar-head';
+    var previous=doc.createElement('button');previous.type='button';previous.className='persian-calendar-nav';previous.textContent='ماه قبل';previous.setAttribute('aria-label','ماه قبل');
+    var title=doc.createElement('strong');title.id=popup.id+'Title';popup.setAttribute('aria-labelledby',title.id);
+    var next=doc.createElement('button');next.type='button';next.className='persian-calendar-nav';next.textContent='ماه بعد';next.setAttribute('aria-label','ماه بعد');header.append(previous,title,next);
+    var weekdays=doc.createElement('div');weekdays.className='persian-calendar-weekdays';['ش','ی','د','س','چ','پ','ج'].forEach(function(label,index){var day=doc.createElement('span');day.textContent=label;day.title=['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'][index];day.setAttribute('aria-hidden','true');weekdays.appendChild(day);});
+    var grid=doc.createElement('div');grid.className='persian-calendar-grid';grid.setAttribute('role','grid');popup.append(header,weekdays,grid);input.parentNode.appendChild(popup);
+    function close(focus){popup.hidden=true;input.setAttribute('aria-expanded','false');if(focus)(openButton||input).focus();}
+    function render(){
+      var data=persianMonth(view.year,view.month);if(!data)return;grid.replaceChildren();
+      title.textContent=new Intl.DateTimeFormat('fa-IR-u-ca-persian',{timeZone:TIME_ZONE,year:'numeric',month:'long'}).format(new Date(data.first+'T12:00:00Z'));
+      for(var blank=0;blank<data.offset;blank++){var spacer=doc.createElement('span');spacer.className='persian-calendar-blank';spacer.setAttribute('aria-hidden','true');grid.appendChild(spacer);}
+      var today=dayKey();
+      for(var number=1;number<=data.days;number++)(function(dayNumber){
+        var iso=parsePersianDate(view.year+'/'+view.month+'/'+dayNumber),button=doc.createElement('button');button.type='button';button.className='persian-calendar-day';button.textContent=fa(dayNumber);button.dataset.date=iso;button.setAttribute('role','gridcell');button.setAttribute('aria-label',formatDate(iso,{weekday:'long'}));button.classList.toggle('today',iso===today);button.classList.toggle('selected',iso===selected);button.setAttribute('aria-selected',String(iso===selected));
+        button.addEventListener('click',function(){selected=iso;input.value=inputDate(iso);input.dataset.isoDate=iso;input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));close(true);});grid.appendChild(button);
+      })(number);
+    }
+    function open(){selected=parsePersianDate(input.value)||input.dataset.isoDate||dayKey();view=persianParts(selected);render();popup.hidden=false;input.setAttribute('aria-expanded','true');var active=grid.querySelector('.selected')||grid.querySelector('.today')||grid.querySelector('button');if(active)active.focus();}
+    previous.addEventListener('click',function(){view=shiftPersianMonth(view.year,view.month,-1);render();});next.addEventListener('click',function(){view=shiftPersianMonth(view.year,view.month,1);render();});
+    input.addEventListener('click',open);input.addEventListener('keydown',function(event){if(['Enter',' ','ArrowDown'].includes(event.key)){event.preventDefault();open();}});if(openButton)openButton.addEventListener('click',function(){popup.hidden?open():close(true);});
+    popup.addEventListener('keydown',function(event){if(event.key==='Escape'){event.preventDefault();close(true);}});doc.addEventListener('pointerdown',function(event){if(!popup.hidden&&!input.parentNode.contains(event.target))close(false);});
+    return {open:open,close:close,render:render};
+  }
+  global.IntMedDateTime={TIME_ZONE:TIME_ZONE,latin:latin,dayKey:dayKey,formatDate:formatDate,formatDateTime:formatDateTime,inputDate:inputDate,parsePersianDate:parsePersianDate,persianParts:persianParts,persianMonth:persianMonth,currentWeekKeys:currentWeekKeys,googleCalendarUrl:googleCalendarUrl,ics:ics,downloadIcs:downloadIcs,attachPersianDatePicker:attachPersianDatePicker};
 })(window);

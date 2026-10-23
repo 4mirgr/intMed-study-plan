@@ -1162,12 +1162,14 @@
       adminTabTickets.classList.remove("active");
       adminUsersPanel.style.display = "";
       adminTicketsPanel.style.display = "none";
+      var messagesQuick=document.getElementById('messagesQuickBtn');if(messagesQuick)messagesQuick.classList.remove('active');
     });
     adminTabTickets.addEventListener("click", function(){
       adminTabTickets.classList.add("active");
       adminTabUsers.classList.remove("active");
       adminTicketsPanel.style.display = "";
       adminUsersPanel.style.display = "none";
+      var messagesQuick=document.getElementById('messagesQuickBtn');if(messagesQuick)messagesQuick.classList.add('active');
     });
   }
 
@@ -2553,13 +2555,20 @@
   function setTab(name){
     if(name==='management' && (usesPrivateBackend()?myBucket().backendRole!=='admin':CURRENT_USER_ID!=='amir'))name='dashboard';
     if(name!=='education' && window.IntMedDashboard)window.IntMedDashboard.stop();
-    ['dashboard','education','account','management'].forEach(function(key){
+    ['dashboard','education','account','messages','management'].forEach(function(key){
       var suffix=key[0].toUpperCase()+key.slice(1),button=document.getElementById('tabBtn'+suffix),panel=document.getElementById('tabPanel'+suffix);
       if(button){button.classList.toggle('active',key===name);button.setAttribute('aria-pressed',String(key===name));}
       if(panel)panel.classList.toggle('active',key===name);
     });
+    var accountQuickState=document.getElementById('accountQuickBtn'),messagesQuickState=document.getElementById('messagesQuickBtn');
+    if(accountQuickState){accountQuickState.classList.toggle('active',name==='account');accountQuickState.setAttribute('aria-pressed',String(name==='account'));}
+    if(messagesQuickState){messagesQuickState.classList.toggle('active',name==='messages'||(name==='management'&&adminTicketsPanel&&adminTicketsPanel.style.display!=='none'));messagesQuickState.setAttribute('aria-pressed',String(name==='messages'));}
     if(name==='dashboard')renderStudyDashboard();
-    if(name==='account')renderUserPanel();
+    if(name==='account'){
+      renderUserPanel();
+      var profileEditor=document.getElementById('profileEditor');if(profileEditor)profileEditor.open=true;
+    }
+    if(name==='messages')renderTicketHistory();
     if(name==='management')renderUserPanel();
   }
   document.getElementById('tabBtnManagement').addEventListener('click',function(){setTab('management');});
@@ -2582,11 +2591,11 @@
   if(accountQuick)accountQuick.addEventListener('click',function(){setTab('account');});
   if(messagesQuick)messagesQuick.addEventListener('click',function(){
     if(myBucket().backendRole==='admin'){setTab('management');if(adminTabTickets)adminTabTickets.click();var panel=document.getElementById('adminTicketsPanel');if(panel)panel.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
-    markOwnMessagesRead();setTab('account');renderTicketHistory();var history=document.getElementById('ticketHistoryList');if(history)history.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    markOwnMessagesRead();setTab('messages');renderTicketHistory();var history=document.getElementById('ticketHistoryList');if(history)history.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   });
   function refreshMessageNotifications(){
     if(!usesPrivateBackend()||!stateLoaded||dirty||flushing||document.visibilityState==='hidden'||!window.IntMedBackend.loadTickets)return;
-    window.IntMedBackend.loadTickets().then(function(tickets){STATE.tickets=tickets;updateManagementBadge();if(document.getElementById('tabPanelAccount').classList.contains('active'))renderTicketHistory();if(document.getElementById('tabPanelManagement').classList.contains('active'))renderAdminTickets();}).catch(function(){});
+    window.IntMedBackend.loadTickets().then(function(tickets){STATE.tickets=tickets;updateManagementBadge();if(document.getElementById('tabPanelMessages').classList.contains('active'))renderTicketHistory();if(document.getElementById('tabPanelManagement').classList.contains('active'))renderAdminTickets();}).catch(function(){});
   }
   setInterval(refreshMessageNotifications,45000);
   window.addEventListener('focus',refreshMessageNotifications);

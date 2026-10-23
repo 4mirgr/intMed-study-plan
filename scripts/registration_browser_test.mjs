@@ -20,7 +20,7 @@ try{
  await page.locator('#showSignupLink').click();
  for(const id of ['signupFullName','signupUser','signupPass','signupPassConfirm','signupDegree'])if(!await page.locator('#'+id).evaluate(e=>e.required))throw Error(id+' not required');
  const degreeLabels=await page.locator('#signupDegree option').allTextContents();
- if(degreeLabels.length!==8||degreeLabels.indexOf('پزشکی عمومی')+1!==degreeLabels.indexOf('رزیدنت'))throw Error('Degree list/order wrong');
+ if(degreeLabels.length!==9||degreeLabels.indexOf('پزشکی عمومی')+1!==degreeLabels.indexOf('رزیدنت')||degreeLabels.at(-1)!=='سایر')throw Error('Degree list/order wrong');
  if(await page.evaluate(()=>window.IntMedRegistration.provinces.length)!==31)throw Error('Province list incomplete');
  await page.locator('#signupFullName').fill('پزشک آزمایشی');await page.locator('#signupUser').fill('doctor_qa');await page.locator('#signupPass').fill('StrongPassword-123');await page.locator('#signupPassConfirm').fill('different-password');await page.locator('#signupDegree').selectOption({label:'رزیدنت'});
  await page.locator('#signupSpecialty').fill('داخلی');await page.getByRole('option',{name:'بیماری های داخلی',exact:true}).click();

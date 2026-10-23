@@ -38,7 +38,7 @@ begin
     new.email,new.raw_user_meta_data->>'fullName',new.raw_user_meta_data->>'degree',
     new.raw_user_meta_data->>'idNumber',new.raw_user_meta_data->>'phone',
     new.raw_user_meta_data->>'specialty',new.raw_user_meta_data->>'province',
-    new.raw_user_meta_data->>'app'='intmed',false)
+    coalesce(new.raw_user_meta_data->>'app'='intmed',false),false)
   on conflict(id) do nothing;
   insert into public.study_state(user_id) values(new.id) on conflict(user_id) do nothing;
   return new;
