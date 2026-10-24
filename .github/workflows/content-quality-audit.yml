@@ -1,0 +1,81 @@
+name: Weekly content quality audit
+
+on:
+  schedule:
+    # Saturday 05:30 Iran time during standard UTC+3:30.
+    - cron: "0 2 * * 6"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: content-quality-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate canonical content
+        run: python3 scripts/content_pipeline.py validate
+      - name: Run deterministic audit
+        run: |
+          python3 scripts/content_quality_audit.py --json --output audit-report/content-quality.json
+          python3 scripts/content_quality_audit.py --markdown --output audit-report/content-quality.md
+      - name: Test audit reporting
+        run: python3 scripts/content_quality_audit_test.py
+      - name: Upload complete audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: intmed-content-quality-${{ github.run_id }}
+          path: audit-report/
+          retention-days: 90
+      - name: Create or update the single review issue
+        uses: actions/github-script@v7
+        env:
+          REPORT_JSON: audit-report/content-quality.json
+          REPORT_MARKDOWN: audit-report/content-quality.md
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync(process.env.REPORT_JSON, 'utf8'));
+            const body = fs.readFileSync(process.env.REPORT_MARKDOWN, 'utf8') +
+              `\n[گزارش کامل اجرای فعلی](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})\n`;
+            const title = 'بازبینی دوره‌ای کیفیت محتوای پزشکی';
+            const marker = `<!-- intmed-content-audit:${report.fingerprint} -->`;
+            try {
+              await github.rest.issues.getLabel({ ...context.repo, name: 'content-quality-audit' });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              await github.rest.issues.createLabel({
+                ...context.repo, name: 'content-quality-audit', color: '0E8A16',
+                description: 'گزارش خودکار؛ نیازمند بازبینی انسانی و بالینی'
+              });
+            }
+            const listed = await github.paginate(github.rest.issues.listForRepo, {
+              ...context.repo, state: 'open', labels: 'content-quality-audit', per_page: 100
+            });
+            const issue = listed.find(item => !item.pull_request && item.title === title);
+            const total = report.counts.error + report.counts.warning + report.counts.info;
+            if (!total) {
+              if (issue) await github.rest.issues.update({ ...context.repo, issue_number: issue.number, state: 'closed', body });
+              core.notice('Content audit found no review items.');
+            } else if (!issue) {
+              await github.rest.issues.create({ ...context.repo, title, body, labels: ['content-quality-audit'] });
+            } else if (!(issue.body || '').includes(marker)) {
+              await github.rest.issues.update({ ...context.repo, issue_number: issue.number, body });
+            } else {
+              core.notice('Audit fingerprint is unchanged; the existing issue was left untouched.');
+            }
+            await core.summary
+              .addHeading('IntMed content quality audit')
+              .addTable([
+                [{data: 'Topics', header: true}, {data: 'Errors', header: true}, {data: 'Warnings', header: true}, {data: 'Review', header: true}],
+                [String(report.topics), String(report.counts.error), String(report.counts.warning), String(report.counts.info)]
+              ]).write();

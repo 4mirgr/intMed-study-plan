@@ -2,10 +2,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IntMed</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#0f4c81">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://api.drgerami-md.ir https://upwbktvnybsjugdegjji.supabase.co; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=5076663fa0c96d9d">
+<link rel="stylesheet" href="intmed.css?v=9e5e0c98a57e713a">
+<link rel="stylesheet" href="pwa.css?v=fd05bfbc6b4b22fc">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
   <form class="login-card" id="loginForm">
@@ -170,7 +175,8 @@
       </div>
       <div class="tabbar">
         <button type="button" class="tab-btn" id="tabBtnDashboard">داشبورد</button>
-        <button type="button" class="tab-btn active" id="tabBtnEducation">بخش آموزشی</button><button type="button" class="tab-btn" id="tabBtnManagement" hidden>مدیریت <span id="managementBadge" class="management-badge" hidden></span></button>
+        <button type="button" class="tab-btn active" id="tabBtnEducation">بخش آموزشی</button>
+        <button type="button" class="tab-btn" id="tabBtnLibrary">تصاویر و الگوریتم‌ها</button><button type="button" class="tab-btn" id="tabBtnManagement" hidden>مدیریت <span id="managementBadge" class="management-badge" hidden></span></button>
       </div>
     </div>
   </header>
@@ -297,7 +303,7 @@
       <details class="notification-panel"><summary>پیام‌های بازیابی دسترسی <span id="recoveryTicketCount" class="management-badge" hidden></span></summary><button type="button" id="refreshRecoveryTickets">بررسی پیام‌های جدید</button><p id="recoveryAdminStatus" role="status"></p><div id="recoveryAdminList"></div></details><div id="adminOverview" class="metric-grid"></div>
       <details class="notification-panel"><summary>خروجی PDF دفتر مطالعهٔ کاربران</summary><div class="notebook-export-controls"><label>کاربر <select id="notebookExportUser"></select></label><label>محتوا <select id="notebookExportKind"><option value="all">یادداشت‌ها و هایلایت‌ها</option><option value="notes">فقط یادداشت‌ها</option><option value="highlights">فقط هایلایت‌ها</option></select></label><button type="button" id="adminExportNotebook" class="secondary-action">آماده‌سازی PDF</button><small id="notebookExportStatus" role="status"></small></div><p class="section-caption">فقط اطلاعات کاربر انتخاب‌شده در خروجی قرار می‌گیرد. در پنجرهٔ چاپ، Save as PDF را انتخاب کنید.</p></details>
       <details class="notification-panel"><summary>اعلان ثبت‌نام در تلگرام</summary><p class="section-caption">پس از راه‌اندازی یک‌باره، درخواست‌های جدید به بات تلگرام شما ارسال می‌شوند؛ دریافت اعلان روی آیفون به فعال‌بودن اعلان‌های Telegram بستگی دارد.</p>
-        <div class="admin-account-actions"><button type="button" data-notification-action="status">بررسی اتصال</button><button type="button" data-notification-action="discover">پیداکردن گفت‌وگوی من با بات</button><button type="button" data-notification-action="test">ارسال اعلان آزمایشی</button><button type="button" data-notification-action="retry">تلاش دوباره برای اعلان‌های در صف</button></div>
+        <div class="admin-account-actions"><button type="button" data-notification-action="status">بررسی اتصال</button><button type="button" data-notification-action="discover">پیداکردن گفت‌وگوی من با بات</button><button type="button" data-notification-action="test">ارسال اعلان آزمایشی</button><button type="button" data-notification-action="webhook">فعال‌سازی دریافت فایل و Forward</button><button type="button" data-notification-action="retry">تلاش دوباره برای اعلان‌های در صف</button></div>
         <div id="notificationChats"></div><p id="notificationStatus" class="section-caption" role="status">اتصال هنوز بررسی نشده است.</p>
       </details>
       <div class="dashboard-grid">
@@ -336,6 +342,31 @@
       <div id="adminUsersPanel"></div>
       <div id="adminTicketsPanel" style="display:none"></div>
     </section></div>
+  <div class="tab-panel library-panel" id="tabPanelLibrary" aria-labelledby="libraryTitle">
+    <section class="library-hero">
+      <div><p class="eyebrow">مرور تصویری و تصمیم‌گیری بالینی</p><h2 id="libraryTitle">کتابخانهٔ تصاویر و الگوریتم‌ها</h2><p>تصاویر، جداول و الگوریتم‌های مباحث را یک‌جا جست‌وجو کنید و مستقیم به درس مربوط بروید.</p></div>
+      <span class="library-hero-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 10h34v28H7Z"/><path d="m11 33 9-10 7 7 5-5 5 8"/><circle cx="31" cy="17" r="4"/></svg></span>
+    </section>
+    <form id="libraryFilters" class="library-filters" role="search">
+      <label class="library-search">جست‌وجو<input type="search" id="librarySearch" placeholder="مثلاً الگوریتم درمان، ECG یا آمبولی ریه" autocomplete="off"></label>
+      <label>نوع<select id="libraryKind"><option value="">همه</option><option value="algorithm">الگوریتم</option><option value="image">تصویر</option><option value="table">جدول</option><option value="tracing">نوار و tracing</option><option value="radiology">رادیولوژی</option><option value="pathology">پاتولوژی</option><option value="clinical">تصویر بالینی</option><option value="chart">نمودار</option></select></label>
+      <label>بخش<select id="libraryCategory"><option value="">همهٔ بخش‌ها</option></select></label>
+      <label>منبع<select id="librarySource"><option value="">همهٔ منابع</option></select></label>
+      <label class="library-favorite-filter"><input type="checkbox" id="libraryFavoritesOnly"> فقط نشان‌شده‌ها</label>
+    </form>
+    <p id="libraryStatus" class="section-caption" role="status" aria-live="polite">کتابخانه هنگام نخستین بازشدن بارگذاری می‌شود.</p>
+    <div id="libraryRecent" class="library-recent" hidden><h3>تازه دیده‌شده</h3><div class="library-recent-list"></div></div>
+    <div id="libraryGrid" class="library-grid"></div>
+    <button type="button" id="libraryMore" class="secondary-action library-more" hidden>نمایش موارد بیشتر</button>
+  </div>
+
+  <dialog id="libraryViewer" class="library-viewer" aria-labelledby="libraryViewerTitle">
+    <button type="button" class="library-viewer-close" aria-label="بستن">×</button>
+    <div class="library-viewer-heading"><p class="eyebrow" id="libraryViewerMeta"></p><h2 id="libraryViewerTitle"></h2></div>
+    <div id="libraryViewerBody" class="library-viewer-body"></div>
+    <div class="library-viewer-actions"><button type="button" id="libraryViewerFavorite" class="secondary-action"></button><button type="button" id="libraryViewerTopic" class="profile-save-btn">رفتن به مبحث</button></div>
+  </dialog>
+
   <div class="tab-panel active" id="tabPanelEducation">
     <h2 class="section-title">بخش آموزشی</h2>
     <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. با لمس قلب، مبحث به علاقه‌مندی‌های داشبوردت اضافه می‌شود. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، فلش‌کارت‌ها، تست‌ها، KF‌وPMP و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در پنل کاربری خود نظرتان را ارسال بفرمایید.</p>
@@ -348,13 +379,15 @@
 </div>
 
 <script src="config.js?v=066d4f9726ed485f"></script>
-<script src="js/intmed-backend.js?v=85e913e39079cb41"></script>
+<script src="js/intmed-backend.js?v=208d9d0d0f4e4e0c"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
 <script src="js/intmed-registration.js?v=a6129deced75bfd3"></script>
 <script src="js/intmed-login.js?v=5f03e32e71b1a970"></script>
 <script src="js/intmed-datetime.js?v=c2fdd8f88580b533"></script>
 <script src="js/intmed-exams.js?v=ca47a29078613b9c"></script>
-<script src="js/intmed-dashboard.js?v=317d96309ef46252"></script>
+<script src="js/intmed-library.js?v=5a1235d164b5cffc"></script>
+<script src="js/intmed-dashboard.js?v=e100ccf63354a53b"></script>
 <script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
 <script src="js/intmed-motion.js?v=5185491e3eeace42"></script>
-<script src="js/intmed-app.js?v=34d0b477cd1f2452"></script>
+<script src="js/intmed-app.js?v=596824dd7bc73997"></script>
+<script src="js/intmed-pwa.js?v=4050a7ab5c891840"></script>

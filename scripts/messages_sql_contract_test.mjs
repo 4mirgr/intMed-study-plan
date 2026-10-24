@@ -1,0 +1,29 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const sql=fs.readFileSync('backend/supabase/messages.sql','utf8');
+for(const table of ['intmed_conversations','intmed_messages','intmed_conversation_reads']){
+  assert.match(sql,new RegExp(`create table if not exists public\\.${table}`));
+  assert.match(sql,new RegExp(`alter table public\\.${table} enable row level security`));
+}
+assert.match(sql,/references public\.profiles\(id\) on delete cascade/);
+assert.match(sql,/unique\(conversation_id,client_id\)/);
+assert.match(sql,/unique\(conversation_id,legacy_part\)/);
+assert.match(sql,/sender_id=auth\.uid\(\)/);
+assert.match(sql,/sender_role=case when public\.is_intmed_admin\(\) then 'admin' else 'user' end/);
+assert.match(sql,/legacy_ticket_id is null/);
+assert.match(sql,/create or replace function public\.send_intmed_message/);
+assert.match(sql,/create or replace function public\.mark_intmed_conversation_read/);
+assert.match(sql,/message rate limit/);
+assert.doesNotMatch(sql,/grant insert on public\.intmed_/);
+assert.match(sql,/create trigger mirror_intmed_ticket_messages/);
+assert.match(sql,/create trigger guard_intmed_legacy_ticket_write/);
+assert.match(sql,/only read cursors may be changed/);
+assert.match(sql,/admin message fields are server controlled/);
+assert.match(sql,/after insert or update on public\.tickets/);
+assert.match(sql,/new\.payload->>'fromAdmin'/);
+assert.match(sql,/new\.payload \? 'replyReadAt'/);
+assert.match(sql,/pg_publication_tables/);
+assert.ok(!/drop table\s+(?:if exists\s+)?public\.tickets/i.test(sql),'Legacy tickets must remain during dual-write');
+assert.ok(!/grant\s+all[^;]+authenticated/i.test(sql),'Authenticated clients received broad table grants');
+console.log('Messages SQL contract passed: normalized threads/messages/read cursors, RLS, idempotent legacy mirror and optional Realtime.');

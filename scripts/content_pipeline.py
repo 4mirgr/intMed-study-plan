@@ -359,6 +359,96 @@ def publish_payload(data: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+def build_library_index(
+    taxonomy: dict[str, Any], payloads: dict[str, dict[str, Any]], output: Path
+) -> dict[str, Any]:
+    """Build a compact discovery index; full clinical content stays in topic payloads."""
+    topic_meta: dict[str, dict[str, str]] = {}
+    for category in taxonomy.get("categories", []):
+        for topic in category.get("topics", []):
+            topic_meta[topic.get("id", "")] = {
+                "topicLabel": topic.get("label", topic.get("id", "")),
+                "categoryId": category.get("id", ""),
+                "categoryLabel": category.get("label", category.get("id", "")),
+            }
+
+    entries: list[dict[str, Any]] = []
+    for topic_id in sorted(topic_meta):
+        payload = payloads.get(topic_id, {})
+        meta = topic_meta[topic_id]
+        sources = {source.get("id"): source for source in payload.get("sources", []) if isinstance(source, dict)}
+
+        def source_summary(item: dict[str, Any]) -> tuple[str, str, str]:
+            refs = item.get("sourceRefs") or []
+            source_id = next((ref.get("sourceId") for ref in refs if isinstance(ref, dict) and ref.get("sourceId")), "")
+            source = sources.get(source_id) or (next(iter(sources.values())) if sources else {})
+            pages = ", ".join(
+                str(ref.get("page") or ref.get("pages") or "")
+                for ref in refs
+                if isinstance(ref, dict) and (ref.get("page") or ref.get("pages"))
+            )
+            title = str(source.get("title", ""))
+            if not title and re.search(r"harrison|هاریسون", json.dumps(item, ensure_ascii=False), re.IGNORECASE):
+                title = "Harrison"
+            return title, str(source_id or source.get("id", "")), pages
+
+        def add(field: str, item: dict[str, Any], kind: str, title: str, search: str = "") -> None:
+            source_title, source_id, source_pages = source_summary(item)
+            entry = {
+                "id": f"{topic_id}:{field}:{item.get('id')}",
+                "itemId": item.get("id"),
+                "field": field,
+                "kind": kind,
+                "title": title,
+                "topicId": topic_id,
+                **meta,
+                "sourceId": source_id,
+                "sourceTitle": source_title,
+                "sourcePages": source_pages,
+                "reviewStatus": item.get("reviewStatus", ""),
+                "search": " ".join(filter(None, [title, search, meta["topicLabel"], meta["categoryLabel"], source_title])),
+            }
+            if field == "images":
+                entry["thumbnail"] = item.get("sourceUrl", "")
+                entry["copyright"] = item.get("copyright", item.get("copyrightNote", ""))
+                entry["width"] = item.get("width")
+                entry["height"] = item.get("height")
+            entries.append(entry)
+
+        for image in payload.get("images", []):
+            if isinstance(image, dict) and image.get("id"):
+                image_text = " ".join([str(image.get("caption", "")), str(image.get("note", ""))])
+                declared = str(image.get("kind", ""))
+                if declared in {"tracing", "radiology", "pathology", "clinical", "chart"}:
+                    kind = declared
+                elif re.search(r"ecg|ekg|tracing|نوار قلب", image_text, re.IGNORECASE):
+                    kind = "tracing"
+                elif re.search(r"radiograph|x.?ray|\bct\b|\bmri\b|رادیوگراف|سی.?تی|ام.?آر.?آی", image_text, re.IGNORECASE):
+                    kind = "radiology"
+                elif re.search(r"patholog|histolog|biopsy|پاتولوژ|هیستولوژ|بیوپسی", image_text, re.IGNORECASE):
+                    kind = "pathology"
+                elif re.search(r"chart|plot|curve|نمودار|منحنی", image_text, re.IGNORECASE):
+                    kind = "chart"
+                else:
+                    kind = "image"
+                add("images", image, kind, str(image.get("caption", "تصویر آموزشی")), str(image.get("note", "")))
+        for table in payload.get("tables", []):
+            if isinstance(table, dict) and table.get("id"):
+                title = str(table.get("title", "جدول آموزشی"))
+                kind = "algorithm" if re.search(r"algorithm|الگوریتم|رویکرد", title, re.IGNORECASE) else "table"
+                add("tables", table, kind, title)
+        for case in payload.get("kfPmp", []):
+            if not isinstance(case, dict) or not case.get("id"):
+                continue
+            title = str(case.get("title", ""))
+            if re.search(r"algorithm|الگوریتم|رویکرد", title, re.IGNORECASE):
+                add("kfPmp", case, "algorithm", title, str(case.get("vignette", "")))
+
+    library = {"version": 1, "entries": entries}
+    write_json(output / "library.json", library, pretty=False)
+    return library
+
+
 def build_to(output: Path) -> dict[str, Any]:
     topics = load_topics()
     taxonomy = read_json(TAXONOMY_PATH)
@@ -387,11 +477,20 @@ def build_to(output: Path) -> dict[str, Any]:
             "counts": {field: len(payload.get(field, [])) for field in FIELDS},
         }
 
+    library = build_library_index(taxonomy, payloads, output)
+
     taxonomy_bytes = (output / "taxonomy.json").read_bytes()
     build_hash = hashlib.sha256(
-        taxonomy_bytes + "".join(item["sha256"] for item in manifest_topics.values()).encode("ascii")
+        taxonomy_bytes
+        + (output / "library.json").read_bytes()
+        + "".join(item["sha256"] for item in manifest_topics.values()).encode("ascii")
     ).hexdigest()
-    manifest = {"version": 1, "buildId": build_hash[:16], "topics": manifest_topics}
+    manifest = {
+        "version": 1,
+        "buildId": build_hash[:16],
+        "topics": manifest_topics,
+        "library": {"path": "content/library.json", "count": len(library["entries"])},
+    }
     write_json(output / "manifest.json", manifest, pretty=False)
     return manifest
 

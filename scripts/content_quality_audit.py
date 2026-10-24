@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import re
 import struct
@@ -31,6 +32,67 @@ class Finding:
     topic: str
     location: str
     message: str
+
+
+def finding_fingerprint(findings: Iterable[Finding]) -> str:
+    """Return a stable digest for issue deduplication.
+
+    Ordering changes must not create a new weekly issue update. The digest intentionally includes
+    messages so a refined diagnostic is visible to reviewers.
+    """
+    rows = sorted(
+        (item.severity, item.code, item.topic, item.location, item.message)
+        for item in findings
+    )
+    raw = json.dumps(rows, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def report_payload(topic_count: int, findings: list[Finding]) -> dict[str, Any]:
+    counts = {
+        severity: sum(item.severity == severity for item in findings)
+        for severity in ("error", "warning", "info")
+    }
+    return {
+        "topics": topic_count,
+        "counts": counts,
+        "fingerprint": finding_fingerprint(findings),
+        "findings": [asdict(item) for item in findings],
+    }
+
+
+def markdown_report(payload: dict[str, Any], limit: int = 250) -> str:
+    counts = payload["counts"]
+    findings = payload["findings"]
+    lines = [
+        "# گزارش ممیزی محتوای IntMed",
+        "",
+        "این گزارش فقط برای بازبینی است و هیچ ادعای پزشکی را خودکار تغییر نمی‌دهد.",
+        "",
+        f"- مباحث بررسی‌شده: {payload['topics']}",
+        f"- خطا: {counts['error']}",
+        f"- هشدار: {counts['warning']}",
+        f"- نیازمند بازبینی: {counts['info']}",
+        "",
+        f"<!-- intmed-content-audit:{payload['fingerprint']} -->",
+    ]
+    if not findings:
+        lines.extend(["", "یافته‌ای ثبت نشد."])
+        return "\n".join(lines) + "\n"
+    lines.extend(["", "## یافته‌ها", ""])
+    for item in findings[:limit]:
+        lines.append(
+            f"- **{item['severity'].upper()} · {item['code']}** — "
+            f"`{item['topic']}/{item['location']}`: {item['message']}"
+        )
+    if len(findings) > limit:
+        lines.extend(
+            [
+                "",
+                f"{len(findings) - limit} یافتهٔ دیگر فقط در artifact کامل JSON موجود است.",
+            ]
+        )
+    return "\n".join(lines) + "\n"
 
 
 def topic_files(topic: str | None) -> list[Path]:
@@ -164,6 +226,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--topic", help="audit one stable topic ID")
     parser.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    parser.add_argument("--markdown", action="store_true", help="emit a reviewer-friendly Markdown summary")
+    parser.add_argument("--output", type=Path, help="write the selected report format to this file")
     parser.add_argument("--strict", action="store_true", help="fail when any finding remains")
     args = parser.parse_args()
     try:
@@ -173,13 +237,24 @@ def main() -> int:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 
-    counts = {severity: sum(item.severity == severity for item in findings) for severity in ("error", "warning", "info")}
+    if args.json and args.markdown:
+        parser.error("--json and --markdown are mutually exclusive")
+    payload = report_payload(len(paths), findings)
+    counts = payload["counts"]
     if args.json:
-        print(json.dumps({"topics": len(paths), "counts": counts, "findings": [asdict(item) for item in findings]}, ensure_ascii=False, indent=2))
+        rendered = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    elif args.markdown:
+        rendered = markdown_report(payload)
     else:
-        print(f"audited {len(paths)} topic(s): {counts['error']} error, {counts['warning']} warning, {counts['info']} info")
+        lines = [f"audited {len(paths)} topic(s): {counts['error']} error, {counts['warning']} warning, {counts['info']} info"]
         for item in findings:
-            print(f"{item.severity.upper()} {item.code} {item.topic}/{item.location}: {item.message}")
+            lines.append(f"{item.severity.upper()} {item.code} {item.topic}/{item.location}: {item.message}")
+        rendered = "\n".join(lines) + "\n"
+    if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(rendered, encoding="utf-8")
+    else:
+        print(rendered, end="")
     return 1 if args.strict and findings else 0
 
 

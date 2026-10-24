@@ -402,6 +402,18 @@
   function studyEventAction(payload){return request("/functions/v1/intmed-study-event",{method:"POST",body:JSON.stringify(payload)});}
   function notificationAction(action,chatId){return request("/functions/v1/intmed-signup-notify",{method:"POST",body:JSON.stringify({action:action,chatId:chatId})});}
   function loadTickets(){return select("tickets?select=id,user_id,payload,updated_at").then(function(rows){return (rows||[]).map(function(row){var ticket=Object.assign({},row.payload||{});ticket.id=row.id;ticket.userId=row.user_id;ticket.updatedAt=row.updated_at;return ticket;});});}
+  // Normalized messaging is deployed alongside the legacy ticket mirror. The current UI keeps
+  // reading tickets during the reversible rollout; new clients can use these methods without
+  // learning the storage schema or choosing their own sender role/timestamps.
+  function loadConversations(){
+    return select("intmed_conversations?select=id,user_id,subject,status,last_message_at,created_at,intmed_messages(id,sender_id,sender_role,body,created_at),intmed_conversation_reads(user_id,last_read_at,last_read_message_id)&order=last_message_at.desc&intmed_messages.order=created_at.asc");
+  }
+  function sendMessage(conversationId,userId,body,requestId){
+    return request("/rest/v1/rpc/send_intmed_message",{method:"POST",body:JSON.stringify({target_conversation:conversationId||null,target_user:userId||null,message_body:body,request_id:requestId})});
+  }
+  function markConversationRead(conversationId,messageId){
+    return request("/rest/v1/rpc/mark_intmed_conversation_read",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify({target_conversation:conversationId,target_message:messageId||null})});
+  }
   global.IntMedBackend = {
     isConfigured:configured,
     session:session,
@@ -419,6 +431,6 @@
     loadLegacyState:loadLegacyState,
     saveLegacyState:saveLegacyState,
     approveUser:approveUser,
-    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,adminUpdateUser:adminUpdateUser,notificationAction:notificationAction,newsletterAction:newsletterAction,studyEventAction:studyEventAction,loadTickets:loadTickets
+    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,adminUpdateUser:adminUpdateUser,notificationAction:notificationAction,newsletterAction:newsletterAction,studyEventAction:studyEventAction,loadTickets:loadTickets,loadConversations:loadConversations,sendMessage:sendMessage,markConversationRead:markConversationRead
   };
 })(window);

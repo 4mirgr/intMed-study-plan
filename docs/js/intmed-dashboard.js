@@ -192,7 +192,7 @@
     var buttons=document.querySelectorAll('[data-notification-action]');buttons.forEach(function(b){b.disabled=true;});
     return global.IntMedBackend.notificationAction(action,chatId).then(function(value){
       if(action==='status'){var badge=document.getElementById('telegramSetupBadge');badge.textContent=value.connected?'تلگرام: متصل':value.tokenConfigured?'تلگرام: انتخاب گفت‌وگو لازم است':'تلگرام: توکن تنظیم نیست';badge.classList.toggle('ready',value.connected===true);}
-      if(action==='status')status.textContent=!value.tokenConfigured?'توکن بات هنوز در تنظیمات محرمانهٔ سرور ثبت نشده است.':!value.connected?'بات آماده است؛ در تلگرام Start را بزنید، سپس گفت‌وگوی خودتان را پیدا و انتخاب کنید.':'تلگرام متصل است؛ '+number(value.pending)+' اعلان در صف ارسال است.';
+      if(action==='status')status.textContent=!value.tokenConfigured?'توکن بات هنوز در تنظیمات محرمانهٔ سرور ثبت نشده است.':!value.connected?'بات آماده است؛ در تلگرام Start را بزنید، سپس گفت‌وگوی خودتان را پیدا و انتخاب کنید.':'تلگرام متصل است؛ '+number(value.pending)+' اعلان در صف ارسال است.'+(value.inboxConfigured?' دریافت امن فایل آمادهٔ فعال‌سازی است.':' Secret دریافت فایل هنوز تنظیم نشده است.');
       if(action==='discover'){
         var chats=document.getElementById('notificationChats');chats.replaceChildren();
         (value.chats||[]).forEach(function(chat){var button=document.createElement('button');button.type='button';button.className='secondary-action';button.textContent='اتصال به '+chat.name;button.addEventListener('click',function(){notification('connect',chat.id);});chats.appendChild(button);});
@@ -200,6 +200,7 @@
       }
       if(action==='connect'){document.getElementById('notificationChats').replaceChildren();status.textContent='گفت‌وگوی شما متصل شد. اکنون اعلان آزمایشی را امتحان کنید.';}
       if(action==='test')status.textContent='اعلان آزمایشی به تلگرام ارسال شد.';
+      if(action==='webhook')status.textContent='دریافت امن متن، فایل، تصویر و پیام‌های Forwardشده فعال شد.';
       if(action==='retry')status.textContent=number(value.sent)+' اعلان ارسال شد.';
     }).catch(function(e){var badge=document.getElementById('telegramSetupBadge');badge.textContent=e.status===404?'تلگرام: تابع نصب نیست':'تلگرام: نیاز به بررسی';badge.classList.remove('ready');status.textContent=e.status===404?'اعلان تلگرام هنوز در سرور نصب نشده است؛ مراحل راه‌اندازی اولیه باقی مانده‌اند.':e.message||'ارتباط برقرار نشد؛ دوباره تلاش کنید.';}).finally(function(){buttons.forEach(function(b){b.disabled=false;});});
   }

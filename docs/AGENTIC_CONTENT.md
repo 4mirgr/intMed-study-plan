@@ -23,6 +23,11 @@ pushes, and checks production.
 
 ## PDF to published topic
 
+Sources may arrive as a local upload or as an authorized Telegram inbox item. Telegram records are
+inputs only: copy/download the private object into a hashed extraction cache, retain its ingest ID
+and provenance, and leave the record unaccepted until the same reviews below pass. A forwarded
+channel name or topic hint is never evidence of medical correctness and never authorizes publish.
+
 1. **Identify and cache once.** Hash the input and run
    `python3 scripts/content_pipeline.py extract-pdf TOPIC_ID SOURCE.pdf`. Reuse the cached text,
    images and page manifest in later turns; never paste the full PDF into every agent prompt.
@@ -85,6 +90,11 @@ The safe design is detect → report → review → patch, never autonomous medi
 4. A content agent proposes a source-cited patch; a separate clinical reviewer checks it; the
    teacher approves medical changes. Then validate/build/preview/publish normally.
 5. Periodically sample rendered pages with narrow/wide visual regression and broken-link checks.
+
+The repository workflow `.github/workflows/content-quality-audit.yml` runs this audit every
+Saturday, keeps the complete JSON/Markdown report as a 90-day artifact, and creates or updates one
+deduplicated GitHub issue. An unchanged fingerprint does not create issue noise. The workflow has
+no write access to repository contents and therefore cannot rewrite or publish medical material.
 
 The deterministic audit is intentionally conservative. A zero-warning report proves structural
 hygiene, not medical correctness or currency.

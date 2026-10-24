@@ -67,6 +67,7 @@ jobs:
           node scripts/recovery_browser_test.mjs
           node scripts/recovery_support_browser_test.mjs
           node scripts/dashboard_browser_test.mjs
+          node scripts/library_browser_test.mjs
           node scripts/annotations_theme_browser_test.mjs
           node scripts/pdf_ecg_browser_test.mjs
           node scripts/study_workspace_browser_test.mjs

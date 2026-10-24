@@ -20,7 +20,11 @@ page.on("console", message => { if (message.type() === "error") errors.push(mess
 
 try {
   await page.goto(base, {waitUntil: "domcontentloaded"});
-  await page.waitForSelector(".topic-item", {state:"attached"});
+  await page.waitForLoadState("networkidle");
+  await page.waitForFunction(() =>
+    document.querySelectorAll(".topic-cat").length === 12 &&
+    document.querySelectorAll(".topic-item").length === 141
+  );
   const categories = await page.locator(".topic-cat").count();
   const topics = await page.locator(".topic-item").count();
   if (categories !== 12 || topics !== 141) throw new Error(`unexpected taxonomy DOM: ${categories}/${topics}`);

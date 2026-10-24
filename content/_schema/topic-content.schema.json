@@ -189,6 +189,34 @@
           "note": {
             "type": "string"
           },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "tracing",
+              "radiology",
+              "pathology",
+              "clinical",
+              "chart"
+            ]
+          },
+          "copyright": {
+            "type": "string"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "reviewed"
+            ]
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1
+          },
           "id": {
             "type": "string"
           },

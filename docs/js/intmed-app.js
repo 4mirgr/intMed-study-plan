@@ -2555,7 +2555,7 @@
   function setTab(name){
     if(name==='management' && (usesPrivateBackend()?myBucket().backendRole!=='admin':CURRENT_USER_ID!=='amir'))name='dashboard';
     if(name!=='education' && window.IntMedDashboard)window.IntMedDashboard.stop();
-    ['dashboard','education','account','messages','management'].forEach(function(key){
+    ['dashboard','education','library','account','messages','management'].forEach(function(key){
       var suffix=key[0].toUpperCase()+key.slice(1),button=document.getElementById('tabBtn'+suffix),panel=document.getElementById('tabPanel'+suffix);
       if(button){button.classList.toggle('active',key===name);button.setAttribute('aria-pressed',String(key===name));}
       if(panel)panel.classList.toggle('active',key===name);
@@ -2564,6 +2564,7 @@
     if(accountQuickState){accountQuickState.classList.toggle('active',name==='account');accountQuickState.setAttribute('aria-pressed',String(name==='account'));}
     if(messagesQuickState){messagesQuickState.classList.toggle('active',name==='messages'||(name==='management'&&adminTicketsPanel&&adminTicketsPanel.style.display!=='none'));messagesQuickState.setAttribute('aria-pressed',String(name==='messages'));}
     if(name==='dashboard')renderStudyDashboard();
+    if(name==='library'&&window.IntMedLibrary)window.IntMedLibrary.show();
     if(name==='account'){
       renderUserPanel();
       var profileEditor=document.getElementById('profileEditor');if(profileEditor)profileEditor.open=true;
@@ -2587,6 +2588,7 @@
   }
   tabBtnDashboard.addEventListener("click", function(){ setTab("dashboard"); });
   tabBtnEducation.addEventListener("click", function(){ setTab("education"); });
+  document.getElementById('tabBtnLibrary').addEventListener('click',function(){setTab('library');});
   var accountQuick=document.getElementById('accountQuickBtn'),messagesQuick=document.getElementById('messagesQuickBtn');
   if(accountQuick)accountQuick.addEventListener('click',function(){setTab('account');});
   if(messagesQuick)messagesQuick.addEventListener('click',function(){
@@ -2600,6 +2602,9 @@
   setInterval(refreshMessageNotifications,45000);
   window.addEventListener('focus',refreshMessageNotifications);
 
+  if(window.IntMedLibrary)window.IntMedLibrary.init({state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},ready:function(){return stateLoaded;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},open:function(id,type,itemId){
+    goToTopic(id);return ensureTopicLoaded(id).then(function(){var topic=topicEls[id];if(!topic)return;topic.openType=type;Object.keys(topic.learnBtns).forEach(function(key){topic.learnBtns[key].classList.toggle('active',key===type);});topic.learnPanel.classList.add('open');renderLearnPanel(id,type);if(window.IntMedDashboard)window.IntMedDashboard.open(id,type);requestAnimationFrame(function(){var target=topic.learnPanel;if(type==='images'){var imageIndex=(contentMap[id].images||[]).findIndex(function(item){return item.id===itemId;});if(imageIndex>=0)target=topic.learnPanel.querySelectorAll('.img-row')[imageIndex]||target;}else if(type==='kfPmp'){var caseIndex=(contentMap[id].kfPmp||[]).findIndex(function(item){return item.id===itemId;});if(caseIndex>=0)target=topic.learnPanel.querySelectorAll('.kfp-block')[caseIndex]||target;}else if(type==='tables'){var tableIndex=(contentMap[id].tables||[]).findIndex(function(item){return item.id===itemId;});if(tableIndex>=0)target=topic.learnPanel.querySelectorAll('.tbl-title')[tableIndex]||target;}target.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});target.classList.add('annotation-destination');setTimeout(function(){target.classList.remove('annotation-destination');},3500);});});
+  }});
   if(window.IntMedDashboard)window.IntMedDashboard.init({
     state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},topics:function(){return topicEls;},
     ready:function(){return stateLoaded;},goto:goToTopic,annotation:openAnnotation,phases:function(){return PHASES;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},

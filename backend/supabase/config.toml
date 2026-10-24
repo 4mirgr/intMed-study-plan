@@ -4,6 +4,13 @@ verify_jwt = false
 [functions.intmed-signup-notify]
 verify_jwt = true
 
+[functions.intmed-purchase-verify]
+verify_jwt = true
+
+# Telegram authenticates webhook requests with X-Telegram-Bot-Api-Secret-Token.
+[functions.intmed-telegram-bot]
+verify_jwt = false
+
 # Public signed unsubscribe links; admin actions validate Auth/role inside the handler.
 [functions.intmed-newsletter]
 verify_jwt = false

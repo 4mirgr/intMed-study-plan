@@ -1,6 +1,6 @@
 import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
 let handler,admin=true,telegramOK=true,claims=0,deliveries=0,status='pending',chatId='123',app='intmed';const calls=[];
-const env={SUPABASE_URL:'https://test.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'server-only-key',SUPABASE_ANON_KEY:'public-key',TELEGRAM_BOT_TOKEN:'synthetic-bot-token'};
+const env={SUPABASE_URL:'https://test.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'server-only-key',SUPABASE_ANON_KEY:'public-key',TELEGRAM_BOT_TOKEN:'synthetic-bot-token',TELEGRAM_WEBHOOK_SECRET:'webhook-secret'};
 const uid='33333333-3333-4333-8333-333333333333';
 const context=vm.createContext({Deno:{serve:fn=>{handler=fn},env:{get:key=>env[key]}},Response,Map,fetch:async(url,options={})=>{
  calls.push({url,options});
@@ -13,6 +13,7 @@ const context=vm.createContext({Deno:{serve:fn=>{handler=fn},env:{get:key=>env[k
  if(url.includes('/intmed_signup_alerts')){if(options.method==='PATCH'){status=JSON.parse(options.body).status;return new Response(null,{status:204});}return Response.json([{user_id:uid,status}]);}
  if(url.includes('/sendMessage')){deliveries++;const body=JSON.parse(options.body);assert.ok(!body.text.includes('@example.com'));return Response.json({ok:telegramOK,result:{message_id:1}},{status:telegramOK?200:500});}
  if(url.includes('/getUpdates'))return Response.json({ok:true,result:[{message:{chat:{id:123,type:'private',first_name:'Owner'}}}]});
+ if(url.includes('/setWebhook')){const body=JSON.parse(options.body);assert.ok(body.url.endsWith('/functions/v1/intmed-telegram-bot'));assert.equal(body.secret_token,'webhook-secret');return Response.json({ok:true,result:true});}
  throw Error('Unexpected request '+url);
 }});
 vm.runInContext(fs.readFileSync('backend/supabase/functions/intmed-signup-notify/index.ts','utf8'),context);
@@ -25,6 +26,7 @@ admin=false;response=await post({action:'test'});assert.equal(response.status,40
 admin=true;response=await post({action:'discover'});assert.equal((await response.json()).chats[0].id,'123');
 response=await post({action:'connect',chatId:'999'});assert.equal(response.status,400);assert.equal(chatId,'123');
 response=await post({action:'connect',chatId:'123'});assert.equal(response.status,200);
+response=await post({action:'webhook'});assert.equal(response.status,200);assert.equal((await response.json()).configured,true);
 telegramOK=false;status='pending';response=await post(event);assert.equal(response.status,503);assert.equal(status,'error');assert.ok(!(await response.text()).includes(env.TELEGRAM_BOT_TOKEN));
 telegramOK=true;response=await post({action:'retry'});assert.equal(response.status,200);assert.equal(status,'sent');
 assert.ok(calls.filter(c=>c.url.includes('/rest/v1/')).every(c=>c.options.headers.apikey==='server-only-key'));

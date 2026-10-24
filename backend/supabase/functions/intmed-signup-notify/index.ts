@@ -5,7 +5,7 @@ Deno.serve(async req=>{
   const reply=(status,body)=>new Response(JSON.stringify(body),{status,headers});
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers});
   if(req.method!=='POST'||(origin&&!allowed.includes(origin)))return reply(403,{message:'Forbidden'});
-  const url=Deno.env.get('SUPABASE_URL'),service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),anon=Deno.env.get('SUPABASE_ANON_KEY'),token=Deno.env.get('TELEGRAM_BOT_TOKEN');
+  const url=Deno.env.get('SUPABASE_URL'),service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),anon=Deno.env.get('SUPABASE_ANON_KEY'),token=Deno.env.get('TELEGRAM_BOT_TOKEN'),webhookSecret=Deno.env.get('TELEGRAM_WEBHOOK_SECRET');
   if(!url||!service||!anon)return reply(503,{message:'Server configuration missing'});
   const sh={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
   async function db(path,method='GET',body,extra={}){const r=await fetch(url+'/rest/v1/'+path,{method,headers:{...sh,...extra},...(body===undefined?{}:{body:JSON.stringify(body)})});if(!r.ok)throw Error('Database operation failed');return r.status===204?null:JSON.parse(await r.text()||'null');}
@@ -30,7 +30,7 @@ Deno.serve(async req=>{
     const raw=await req.text();if(raw.length>8192)return reply(413,{message:'Request too large'});const body=JSON.parse(raw);
     if(body.action){
       if(!await admin())return reply(403,{message:'Admin required'});
-      if(body.action==='status'){const alerts=await db('intmed_signup_alerts?select=status');return reply(200,{tokenConfigured:!!token,connected:!!await setting(),pending:alerts.filter(r=>r.status!=='sent'&&r.status!=='dismissed').length});}
+      if(body.action==='status'){const alerts=await db('intmed_signup_alerts?select=status');return reply(200,{tokenConfigured:!!token,inboxConfigured:!!token&&!!webhookSecret,connected:!!await setting(),pending:alerts.filter(r=>r.status!=='sent'&&r.status!=='dismissed').length});}
       if(body.action==='discover'){
         const updates=await telegram('getUpdates',{timeout:0,allowed_updates:['message']});const chats=new Map();updates.forEach(u=>{const c=u.message?.chat;if(c&&c.type==='private')chats.set(String(c.id),{id:String(c.id),name:[c.first_name,c.last_name].filter(Boolean).join(' ')||c.username||String(c.id)});});return reply(200,{chats:[...chats.values()]});
       }
@@ -39,6 +39,12 @@ Deno.serve(async req=>{
         await db('intmed_notification_settings?key=eq.telegram','PATCH',{chat_id:String(chat.id)},{Prefer:'return=minimal'});return reply(200,{connected:true});
       }
       if(body.action==='test'){const chat=await setting();if(!chat)return reply(400,{message:'تلگرام هنوز متصل نیست.'});await telegram('sendMessage',{chat_id:chat,text:'✅ اعلان‌های IntMed به تلگرام شما متصل است.'});return reply(200,{sent:true});}
+      if(body.action==='webhook'){
+        if(!await setting())return reply(400,{message:'ابتدا گفت‌وگوی مدیر را متصل کنید.'});
+        if(!webhookSecret)return reply(503,{message:'Secret دریافت امن فایل هنوز تنظیم نشده است.'});
+        await telegram('setWebhook',{url:url+'/functions/v1/intmed-telegram-bot',secret_token:webhookSecret,allowed_updates:['message'],drop_pending_updates:false,max_connections:10});
+        return reply(200,{configured:true});
+      }
       if(body.action==='retry'){const alerts=await db('intmed_signup_alerts?status=in.(pending,error,processing)&select=user_id&limit=10');let sent=0;for(const alert of alerts){try{if((await deliver(alert.user_id)).sent)sent++;}catch{}}return reply(200,{sent});}
       return reply(400,{message:'Unknown action'});
     }

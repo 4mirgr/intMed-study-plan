@@ -16,7 +16,7 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   move behind an authenticated API before subscriptions launch.
 - Medical content is AI-assisted, source-traceable, and always marked draft until teacher review.
 
-## Shipped baseline (2026-10-23)
+## Shipped baseline (2026-10-24)
 
 - Persian/Tehran dashboard and planning dates, Saturday-first week, Google Calendar and ICS.
 - Calendar-email Edge Function and delivery ledger; production email is blocked until
@@ -27,6 +27,16 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   highlights with recoloring, dashboard depth/motion and responsive header improvements.
 - Production Supabase migrations/functions were installed; Telegram secret exists. The GitHub
   branch is `claude/quirky-ride-mavb6b`. Confirm the branch and current remote SHA before edits.
+- A generated image/algorithm library provides Persian search, filters, full viewers, private
+  favorites/recent history and stable lesson deep links for 402 current entries.
+- A conservative weekly content-audit workflow publishes artifacts and maintains one deduplicated
+  review issue; it cannot modify medical content.
+- The secure Telegram inbox accepts authorized direct/forwarded text, PDF and images into a private
+  quarantine queue. It records privacy-limited provenance and never auto-publishes content.
+- Normalized message/read-cursor and subscription/entitlement foundations are additive and keep the
+  legacy UI/public content behavior unchanged until staged cutovers.
+- The installable Persian PWA shell has an explicit offline screen and never caches Auth/API/private
+  data. Production Auth now requires at least eight password characters.
 
 ## Open work, in priority order
 
@@ -42,23 +52,20 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 - Run the PDF workflow in `AGENTIC_CONTENT.md` for each supplied chapter; complete lung neoplasms
   and every earlier draft with teacher clinical review.
-- Add a first-class image/algorithm library reachable from the dashboard: category/topic/source
-  filters, Persian search, thumbnails, full-resolution viewer, stable deep links and favorites.
 - Re-extract low-quality PDF figures from original embedded streams or render the figure region at
   high DPI; record page, source, copyright and visual QA. Never upscale a bad thumbnail as a fix.
-- Add a scheduled content audit that opens issues/reports; it must never silently rewrite medical
-  claims. Use `scripts/content_quality_audit.py` as the deterministic first stage.
-- Normalize tickets into conversation/message tables, add per-recipient read cursors, Supabase
-  Realtime and later native push. Current JSONB polling/badges are an MVP.
-- Publish a user-facing changelog/news panel with dated, plain-Persian release notes.
+- Validate normalized message backfill in production, then move the UI from legacy ticket polling
+  to conversation RPCs/Realtime; add native push later. Dual-write keeps the cutover reversible.
+- Add a reviewed ingest worker that maps Telegram queue items to cached PDF extraction/page maps
+  and opens a content patch; the bot inbox itself deliberately stops at `pending_review`.
 
 ### P1 — paid/mobile foundation
 
-- Define subscription products, entitlement service, server-side receipt verification,
-  idempotency, refunds/revocation and audit logs. Never trust a client purchase flag.
+- Connect the entitlement foundation to official Bazaar/Myket sandbox verifiers, reconciliation,
+  refunds/revocation and real products. Never trust a client purchase flag.
 - Move protected content/assets off public GitHub Pages before selling access; enforce entitlement
   server-side with signed/short-lived delivery.
-- Stabilize the web API/PWA, then build an Android shell (Capacitor is the shortest migration path)
+- Validate the new PWA install/update/offline flow, then build an Android shell (Capacitor is the shortest migration path)
   with secure storage, deep links, notifications, offline rules and separate Bazaar/Myket flavors.
 - At publication time recheck the current official Bazaar/Myket contracts and IAP rules, Enamad,
   tax obligations, privacy/terms/refund policy, and medical-education disclaimer. Store terms and
@@ -72,7 +79,8 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   tables; add indexes, pagination, retention and observability before large growth.
 - Add staging, migration rollback notes, backup/restore drills, error tracking and load tests.
 - Establish accessibility/performance budgets and reduced-motion/low-end-device regression tests.
-- Finish Telegram operational setup/retry UX and decide which events merit notification.
+- Activate and smoke-test the Telegram webhook from the admin panel after deploying its function;
+  decide which future events merit notification.
 
 ## Completion rule
 
