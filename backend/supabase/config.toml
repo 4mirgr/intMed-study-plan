@@ -11,6 +11,10 @@ verify_jwt = true
 [functions.intmed-telegram-bot]
 verify_jwt = false
 
+# Invoked internally with the service JWT after quarantine; admin JWTs may retry safely.
+[functions.intmed-content-worker]
+verify_jwt = true
+
 # Public signed unsubscribe links; admin actions validate Auth/role inside the handler.
 [functions.intmed-newsletter]
 verify_jwt = false

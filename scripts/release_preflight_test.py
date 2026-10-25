@@ -11,7 +11,7 @@ import release_preflight as subject
 class ReleasePreflightTest(unittest.TestCase):
     def test_remote_reports_names_and_jwt_without_values(self):
         fixtures = {
-            f"/v1/projects/{subject.PROJECT_REF}/secrets": [{"name": name, "value": "must-not-leak"} for name in subject.REQUIRED_SECRETS],
+            f"/v1/projects/{subject.PROJECT_REF}/secrets": [{"name": name, "value": "must-not-leak"} for name in subject.REQUIRED_SECRETS | subject.OPTIONAL_SECRETS],
             f"/v1/projects/{subject.PROJECT_REF}/functions": [{"slug": name, "verify_jwt": jwt} for name, jwt in subject.REQUIRED_FUNCTIONS.items()],
             f"/v1/projects/{subject.PROJECT_REF}/config/auth": {"site_url": subject.SITE, "mailer_autoconfirm": False, "password_min_length": 8, "uri_allow_list": subject.SITE, "security_captcha_enabled": True, "mailer_subjects_confirmation": "IntMed — confirmation"},
         }

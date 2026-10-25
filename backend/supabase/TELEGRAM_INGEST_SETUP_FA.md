@@ -32,13 +32,22 @@ service-only ذخیره می‌شود.
 7. یک متن، عکس یا فایل را از کاربر/گروه/کانال دیگری برای بات Forward کنید. نوع منبع، نام نمایشی،
    username عمومی، تاریخ اصلی و در صورت وجود شمارهٔ پیام نگه داشته می‌شود؛ شناسهٔ عددی شخص یا
    چت منبع ذخیره نمی‌شود و منبع Forwardشده هیچ سطح اعتمادی ایجاد نمی‌کند.
-8. رکورد باید `pending_review` و object فایل باید در bucket خصوصی `intmed-content-inbox` باشد. ورودی تنها
-   پس از اسکن/استخراج، تطبیق مبحث، کنترل تصویر، بازبینی علمی و تأیید مدیر وارد محتوای canonical شود.
+8. تابع `intmed-content-worker` را با **Verify JWT روشن** deploy کنید. برای تحلیل هوشمند، secret
+   `OPENAI_API_KEY` و در صورت نیاز `INTMED_CONTENT_MODEL` را فقط در Edge Secrets قرار دهید. بدون
+   کلید، ورودی حذف نمی‌شود و draft در وضعیت `waiting_provider` می‌ماند.
+9. رکورد ingest باید `pending_review` و object فایل باید در bucket خصوصی `intmed-content-inbox`
+   باشد. بات worker را بعد از قرنطینه در پس‌زمینه فراخوانی می‌کند. worker فهرست مبحث‌ها را از
+   taxonomy منتشرشده می‌خواند، متن/PDF/تصویر تا سقف ۱۰ مگابایت را تحلیل و نتیجه را در جدول
+   service-only `intmed_content_drafts` با وضعیت `draft_ready` ذخیره می‌کند.
+10. پیش‌نویس، سؤال و تشخیص مبحث هیچ‌گاه مستقیماً محتوای canonical را تغییر نمی‌دهد. اعلان تلگرام
+   فقط آماده‌شدن draft را اعلام می‌کند؛ بازبینی منبع، حق استفاده از تصویر، کنترل علمی و تأیید مدیر
+   همچنان پیش‌شرط ساخت patch و انتشار است.
 
 کنترل‌های فعلی: secret ثابت‌زمان، chat allowlist، گفت‌وگوی خصوصی، سقف ۲۰MB، allowlist PDF/JPEG/PNG/WebP،
 بررسی magic bytes مستقل از MIME ادعایی، سقف ۱۲ هزار نویسه برای متن، حداکثر ۱۲ ورودی در ده دقیقه،
 update id یکتا، hash SHA-256، نام امن، جلوگیری از path traversal، bucket خصوصی و پیام خطای بدون افشای
-secret. پیام عادی و Forwardشده هر دو قرنطینه می‌شوند و هیچ trigger انتشار خودکار وجود ندارد. تست محلی
+secret. پیام عادی و Forwardشده هر دو قرنطینه می‌شوند و هیچ trigger انتشار خودکار وجود ندارد. worker
+دارای فراخوانی idempotent، محدودیت ۱۰MB، خروجی JSON ساختاریافته و مرز service/admin است. تست محلی
 هیچ تماس واقعی با تلگرام یا Supabase ندارد:
 
 `node scripts/telegram_ingest_test.mjs`

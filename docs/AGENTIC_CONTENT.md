@@ -77,6 +77,12 @@ an explicit copyright/use note, a medically useful Persian caption/alt, and draf
 Do not infer PBS from a filename or publish a book screenshot: extract the original embedded image
 when possible, otherwise crop only the figure at 300–450 DPI from a user-supplied authorized PDF.
 
+Every new image also declares one rights/provenance lane with `sourceClass`: `harrison-private`
+for a user-supplied Harrison extraction that must remain private, `authored` for a newly drawn
+original IntMed visual, or `open-license` for a web image whose exact license and source URL are
+recorded. Citation alone does not make a copyrighted figure reusable. Missing legacy values remain
+explicitly «unknown» in the library filter and must never be guessed from a title or filename.
+
 The future dashboard library reads that generated index and offers subject/topic/kind/source filters,
 Persian search, favorites, recent items, full-resolution viewing and a “go to lesson” deep link.
 Algorithms should also have a structured text/table representation so they remain searchable,

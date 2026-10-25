@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=dd6e67b5c7261bc8">
+<link rel="stylesheet" href="intmed.css?v=3562efc3fe8aeb93">
 <link rel="stylesheet" href="pwa.css?v=fd05bfbc6b4b22fc">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
@@ -80,9 +80,11 @@
       <div class="search-options" id="provinceOptions" role="listbox" hidden></div>
     </div>
     </div><div class="signup-field"><label for="signupIdNumber">کد نظام پزشکی / شماره دانشجویی</label>
-    <input type="text" id="signupIdNumber" placeholder="کد نظام پزشکی / شماره دانشجویی">
+    <input type="text" id="signupIdNumber" inputmode="numeric" dir="ltr" maxlength="24" pattern="[0-9۰-۹٠-٩ ]*" placeholder="کد نظام پزشکی / شماره دانشجویی" aria-describedby="signupIdNumberHelp">
+    <small id="signupIdNumberHelp">کیبورد عددی باز می‌شود؛ اعداد فارسی و عربی خودکار به انگلیسی تبدیل می‌شوند.</small>
     </div><div class="signup-field"><label for="signupMobile">شماره موبایل</label>
-    <input type="tel" id="signupMobile" autocomplete="tel" placeholder="شماره موبایل">
+    <input type="tel" id="signupMobile" inputmode="tel" dir="ltr" autocomplete="tel" maxlength="20" pattern="[+0-9۰-۹٠-٩() -]*" placeholder="مثلاً 09123456789" aria-describedby="signupMobileHelp">
+    <small id="signupMobileHelp">اعداد فارسی و عربی خودکار یکسان‌سازی می‌شوند.</small>
     </div><div class="signup-field"><label for="signupEmail">ایمیل تأیید و بازیابی حساب <span class="required-mark" aria-label="الزامی">*</span></label>
     <input type="email" id="signupEmail" autocomplete="email" placeholder="ایمیل" required>
 </div></div>    <button type="submit">ثبت‌نام</button>
@@ -162,7 +164,7 @@
         <span class="title-row-extras" id="titleRowExtras">
           <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="تغییر حالت تاریک/روشن" title="تغییر حالت تاریک/روشن">🌙</button>
           <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال برای ذخیره‌سازی</button>
-          <button type="button" class="gh-connect-btn header-icon-action" id="logoutBtn" aria-label="خروج" title="خروج"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4M8 12h10"/></svg></button>
+          <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
         </span>
         <button type="button" class="theme-toggle-btn theme-toggle-compact" id="themeToggleCompactBtn" aria-label="تغییر حالت تاریک/روشن" title="تغییر حالت تاریک/روشن">🌙</button>
         <button type="button" class="header-collapse-btn" id="headerCollapseBtn" aria-expanded="true" aria-controls="headerCollapsible" aria-label="جمع‌کردن نوار بالا" title="جمع‌کردن/بازکردن نوار بالا"><svg class="chev-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 14 5-5 5 5"/><path d="M6 19h12"/></svg></button>
@@ -200,7 +202,6 @@
       <ol class="site-update-list">
         <li><span class="update-dot update-dot-purple" aria-hidden="true"></span><div><strong>کتابخانهٔ تصاویر و الگوریتم‌ها</strong><p>تصاویر، جدول‌ها و الگوریتم‌های مباحث را جست‌وجو، فیلتر و برای مراجعهٔ بعدی ذخیره کنید.</p></div><time datetime="2026-10-24">۲ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-cyan" aria-hidden="true"></span><div><strong>نصب روی دستگاه و دسترسی آفلاین امن</strong><p>نسخهٔ PWA اضافه شد؛ صفحات عمومی ضروری در قطعی موقت شبکه قابل دسترسی‌اند و اطلاعات خصوصی cache نمی‌شوند.</p></div><time datetime="2026-10-24">۲ آبان ۱۴۰۵</time></li>
-        <li><span class="update-dot update-dot-yellow" aria-hidden="true"></span><div><strong>صندوق محتوای تلگرام</strong><p>مدیر می‌تواند متن، PDF، تصویر و پیام Forwardشده را برای ورود به چرخهٔ بازبینی محتوا ارسال کند.</p></div><time datetime="2026-10-24">۲ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-green" aria-hidden="true"></span><div><strong>برنامه‌ریزی با تاریخ شمسی و تقویم شخصی</strong><p>هدف مطالعه را ثبت کنید و رویداد را به تقویم دستگاه یا Google Calendar بیفزایید.</p></div><time datetime="2026-10-23">۱ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-blue" aria-hidden="true"></span><div><strong>مرکز پیام و پنل حساب مستقل</strong><p>پیام‌ها، اعلان‌ها و تنظیمات حساب با مسیرهای روشن‌تر در دسترس‌اند.</p></div><time datetime="2026-10-23">۱ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-pink" aria-hidden="true"></span><div><strong>نشست امن‌تر در دستگاه‌های عمومی</strong><p>نشست‌های موقت پس از بستن مرورگر باقی نمی‌مانند و بی‌فعالیتی طولانی کنترل می‌شود.</p></div><time datetime="2026-10-23">۱ آبان ۱۴۰۵</time></li>
@@ -355,6 +356,7 @@
       <label>نوع<select id="libraryKind"><option value="">همه</option><option value="algorithm">الگوریتم</option><option value="image">تصویر</option><option value="table">جدول</option><option value="tracing">نوار و tracing</option><option value="radiology">رادیولوژی</option><option value="pathology">پاتولوژی</option><option value="clinical">تصویر بالینی</option><option value="chart">نمودار</option></select></label>
       <label>بخش<select id="libraryCategory"><option value="">همهٔ بخش‌ها</option></select></label>
       <label>منبع<select id="librarySource"><option value="">همهٔ منابع</option></select></label>
+      <label>نوع منبع<select id="librarySourceClass"><option value="">همهٔ انواع منبع</option><option value="harrison-private">منبع هاریسون · استفاده خصوصی</option><option value="authored">منبع تألیفی</option><option value="open-license">منبع آزاد اینترنتی</option><option value="__none">منبع نامشخص</option></select></label>
       <label class="library-favorite-filter"><input type="checkbox" id="libraryFavoritesOnly"> فقط نشان‌شده‌ها</label>
     </form>
     <p id="libraryStatus" class="section-caption" role="status" aria-live="polite">کتابخانه هنگام نخستین بازشدن بارگذاری می‌شود.</p>
@@ -384,11 +386,11 @@
 <script src="config.js?v=066d4f9726ed485f"></script>
 <script src="js/intmed-backend.js?v=148f899a068fa0e2"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
-<script src="js/intmed-registration.js?v=a6129deced75bfd3"></script>
+<script src="js/intmed-registration.js?v=5115d87c275f66f1"></script>
 <script src="js/intmed-login.js?v=5f03e32e71b1a970"></script>
 <script src="js/intmed-datetime.js?v=c2fdd8f88580b533"></script>
 <script src="js/intmed-exams.js?v=ca47a29078613b9c"></script>
-<script src="js/intmed-library.js?v=b90b44a6a3a1e080"></script>
+<script src="js/intmed-library.js?v=a0f5fe5a2f4ba266"></script>
 <script src="js/intmed-dashboard.js?v=e100ccf63354a53b"></script>
 <script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
 <script src="js/intmed-motion.js?v=5185491e3eeace42"></script>

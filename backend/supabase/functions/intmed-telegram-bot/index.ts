@@ -14,6 +14,10 @@ Deno.serve(async req=>{
   async function db(path,method='GET',body,extra={}){const r=await fetch(url+'/rest/v1/'+path,{method,headers:{...sh,...extra},...(body===undefined?{}:{body:JSON.stringify(body)})});if(!r.ok)throw Error('db');return r.status===204?null:JSON.parse(await r.text()||'null');}
   async function telegram(method,body){const r=await fetch('https://api.telegram.org/bot'+token+'/'+method,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),v=await r.json();if(!r.ok||!v.ok)throw Error('telegram');return v.result;}
   async function say(chat,text){try{await telegram('sendMessage',{chat_id:chat,text,link_preview_options:{is_disabled:true}});}catch{}}
+  function kickWorker(id){
+    const task=fetch(url+'/functions/v1/intmed-content-worker',{method:'POST',headers:{apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'},body:JSON.stringify({ingestId:id})}).catch(()=>null);
+    const runtime=globalThis.EdgeRuntime;if(runtime&&typeof runtime.waitUntil==='function')runtime.waitUntil(task);
+  }
   async function configuredChat(){const rows=await db('intmed_notification_settings?key=eq.telegram&select=chat_id');return rows[0]?.chat_id?String(rows[0].chat_id):'';}
   function safeName(value,kind){const fallback=kind==='pdf'?'source.pdf':'image.jpg',name=String(value||fallback).normalize('NFKC').replace(/[\\/\u0000-\u001f\u007f]/g,'-').replace(/[^\p{L}\p{N}._ -]/gu,'-').replace(/\s+/g,'-').slice(-120);return name&&name!=='.'&&name!=='..'?name:fallback;}
   function topicHint(text){const m=String(text||'').toLowerCase().match(/(?:\/topic\s+|#)([a-z0-9][a-z0-9-]{1,79})(?:\s|$)/);return m?m[1]:null;}
@@ -70,6 +74,7 @@ Deno.serve(async req=>{
       if(!bytes.length||bytes.length>65536){await say(chat,'⛔ متن برای صندوق محتوا بیش از حد طولانی است.');return reply(200,{ok:true,rejected:true});}
       const id=crypto.randomUUID(),hint=topicHint(content);
       await db('intmed_content_ingest','POST',{id,telegram_update_id:updateId,telegram_chat_id:chat,telegram_message_id:Number(message.message_id),telegram_file_id:null,telegram_file_unique_id:null,kind:'text',original_filename:null,mime_type:'text/plain',byte_size:bytes.length,storage_path:null,sha256:hex(await crypto.subtle.digest('SHA-256',bytes)),content_text:content,caption:null,suggested_topic_id:hint,status:'pending_review',...originFields},{Prefer:'return=minimal'});
+      kickWorker(id);
       await say(chat,'✅ متن'+(origin?' فورواردشده':'')+' در صف بازبینی ثبت شد.\nشناسه: '+id.slice(0,8)+(hint?'\nمبحث پیشنهادی: '+hint:'')+'\nانتشار فقط پس از بازبینی انجام می‌شود.');
       return reply(200,{ok:true,queued:true,id,kind:'text'});
     }else{await say(chat,'فقط متن، PDF یا تصویر JPEG/PNG/WebP پذیرفته می‌شود.');return reply(200,{ok:true,ignored:true});}
@@ -88,6 +93,7 @@ Deno.serve(async req=>{
       const digest=hex(await crypto.subtle.digest('SHA-256',bytes));
       const stored=await fetch(url+'/storage/v1/object/intmed-content-inbox/'+path,{method:'POST',headers:{apikey:service,Authorization:'Bearer '+service,'Content-Type':mime,'x-upsert':'false'},body:bytes});if(!stored.ok)throw Error('storage');
       await db('intmed_content_ingest?id=eq.'+id,'PATCH',{sha256:digest,status:'pending_review',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});
+      kickWorker(id);
       await say(chat,'✅ فایل'+(origin?' فورواردشده':'')+' دریافت و قرنطینه شد.\nشناسه: '+id.slice(0,8)+(hint?'\nمبحث پیشنهادی: '+hint:'\nبرای پیشنهاد مبحث، /topic و شناسه مبحث را در caption بنویسید.')+'\nانتشار فقط پس از بازبینی انجام می‌شود.');
       return reply(200,{ok:true,queued:true,id,kind});
     }catch{

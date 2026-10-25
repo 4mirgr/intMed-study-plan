@@ -200,6 +200,15 @@
               "chart"
             ]
           },
+          "sourceClass": {
+            "type": "string",
+            "enum": [
+              "harrison-private",
+              "authored",
+              "open-license"
+            ],
+            "description": "Rights/provenance lane: private Harrison extraction, original authored visual, or publicly reusable open-license source."
+          },
           "copyright": {
             "type": "string"
           },
@@ -467,6 +476,14 @@
         },
         "type": {
           "type": "string"
+        },
+        "sourceClass": {
+          "type": "string",
+          "enum": [
+            "harrison-private",
+            "authored",
+            "open-license"
+          ]
         },
         "note": {
           "type": "string"

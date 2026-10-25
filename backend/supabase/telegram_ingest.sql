@@ -79,8 +79,33 @@ on public.intmed_content_ingest(status,created_at desc);
 create index if not exists intmed_content_ingest_sha_idx
 on public.intmed_content_ingest(sha256) where sha256 is not null;
 
+create table if not exists public.intmed_content_drafts(
+  id uuid primary key default gen_random_uuid(),
+  ingest_id uuid not null unique references public.intmed_content_ingest(id) on delete cascade,
+  status text not null default 'queued' check(status in ('queued','waiting_provider','processing','draft_ready','error','rejected')),
+  topic_id text check(topic_id is null or topic_id ~ '^[a-z0-9][a-z0-9-]{1,79}$'),
+  topic_confidence numeric(4,3) check(topic_confidence is null or topic_confidence between 0 and 1),
+  title text,
+  source_summary text,
+  extracted_text text,
+  draft_json jsonb,
+  provider text,
+  model text,
+  prompt_version text not null default 'intmed-content-v1',
+  error_code text,
+  attempts integer not null default 0 check(attempts between 0 and 20),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists intmed_content_drafts_status_created_idx
+on public.intmed_content_drafts(status,created_at);
+
 alter table public.intmed_content_ingest enable row level security;
+alter table public.intmed_content_drafts enable row level security;
 revoke all on public.intmed_content_ingest from public,anon,authenticated;
+revoke all on public.intmed_content_drafts from public,anon,authenticated;
 grant all on public.intmed_content_ingest to service_role;
+grant all on public.intmed_content_drafts to service_role;
 
 commit;

@@ -378,7 +378,7 @@ def build_library_index(
         meta = topic_meta[topic_id]
         sources = {source.get("id"): source for source in payload.get("sources", []) if isinstance(source, dict)}
 
-        def source_summary(item: dict[str, Any]) -> tuple[str, str, str]:
+        def source_summary(item: dict[str, Any]) -> tuple[str, str, str, str]:
             refs = item.get("sourceRefs") or []
             source_id = next((ref.get("sourceId") for ref in refs if isinstance(ref, dict) and ref.get("sourceId")), "")
             source = sources.get(source_id) or (next(iter(sources.values())) if sources else {})
@@ -390,10 +390,13 @@ def build_library_index(
             title = str(source.get("title", ""))
             if not title and re.search(r"harrison|هاریسون", json.dumps(item, ensure_ascii=False), re.IGNORECASE):
                 title = "Harrison"
-            return title, str(source_id or source.get("id", "")), pages
+            source_class = str(item.get("sourceClass") or source.get("sourceClass") or "")
+            if source_class not in {"harrison-private", "authored", "open-license"}:
+                source_class = ""
+            return title, str(source_id or source.get("id", "")), pages, source_class
 
         def add(field: str, item: dict[str, Any], kind: str, title: str, search: str = "") -> None:
-            source_title, source_id, source_pages = source_summary(item)
+            source_title, source_id, source_pages, source_class = source_summary(item)
             entry = {
                 "id": f"{topic_id}:{field}:{item.get('id')}",
                 "itemId": item.get("id"),
@@ -405,6 +408,7 @@ def build_library_index(
                 "sourceId": source_id,
                 "sourceTitle": source_title,
                 "sourcePages": source_pages,
+                "sourceClass": source_class,
                 "reviewStatus": item.get("reviewStatus", ""),
                 "search": " ".join(filter(None, [title, search, meta["topicLabel"], meta["categoryLabel"], source_title])),
             }

@@ -51,6 +51,8 @@ jobs:
       - run: python3 scripts/build_dashboard_setup.py --check
       - run: node scripts/dashboard_sql_test.mjs
       - run: node scripts/signup_notification_test.mjs
+      - run: node scripts/telegram_ingest_test.mjs
+      - run: node scripts/content_worker_test.mjs
       - run: node scripts/newsletter_test.mjs
       - run: python3 scripts/runtime_config_test.py
       - run: python3 scripts/smoke_test.py

@@ -22,7 +22,7 @@ try{
  const degreeLabels=await page.locator('#signupDegree option').allTextContents();
  if(degreeLabels.length!==9||degreeLabels.indexOf('پزشکی عمومی')+1!==degreeLabels.indexOf('رزیدنت')||degreeLabels.at(-1)!=='سایر')throw Error('Degree list/order wrong');
  if(await page.evaluate(()=>window.IntMedRegistration.provinces.length)!==31)throw Error('Province list incomplete');
- await page.locator('#signupFullName').fill('پزشک آزمایشی');await page.locator('#signupUser').fill('doctor_qa');await page.locator('#signupPass').fill('StrongPassword-123');await page.locator('#signupPassConfirm').fill('different-password');await page.locator('#signupDegree').selectOption({label:'رزیدنت'});
+ await page.locator('#signupFullName').fill('پزشک آزمایشی');await page.locator('#signupUser').fill('Doctor_۱۲');await page.locator('#signupIdNumber').fill(' ۱۲۳ ٤٥٦ ');await page.locator('#signupMobile').fill('۰۹۱۲ ۳۴۵-۶۷۸۹');await page.locator('#signupPass').fill('StrongPassword-123');await page.locator('#signupPassConfirm').fill('different-password');await page.locator('#signupDegree').selectOption({label:'رزیدنت'});
  await page.locator('#signupSpecialty').fill('داخلی');await page.getByRole('option',{name:'بیماری های داخلی',exact:true}).click();
  await page.locator('#signupProvince').fill('غيرمعتبر');
  if(await page.locator('#signupProvince').evaluate(e=>e.checkValidity()))throw Error('Invalid province accepted');
@@ -30,10 +30,12 @@ try{
  // Normal Persian spelling and Arabic Yeh searches both match.
  await page.locator('#signupProvince').fill('آذربايجان');await page.locator('#signupProvince').press('ArrowDown');await page.locator('#signupProvince').press('Enter');
  if(await page.locator('#signupProvince').inputValue()!=='آذربایجان شرقی')throw Error('Province keyboard selection failed');
- await page.locator('#signupEmail').fill('qa@example.com');await page.locator('#signupForm button[type=submit]').click();
+ await page.locator('#signupEmail').fill('QA۱۲@example.com');await page.locator('#signupForm button[type=submit]').click();
  if(!await page.locator('#signupErr').textContent().then(t=>t.includes('یکسان نیستند')))throw Error('Password confirmation mismatch accepted');
  await page.locator('#signupPassConfirm').fill('StrongPassword-123');await page.locator('#signupForm button[type=submit]').click();await page.locator('#signupSuccessBox').waitFor({state:'visible'});
  if(!gatewayAttempts)throw Error('Public gateway fallback was not exercised');
+ if(signupBody.email!=='qa12@example.com'||signupBody.data.username!=='doctor_12'||signupBody.data.idNumber!=='123456'||signupBody.data.phone!=='09123456789')throw Error('Persian/Arabic digit normalization failed');
+ if(await page.locator('#signupIdNumber').getAttribute('inputmode')!=='numeric'||await page.locator('#signupMobile').getAttribute('inputmode')!=='tel')throw Error('Mobile numeric keyboard hints are missing');
  if(signupBody.data.specialty!=='بیماری های داخلی'||signupBody.data.province!=='آذربایجان شرقی'||signupBody.data.degree!=='رزیدنت'||signupBody.data.app!=='intmed')throw Error('New profile metadata lost');
  await page.locator('#backToLoginFromSuccess').click();await page.locator('#showSignupLink').click();await page.locator('#signupEmail').fill('duplicate@example.com');await page.locator('#signupForm button[type=submit]').click();await page.locator('#signupRecoveryGuide').waitFor({state:'visible'});
  if(!await page.locator('#signupErr').textContent().then(t=>t.includes('این ایمیل قبلاً ثبت شده است')))throw Error('Duplicate email message missing');

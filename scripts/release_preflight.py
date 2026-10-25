@@ -19,12 +19,14 @@ REQUIRED_SECRETS = {
     "NEWSLETTER_SIGNING_SECRET",
     "TELEGRAM_WEBHOOK_SECRET",
 }
+OPTIONAL_SECRETS = {"OPENAI_API_KEY"}
 REQUIRED_FUNCTIONS = {
     "intmed-login": False,
     "intmed-newsletter": False,
     "intmed-signup-notify": True,
     "intmed-study-event": True,
     "intmed-telegram-bot": False,
+    "intmed-content-worker": True,
     "intmed-purchase-verify": True,
 }
 
@@ -72,6 +74,8 @@ def remote_checks(token: str, project_ref: str = PROJECT_REF) -> list[dict]:
         names = {row.get("name") for row in secrets if isinstance(row, dict)}
         for name in sorted(REQUIRED_SECRETS):
             checks.append(finding("SECRET_" + name, name in names, f"Supabase secret name is configured: {name}."))
+        for name in sorted(OPTIONAL_SECRETS):
+            checks.append(finding("SECRET_" + name, name in names, f"Optional worker secret name is configured: {name}.", blocking=False))
         functions = api_json(token, f"/v1/projects/{project_ref}/functions")
         by_slug = {row.get("slug") or row.get("name"): row for row in functions if isinstance(row, dict)}
         for slug, expected_jwt in REQUIRED_FUNCTIONS.items():
@@ -101,7 +105,8 @@ def render(checks: list[dict], json_output: bool) -> None:
         print(json.dumps({"ok": all(c["ok"] or not c["blocking"] for c in checks), "checks": checks}, ensure_ascii=False, indent=2))
         return
     for item in checks:
-        print(("PASS" if item["ok"] else "FAIL") + " " + item["code"] + " — " + item["detail"])
+        label = "PASS" if item["ok"] else ("FAIL" if item["blocking"] else "WARN")
+        print(label + " " + item["code"] + " — " + item["detail"])
 
 
 def main(argv: list[str] | None = None) -> int:

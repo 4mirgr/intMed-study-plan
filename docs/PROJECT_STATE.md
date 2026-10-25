@@ -33,8 +33,8 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   review issue; it cannot modify medical content.
 - The secure Telegram inbox accepts authorized direct/forwarded text, PDF and images into a private
   quarantine queue. It records privacy-limited provenance and never auto-publishes content.
-- Normalized message/read-cursor and subscription/entitlement foundations are additive and keep the
-  legacy UI/public content behavior unchanged until staged cutovers.
+- Normalized conversations/messages/read cursors are now the primary message UI; a temporary
+  legacy-ticket fallback remains only for old cached clients or an unavailable schema.
 - The installable Persian PWA shell has an explicit offline screen and never caches Auth/API/private
   data. Production Auth now requires at least eight password characters.
 
@@ -56,8 +56,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   high DPI; record page, source, copyright and visual QA. Never upscale a bad thumbnail as a fix.
 - Validate normalized message backfill in production, then move the UI from legacy ticket polling
   to conversation RPCs/Realtime; add native push later. Dual-write keeps the cutover reversible.
-- Add a reviewed ingest worker that maps Telegram queue items to cached PDF extraction/page maps
-  and opens a content patch; the bot inbox itself deliberately stops at `pending_review`.
+- Deploy and provider-test the reviewed Telegram ingest worker. It now creates a structured,
+  source-linked `draft_ready` record and suggests a canonical topic, but deliberately cannot edit
+  or publish repository content. `OPENAI_API_KEY` is an external production dependency.
 
 ### P1 — paid/mobile foundation
 
@@ -67,6 +68,8 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   server-side with signed/short-lived delivery.
 - Validate the new PWA install/update/offline flow, then build an Android shell (Capacitor is the shortest migration path)
   with secure storage, deep links, notifications, offline rules and separate Bazaar/Myket flavors.
+- Keep the proposed localhost/PWA `offline-readonly` mode in the backlog; it is explicitly deferred
+  for now and must not copy private sessions or synced account data onto shared computers.
 - At publication time recheck the current official Bazaar/Myket contracts and IAP rules, Enamad,
   tax obligations, privacy/terms/refund policy, and medical-education disclaimer. Store terms and
   fees change; do not encode remembered percentages.
