@@ -195,6 +195,7 @@
               "tracing",
               "radiology",
               "pathology",
+              "pbs",
               "clinical",
               "chart"
             ]

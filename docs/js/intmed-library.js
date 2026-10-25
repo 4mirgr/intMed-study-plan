@@ -1,7 +1,7 @@
 (function(global){
   'use strict';
   var api=null,data=null,visible=48,current=null,topicCache=new Map(),loading=null;
-  var labels={algorithm:'الگوریتم',image:'تصویر',table:'جدول',tracing:'نوار و tracing',radiology:'رادیولوژی',pathology:'پاتولوژی',clinical:'تصویر بالینی',chart:'نمودار'};
+  var labels={algorithm:'الگوریتم',image:'تصویر',table:'جدول',tracing:'نوار و tracing',radiology:'رادیولوژی',pathology:'پاتولوژی',pbs:'PBS · لام خون محیطی',clinical:'تصویر بالینی',chart:'نمودار'};
   function el(tag,className,text){var node=document.createElement(tag);if(className)node.className=className;if(text!=null)node.textContent=text;return node;}
   function fa(value){return new Intl.NumberFormat('fa-IR').format(Number(value)||0);}
   function normalize(value){return String(value||'').toLowerCase().normalize('NFKD').replace(/[\u064B-\u065F\u0670]/g,'').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/\u200c/g,' ').replace(/[^\p{L}\p{N}]+/gu,' ').trim();}
@@ -19,7 +19,7 @@
   function status(message){var root=document.getElementById('libraryStatus');if(root)root.textContent=message;}
   function unique(key){var found=new Map();(data.entries||[]).forEach(function(entry){var value=entry[key];if(value&&!found.has(value))found.set(value,key==='categoryId'?entry.categoryLabel:value);});return Array.from(found.entries()).sort(function(a,b){return String(a[1]).localeCompare(String(b[1]),'fa');});}
   function populate(selectId,items){var select=document.getElementById(selectId),first=select.firstElementChild;select.replaceChildren(first);items.forEach(function(pair){var option=el('option',null,pair[1]);option.value=pair[0];select.appendChild(option);});}
-  function populateFilters(){populate('libraryCategory',unique('categoryId'));var sources=unique('sourceTitle');if((data.entries||[]).some(function(entry){return !entry.sourceTitle;}))sources.push(['__none','بدون منبع ثبت‌شده']);populate('librarySource',sources);}
+  function populateFilters(){var kind=document.getElementById('libraryKind');if(kind&&!kind.querySelector('option[value="pbs"]')){var pbs=el('option',null,labels.pbs);pbs.value='pbs';var pathology=kind.querySelector('option[value="pathology"]');if(pathology)pathology.insertAdjacentElement('afterend',pbs);else kind.appendChild(pbs);}populate('libraryCategory',unique('categoryId'));var sources=unique('sourceTitle');if((data.entries||[]).some(function(entry){return !entry.sourceTitle;}))sources.push(['__none','بدون منبع ثبت‌شده']);populate('librarySource',sources);}
   function filtered(){
     if(!data)return[];var query=normalize(document.getElementById('librarySearch').value),words=query.split(/\s+/).filter(Boolean),kind=document.getElementById('libraryKind').value,category=document.getElementById('libraryCategory').value,source=document.getElementById('librarySource').value,only=document.getElementById('libraryFavoritesOnly').checked;
     return data.entries.filter(function(entry){var hay=normalize(entry.search);return(!kind||entry.kind===kind)&&(!category||entry.categoryId===category)&&(!source||(source==='__none'?!entry.sourceTitle:entry.sourceTitle===source))&&(!only||favorite(entry))&&words.every(function(word){return hay.includes(word);});}).sort(function(a,b){return Number(favorite(b))-Number(favorite(a))||a.categoryLabel.localeCompare(b.categoryLabel,'fa')||a.title.localeCompare(b.title,'fa');});

@@ -68,8 +68,14 @@ python3 scripts/content_pipeline.py check
 
 Do not create a second hardcoded catalog. Extend canonical topic content with stable figure metadata
 and generate a searchable index during build. Each entry needs: `id`, `topicId`, kind
-(`algorithm|table|tracing|radiology|pathology|clinical|chart`), Persian title/alt, keywords, source
+(`algorithm|table|tracing|radiology|pathology|pbs|clinical|chart`), Persian title/alt, keywords, source
 ID/pages/edition, copyright/use note, review state, original hash, derivative dimensions and path.
+
+Use `kind: "pbs"` only for a peripheral blood smear (لام خون محیطی), not marrow aspirates,
+histopathology or generic microscopy. A PBS item must retain the source edition and page/figure,
+an explicit copyright/use note, a medically useful Persian caption/alt, and draft/reviewed status.
+Do not infer PBS from a filename or publish a book screenshot: extract the original embedded image
+when possible, otherwise crop only the figure at 300–450 DPI from a user-supplied authorized PDF.
 
 The future dashboard library reads that generated index and offers subject/topic/kind/source filters,
 Persian search, favorites, recent items, full-resolution viewing and a “go to lesson” deep link.

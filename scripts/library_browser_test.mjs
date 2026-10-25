@@ -1,4 +1,5 @@
-import {createRequire} from 'node:module';import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';import assert from 'node:assert/strict';import fs from 'node:fs';
+const schema=JSON.parse(fs.readFileSync('content/_schema/topic-content.schema.json','utf8'));assert.ok(schema.properties.images.items.properties.kind.enum.includes('pbs'));assert.match(fs.readFileSync('scripts/content_pipeline.py','utf8'),/"pbs"/);
 const {chromium}=createRequire(import.meta.url)('playwright'),exe=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 const browser=await chromium.launch({headless:true,...(exe?{executablePath:exe}:{})}),owner='11111111-1111-4111-8111-111111111111';
 const state={itemState:{},highlights:{},meta:{}},context=await browser.newContext({viewport:{width:390,height:844}});
@@ -11,6 +12,7 @@ await context.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,a
   return route.fulfill({json:[{user_id:owner,state,updated_at:'2026-10-24T10:00:00Z'}]});
  }
  if(url.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
+ if(url.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:[]});
  throw Error('Unexpected request '+url.pathname);
 });
 await context.route('**/rest/v1/intmed_recovery_tickets?*',route=>route.fulfill({json:[]}));
@@ -18,6 +20,7 @@ const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.p
 try{
  await page.goto(process.env.INTMED_BASE_URL||'http://127.0.0.1:8765');await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#headerCollapseBtn').click();await page.locator('#tabBtnLibrary').click();
  await page.locator('.library-card').first().waitFor();assert.ok(await page.locator('.library-card').count()>20);assert.match(await page.locator('#libraryStatus').textContent(),/مورد پیدا شد/);
+ assert.equal(await page.locator('#libraryKind option[value="pbs"]').textContent(),'PBS · لام خون محیطی');await page.locator('#libraryKind').selectOption('pbs');assert.equal(await page.locator('.library-card').count(),0);assert.match(await page.locator('#libraryStatus').textContent(),/موردی با این فیلتر پیدا نشد/);
  await page.locator('#libraryKind').selectOption('algorithm');assert.ok(await page.locator('.library-card').count()>5);assert.equal(await page.locator('.library-kind').first().textContent(),'الگوریتم');
  const algorithm=page.locator('.library-card').first();await algorithm.locator('.library-card-favorite').click();await page.waitForTimeout(700);const favoriteKey=Object.keys(state.itemState).find(key=>key.startsWith('library-favorite:'));assert.ok(favoriteKey);assert.equal(state.itemState[favoriteKey].favorite,true);
  await page.locator('#libraryFavoritesOnly').check();assert.equal(await page.locator('.library-card').count(),1);await page.locator('#libraryFavoritesOnly').uncheck();

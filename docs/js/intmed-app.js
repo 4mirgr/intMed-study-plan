@@ -1066,6 +1066,7 @@
   var profileSavedNote = document.getElementById("profileSavedNote");
   var ticketMessageEl = document.getElementById("ticketMessage");
   var ticketSendBtn = document.getElementById("ticketSendBtn");
+  var messageCenterMode = "unknown";
   var adminTabUsers = document.getElementById("adminTabUsers");
   var adminTabTickets = document.getElementById("adminTabTickets");
   var adminUsersPanel = document.getElementById("adminUsersPanel");
@@ -1073,6 +1074,31 @@
   var accountFilter=document.getElementById("adminUserStatusFilter");if(accountFilter)accountFilter.addEventListener("change",renderAdminUsers);
   var adminTicketsPanel = document.getElementById("adminTicketsPanel");
   var adminTicketBadge = document.getElementById("adminTicketBadge");
+  function messageRequestId(){
+    if(window.crypto&&typeof window.crypto.randomUUID==="function")return window.crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==="x"?r:(r&3|8);return v.toString(16);});
+  }
+  function conversationForUser(userId){
+    var item=(STATE.tickets||[]).find(function(row){return row._normalized&&row.userId===userId&&row._conversationId;});
+    return item&&item._conversationId||null;
+  }
+  function useMessageCenter(result){
+    (result.items||[]).forEach(function(row){var bucket=(STATE.users||{})[row.userId]||{},profile=bucket.profile||{};row.userName=profile.fullName||bucket.backendUsername||USER_NAMES[row.userId]||row.userId;});
+    messageCenterMode=result.mode;STATE.tickets=result.items||[];updateManagementBadge();
+    if(document.getElementById('tabPanelMessages').classList.contains('active'))renderTicketHistory();
+    if(document.getElementById('tabPanelManagement').classList.contains('active'))renderAdminTickets();
+    return result;
+  }
+  function loadMessageCenter(){
+    if(!usesPrivateBackend()||!window.IntMedBackend.loadMessageCenter)return Promise.resolve({mode:"legacy",items:STATE.tickets||[]});
+    return window.IntMedBackend.loadMessageCenter().then(useMessageCenter);
+  }
+  function sendCenterMessage(userId,body){
+    return loadMessageCenter().then(function(result){
+      if(result.mode!=="normalized")return false;
+      return window.IntMedBackend.sendMessage(conversationForUser(userId),userId===CURRENT_USER_ID?null:userId,body,messageRequestId()).then(function(){return loadMessageCenter();}).then(function(){return true;});
+    });
+  }
 
   // Best-effort mirror of a saved profile into the "IntMed - کاربران و
   // ثبت‌نام‌ها" Google Sheet, via a Google Apps Script Web App bound to that
@@ -1142,18 +1168,13 @@
     ticketSendBtn.addEventListener("click", function(){
       var msg = ticketMessageEl.value.trim();
       if(!msg) return;
-      if(!STATE.tickets) STATE.tickets = [];
-      STATE.tickets.push({
-        id: "t" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
-        userId: CURRENT_USER_ID,
-        userName: USER_NAMES[CURRENT_USER_ID] || CURRENT_USER_ID,
-        message: msg,
-        createdAt: new Date().toISOString(),
-        read: false
-      });
-      ticketMessageEl.value = "";
-      scheduleFlush(300);
-      renderTicketHistory();
+      ticketSendBtn.disabled=true;
+      sendCenterMessage(CURRENT_USER_ID,msg).then(function(sent){
+        if(sent){ticketMessageEl.value="";return;}
+        if(!STATE.tickets) STATE.tickets = [];
+        STATE.tickets.push({id:"t"+Date.now()+"-"+Math.random().toString(36).slice(2,7),userId:CURRENT_USER_ID,userName:USER_NAMES[CURRENT_USER_ID]||CURRENT_USER_ID,message:msg,createdAt:new Date().toISOString(),read:false});
+        ticketMessageEl.value="";scheduleFlush(300);renderTicketHistory();
+      }).catch(function(error){alert(error.message||"ارسال پیام انجام نشد.");}).finally(function(){ticketSendBtn.disabled=false;});
     });
   }
   if(adminTabUsers){
@@ -1391,16 +1412,16 @@
           if(note) note.textContent = "اول پیام رو بنویس.";
           return;
         }
-        if(!STATE.tickets) STATE.tickets = [];
-        STATE.tickets.push({
-          id: "t" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
-          userId: id, userName: name, message: msg, fromAdmin: true,
-          createdAt: new Date().toISOString(), read: true
-        });
-        scheduleFlush(200);
-        if(textarea) textarea.value = "";
-        if(note) note.textContent = "ارسال شد ✓ — در تب «پیام‌ها و تیکت‌ها» هم ثبت شد.";
-        renderAdminTickets();
+        btn.disabled=true;if(note)note.textContent="در حال ارسال…";
+        sendCenterMessage(id,msg).then(function(sent){
+          if(!sent){
+            if(!STATE.tickets)STATE.tickets=[];
+            STATE.tickets.push({id:"t"+Date.now()+"-"+Math.random().toString(36).slice(2,7),userId:id,userName:name,message:msg,fromAdmin:true,createdAt:new Date().toISOString(),read:true});
+            scheduleFlush(200);renderAdminTickets();
+          }
+          if(textarea)textarea.value="";
+          if(note)note.textContent="ارسال شد ✓ — در تب «پیام‌ها و تیکت‌ها» هم ثبت شد.";
+        }).catch(function(error){if(note)note.textContent=error.message||"ارسال انجام نشد.";}).finally(function(){btn.disabled=false;});
       });
     });
   }
@@ -1447,7 +1468,10 @@
       btn.addEventListener("click", function(){
         var id = btn.getAttribute("data-mark-read");
         var t = (STATE.tickets || []).find(function(x){ return x.id === id; });
-        if(t){ t.read = true; scheduleFlush(200); renderAdminTickets(); }
+        if(!t)return;
+        if(t._normalized){
+          btn.disabled=true;window.IntMedBackend.markConversationRead(t._conversationId,t._lastMessageId||t._messageId).then(loadMessageCenter).catch(function(error){alert(error.message||"ثبت وضعیت خوانده‌شدن انجام نشد.");}).finally(function(){btn.disabled=false;});
+        }else{t.read=true;scheduleFlush(200);renderAdminTickets();}
       });
     });
     // Sending a reply used to just silently re-render — if the typed text
@@ -1468,11 +1492,13 @@
           if(note){ note.textContent = "اول پاسخ رو بنویس."; note.classList.add("warn"); }
           return;
         }
-        t.reply = reply;
-        t.replyAt = new Date().toISOString();
-        t.read = true;
-        scheduleFlush(200);
-        if(note){ note.classList.remove("warn"); note.textContent = "ارسال شد ✓"; }
+        if(t._normalized){
+          btn.disabled=true;if(note){note.classList.remove("warn");note.textContent="در حال ارسال…";}
+          window.IntMedBackend.sendMessage(t._conversationId,null,reply,messageRequestId()).then(function(){return window.IntMedBackend.markConversationRead(t._conversationId,t._lastMessageId||t._messageId);}).then(loadMessageCenter).then(function(){if(note)note.textContent="ارسال شد ✓";}).catch(function(error){if(note){note.classList.add("warn");note.textContent=error.message||"ارسال انجام نشد.";}}).finally(function(){btn.disabled=false;});
+          return;
+        }
+        t.reply=reply;t.replyAt=new Date().toISOString();t.read=true;scheduleFlush(200);
+        if(note){note.classList.remove("warn");note.textContent="ارسال شد ✓";}
         // Delay the re-render so the "ارسال شد ✓" note is actually visible
         // for a moment — renderAdminTickets() replaces this whole box's
         // markup (including this note), so firing it immediately would
@@ -2584,6 +2610,10 @@
     var quickCount=myBucket().backendRole==='admin'?tickets+(recoveryPending||0):ownUnread,quick=document.getElementById('messagesBadge');if(quick){quick.textContent=faDigits(quickCount);quick.hidden=!quickCount;}
   }
   function markOwnMessagesRead(){
+    if(messageCenterMode==="normalized"){
+      var threads={};(STATE.tickets||[]).forEach(function(t){if(t.userId===CURRENT_USER_ID&&t._normalized&&t.fromAdmin&&!t.userReadAt)threads[t._conversationId]=t._lastMessageId||t._messageId;});
+      Promise.all(Object.keys(threads).map(function(id){return window.IntMedBackend.markConversationRead(id,threads[id]);})).then(loadMessageCenter).catch(function(){});return;
+    }
     var changed=false,now=new Date().toISOString();(STATE.tickets||[]).forEach(function(t){if(t.userId!==CURRENT_USER_ID)return;if(t.fromAdmin&&!t.userReadAt){t.userReadAt=now;changed=true;}if(t.reply&&(!t.replyReadAt||String(t.replyReadAt)<String(t.replyAt||''))){t.replyReadAt=now;changed=true;}});if(changed)scheduleFlush(200);updateManagementBadge();
   }
   tabBtnDashboard.addEventListener("click", function(){ setTab("dashboard"); });
@@ -2596,9 +2626,10 @@
     markOwnMessagesRead();setTab('messages');renderTicketHistory();var history=document.getElementById('ticketHistoryList');if(history)history.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   });
   function refreshMessageNotifications(){
-    if(!usesPrivateBackend()||!stateLoaded||dirty||flushing||document.visibilityState==='hidden'||!window.IntMedBackend.loadTickets)return;
-    window.IntMedBackend.loadTickets().then(function(tickets){STATE.tickets=tickets;updateManagementBadge();if(document.getElementById('tabPanelMessages').classList.contains('active'))renderTicketHistory();if(document.getElementById('tabPanelManagement').classList.contains('active'))renderAdminTickets();}).catch(function(){});
+    if(!usesPrivateBackend()||!stateLoaded||dirty||flushing||document.visibilityState==='hidden'||!window.IntMedBackend.loadMessageCenter)return Promise.resolve();
+    return loadMessageCenter().catch(function(){});
   }
+  setTimeout(refreshMessageNotifications,1200);
   setInterval(refreshMessageNotifications,45000);
   window.addEventListener('focus',refreshMessageNotifications);
 

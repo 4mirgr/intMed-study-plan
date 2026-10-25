@@ -18,6 +18,7 @@ await context.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,a
   return route.fulfill({json:ids.map(id=>({user_id:id,state:states[id],updated_at:'2026-10-21T10:00:00Z'}))});
  }
  if(url.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
+ if(url.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:[]});
  throw Error('Unexpected request '+url.pathname);
 });
 const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));

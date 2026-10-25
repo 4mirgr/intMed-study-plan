@@ -20,6 +20,7 @@ await context.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,a
  if(url.pathname==='/auth/v1/logout'){logoutCalls++;assert.equal(states[owner].itemState[topic].note,'آخرین یادداشت قبل از خروج');return route.fulfill({status:204,body:''});}
  if(url.pathname==='/functions/v1/intmed-study-event')return route.fulfill({json:{sent:true}});
  if(url.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
+ if(url.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:[]});
  throw Error('Unexpected request '+url.pathname);
 });
 const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));

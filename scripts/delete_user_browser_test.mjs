@@ -26,6 +26,7 @@ await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,asyn
   return route.fulfill({json:u.searchParams.has('user_id')?rows.filter(r=>r.user_id===owner):rows});
  }
  if(u.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
+ if(u.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:[]});
  throw Error('Unexpected request '+u.pathname);
 });
 await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));

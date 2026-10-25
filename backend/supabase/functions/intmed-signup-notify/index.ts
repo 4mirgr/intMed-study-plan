@@ -12,6 +12,9 @@ Deno.serve(async req=>{
   async function telegram(method,body){if(!token)throw Error('Telegram token missing');const r=await fetch('https://api.telegram.org/bot'+token+'/'+method,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const value=await r.json();if(!r.ok||!value.ok)throw Error('Telegram delivery failed');return value.result;}
   async function admin(){const bearer=req.headers.get('authorization');if(!bearer)return false;const r=await fetch(url+'/auth/v1/user',{headers:{apikey:anon,Authorization:bearer}});if(!r.ok)return false;const user=await r.json();const rows=await db('profiles?id=eq.'+encodeURIComponent(user.id)+'&select=role,approved,rejected');return rows.length===1&&rows[0].role==='admin'&&rows[0].approved&&!rows[0].rejected;}
   async function setting(){const rows=await db('intmed_notification_settings?key=eq.telegram&select=chat_id');return rows[0]&&rows[0].chat_id;}
+  const inboxUrl=()=>url+'/functions/v1/intmed-telegram-bot';
+  async function webhookInfo(){if(!token)return null;const value=await telegram('getWebhookInfo',{});return {active:value?.url===inboxUrl(),pending:Number(value?.pending_update_count||0)};}
+  async function enableInbox(){if(!webhookSecret)throw Error('Telegram webhook secret missing');await telegram('setWebhook',{url:inboxUrl(),secret_token:webhookSecret,allowed_updates:['message'],drop_pending_updates:false,max_connections:10});}
   async function deliver(id){
     const profiles=await db('profiles?id=eq.'+encodeURIComponent(id)+'&select=id,username,approved,rejected');
     if(profiles.length!==1||profiles[0].rejected){await db('intmed_signup_alerts?user_id=eq.'+encodeURIComponent(id),'PATCH',{status:'dismissed',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});return {skipped:true};}
@@ -30,19 +33,26 @@ Deno.serve(async req=>{
     const raw=await req.text();if(raw.length>8192)return reply(413,{message:'Request too large'});const body=JSON.parse(raw);
     if(body.action){
       if(!await admin())return reply(403,{message:'Admin required'});
-      if(body.action==='status'){const alerts=await db('intmed_signup_alerts?select=status');return reply(200,{tokenConfigured:!!token,inboxConfigured:!!token&&!!webhookSecret,connected:!!await setting(),pending:alerts.filter(r=>r.status!=='sent'&&r.status!=='dismissed').length});}
+      if(body.action==='status'){const alerts=await db('intmed_signup_alerts?select=status'),hook=await webhookInfo();return reply(200,{tokenConfigured:!!token,inboxConfigured:!!token&&!!webhookSecret,webhookActive:!!hook?.active,webhookPending:hook?.pending||0,connected:!!await setting(),pending:alerts.filter(r=>r.status!=='sent'&&r.status!=='dismissed').length});}
       if(body.action==='discover'){
+        const hook=await webhookInfo();
+        // Telegram forbids getUpdates while a webhook is active. An authenticated admin may
+        // pause the inbox without dropping updates, discover the pending /start chat, then the
+        // connect action below restores the webhook automatically.
+        if(hook?.active)await telegram('deleteWebhook',{drop_pending_updates:false});
         const updates=await telegram('getUpdates',{timeout:0,allowed_updates:['message']});const chats=new Map();updates.forEach(u=>{const c=u.message?.chat;if(c&&c.type==='private')chats.set(String(c.id),{id:String(c.id),name:[c.first_name,c.last_name].filter(Boolean).join(' ')||c.username||String(c.id)});});return reply(200,{chats:[...chats.values()]});
       }
       if(body.action==='connect'){
         const updates=await telegram('getUpdates',{timeout:0,allowed_updates:['message']});const chat=updates.map(u=>u.message?.chat).find(c=>c&&c.type==='private'&&String(c.id)===String(body.chatId));if(!chat)return reply(400,{message:'ابتدا در گفت‌وگوی بات Start را بزنید و چت خودتان را انتخاب کنید.'});
-        await db('intmed_notification_settings?key=eq.telegram','PATCH',{chat_id:String(chat.id)},{Prefer:'return=minimal'});return reply(200,{connected:true});
+        await db('intmed_notification_settings?key=eq.telegram','PATCH',{chat_id:String(chat.id)},{Prefer:'return=minimal'});
+        if(webhookSecret)await enableInbox();
+        return reply(200,{connected:true,webhookActive:!!webhookSecret});
       }
       if(body.action==='test'){const chat=await setting();if(!chat)return reply(400,{message:'تلگرام هنوز متصل نیست.'});await telegram('sendMessage',{chat_id:chat,text:'✅ اعلان‌های IntMed به تلگرام شما متصل است.'});return reply(200,{sent:true});}
       if(body.action==='webhook'){
         if(!await setting())return reply(400,{message:'ابتدا گفت‌وگوی مدیر را متصل کنید.'});
         if(!webhookSecret)return reply(503,{message:'Secret دریافت امن فایل هنوز تنظیم نشده است.'});
-        await telegram('setWebhook',{url:url+'/functions/v1/intmed-telegram-bot',secret_token:webhookSecret,allowed_updates:['message'],drop_pending_updates:false,max_connections:10});
+        await enableInbox();
         return reply(200,{configured:true});
       }
       if(body.action==='retry'){const alerts=await db('intmed_signup_alerts?status=in.(pending,error,processing)&select=user_id&limit=10');let sent=0;for(const alert of alerts){try{if((await deliver(alert.user_id)).sent)sent++;}catch{}}return reply(200,{sent});}

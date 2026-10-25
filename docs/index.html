@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=9e5e0c98a57e713a">
+<link rel="stylesheet" href="intmed.css?v=dd6e67b5c7261bc8">
 <link rel="stylesheet" href="pwa.css?v=fd05bfbc6b4b22fc">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
@@ -157,12 +157,12 @@
           <span class="header-quick-user" id="userLabel" aria-label="کاربر فعلی"></span>
           <button type="button" class="header-icon-btn" id="accountQuickBtn" aria-label="پنل کاربری" title="پنل کاربری"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button>
           <button type="button" class="header-icon-btn" id="messagesQuickBtn" aria-label="پیام‌ها" title="پیام‌ها"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H8l-4 4Z"/><path d="M8 9h8M8 13h5"/></svg><span id="messagesBadge" class="quick-badge" hidden></span></button>
+          <span class="conn num header-sync-status" id="connStatus" aria-live="polite" title="وضعیت اتصال و همگام‌سازی">در حال اتصال...</span>
         </span>
         <span class="title-row-extras" id="titleRowExtras">
-          <span class="conn num" id="connStatus">در حال اتصال...</span>
           <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="تغییر حالت تاریک/روشن" title="تغییر حالت تاریک/روشن">🌙</button>
           <button type="button" class="gh-connect-btn" id="ghConnectBtn">اتصال برای ذخیره‌سازی</button>
-          <button type="button" class="gh-connect-btn" id="logoutBtn">خروج</button>
+          <button type="button" class="gh-connect-btn header-icon-action" id="logoutBtn" aria-label="خروج" title="خروج"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4M8 12h10"/></svg></button>
         </span>
         <button type="button" class="theme-toggle-btn theme-toggle-compact" id="themeToggleCompactBtn" aria-label="تغییر حالت تاریک/روشن" title="تغییر حالت تاریک/روشن">🌙</button>
         <button type="button" class="header-collapse-btn" id="headerCollapseBtn" aria-expanded="true" aria-controls="headerCollapsible" aria-label="جمع‌کردن نوار بالا" title="جمع‌کردن/بازکردن نوار بالا"><svg class="chev-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 14 5-5 5 5"/><path d="M6 19h12"/></svg></button>
@@ -192,18 +192,21 @@
     </div>
 
     <section class="study-hero"><div><p class="eyebrow">فضای شخصی مطالعه</p><h2 id="studyGreeting">مسیر یادگیری من</h2><p>قدم‌های کوچک، مرور هدفمند و پیشرفت قابل مشاهده</p></div><span class="hero-orbit" aria-hidden="true">✦</span></section>
-    <section id="studyMetrics" class="metric-grid" aria-label="آمار شخصی مطالعه"></section>
     <section class="site-updates" aria-labelledby="siteUpdatesTitle">
       <div class="site-updates-heading">
         <span class="updates-orbit" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M25 5 9 27h13l-2 16 19-25H26Z"/><path d="M8 10h8M5 16h7"/></svg></span>
         <div><p class="eyebrow">خبرهای محصول</p><h2 id="siteUpdatesTitle">تازه‌های IntMed</h2><p>قابلیت‌هایی که تجربهٔ مطالعه و مدیریت حساب شما را بهتر می‌کنند.</p></div>
       </div>
       <ol class="site-update-list">
+        <li><span class="update-dot update-dot-purple" aria-hidden="true"></span><div><strong>کتابخانهٔ تصاویر و الگوریتم‌ها</strong><p>تصاویر، جدول‌ها و الگوریتم‌های مباحث را جست‌وجو، فیلتر و برای مراجعهٔ بعدی ذخیره کنید.</p></div><time datetime="2026-10-24">۲ آبان ۱۴۰۵</time></li>
+        <li><span class="update-dot update-dot-cyan" aria-hidden="true"></span><div><strong>نصب روی دستگاه و دسترسی آفلاین امن</strong><p>نسخهٔ PWA اضافه شد؛ صفحات عمومی ضروری در قطعی موقت شبکه قابل دسترسی‌اند و اطلاعات خصوصی cache نمی‌شوند.</p></div><time datetime="2026-10-24">۲ آبان ۱۴۰۵</time></li>
+        <li><span class="update-dot update-dot-yellow" aria-hidden="true"></span><div><strong>صندوق محتوای تلگرام</strong><p>مدیر می‌تواند متن، PDF، تصویر و پیام Forwardشده را برای ورود به چرخهٔ بازبینی محتوا ارسال کند.</p></div><time datetime="2026-10-24">۲ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-green" aria-hidden="true"></span><div><strong>برنامه‌ریزی با تاریخ شمسی و تقویم شخصی</strong><p>هدف مطالعه را ثبت کنید و رویداد را به تقویم دستگاه یا Google Calendar بیفزایید.</p></div><time datetime="2026-10-23">۱ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-blue" aria-hidden="true"></span><div><strong>مرکز پیام و پنل حساب مستقل</strong><p>پیام‌ها، اعلان‌ها و تنظیمات حساب با مسیرهای روشن‌تر در دسترس‌اند.</p></div><time datetime="2026-10-23">۱ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-pink" aria-hidden="true"></span><div><strong>نشست امن‌تر در دستگاه‌های عمومی</strong><p>نشست‌های موقت پس از بستن مرورگر باقی نمی‌مانند و بی‌فعالیتی طولانی کنترل می‌شود.</p></div><time datetime="2026-10-23">۱ آبان ۱۴۰۵</time></li>
       </ol>
     </section>
+    <section id="studyMetrics" class="metric-grid" aria-label="آمار شخصی مطالعه"></section>
     <div class="dashboard-grid">
       <section class="neon-panel"><h3>فعالیت هفتهٔ جاری؛ شنبه تا جمعه</h3><div id="studyWeekChart" class="week-chart"></div><p class="section-caption">زمان فعال محتوا؛ زمانِ تب پنهان یا بی‌فعالیتی طولانی محاسبه نمی‌شود.</p></section>
       <section class="neon-panel"><h3>ادامهٔ مسیر</h3><div id="studyRecent" class="insight-list"></div></section>
@@ -379,15 +382,15 @@
 </div>
 
 <script src="config.js?v=066d4f9726ed485f"></script>
-<script src="js/intmed-backend.js?v=208d9d0d0f4e4e0c"></script>
+<script src="js/intmed-backend.js?v=148f899a068fa0e2"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
 <script src="js/intmed-registration.js?v=a6129deced75bfd3"></script>
 <script src="js/intmed-login.js?v=5f03e32e71b1a970"></script>
 <script src="js/intmed-datetime.js?v=c2fdd8f88580b533"></script>
 <script src="js/intmed-exams.js?v=ca47a29078613b9c"></script>
-<script src="js/intmed-library.js?v=5a1235d164b5cffc"></script>
+<script src="js/intmed-library.js?v=b90b44a6a3a1e080"></script>
 <script src="js/intmed-dashboard.js?v=e100ccf63354a53b"></script>
 <script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
 <script src="js/intmed-motion.js?v=5185491e3eeace42"></script>
-<script src="js/intmed-app.js?v=596824dd7bc73997"></script>
+<script src="js/intmed-app.js?v=2e73fb1b4d13115d"></script>
 <script src="js/intmed-pwa.js?v=4050a7ab5c891840"></script>
