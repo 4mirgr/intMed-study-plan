@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
+const wrangler = JSON.parse(fs.readFileSync('wrangler.jsonc', 'utf8'));
+assert.equal(wrangler.name, 'intmed-api-proxy');
+assert.equal(wrangler.main, 'backend/cloudflare/intmed-api-proxy.js');
+assert.equal(wrangler.assets, undefined, 'Worker proxy must not upload the repository as static assets');
+
 const source = fs.readFileSync('backend/cloudflare/intmed-api-proxy.js', 'utf8');
 const moduleUrl = 'data:text/javascript;base64,' + Buffer.from(source).toString('base64');
 const calls = [];

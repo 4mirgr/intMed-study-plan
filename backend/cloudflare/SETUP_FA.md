@@ -4,6 +4,10 @@
 هیچ رمز یا `service_role` در آن قرار نمی‌گیرد و فقط سه مسیر لازم همین پروژه را
 به آدرس ثابت Supabase منتقل می‌کند.
 
+فایل ریشهٔ `wrangler.jsonc` عمداً `main` را به همین Worker محدود می‌کند. در اتصال
+Git، آن را حذف نکنید و `assets.directory` را روی `.` نگذارید؛ وگرنه Cloudflare کل
+ریپو و `node_modules` را asset فرض می‌کند و deploy با خطای 25 MiB شکست می‌خورد.
+
 ## ساخت Worker
 
 1. وارد [Cloudflare Dashboard](https://dash.cloudflare.com/) شوید.
