@@ -2,7 +2,7 @@ import {createRequire} from 'node:module';import assert from 'node:assert/strict
 const {chromium}=createRequire(import.meta.url)('playwright'),exe=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 const browser=await chromium.launch({headless:true,...(exe?{executablePath:exe}:{})});
 const owner='11111111-1111-4111-8111-111111111111',other='22222222-2222-4222-8222-222222222222',topic='cardio-ecg';
-let admin=false;const profiles=[{id:owner,username:'qa',full_name:'پزشک آزمایشی',role:'user',approved:true},{id:other,username:'other',full_name:'کاربر دوم',role:'user',approved:true}];
+let admin=false,stateWrites=0;const profiles=[{id:owner,username:'qa',full_name:'پزشک آزمایشی',role:'user',approved:true},{id:other,username:'other',full_name:'کاربر دوم',role:'user',approved:true}];
 const states={[owner]:{itemState:{},highlights:{},meta:{}},[other]:{itemState:{['favorite:'+topic]:{favorite:true}},meta:{},highlights:{}}};
 const context=await browser.newContext({viewport:{width:390,height:844}});
 await context.addInitScript(id=>localStorage.setItem('intmed_supabase_session',JSON.stringify({access_token:id,user:{id}})),owner);
@@ -13,7 +13,7 @@ await context.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,a
   return route.fulfill({json:url.searchParams.has('id')?list.find(p=>p.id===uid):list});
  }
  if(url.pathname==='/rest/v1/study_state'){
-  if(req.method()==='PATCH'){const body=req.postDataJSON();states[uid]=body.state;return route.fulfill({json:[{user_id:uid,...body}]});}
+  if(req.method()==='PATCH'){stateWrites++;const body=req.postDataJSON();states[uid]=body.state;return route.fulfill({json:[{user_id:uid,...body}]});}
   const ids=url.searchParams.has('user_id')?[uid]:(admin?Object.keys(states):[uid]);
   return route.fulfill({json:ids.map(id=>({user_id:id,state:states[id],updated_at:'2026-10-21T10:00:00Z'}))});
  }
@@ -49,8 +49,10 @@ try{
  assert.equal(await page.locator('[data-ranked-topic="'+topic+'"] b').textContent(),'۱ لایک');
  // A fresh server-side change must survive manual statistics refresh.
  states[owner].itemState['favorite:'+topic]={favorite:true};
+ const writesBeforeStats=stateWrites;
  await page.locator('#refreshFavoriteStats').click();await page.waitForFunction(()=>document.getElementById('favoriteStatsStatus').textContent.includes('به‌روزرسانی شد'));
  assert.equal(await page.locator('[data-ranked-topic="'+topic+'"] b').textContent(),'۲ لایک');
+ assert.equal(stateWrites,writesBeforeStats,'Statistics refresh must not record a login or write study state');
  assert.equal(await page.locator('#dashboardFavorites [data-favorite-topic]').count(),1);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true,'Mobile horizontal overflow');
  await page.screenshot({path:'/tmp/intmed-dashboard-neon-mobile.png',fullPage:true});

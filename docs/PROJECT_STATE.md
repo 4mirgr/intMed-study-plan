@@ -23,7 +23,8 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   `RESEND_API_KEY` and a verified `NEWSLETTER_FROM` are configured in Supabase.
 - Immediate IntMed signup approval, safer session expiry, duplicate-email/recovery flow, signup
   Telegram notification, newsletter server scaffolding.
-- Separate account/message entry points and notification badges (polling MVP), personal notebook,
+- Separate account/message entry points and notification badges with adaptive 8-second foreground
+  polling (up to 60-second backoff on failure), personal notebook,
   highlights with recoloring, dashboard depth/motion and responsive header improvements.
 - Production Supabase migrations/functions were installed; Telegram secret exists. The GitHub
   branch is `claude/quirky-ride-mavb6b`. Confirm the branch and current remote SHA before edits.
@@ -77,6 +78,11 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   `INTMED_CONTENT_PROCESSING_ENABLED`. Process sources through direct chat or an authorized private
   Drive folder. Hosted free-provider fallback requires separate explicit approval of provider and
   data-handling terms and must never happen silently.
+- The approved zero-cost local direction is LM Studio on the owner's 8 GB computer: Qwen3 4B as the
+  primary structured drafter, Gemma E2B for a constrained Persian style pass, and DeepSeek R1
+  Distill Qwen 7B only for small targeted reviews, one loaded model at a time. The secure
+  admin-authenticated pull/claim/heartbeat runner is not implemented yet; do not expose port 1234
+  or store a Supabase service-role key on the laptop.
 
 ### P1 — paid/mobile foundation
 

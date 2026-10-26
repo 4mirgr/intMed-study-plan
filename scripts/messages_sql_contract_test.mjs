@@ -34,5 +34,9 @@ assert.match(backend,/if\(ticket\._normalized\) return/,'Normalized messages mus
 assert.match(app,/sendCenterMessage\(CURRENT_USER_ID,msg\)/);
 assert.match(app,/IntMedBackend\.sendMessage\(t\._conversationId,null,reply,messageRequestId\(\)\)/);
 assert.match(app,/IntMedBackend\.markConversationRead\(t\._conversationId/);
-assert.match(app,/setTimeout\(refreshMessageNotifications,1200\)/);
-console.log('Messages contract passed: normalized threads/messages/read cursors, secure RPC UI, compatibility fallback, RLS and idempotent legacy mirror.');
+assert.match(app,/messagePollDelay=8000/);
+assert.match(app,/Math\.min\(messagePollDelay\*2,60000\)/);
+assert.match(app,/loadMessageCenter\(\{passive:true\}\)/);
+assert.match(app,/visibilitychange/);
+assert.doesNotMatch(app,/setInterval\(refreshMessageNotifications/);
+console.log('Messages contract passed: normalized threads/messages/read cursors, secure RPC UI, compatibility fallback, adaptive 8-second polling, RLS and idempotent legacy mirror.');

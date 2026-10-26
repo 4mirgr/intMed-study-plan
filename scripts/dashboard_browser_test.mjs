@@ -3,7 +3,7 @@ const {chromium}=createRequire(import.meta.url)('playwright'),exe=process.env.PL
 const browser=await chromium.launch({headless:true,...(exe?{executablePath:exe}:{})});
 const owner='11111111-1111-4111-8111-111111111111',other='22222222-2222-4222-8222-222222222222',pending='33333333-3333-4333-8333-333333333333',topic='cardio-ecg';
 const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tehran',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-let admin=false,profileWrites=0,stateWrites=0,adminUpdates=0;
+let admin=false,profileWrites=0,stateWrites=0,adminUpdates=0,conversations=[];
 const profiles=[{id:owner,username:'owner',full_name:'کاربر آزمایشی',degree:'رزیدنت',email:'owner@example.com',approved:true,role:'user',province:'تهران',specialty:'پزشکی داخلی'},{id:other,username:'member',full_name:'کاربر دوم',role:'user',approved:true,email:'other@example.com'},{id:pending,username:'pending',role:'user',approved:false,rejected:false}];
 const states={[owner]:{itemState:{[topic]:{note:'یادداشت قبلی',status:'ضعیف'}},highlights:{[topic]:[{id:'stable-hl',quote:'متن مهم',note:'یادداشت هایلایت'}]},meta:{}},[other]:{itemState:{['activity:'+topic+':'+today]:{opens:5,seconds:120,lastOpenedAt:new Date().toISOString()},['favorite:'+topic]:{favorite:true}},highlights:{},meta:{}},[pending]:{itemState:{},highlights:{},meta:{}}};
 const page=await browser.newPage({viewport:{width:390,height:844}});await page.clock.install({time:new Date()});
@@ -21,7 +21,8 @@ await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,asyn
   return route.fulfill({json:(u.searchParams.has('user_id')?[owner]:(admin?Object.keys(states):[owner])).map(id=>({user_id:id,state:states[id],updated_at:'2026-10-21T10:00:00Z'}))});
  }
  if(u.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
- if(u.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:[]});
+ if(u.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:conversations});
+ if(u.pathname==='/rest/v1/rpc/mark_intmed_conversation_read'){const body=req.postDataJSON(),thread=conversations.find(c=>c.id===body.target_conversation);if(thread)thread.intmed_conversation_reads=[{user_id:owner,last_read_at:new Date().toISOString(),last_read_message_id:body.target_message}];return route.fulfill({status:204,body:''});}
  if(u.pathname==='/functions/v1/intmed-telegram-bot')return route.fulfill({json:{ok:true}});
  if(u.pathname==='/rest/v1/rpc/update_intmed_username'){profiles[0].username=req.postDataJSON().new_username;return route.fulfill({status:204,body:''});}
  if(u.pathname==='/rest/v1/rpc/set_intmed_user_approval'){const body=req.postDataJSON(),p=profiles.find(p=>p.id===body.target_user);p.approved=body.new_approved;p.rejected=!p.approved;return route.fulfill({status:204,body:''});}
@@ -54,7 +55,11 @@ try{
  await page.locator('#planDateOpen').click();assert.equal(await page.locator('#planDate').getAttribute('aria-expanded'),'true');assert.ok(await page.locator('.persian-calendar-day').count()>=29);await page.locator('.persian-calendar-day.selected').click();assert.equal(await page.locator('#planDate').getAttribute('aria-expanded'),'false');assert.match(await page.locator('#planDate').inputValue(),/^[۰-۹]{4}\/[۰-۹]{2}\/[۰-۹]{2}$/);
  await page.locator('#studyTagFilter').selectOption('نیاز به مرور');assert.equal(await page.locator('#studyTagged [data-insight-topic]').count(),0);
  await page.waitForTimeout(700);const preserved=JSON.stringify(states[owner]);const previousStateWrites=stateWrites;
+ conversations=[{id:'44444444-4444-4444-8444-444444444444',user_id:owner,subject:'پشتیبانی',status:'open',created_at:'2026-10-26T10:00:00Z',last_message_at:'2026-10-26T10:01:00Z',intmed_messages:[{id:'55555555-5555-4555-8555-555555555555',sender_id:null,sender_role:'admin',body:'پاسخ تازهٔ مدیر',created_at:'2026-10-26T10:01:00Z'}],intmed_conversation_reads:[]}];
+ await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.waitForFunction(()=>!document.getElementById('messagesBadge').hidden);
+ assert.equal(await page.locator('#messagesBadge').textContent(),'۱');assert.equal(await page.locator('#headerCollapseBtn').evaluate(e=>e.classList.contains('has-message-notification')),true,'New message did not notify the collapsed-header control');
  await page.locator('#messagesQuickBtn').click();assert.equal(await page.locator('#tabPanelMessages').isVisible(),true);assert.equal(await page.locator('#ticketMessage').isVisible(),true);assert.equal(await page.locator('#profileEditor').isVisible(),false,'Profile leaked into the messages workspace');
+ await page.waitForFunction(()=>document.getElementById('ticketHistoryList').textContent.includes('پاسخ تازهٔ مدیر'));await page.waitForFunction(()=>document.getElementById('messagesBadge').hidden);
  await page.locator('#accountQuickBtn').click();assert.equal(await page.locator('#tabPanelAccount').isVisible(),true);assert.equal(await page.locator('#profileEditor').getAttribute('open'),'');assert.equal(await page.locator('#ticketMessage').isVisible(),false,'Messages leaked into the account workspace');
  await page.locator('#profileInput-fullName').fill('نام ویرایش‌شده');await page.locator('#profileInput-province').click();assert.equal(await page.locator('#profileInput-province').getAttribute('aria-expanded'),'true');await page.locator('#profileInput-province').fill('فار');await page.locator('#profileInput-province-options [role=option]').filter({hasText:'فارس'}).click();assert.equal(await page.locator('#profileInput-province').inputValue(),'فارس');await page.locator('#profileSaveBtn').click();await page.waitForFunction(()=>document.getElementById('profileSavedNote').textContent.includes('مشخصات ذخیره شد'));
  assert.equal(profileWrites,1);assert.equal(stateWrites,previousStateWrites,'Profile edit rewrote study state');assert.equal(JSON.stringify(states[owner]),preserved);assert.equal(profiles[0].full_name,'نام ویرایش‌شده');assert.equal(await page.locator('#profileInput-email').getAttribute('readonly'),'');

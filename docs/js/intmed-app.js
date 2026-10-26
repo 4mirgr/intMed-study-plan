@@ -285,8 +285,8 @@
   var statsRefresh=document.getElementById("refreshFavoriteStats");
   if(statsRefresh)statsRefresh.addEventListener("click",function(){
     statsRefresh.disabled=true;var status=document.getElementById("favoriteStatsStatus");status.textContent="در حال دریافت آخرین آمار…";
-    waitForPendingWrites().then(connectGithub).then(function(){
-      status.textContent=document.getElementById("connStatus").classList.contains("ok")?"آمار به‌روزرسانی شد.":"دریافت آمار ناموفق بود؛ دوباره تلاش کنید.";
+    waitForPendingWrites().then(function(){return connectGithub({skipLoginEvent:true});}).then(function(updated){
+      status.textContent=updated?"آمار به‌روزرسانی شد.":"دریافت آمار ناموفق بود؛ دوباره تلاش کنید.";
     }).catch(function(){status.textContent="دریافت آمار ناموفق بود؛ اتصال را بررسی کنید.";}).finally(function(){statsRefresh.disabled=false;});
   });
 
@@ -983,7 +983,8 @@
   }
 
   var connectRetryCount = 0;
-  function connectGithub(){
+  function connectGithub(options){
+    options=options||{};
     setConn("connecting");
     var localSnapshot = STATE;
     return ghFetchState().then(function(remote){
@@ -1000,7 +1001,7 @@
       stateLoaded=true;
       setConn("online");
       applyLoadedState();
-      logLoginIfDue();
+      if(!options.skipLoginEvent)logLoginIfDue();
       renderUserPanel();
       updateGhBtn();
       // A dynamically-approved signup user isn't in the static USER_NAMES
@@ -1018,6 +1019,7 @@
       // right after this one doesn't lose it again before the normal
       // debounced flush would have fired.
       if(mergedAnything) scheduleFlush(200);
+      return true;
     }).catch(function(err){
       var isAuth = err && (err.message === "auth" || err.status === 401);
       setConn(isAuth ? "auth" : "error");
@@ -1028,8 +1030,9 @@
       // token from the user, so that one still stops here and waits for them.
       if(!isAuth && connectRetryCount < 3){
         connectRetryCount++;
-        setTimeout(connectGithub, 4000);
+        setTimeout(function(){connectGithub(options);}, 4000);
       }
+      return false;
     });
   }
 
@@ -1121,6 +1124,7 @@
   var accountFilter=document.getElementById("adminUserStatusFilter");if(accountFilter)accountFilter.addEventListener("change",renderAdminUsers);
   var adminTicketsPanel = document.getElementById("adminTicketsPanel");
   var adminTicketBadge = document.getElementById("adminTicketBadge");
+  var messageCenterFingerprint="",messageCenterRenderDeferred=false;
   function messageRequestId(){
     if(window.crypto&&typeof window.crypto.randomUUID==="function")return window.crypto.randomUUID();
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==="x"?r:(r&3|8);return v.toString(16);});
@@ -1129,16 +1133,26 @@
     var item=(STATE.tickets||[]).find(function(row){return row._normalized&&row.userId===userId&&row._conversationId;});
     return item&&item._conversationId||null;
   }
-  function useMessageCenter(result){
+  function messageFingerprint(items){
+    return (items||[]).map(function(row){return [row.id,row.createdAt,row.read,row.userReadAt,row.replyAt,row.replyReadAt,row.status].join("|");}).join(";");
+  }
+  function useMessageCenter(result,options){
+    options=options||{};
     (result.items||[]).forEach(function(row){var bucket=(STATE.users||{})[row.userId]||{},profile=bucket.profile||{};row.userName=profile.fullName||bucket.backendUsername||USER_NAMES[row.userId]||row.userId;});
+    var nextFingerprint=messageFingerprint(result.items),changed=nextFingerprint!==messageCenterFingerprint;
+    messageCenterFingerprint=nextFingerprint;
     messageCenterMode=result.mode;STATE.tickets=result.items||[];updateManagementBadge();
-    if(document.getElementById('tabPanelMessages').classList.contains('active'))renderTicketHistory();
-    if(document.getElementById('tabPanelManagement').classList.contains('active'))renderAdminTickets();
+    if(changed&&document.getElementById('tabPanelMessages').classList.contains('active'))renderTicketHistory();
+    var focused=document.activeElement,adminDraftFocused=focused&&adminTicketsPanel&&adminTicketsPanel.contains(focused)&&focused.matches('textarea,input');
+    if((changed||messageCenterRenderDeferred)&&document.getElementById('tabPanelManagement').classList.contains('active')){
+      if(options.passive&&adminDraftFocused)messageCenterRenderDeferred=true;
+      else{messageCenterRenderDeferred=false;renderAdminTickets();}
+    }
     return result;
   }
-  function loadMessageCenter(){
+  function loadMessageCenter(options){
     if(!usesPrivateBackend()||!window.IntMedBackend.loadMessageCenter)return Promise.resolve({mode:"legacy",items:STATE.tickets||[]});
-    return window.IntMedBackend.loadMessageCenter().then(useMessageCenter);
+    return window.IntMedBackend.loadMessageCenter().then(function(result){return useMessageCenter(result,options);});
   }
   function sendCenterMessage(userId,body){
     return loadMessageCenter().then(function(result){
@@ -2685,7 +2699,11 @@
     if(badge){badge.textContent=faDigits(count);badge.hidden=!count;}
     var button=document.getElementById('tabBtnManagement');if(button)button.classList.toggle('needs-attention',count>0);
     var ownUnread=(STATE.tickets||[]).filter(function(t){return t.userId===CURRENT_USER_ID&&((t.fromAdmin&&!t.userReadAt)||(t.reply&&(!t.replyReadAt||String(t.replyReadAt)<String(t.replyAt||''))));}).length;
-    var quickCount=myBucket().backendRole==='admin'?tickets+(recoveryPending||0):ownUnread,quick=document.getElementById('messagesBadge');if(quick){quick.textContent=faDigits(quickCount);quick.hidden=!quickCount;}
+    var quickCount=myBucket().backendRole==='admin'?tickets+(recoveryPending||0):ownUnread,quick=document.getElementById('messagesBadge');if(quick){quick.textContent=faDigits(quickCount);quick.hidden=!quickCount;quick.setAttribute('aria-label',quickCount?faDigits(quickCount)+' پیام خوانده‌نشده':'پیام خوانده‌نشده‌ای نیست');}
+    var quickButton=document.getElementById('messagesQuickBtn'),collapseButton=document.getElementById('headerCollapseBtn');
+    if(quickButton){quickButton.classList.toggle('has-new-message',quickCount>0);quickButton.title=quickCount?faDigits(quickCount)+' پیام خوانده‌نشده':'پیام‌ها';}
+    if(collapseButton){collapseButton.classList.toggle('has-message-notification',quickCount>0);collapseButton.dataset.messageCount=quickCount?faDigits(quickCount):'';}
+    return quickCount;
   }
   function markOwnMessagesRead(){
     if(messageCenterMode==="normalized"){
@@ -2703,13 +2721,17 @@
     if(myBucket().backendRole==='admin'){setTab('management');if(adminTabTickets)adminTabTickets.click();var panel=document.getElementById('adminTicketsPanel');if(panel)panel.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return;}
     markOwnMessagesRead();setTab('messages');renderTicketHistory();var history=document.getElementById('ticketHistoryList');if(history)history.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   });
+  var messagePollTimer=null,messagePollBusy=false,messagePollDelay=8000;
+  function scheduleMessagePoll(delay){clearTimeout(messagePollTimer);messagePollTimer=setTimeout(refreshMessageNotifications,delay==null?messagePollDelay:delay);}
   function refreshMessageNotifications(){
-    if(!usesPrivateBackend()||!stateLoaded||dirty||flushing||document.visibilityState==='hidden'||!window.IntMedBackend.loadMessageCenter)return Promise.resolve();
-    return loadMessageCenter().catch(function(){});
+    if(messagePollBusy)return Promise.resolve();
+    if(!usesPrivateBackend()||!stateLoaded||dirty||flushing||document.visibilityState==='hidden'||!window.IntMedBackend.loadMessageCenter){scheduleMessagePoll(8000);return Promise.resolve();}
+    messagePollBusy=true;
+    return loadMessageCenter({passive:true}).then(function(){messagePollDelay=8000;}).catch(function(){messagePollDelay=Math.min(messagePollDelay*2,60000);}).finally(function(){messagePollBusy=false;scheduleMessagePoll(messagePollDelay);});
   }
-  setTimeout(refreshMessageNotifications,1200);
-  setInterval(refreshMessageNotifications,45000);
-  window.addEventListener('focus',refreshMessageNotifications);
+  scheduleMessagePoll(1200);
+  window.addEventListener('focus',function(){scheduleMessagePoll(0);});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')scheduleMessagePoll(0);});
 
   if(window.IntMedLibrary)window.IntMedLibrary.init({state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},ready:function(){return stateLoaded;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},open:function(id,type,itemId){
     goToTopic(id);return ensureTopicLoaded(id).then(function(){var topic=topicEls[id];if(!topic)return;topic.openType=type;Object.keys(topic.learnBtns).forEach(function(key){topic.learnBtns[key].classList.toggle('active',key===type);});topic.learnPanel.classList.add('open');renderLearnPanel(id,type);if(window.IntMedDashboard)window.IntMedDashboard.open(id,type);requestAnimationFrame(function(){var target=topic.learnPanel;if(type==='images'){var imageIndex=(contentMap[id].images||[]).findIndex(function(item){return item.id===itemId;});if(imageIndex>=0)target=topic.learnPanel.querySelectorAll('.img-row')[imageIndex]||target;}else if(type==='kfPmp'){var caseIndex=(contentMap[id].kfPmp||[]).findIndex(function(item){return item.id===itemId;});if(caseIndex>=0)target=topic.learnPanel.querySelectorAll('.kfp-block')[caseIndex]||target;}else if(type==='tables'){var tableIndex=(contentMap[id].tables||[]).findIndex(function(item){return item.id===itemId;});if(tableIndex>=0)target=topic.learnPanel.querySelectorAll('.tbl-title')[tableIndex]||target;}target.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});target.classList.add('annotation-destination');setTimeout(function(){target.classList.remove('annotation-destination');},3500);});});

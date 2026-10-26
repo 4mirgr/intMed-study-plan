@@ -53,6 +53,27 @@ to one or transmit private/book content to it. Add a provider adapter only after
 approves that provider and its data-handling terms. Creating a new OpenAI key does not add credit or
 remove an organization/project billing limit.
 
+### Owner-operated LM Studio profile (8 GB memory)
+
+Use the exact model IDs reported by `curl http://127.0.0.1:1234/v1/models`; display names are not a
+stable API contract. Load only one model at a time and keep concurrency at one.
+
+- **Qwen3 4B Thinking 2507** is the default coordinator/drafter: extraction cleanup, taxonomy
+  matching, structured Persian draft and question generation. Start with 4096 context, 800–1600
+  output tokens, temperature 0.1 for extraction and 0.25–0.35 for prose.
+- **Gemma E2B** is a short final style pass only. Its prompt must say: preserve every fact, number,
+  dose, citation and stable ID; remove machine-like phrasing; return only the rewritten Persian.
+- **DeepSeek R1 Distill Qwen 7B** is optional and sequential for a small set of difficult clinical or
+  MCQ checks. Do not send whole chapters to it on an 8 GB machine. Do not expose chain-of-thought in
+  the stored result; keep only concise findings with source/page evidence.
+
+Every stage returns schema-validated JSON, quotes the source page for factual claims, says
+`insufficient_evidence` instead of filling gaps from memory, and produces a review draft—not a
+publication. The future local runner must bind LM Studio to `127.0.0.1`, pull jobs through an
+admin-authenticated narrow endpoint, and use claim/heartbeat/ack so a slow model cannot duplicate a
+job. Never put `service_role` on the laptop and never expose the LM Studio port through a public
+tunnel. Until that endpoint and runner are implemented and reviewed, use the manual file/Drive lane.
+
 The owner approved manual mode on 2026-10-26. Automatic worker dispatch is gated behind the
 server-side `INTMED_CONTENT_PROCESSING_ENABLED` flag and defaults off: Telegram still saves inputs,
 `/start` and `/status` remain useful, `/retry` explains that processing is paused, and no queued input
