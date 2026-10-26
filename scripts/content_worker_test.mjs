@@ -11,10 +11,13 @@ const fetchMock=async(url,options={})=>{
 };
 const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:key=>env[key]}},fetch:fetchMock,Response,Request,JSON,Object,String,Set,Date,RegExp,Number,Array,TextEncoder,Uint8Array,crypto,btoa,Error,globalThis:null});context.globalThis=context;
 vm.runInContext(fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8'),context);
+const manualResponse=await handler(new Request('https://project.supabase.co/functions/v1/intmed-content-worker',{method:'POST',headers:{authorization:'Bearer service-secret','content-type':'application/json'},body:'{}'}));
+assert.equal(manualResponse.status,200);assert.deepEqual(await manualResponse.json(),{processed:0,reason:'manual_mode'});assert.equal(saved.length,0);assert.equal(released,0);
+env.INTMED_CONTENT_PROCESSING_ENABLED='true';
 const response=await handler(new Request('https://project.supabase.co/functions/v1/intmed-content-worker',{method:'POST',headers:{authorization:'Bearer service-secret','content-type':'application/json'},body:'{}'}));
 assert.equal(response.status,200);assert.deepEqual(await response.json(),{processed:0,waitingProvider:1,failed:0});assert.equal(saved.length,1);assert.equal(saved[0].status,'waiting_provider');assert.equal(saved[0].error_code,'provider_not_configured');
 assert.equal(released,1,'Worker lease was not released');
 const sql=fs.readFileSync('backend/supabase/telegram_ingest.sql','utf8'),bot=fs.readFileSync('backend/supabase/functions/intmed-telegram-bot/index.ts','utf8'),config=fs.readFileSync('backend/supabase/config.toml','utf8');
 assert.match(sql,/intmed_content_drafts/);assert.match(sql,/enable row level security/);assert.match(bot,/intmed-content-worker/);assert.match(config,/\[functions\.intmed-content-worker\][\s\S]*verify_jwt = true/);assert.ok(!fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8').includes('auto-publish'));
 assert.match(sql,/claim_intmed_content_ingest/);assert.match(sql,/skip locked/i);assert.match(fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8'),/provider_rate_limited/);
-console.log('Content worker passed: service-only queue, provider-safe waiting state, canonical taxonomy lookup, structured review draft and no repository publication.');
+assert.match(bot,/INTMED_CONTENT_PROCESSING_ENABLED/);console.log('Content worker passed: manual mode default, service-only queue, provider-safe waiting state, canonical taxonomy lookup, structured review draft and no repository publication.');

@@ -17,6 +17,8 @@ Deno.serve(async req=>{
   }
   let body;try{body=await req.json();}catch{return reply(400,{message:'Invalid JSON'});}
   const requested=String(body.ingestId||'');if(requested&&!/^[0-9a-f-]{36}$/i.test(requested))return reply(400,{message:'Invalid ingest id'});
+  const processingEnabled=Deno.env.get('INTMED_CONTENT_PROCESSING_ENABLED')==='true';
+  if(!processingEnabled)return reply(200,{processed:0,reason:'manual_mode'});
   const sh={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
   async function db(path,method='GET',value,extra={}){const r=await fetch(base+'/rest/v1/'+path,{method,headers:{...sh,...extra},...(value===undefined?{}:{body:JSON.stringify(value)})});if(!r.ok)throw Error('database');return r.status===204?null:JSON.parse(await r.text()||'null');}
   async function notify(text){try{const token=Deno.env.get('TELEGRAM_BOT_TOKEN');if(!token)return;const settings=await db('intmed_notification_settings?key=eq.telegram&select=chat_id'),chat=settings[0]?.chat_id;if(!chat)return;await fetch('https://api.telegram.org/bot'+token+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:chat,text,link_preview_options:{is_disabled:true}})});}catch{}}

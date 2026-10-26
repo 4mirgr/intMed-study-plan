@@ -72,10 +72,11 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Validate normalized message backfill in production, then move the UI from legacy ticket polling
   to conversation RPCs/Realtime; add native push later. Dual-write keeps the cutover reversible.
 - Twelve Telegram content inputs remain preserved after `provider_rate_limited`. OpenAI credit is
-  zero, so a new key alone will not fix processing. Await owner confirmation before enabling manual
-  mode (keep intake/alerts, stop automatic model dispatch); then process sources through direct chat
-  or an authorized private Drive folder. Hosted free-provider fallback requires separate explicit
-  approval of provider and data-handling terms and must never happen silently.
+  zero, so a new key alone will not fix processing. The owner approved manual mode: keep intake and
+  alerts active while automatic model dispatch defaults off behind
+  `INTMED_CONTENT_PROCESSING_ENABLED`. Process sources through direct chat or an authorized private
+  Drive folder. Hosted free-provider fallback requires separate explicit approval of provider and
+  data-handling terms and must never happen silently.
 
 ### P1 — paid/mobile foundation
 

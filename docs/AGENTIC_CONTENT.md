@@ -53,10 +53,11 @@ to one or transmit private/book content to it. Add a provider adapter only after
 approves that provider and its data-handling terms. Creating a new OpenAI key does not add credit or
 remove an organization/project billing limit.
 
-If the owner approves manual mode, gate automatic worker dispatch behind a server-side environment
-flag: Telegram must still save inputs, `/start` and `/status` must remain useful, `/retry` must explain
-that processing is paused, and no queued input may be discarded. Changing this flag or provider is
-an operational decision and requires owner confirmation.
+The owner approved manual mode on 2026-10-26. Automatic worker dispatch is gated behind the
+server-side `INTMED_CONTENT_PROCESSING_ENABLED` flag and defaults off: Telegram still saves inputs,
+`/start` and `/status` remain useful, `/retry` explains that processing is paused, and no queued input
+is discarded. Re-enabling this flag or changing provider is a separate operational decision and
+requires owner confirmation.
 
 1. **Identify and cache once.** Hash the input and run
    `python3 scripts/content_pipeline.py extract-pdf TOPIC_ID SOURCE.pdf`. Reuse the cached text,

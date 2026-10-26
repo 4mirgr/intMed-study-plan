@@ -6,19 +6,22 @@ Deno.serve(async req=>{
   if(req.method!=='POST')return reply(405,{ok:false});
   const url=Deno.env.get('SUPABASE_URL'),service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   const token=Deno.env.get('TELEGRAM_BOT_TOKEN'),secret=Deno.env.get('TELEGRAM_WEBHOOK_SECRET'),anon=Deno.env.get('SUPABASE_ANON_KEY');
+  const processingEnabled=Deno.env.get('INTMED_CONTENT_PROCESSING_ENABLED')==='true';
   if(!url||!service||!token||!secret)return reply(503,{ok:false});
   function same(a,b){if(typeof a!=='string'||a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0;}
   const raw=await req.text();if(raw.length>262144)return reply(413,{ok:false});
   const sh={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
   async function db(path,method='GET',body,extra={}){const r=await fetch(url+'/rest/v1/'+path,{method,headers:{...sh,...extra},...(body===undefined?{}:{body:JSON.stringify(body)})});if(!r.ok)throw Error('db');return r.status===204?null:JSON.parse(await r.text()||'null');}
   async function telegram(method,body){const r=await fetch('https://api.telegram.org/bot'+token+'/'+method,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),v=await r.json();if(!r.ok||!v.ok)throw Error('telegram');return v.result;}
-  const menu={inline_keyboard:[[{text:'📥 وضعیت صف',callback_data:'menu:status'},{text:'🏷 تعیین مبحث',callback_data:'topic:set'}],[{text:'🔄 پردازش دوباره',callback_data:'queue:retry'},{text:'راهنما',callback_data:'menu:help'}]]};
+  const menu={inline_keyboard:[[{text:'📥 وضعیت صف',callback_data:'menu:status'},{text:'🏷 تعیین مبحث',callback_data:'topic:set'}],[{text:processingEnabled?'🔄 پردازش دوباره':'🧾 پردازش دستی',callback_data:'queue:retry'},{text:'راهنما',callback_data:'menu:help'}]]};
   async function say(chat,text,reply_markup=menu){try{return await telegram('sendMessage',{chat_id:chat,text,reply_markup,link_preview_options:{is_disabled:true}});}catch{return null;}}
   function kickWorker(){
+    if(!processingEnabled)return false;
     // The worker claims one project-wide lease; a burst of Telegram updates therefore remains
     // a serial queue instead of becoming concurrent provider requests.
     const task=fetch(url+'/functions/v1/intmed-content-worker',{method:'POST',headers:{apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'},body:'{}'}).catch(()=>null);
     const runtime=globalThis.EdgeRuntime;if(runtime&&typeof runtime.waitUntil==='function')runtime.waitUntil(task);
+    return true;
   }
   async function configuredChat(){const rows=await db('intmed_notification_settings?key=eq.telegram&select=chat_id');return rows[0]?.chat_id?String(rows[0].chat_id):'';}
   async function session(chat){const rows=await db('intmed_bot_sessions?chat_id=eq.'+encodeURIComponent(chat)+'&select=mode,topic_hint');return rows[0]||{mode:'idle',topic_hint:null};}
@@ -94,8 +97,8 @@ Deno.serve(async req=>{
       await saveSession(chat,'idle',hint);await say(chat,'✅ راهنمای مبحث «'+hint+'» ذخیره شد. اکنون فایل، تصویر یا متن اصلی را بفرستید.');return reply(200,{ok:true,topicHint:true});
     }
     if(command==='/start'||command==='/help'||callbackData==='menu:help'){
-      if(command==='/start'){try{await telegram('setWebhook',{url:url+'/functions/v1/intmed-telegram-bot',secret_token:secret,allowed_updates:['message','callback_query'],drop_pending_updates:false,max_connections:10});}catch{}kickWorker();}
-      await say(chat,'🤖 صندوق محتوای IntMed آماده است.\nمتن، PDF، تصویر یا پیام Forwardشده را همراه توضیح بفرستید. برای پیشنهاد مبحث بنویسید: /topic cardio-ecg\nورودی ابتدا قرنطینه و فقط پس از بازبینی وارد فرایند محتوا می‌شود.\n/status وضعیت صف را نشان می‌دهد.');
+      if(command==='/start')try{await telegram('setWebhook',{url:url+'/functions/v1/intmed-telegram-bot',secret_token:secret,allowed_updates:['message','callback_query'],drop_pending_updates:false,max_connections:10});}catch{}
+      await say(chat,'🤖 صندوق محتوای IntMed آماده است.\nمتن، PDF، تصویر یا پیام Forwardشده را همراه توضیح بفرستید. برای پیشنهاد مبحث بنویسید: /topic cardio-ecg\nورودی ابتدا قرنطینه و فقط پس از بازبینی وارد فرایند محتوا می‌شود.\n'+(processingEnabled?'پردازش هوشمند خودکار فعال است.':'پردازش هوشمند خودکار فعلاً خاموش است؛ همهٔ ورودی‌ها محفوظ می‌مانند و به‌صورت دستی بررسی می‌شوند.')+'\n/status وضعیت صف را نشان می‌دهد.');
       return reply(200,{ok:true,command});
     }
     if(command==='/status'||callbackData==='menu:status'){
@@ -103,10 +106,11 @@ Deno.serve(async req=>{
       const alerts=await db('intmed_telegram_alerts?status=in.(pending,error,processing)&select=status');
       const providerWait=await db('intmed_content_drafts?status=eq.waiting_provider&select=error_code');
       const count=name=>rows.filter(r=>r.status===name).length;
-      await say(chat,'📥 صف محتوا\nدر صف تحلیل یا بازبینی: '+(count('quarantined')+count('pending_review'))+'\nمنتظر سرویس تحلیل: '+providerWait.length+'\nدر حال پردازش: '+count('processing')+'\nنیازمند بررسی خطای واقعی: '+count('error')+'\nاعلان ارسال‌نشده: '+alerts.length);
+      await say(chat,'📥 صف محتوا\nحالت پردازش: '+(processingEnabled?'خودکار':'دستی؛ دریافت فایل فعال است')+'\nدر صف تحلیل یا بازبینی: '+(count('quarantined')+count('pending_review'))+'\nمنتظر سرویس تحلیل: '+providerWait.length+'\nدر حال پردازش: '+count('processing')+'\nنیازمند بررسی خطای واقعی: '+count('error')+'\nاعلان ارسال‌نشده: '+alerts.length);
       return reply(200,{ok:true,command});
     }
     if(command==='/retry'||callbackData==='queue:retry'){
+      if(!processingEnabled){await say(chat,'🧾 پردازش خودکار فعلاً خاموش است. ورودی‌های شما محفوظ‌اند و دریافت متن، PDF، تصویر و Forward همچنان فعال است. برای پردازش، فایل را از صندوق خصوصی در اختیار هماهنگ‌کننده قرار دهید.');return reply(200,{ok:true,command:'retry',queued:0,manual:true});}
       const drafts=await db('intmed_content_drafts?status=in.(error,waiting_provider)&error_code=in.(provider_429,provider_rate_limited,provider_quota,provider_unavailable,provider_not_configured)&select=ingest_id&limit=30');
       for(const draft of drafts){await db('intmed_content_drafts?ingest_id=eq.'+draft.ingest_id,'PATCH',{status:'waiting_provider',error_code:'provider_rate_limited',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});await db('intmed_content_ingest?id=eq.'+draft.ingest_id,'PATCH',{status:'pending_review',error_code:'provider_rate_limited',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});}
       if(drafts.length)kickWorker();
