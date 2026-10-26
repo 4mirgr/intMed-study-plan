@@ -16,7 +16,7 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   move behind an authenticated API before subscriptions launch.
 - Medical content is AI-assisted, source-traceable, and always marked draft until teacher review.
 
-## Shipped baseline (2026-10-24)
+## Shipped baseline (2026-10-26)
 
 - Persian/Tehran dashboard and planning dates, Saturday-first week, Google Calendar and ICS.
 - Calendar-email Edge Function and delivery ledger; production email is blocked until
@@ -41,6 +41,12 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   message alerts, and a serialized provider queue with recoverable retry states instead of parallel
   AI bursts. Three draft CNS-infection chapters and four original clinical algorithms are published
   in the canonical content system.
+- The production login gateway is active at `api.drgerami-md.ir`; public probes return the site with
+  HTTP 200 and the gateway/Worker with the expected authenticated-service response. The temporary
+  same-origin `/api` experiment was removed because GitHub Pages correctly rejects POST with 405.
+- Production Telegram evidence now includes two delivered login alerts and one delivered activity
+  alert. The bot chat, webhook secrets and Edge Functions are installed; twelve preserved content
+  inputs remain recoverable in `waiting_provider` after repeated OpenAI rate-limit responses.
 
 ## Open work, in priority order
 
@@ -51,6 +57,8 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Configure and end-to-end test Resend sender, calendar email, newsletter test/send/unsubscribe.
 - Test signup, login, recovery, account/messages, calendar and email on real iOS/Android networks.
 - Recheck Supabase redirect allow-list, Auth email templates, CSP, rate limits and abuse protection.
+- Retry the four historical pending signup alerts from the authenticated admin panel and confirm
+  that new signup alerts continue to deliver automatically.
 
 ### P1 — content factory and learning product
 
@@ -60,10 +68,11 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   high DPI; record page, source, copyright and visual QA. Never upscale a bad thumbnail as a fix.
 - Validate normalized message backfill in production, then move the UI from legacy ticket polling
   to conversation RPCs/Realtime; add native push later. Dual-write keeps the cutover reversible.
-- Provider-test the serialized Telegram ingest worker after deployment by retrying the preserved
-  queue from the bot. The first live batch hit provider HTTP 429; the new worker distinguishes rate
-  limit, quota and provider outages, keeps inputs recoverable, and never edits or publishes canonical
-  content. If it reports `provider_quota`, billing/quota must be fixed before another manual retry.
+- Resolve the OpenAI project limit used by the Telegram ingest worker. A live retry on 2026-10-26
+  still returned `provider_rate_limited`: twelve inputs are preserved, the oldest text item has five
+  attempts and the remaining items one attempt each. Verify project billing/rate limits before one
+  further retry; if the first item still fails, reduce request/token size and record the provider's
+  safe error code before retrying the whole queue.
 
 ### P1 — paid/mobile foundation
 
