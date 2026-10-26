@@ -15,16 +15,43 @@ jobs:
       - name: Probe public routes
         shell: bash
         run: |
-          set +e
-          for url in \
-            'https://drgerami-md.ir/' \
-            'https://www.drgerami-md.ir/' \
-            'https://api.drgerami-md.ir/auth/v1/health' \
-            'https://intmed-api-proxy.dr-gerami-md.workers.dev/auth/v1/health'
-          do
+          set -euo pipefail
+          probe() {
+            local url="$1" expected="$2" status
             echo "PROBE $url"
-            curl --silent --show-error --location --max-time 20 \
-              --output /dev/null --dump-header - \
-              --write-out 'FINAL status=%{http_code} remote=%{remote_ip} time=%{time_total}\n' \
-              "$url"
+            status=$(curl --silent --show-error --location --max-time 20 \
+              --output /dev/null --write-out '%{http_code}' "$url")
+            echo "FINAL status=$status"
+            case ",$expected," in
+              *",$status,"*) ;;
+              *) echo "Unexpected HTTP status for $url: $status (expected $expected)" >&2; exit 1 ;;
+            esac
+          }
+
+          probe 'https://drgerami-md.ir/' '200'
+          probe 'https://www.drgerami-md.ir/' '200'
+          probe 'https://api.drgerami-md.ir/auth/v1/health' '200,401'
+          probe 'https://intmed-api-proxy.dr-gerami-md.workers.dev/auth/v1/health' '200,401'
+
+          config_js=$(curl --fail --silent --show-error --location --max-time 20 \
+            'https://drgerami-md.ir/config.js')
+          anon_key=$(printf '%s' "$config_js" | sed -n 's/.*"supabaseAnonKey":"\([^"]*\)".*/\1/p')
+          test -n "$anon_key"
+          for origin in \
+            'https://api.drgerami-md.ir' \
+            'https://intmed-api-proxy.dr-gerami-md.workers.dev'
+          do
+            echo "PROBE invalid signup through $origin"
+            status=$(curl --silent --show-error --max-time 20 \
+              --output /dev/null --write-out '%{http_code}' \
+              --request POST \
+              --header "apikey: $anon_key" \
+              --header 'Content-Type: application/json' \
+              --data '{"email":"invalid","password":"invalid","data":{}}' \
+              "$origin/auth/v1/signup")
+            echo "FINAL signup status=$status"
+            case "$status" in
+              400|422) ;;
+              *) echo "Signup route is unhealthy: $origin returned $status" >&2; exit 1 ;;
+            esac
           done
