@@ -1,0 +1,30 @@
+name: Production route diagnostics
+
+on:
+  push:
+    branches: [claude/quirky-ride-mavb6b]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe public routes
+        shell: bash
+        run: |
+          set +e
+          for url in \
+            'https://drgerami-md.ir/' \
+            'https://www.drgerami-md.ir/' \
+            'https://api.drgerami-md.ir/auth/v1/health' \
+            'https://intmed-api-proxy.dr-gerami-md.workers.dev/auth/v1/health'
+          do
+            echo "PROBE $url"
+            curl --silent --show-error --location --max-time 20 \
+              --output /dev/null --dump-header - \
+              --write-out 'FINAL status=%{http_code} remote=%{remote_ip} time=%{time_total}\n' \
+              "$url"
+          done
