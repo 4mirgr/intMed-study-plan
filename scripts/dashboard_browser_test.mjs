@@ -22,6 +22,7 @@ await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,asyn
  }
  if(u.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
  if(u.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:[]});
+ if(u.pathname==='/functions/v1/intmed-telegram-bot')return route.fulfill({json:{ok:true}});
  if(u.pathname==='/rest/v1/rpc/update_intmed_username'){profiles[0].username=req.postDataJSON().new_username;return route.fulfill({status:204,body:''});}
  if(u.pathname==='/rest/v1/rpc/set_intmed_user_approval'){const body=req.postDataJSON(),p=profiles.find(p=>p.id===body.target_user);p.approved=body.new_approved;p.rejected=!p.approved;return route.fulfill({status:204,body:''});}
  if(u.pathname==='/functions/v1/intmed-admin-user'){const body=req.postDataJSON(),p=profiles.find(p=>p.id===body.userId);adminUpdates++;Object.assign(p,{username:body.username,email:body.email,full_name:body.profile.fullName,degree:body.profile.degree,specialty:body.profile.specialty,province:body.profile.province,id_number:body.profile.idNumber,phone:body.profile.phone});return route.fulfill({json:body});}

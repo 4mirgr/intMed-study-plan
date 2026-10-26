@@ -110,6 +110,7 @@
       saveSession(value);
       return profile().then(function(p){
         if(!p || !p.approved || p.rejected){ saveSession(null); throw new Error("حساب فعال نیست یا دسترسی آن معلق شده است."); }
+        telegramEvent("login").catch(function(){});
         return {session:value, profile:p};
       });
     });
@@ -340,7 +341,7 @@
     var own = cleanBucket((snapshot.users || {})[owner]);
     var before = cleanBucket((old.users || {})[owner]);
     // Admin profile visibility never means rewriting other users' study snapshots.
-    if(!equal(own,before)) work.push(saveOwnState(owner,before,own,0));
+    if(!equal(own,before)) work.push(saveOwnState(owner,before,own,0).then(function(){return telegramEvent("activity").catch(function(){});}));
     (snapshot.tickets || []).forEach(function(ticket){
       if(ticket._normalized) return;
       var previous = (old.tickets || []).find(function(row){return row.id===ticket.id;});
@@ -402,6 +403,7 @@
   function newsletterAction(payload){return request("/functions/v1/intmed-newsletter",{method:"POST",body:JSON.stringify(payload)});}
   function studyEventAction(payload){return request("/functions/v1/intmed-study-event",{method:"POST",body:JSON.stringify(payload)});}
   function notificationAction(action,chatId){return request("/functions/v1/intmed-signup-notify",{method:"POST",body:JSON.stringify({action:action,chatId:chatId})});}
+  function telegramEvent(event){return request("/functions/v1/intmed-telegram-bot",{method:"POST",body:JSON.stringify({event:event})});}
   function loadTickets(){return select("tickets?select=id,user_id,payload,updated_at").then(function(rows){return (rows||[]).map(function(row){var ticket=Object.assign({},row.payload||{});ticket.id=row.id;ticket.userId=row.user_id;ticket.updatedAt=row.updated_at;return ticket;});});}
   function loadConversations(){
     return select("intmed_conversations?select=id,user_id,subject,status,last_message_at,created_at,intmed_messages(id,sender_id,sender_role,body,created_at),intmed_conversation_reads(user_id,last_read_at,last_read_message_id)&order=last_message_at.desc&intmed_messages.order=created_at.asc");
@@ -436,7 +438,7 @@
     });
   }
   function sendMessage(conversationId,userId,body,requestId){
-    return request("/rest/v1/rpc/send_intmed_message",{method:"POST",body:JSON.stringify({target_conversation:conversationId||null,target_user:userId||null,message_body:body,request_id:requestId})});
+    return request("/rest/v1/rpc/send_intmed_message",{method:"POST",body:JSON.stringify({target_conversation:conversationId||null,target_user:userId||null,message_body:body,request_id:requestId})}).then(function(value){telegramEvent("message").catch(function(){});return value;});
   }
   function markConversationRead(conversationId,messageId){
     return request("/rest/v1/rpc/mark_intmed_conversation_read",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify({target_conversation:conversationId,target_message:messageId||null})});
@@ -458,6 +460,6 @@
     loadLegacyState:loadLegacyState,
     saveLegacyState:saveLegacyState,
     approveUser:approveUser,
-    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,adminUpdateUser:adminUpdateUser,notificationAction:notificationAction,newsletterAction:newsletterAction,studyEventAction:studyEventAction,loadTickets:loadTickets,loadConversations:loadConversations,loadMessageCenter:loadMessageCenter,sendMessage:sendMessage,markConversationRead:markConversationRead
+    deleteUser:deleteUser,updateProfile:updateProfile,updateUsername:updateUsername,updateEmail:updateEmail,adminUpdateUser:adminUpdateUser,notificationAction:notificationAction,telegramEvent:telegramEvent,newsletterAction:newsletterAction,studyEventAction:studyEventAction,loadTickets:loadTickets,loadConversations:loadConversations,loadMessageCenter:loadMessageCenter,sendMessage:sendMessage,markConversationRead:markConversationRead
   };
 })(window);

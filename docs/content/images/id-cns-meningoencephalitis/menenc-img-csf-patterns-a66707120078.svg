@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1280" viewBox="0 0 1500 1280" role="img" aria-labelledby="title desc">
+  <title id="title">الگوهای مایع مغزی نخاعی در مننژیت و انسفالیت</title>
+  <desc id="desc">مقایسه الگوهای معمول CSF در عفونت باکتریایی، ویروسی، سل و قارچی</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071a2b"/><stop offset="1" stop-color="#163948"/></linearGradient>
+    <linearGradient id="hd" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#23cbbb"/><stop offset="1" stop-color="#559dff"/></linearGradient>
+    <filter id="s"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-opacity=".23"/></filter>
+    <style>text{font-family:Vazirmatn,Tahoma,Arial,sans-serif;fill:#eefbff;direction:rtl;unicode-bidi:plaintext}.h{font-size:50px;font-weight:800}.sub{font-size:25px;fill:#d6f3f5}.th{font-size:26px;font-weight:800}.t{font-size:24px;font-weight:700}.b{font-size:21px;fill:#d8edf1}.n{font-size:20px;fill:#a7d2d8}.cell{stroke:#477484;stroke-width:2}.row1{fill:#39263d}.row2{fill:#163e46}.row3{fill:#34344d}.row4{fill:#3b342d}.head{fill:#1d5262}</style>
+  </defs>
+  <rect width="1500" height="1280" rx="42" fill="url(#bg)"/>
+  <rect x="55" y="50" width="1390" height="170" rx="32" fill="url(#hd)" filter="url(#s)"/>
+  <text x="750" y="120" text-anchor="middle" class="h">الگوهای معمول CSF</text>
+  <text x="750" y="177" text-anchor="middle" class="sub">اعداد و الگوها هم‌پوشانی دارند؛ نتیجه را در زمینه بالینی تفسیر کنید</text>
+
+  <g filter="url(#s)">
+    <rect x="55" y="275" width="1390" height="105" rx="24" class="head cell"/>
+    <rect x="55" y="380" width="1390" height="175" class="row1 cell"/>
+    <rect x="55" y="555" width="1390" height="175" class="row2 cell"/>
+    <rect x="55" y="730" width="1390" height="175" class="row3 cell"/>
+    <rect x="55" y="905" width="1390" height="175" rx="0 0 24 24" class="row4 cell"/>
+    <path d="M350 275v805M725 275v805M1080 275v805" stroke="#477484" stroke-width="2"/>
+  </g>
+
+  <text x="202" y="342" text-anchor="middle" class="th">الگو</text>
+  <text x="538" y="342" text-anchor="middle" class="th">سلول غالب</text>
+  <text x="902" y="342" text-anchor="middle" class="th">گلوکز</text>
+  <text x="1262" y="342" text-anchor="middle" class="th">پروتئین / نکته</text>
+
+  <text x="202" y="457" text-anchor="middle" class="t">باکتریایی</text>
+  <text x="202" y="500" text-anchor="middle" class="n">حاد</text>
+  <text x="538" y="466" text-anchor="middle" class="b">اغلب نوتروفیل</text>
+  <text x="902" y="466" text-anchor="middle" class="b">پایین</text>
+  <text x="1262" y="450" text-anchor="middle" class="b">بالا؛ فشار بازشدن اغلب بالا</text>
+  <text x="1262" y="494" text-anchor="middle" class="n">آنتی‌بیوتیک را منتظر LP نگذارید</text>
+
+  <text x="202" y="632" text-anchor="middle" class="t">ویروسی / انسفالیت</text>
+  <text x="202" y="675" text-anchor="middle" class="n">الگوی معمول</text>
+  <text x="538" y="641" text-anchor="middle" class="b">اغلب لنفوسیت</text>
+  <text x="538" y="682" text-anchor="middle" class="n">اوایل ممکن است نوتروفیل باشد</text>
+  <text x="902" y="641" text-anchor="middle" class="b">معمولاً طبیعی</text>
+  <text x="1262" y="625" text-anchor="middle" class="b">افزایش خفیف تا متوسط</text>
+  <text x="1262" y="669" text-anchor="middle" class="n">CSF طبیعی زودرس بیماری را رد نمی‌کند</text>
+
+  <text x="202" y="807" text-anchor="middle" class="t">سلّی</text>
+  <text x="202" y="850" text-anchor="middle" class="n">ساب‌اکوت</text>
+  <text x="538" y="816" text-anchor="middle" class="b">اغلب لنفوسیت</text>
+  <text x="902" y="816" text-anchor="middle" class="b">پایین</text>
+  <text x="1262" y="800" text-anchor="middle" class="b">بالا؛ فشار بازشدن ممکن است بالا</text>
+  <text x="1262" y="844" text-anchor="middle" class="n">حجم کافی CSF حساسیت تشخیص را بهتر می‌کند</text>
+
+  <text x="202" y="982" text-anchor="middle" class="t">قارچی</text>
+  <text x="202" y="1025" text-anchor="middle" class="n">به‌ویژه نقص ایمنی</text>
+  <text x="538" y="991" text-anchor="middle" class="b">اغلب لنفوسیت</text>
+  <text x="902" y="991" text-anchor="middle" class="b">طبیعی یا پایین</text>
+  <text x="1262" y="975" text-anchor="middle" class="b">بالا؛ فشار بازشدن در Cryptococcus مهم است</text>
+  <text x="1262" y="1019" text-anchor="middle" class="n">آنتی‌ژن/کشت برحسب میزبان و اپیدمیولوژی</text>
+
+  <rect x="95" y="1130" width="1310" height="90" rx="26" fill="#102d3e" stroke="#4a8491" stroke-width="2"/>
+  <text x="750" y="1170" text-anchor="middle" class="b">مننژیت یعنی التهاب مننژها؛ CSF کاملاً طبیعی تعریف بیماری نیست و فقط در برخی مراحل/علل ممکن است دیده شود.</text>
+  <text x="750" y="1255" text-anchor="middle" class="n">اینفوگرافیک تألیفی IntMed — برای آموزش الگوها، نه جایگزین تفسیر تخصصی</text>
+</svg>

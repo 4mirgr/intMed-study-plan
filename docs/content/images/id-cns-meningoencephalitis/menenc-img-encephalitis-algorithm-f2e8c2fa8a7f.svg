@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1700" viewBox="0 0 1200 1700" role="img" aria-labelledby="title desc">
+  <title id="title">الگوریتم ارزیابی بیمار مشکوک به انسفالیت</title>
+  <desc id="desc">از پایدارسازی و شروع آسیکلوویر تجربی تا تصویربرداری، پونکسیون کمری، نوار مغز و بازبینی تشخیص</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071b2e"/><stop offset="1" stop-color="#123d4b"/></linearGradient>
+    <linearGradient id="head" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#18c6b9"/><stop offset="1" stop-color="#4ca9ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity=".24"/></filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L9,4 z" fill="#62d9cf"/></marker>
+    <style>
+      text{font-family:Vazirmatn,Tahoma,Arial,sans-serif;fill:#eefbff;direction:rtl;unicode-bidi:plaintext}.h{font-size:52px;font-weight:800}.sub{font-size:28px;fill:#c8edf1}.t{font-size:30px;font-weight:700}.b{font-size:25px;fill:#d8eef2}.n{font-size:22px;fill:#9fd4db}.box{fill:#102f42;stroke:#2e7180;stroke-width:3}.urgent{fill:#432136;stroke:#ff668a;stroke-width:3}.test{fill:#183b48;stroke:#4ca9ff;stroke-width:3}.review{fill:#29334b;stroke:#c69cff;stroke-width:3}.line{fill:none;stroke:#62d9cf;stroke-width:5;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="1700" rx="44" fill="url(#bg)"/>
+  <rect x="55" y="50" width="1090" height="180" rx="34" fill="url(#head)" filter="url(#shadow)"/>
+  <text x="600" y="126" text-anchor="middle" class="h">بیمار مشکوک به انسفالیت</text>
+  <text x="600" y="184" text-anchor="middle" class="sub">اختلال وضعیت ذهنی ≥۲۴ ساعت + شواهد التهاب CNS</text>
+
+  <rect x="155" y="285" width="890" height="165" rx="30" class="urgent" filter="url(#shadow)"/>
+  <text x="600" y="342" text-anchor="middle" class="t">هم‌زمان: پایدارسازی و درمان تجربی</text>
+  <text x="600" y="392" text-anchor="middle" class="b">ABC، قند خون، کنترل تشنج؛ نمونه خون و کشت در صورت تب</text>
+  <text x="600" y="428" text-anchor="middle" class="b">آسیکلوویر IV را بدون انتظار برای MRI یا LP آغاز کنید</text>
+  <path d="M600 450 V510" class="line"/>
+
+  <rect x="95" y="525" width="1010" height="185" rx="30" class="box" filter="url(#shadow)"/>
+  <text x="600" y="584" text-anchor="middle" class="t">آیا LP اکنون ایمن است؟</text>
+  <text x="600" y="634" text-anchor="middle" class="b">نشانه‌های افزایش فشار داخل جمجمه، نقص فوکال واضح، تشنج جدید،</text>
+  <text x="600" y="676" text-anchor="middle" class="b">کاهش شدید هوشیاری یا نقص ایمنی → ابتدا CT؛ درمان را عقب نیندازید</text>
+  <path d="M600 710 V775" class="line"/>
+
+  <rect x="70" y="790" width="505" height="270" rx="30" class="test" filter="url(#shadow)"/>
+  <text x="322" y="852" text-anchor="middle" class="t">CSF</text>
+  <text x="322" y="902" text-anchor="middle" class="b">شمارش سلول و افتراق، پروتئین، گلوکز</text>
+  <text x="322" y="944" text-anchor="middle" class="b">Gram stain و کشت برحسب سناریو</text>
+  <text x="322" y="986" text-anchor="middle" class="b">HSV-1/2 PCR؛ VZV PCR ± آنتی‌بادی CSF</text>
+  <text x="322" y="1028" text-anchor="middle" class="n">نمونه اضافی را برای آزمون‌های هدفمند نگه دارید</text>
+
+  <rect x="625" y="790" width="505" height="270" rx="30" class="test" filter="url(#shadow)"/>
+  <text x="878" y="852" text-anchor="middle" class="t">MRI و EEG</text>
+  <text x="878" y="902" text-anchor="middle" class="b">MRI با/بدون contrast؛ DWI و FLAIR</text>
+  <text x="878" y="944" text-anchor="middle" class="b">در HSV: الگوی تمپورال/فرونتال تحتانی محتمل</text>
+  <text x="878" y="986" text-anchor="middle" class="b">EEG برای تشنج بدون تظاهر یا ابهام تشخیصی</text>
+  <text x="878" y="1028" text-anchor="middle" class="n">MRI طبیعیِ زودرس، انسفالیت را به‌تنهایی رد نمی‌کند</text>
+
+  <path d="M322 1060 V1130 H600" class="line"/>
+  <path d="M878 1060 V1130 H600" class="line"/>
+  <rect x="135" y="1150" width="930" height="225" rx="30" class="review" filter="url(#shadow)"/>
+  <text x="600" y="1210" text-anchor="middle" class="t">اگر HSV PCR زودهنگام منفی ولی شک بالینی بالاست</text>
+  <text x="600" y="1260" text-anchor="middle" class="b">آسیکلوویر را ادامه دهید و CSF PCR را معمولاً طی ۳ تا ۷ روز تکرار کنید</text>
+  <text x="600" y="1310" text-anchor="middle" class="b">تشخیص‌های جایگزین: خودایمنی، باکتری/قارچ/TB، متابولیک، سمّی، عروقی</text>
+  <text x="600" y="1350" text-anchor="middle" class="n">نتیجه مثبت دیرهنگام پس از درمان لزوماً به معنای شکست درمان نیست</text>
+  <path d="M600 1375 V1440" class="line"/>
+
+  <rect x="155" y="1455" width="890" height="150" rx="30" class="box" filter="url(#shadow)"/>
+  <text x="600" y="1513" text-anchor="middle" class="t">سیر بدترشونده و بررسی‌های منفی</text>
+  <text x="600" y="1562" text-anchor="middle" class="b">بازبینی دارو/اپیدمیولوژی و پنل خودایمنی؛ بیوپسی مغز فقط در موارد منتخب</text>
+  <text x="600" y="1650" text-anchor="middle" class="n">نمودار آموزشی تألیفی IntMed — جایگزین قضاوت بالینی یا پروتکل مرکز نیست</text>
+</svg>

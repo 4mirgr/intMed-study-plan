@@ -10,10 +10,48 @@ create table if not exists public.intmed_signup_alerts(
  attempts integer not null default 0,
  updated_at timestamptz not null default now()
 );
+-- Private delivery ledger for login/activity/message alerts and short-lived bot UI state.
+-- The browser cannot read or forge either table; the Edge Function validates the signed-in
+-- user before creating an alert and derives the displayed summary from server-side rows.
+create table if not exists public.intmed_telegram_alerts(
+ id uuid primary key default gen_random_uuid(),
+ event_type text not null check(event_type in ('login','activity','message')),
+ user_id uuid not null references public.profiles(id) on delete cascade,
+ dedupe_key text not null unique,
+ status text not null default 'pending' check(status in ('pending','processing','sent','error','dismissed')),
+ payload jsonb not null default '{}'::jsonb,
+ attempts integer not null default 0 check(attempts between 0 and 20),
+ created_at timestamptz not null default now(),
+ updated_at timestamptz not null default now()
+);
+create index if not exists intmed_telegram_alerts_pending_idx
+ on public.intmed_telegram_alerts(status,created_at) where status in ('pending','error');
+
+create table if not exists public.intmed_bot_sessions(
+ chat_id text primary key,
+ mode text not null default 'idle' check(mode in ('idle','awaiting_topic_hint')),
+ topic_hint text,
+ updated_at timestamptz not null default now(),
+ check(topic_hint is null or char_length(topic_hint) between 1 and 300)
+);
 alter table public.intmed_notification_settings enable row level security;
 alter table public.intmed_signup_alerts enable row level security;
-revoke all on public.intmed_notification_settings,public.intmed_signup_alerts from public,anon,authenticated;
-grant all on public.intmed_notification_settings,public.intmed_signup_alerts to service_role;
+alter table public.intmed_telegram_alerts enable row level security;
+alter table public.intmed_bot_sessions enable row level security;
+revoke all on public.intmed_notification_settings,public.intmed_signup_alerts,public.intmed_telegram_alerts,public.intmed_bot_sessions from public,anon,authenticated;
+grant all on public.intmed_notification_settings,public.intmed_signup_alerts,public.intmed_telegram_alerts,public.intmed_bot_sessions to service_role;
+
+create or replace function public.claim_intmed_telegram_alert(target_alert uuid)
+returns boolean language plpgsql security definer set search_path=public
+as $$ declare claimed uuid; begin
+ update public.intmed_telegram_alerts set status='processing',attempts=attempts+1,updated_at=now()
+ where id=target_alert and attempts<20
+ and (status in ('pending','error') or (status='processing' and updated_at<now()-interval '2 minutes'))
+ returning id into claimed;
+ return claimed is not null;
+end; $$;
+revoke all on function public.claim_intmed_telegram_alert(uuid) from public,anon,authenticated;
+grant execute on function public.claim_intmed_telegram_alert(uuid) to service_role;
 create or replace function public.claim_intmed_signup_alert(target_user uuid)
 returns boolean language plpgsql security definer set search_path=public
 as $$ declare claimed uuid; begin

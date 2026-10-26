@@ -123,7 +123,7 @@
     {key:"ventSim", label:"شبیه‌سازی ونتیلاتور", onlyFor:["crit-vent"]},
     {key:"images", label:"تصاویر مهم"},
     {key:"tables", label:"جداول مهم"},
-    {key:"highlights", label:"هایلایت‌های من"}
+    {key:"highlights", label:"نمایش یادداشت‌ها و هایلایت‌ها"}
   ];
   var contentMap = {}; // loaded lazily: topicId -> content payload
   var contentManifest = {topics:{}};
@@ -400,7 +400,11 @@
         var b = document.createElement("button");
         b.type = "button";
         b.className = "learn-btn";
-        b.innerHTML = lt.label + '<span class="cnt" data-lc="'+sub.id+'-'+lt.key+'"></span>';
+        var personalNotesIcon = lt.key === "highlights"
+          ? '<svg class="learn-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5M9 12h6M9 16h4"/><path d="m4 17-1 4 4-1"/></svg>'
+          : '';
+        b.innerHTML = personalNotesIcon + '<span class="learn-btn-label">' + lt.label + '</span><span class="cnt" data-lc="'+sub.id+'-'+lt.key+'"></span>';
+        if(lt.key === "highlights") b.setAttribute("aria-label", "نمایش یادداشت‌ها و هایلایت‌های شخصی این مبحث");
         b.addEventListener("click", function(e){
           e.stopPropagation();
           if(window.IntMedDashboard)window.IntMedDashboard.stop();

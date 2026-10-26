@@ -11,6 +11,7 @@ function fetchMock(url,options={}){
  calls.push({url,options});const path=new URL(url).pathname;
  if(path.endsWith('/profiles'))return response([{id:owner,role:'admin',approved:true,full_name:'Admin'},{id:other,role:'user',approved:true,full_name:'Other'}]);
  if(path.endsWith('/tickets'))return response([]);
+ if(path.endsWith('/functions/v1/intmed-telegram-bot'))return response({ok:true});
  if(path.endsWith('/study_state')){
   if(missingState){if(options.method==='POST'){const body=JSON.parse(options.body);remote={state:body.state,updated_at:'2026-10-21T12:30:00.000Z'};missingState=false;return response([{user_id:owner,...remote}]);}return response([]);}
   if(options.method==='PATCH'){
@@ -28,7 +29,7 @@ vm.runInContext(fs.readFileSync(new URL('../docs/js/intmed-backend.js',import.me
 const state=await window.IntMedBackend.loadLegacyState();state.users[owner].itemState['activity:cardio-ecg:2026-10-21']={opens:2,seconds:15,types:{lesson:2},lastOpenedAt:'2026-10-21T10:30:00Z'};state.users[owner].itemState.newNote={note:'my update'};state.users[owner].itemState['favorite:cardio-ecg']={favorite:true};
 await window.IntMedBackend.saveLegacyState(state);
 assert.equal(remote.state.itemState.anotherDevice.note,'preserve this');assert.equal(remote.state.itemState.newNote.note,'my update');assert.equal(remote.state.itemState['favorite:cardio-ecg'].favorite,true);
-const writes=calls.filter(c=>c.options.method);
+const writes=calls.filter(c=>c.options.method&&c.url.includes('/rest/v1/'));
 assert.ok(writes.every(c=>c.url.includes('/study_state?user_id=eq.'+owner)),'Unexpected user/profile/ticket write');
 assert.equal(writes.length,2,'Expected failed CAS then successful retry');
 const count=calls.length;await window.IntMedBackend.saveLegacyState(state);assert.equal(calls.length,count,'Unchanged save performed network writes');

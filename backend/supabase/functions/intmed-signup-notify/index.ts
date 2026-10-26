@@ -14,7 +14,7 @@ Deno.serve(async req=>{
   async function setting(){const rows=await db('intmed_notification_settings?key=eq.telegram&select=chat_id');return rows[0]&&rows[0].chat_id;}
   const inboxUrl=()=>url+'/functions/v1/intmed-telegram-bot';
   async function webhookInfo(){if(!token)return null;const value=await telegram('getWebhookInfo',{});return {active:value?.url===inboxUrl(),pending:Number(value?.pending_update_count||0)};}
-  async function enableInbox(){if(!webhookSecret)throw Error('Telegram webhook secret missing');await telegram('setWebhook',{url:inboxUrl(),secret_token:webhookSecret,allowed_updates:['message'],drop_pending_updates:false,max_connections:10});}
+  async function enableInbox(){if(!webhookSecret)throw Error('Telegram webhook secret missing');await telegram('setWebhook',{url:inboxUrl(),secret_token:webhookSecret,allowed_updates:['message','callback_query'],drop_pending_updates:false,max_connections:10});}
   async function deliver(id){
     const profiles=await db('profiles?id=eq.'+encodeURIComponent(id)+'&select=id,username,approved,rejected');
     if(profiles.length!==1||profiles[0].rejected){await db('intmed_signup_alerts?user_id=eq.'+encodeURIComponent(id),'PATCH',{status:'dismissed',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});return {skipped:true};}
@@ -23,7 +23,7 @@ Deno.serve(async req=>{
     const chat=await setting();if(!token||!chat)throw Error('Telegram is not connected');
     const claimed=await db('rpc/claim_intmed_signup_alert','POST',{target_user:id});if(!claimed)return {skipped:true};
     try{
-      await telegram('sendMessage',{chat_id:chat,text:'🔔 درخواست عضویت جدید در IntMed\nنام کاربری: '+profiles[0].username+'\nبرای بررسی و تأیید وارد پنل مدیریت شوید:\nhttps://drgerami-md.ir',link_preview_options:{is_disabled:true}});
+      await telegram('sendMessage',{chat_id:chat,text:'🔔 عضو جدید IntMed\nنام کاربری: '+profiles[0].username+'\nحساب پس از تأیید ایمیل آمادهٔ استفاده است.\nhttps://drgerami-md.ir',reply_markup:{inline_keyboard:[[{text:'بازکردن پنل مدیریت',url:'https://drgerami-md.ir/'},{text:'📥 وضعیت',callback_data:'menu:status'}]]},link_preview_options:{is_disabled:true}});
       await db('intmed_signup_alerts?user_id=eq.'+encodeURIComponent(id),'PATCH',{status:'sent',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});return {sent:true};
     }catch{
       await db('intmed_signup_alerts?user_id=eq.'+encodeURIComponent(id),'PATCH',{status:'error',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});throw Error('Delivery failed; retry is available');
@@ -48,7 +48,7 @@ Deno.serve(async req=>{
         if(webhookSecret)await enableInbox();
         return reply(200,{connected:true,webhookActive:!!webhookSecret});
       }
-      if(body.action==='test'){const chat=await setting();if(!chat)return reply(400,{message:'تلگرام هنوز متصل نیست.'});await telegram('sendMessage',{chat_id:chat,text:'✅ اعلان‌های IntMed به تلگرام شما متصل است.'});return reply(200,{sent:true});}
+      if(body.action==='test'){const chat=await setting();if(!chat)return reply(400,{message:'تلگرام هنوز متصل نیست.'});await telegram('sendMessage',{chat_id:chat,text:'✅ اعلان‌های IntMed به تلگرام شما متصل است.',reply_markup:{inline_keyboard:[[{text:'📥 وضعیت صف',callback_data:'menu:status'},{text:'🏷 تعیین مبحث',callback_data:'topic:set'}],[{text:'راهنما',callback_data:'menu:help'}]]}});return reply(200,{sent:true});}
       if(body.action==='webhook'){
         if(!await setting())return reply(400,{message:'ابتدا گفت‌وگوی مدیر را متصل کنید.'});
         if(!webhookSecret)return reply(503,{message:'Secret دریافت امن فایل هنوز تنظیم نشده است.'});

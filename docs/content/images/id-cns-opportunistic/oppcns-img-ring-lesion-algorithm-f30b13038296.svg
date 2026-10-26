@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
+  <title id="title">رویکرد به ضایعات مغزی در بیمار دچار نقص ایمنی</title>
+  <desc id="desc">الگوریتم تألیفی برای افتراق توکسوپلاسموز، لنفوم اولیه دستگاه عصبی مرکزی و PML</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071b2c"/><stop offset="1" stop-color="#123c42"/></linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#123850"/><stop offset="1" stop-color="#17605d"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity=".3"/></filter>
+    <style>.t{font-family:Vazirmatn,Tahoma,sans-serif;fill:#f4fbff;text-anchor:middle;direction:rtl;unicode-bidi:plaintext}.h{font-size:42px;font-weight:700}.b{font-size:27px}.s{font-size:23px;fill:#bfe9e5}.box{fill:url(#card);stroke:#50d6c8;stroke-width:3;rx:28;filter:url(#shadow)}.warn{fill:#4a2835;stroke:#ff8ca5}.ok{fill:#183e31;stroke:#72e3a2}.line{stroke:#8debe2;stroke-width:5;fill:none;marker-end:url(#arrow)}</style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#8debe2"/></marker>
+  </defs>
+  <rect width="1200" height="1600" fill="url(#bg)"/>
+  <text class="t h" x="600" y="75">ضایعهٔ مغزی در بیمار دچار نقص ایمنی</text>
+  <text class="t s" x="600" y="120">الگوریتم آموزشی؛ جایگزین تصمیم تیم تخصصی نیست</text>
+  <rect class="box" x="150" y="175" width="900" height="150"/>
+  <text class="t b" x="600" y="235">MRI با و بدون کنتراست + DWI</text><text class="t s" x="600" y="280">CD4 / نوع نقص ایمنی، ART و داروها، Toxoplasma IgG</text>
+  <path class="line" d="M600 325V390"/>
+  <rect class="box" x="110" y="390" width="470" height="230"/>
+  <text class="t b" x="345" y="455">چند ضایعهٔ ring-enhancing</text><text class="t s" x="345" y="505">بازال‌گانگلیا یا اتصال خاکستری–سفید</text><text class="t s" x="345" y="555">Toxoplasma IgG مثبت → احتمال توکسوپلاسموز</text>
+  <rect class="box" x="620" y="390" width="470" height="230"/>
+  <text class="t b" x="855" y="455">ماده سفید، بدون mass effect واضح</text><text class="t s" x="855" y="505">T2/FLAIR بالا، اغلب enhancement اندک</text><text class="t s" x="855" y="555">PML → CSF JCV PCR</text>
+  <path class="line" d="M345 620V700"/><path class="line" d="M855 620V700"/>
+  <rect class="box ok" x="110" y="700" width="470" height="235"/>
+  <text class="t b" x="345" y="765">درمان تجربی توکسوپلاسموز</text><text class="t s" x="345" y="815">pyrimethamine + sulfadiazine + leucovorin</text><text class="t s" x="345" y="865">یا TMP-SMX؛ ارزیابی پاسخ در ۱۰–۱۴ روز</text>
+  <rect class="box ok" x="620" y="700" width="470" height="235"/>
+  <text class="t b" x="855" y="765">بازسازی ایمنی</text><text class="t s" x="855" y="815">ART یا کاهش عامل سرکوب ایمنی</text><text class="t s" x="855" y="865">پایش PML-IRIS و اثر فضاگیر</text>
+  <path class="line" d="M345 935V1025"/><path class="line" d="M855 935V1025"/>
+  <rect class="box warn" x="110" y="1025" width="470" height="260"/>
+  <text class="t b" x="345" y="1090">عدم پاسخ یا الگوی غیرتیپیک</text><text class="t s" x="345" y="1140">لنفوم اولیه CNS، TB، قارچ و آبسه را بازبینی کن</text><text class="t s" x="345" y="1190">برای نمونه‌برداری ضایعه تصمیم تیمی بگیر</text>
+  <rect class="box warn" x="620" y="1025" width="470" height="260"/>
+  <text class="t b" x="855" y="1090">JCV PCR منفی ولی شک بالا</text><text class="t s" x="855" y="1140">PCR حساس‌تر/تکراری و افتراق‌های دیگر</text><text class="t s" x="855" y="1190">در موارد منتخب بیوپسی مغز</text>
+  <rect x="95" y="1360" width="1010" height="145" rx="24" fill="#0c2835" stroke="#5a9fa8" stroke-width="2"/>
+  <text class="t s" x="600" y="1415">نکته: IgG مثبت فقط تماس قبلی را نشان می‌دهد؛ پاسخ درمانی و الگوی MRI باید با هم تفسیر شوند.</text>
+  <text class="t s" x="600" y="1465">© IntMed — نمودار تألیفی مستقل، نسخهٔ پیش‌نویس برای بازبینی بالینی</text>
+</svg>

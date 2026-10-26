@@ -283,6 +283,19 @@ def cmd_validate(_: argparse.Namespace) -> int:
                             validate_data_uri(source)
                         except ValueError as exc:
                             errors.append(f"{rel}:images[{index}] {exc}")
+                    asset = item.get("assetPath")
+                    if asset:
+                        asset_path = Path(str(asset))
+                        resolved = (path.parent / asset_path).resolve()
+                        try:
+                            resolved.relative_to(path.parent.resolve())
+                        except ValueError:
+                            errors.append(f"{rel}:images[{index}] assetPath escapes the topic directory")
+                        else:
+                            if asset_path.is_absolute() or not resolved.is_file():
+                                errors.append(f"{rel}:images[{index}] assetPath does not exist")
+                            elif resolved.suffix.lower() not in {".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif"}:
+                                errors.append(f"{rel}:images[{index}] assetPath has an unsupported extension")
 
         source_ids = {source.get("id") for source in data.get("sources", []) if isinstance(source, dict) and source.get("id")}
         for ref in iter_source_refs(data):
@@ -327,9 +340,28 @@ def image_extension(mime: str) -> str:
     )
 
 
-def externalize_images(topic_id: str, payload: dict[str, Any], output: Path) -> None:
+def externalize_images(topic_id: str, payload: dict[str, Any], output: Path, topic_dir: Path | None = None) -> None:
     for index, image in enumerate(payload.get("images", [])):
         source = image.get("sourceUrl", "")
+        asset = image.pop("assetPath", None)
+        if asset:
+            if topic_dir is None:
+                raise PipelineError(f"{topic_id}: no source directory for assetPath")
+            source_path = (topic_dir / str(asset)).resolve()
+            try:
+                source_path.relative_to(topic_dir.resolve())
+            except ValueError as exc:
+                raise PipelineError(f"{topic_id}: assetPath escapes the topic directory") from exc
+            raw = source_path.read_bytes()
+            digest = hashlib.sha256(raw).hexdigest()
+            safe_id = re.sub(r"[^a-zA-Z0-9_-]+", "-", str(image.get("id") or f"img-{index + 1:03d}"))
+            filename = f"{safe_id}-{digest[:12]}{source_path.suffix.lower()}"
+            target = output / "images" / topic_id / filename
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+            image["sourceUrl"] = f"content/images/{topic_id}/{filename}"
+            image["sha256"] = digest
+            continue
         override = BLOB_OVERRIDES.get(f"{topic_id}:{index}")
         if override:
             image["sourceUrl"] = override
@@ -423,7 +455,7 @@ def build_library_index(
             if isinstance(image, dict) and image.get("id"):
                 image_text = " ".join([str(image.get("caption", "")), str(image.get("note", ""))])
                 declared = str(image.get("kind", ""))
-                if declared in {"tracing", "radiology", "pathology", "pbs", "clinical", "chart"}:
+                if declared in {"tracing", "radiology", "pathology", "pbs", "clinical", "chart", "algorithm", "table"}:
                     kind = declared
                 elif re.search(r"ecg|ekg|tracing|نوار قلب", image_text, re.IGNORECASE):
                     kind = "tracing"
@@ -470,7 +502,9 @@ def build_to(output: Path) -> dict[str, Any]:
     manifest_topics: dict[str, Any] = {}
     for topic_id in sorted(tax_map):
         payload = payloads.get(topic_id, {field: [] for field in FIELDS})
-        externalize_images(topic_id, payload, output)
+        canonical_id = SHARED_TOPIC_ALIASES.get(topic_id, topic_id)
+        source_topic = topics.get(canonical_id)
+        externalize_images(topic_id, payload, output, source_topic[0].parent if source_topic else None)
         serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8") + b"\n"
         topic_file = output / "topics" / f"{topic_id}.json"
         topic_file.write_bytes(serialized)

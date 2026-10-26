@@ -545,6 +545,18 @@
         {
           "id": "id-empiric",
           "label": "آنتی‌بیوتیک‌درمانی تجربی"
+        },
+        {
+          "id": "id-cns-meningoencephalitis",
+          "label": "مننژیت و انسفالیت"
+        },
+        {
+          "id": "id-brain-abscess-empyema",
+          "label": "آبسه مغزی و امپیم داخل جمجمه"
+        },
+        {
+          "id": "id-cns-opportunistic",
+          "label": "عفونت‌های فرصت‌طلب و مزمن دستگاه عصبی"
         }
       ]
     },

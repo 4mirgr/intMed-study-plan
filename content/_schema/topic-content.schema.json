@@ -186,6 +186,10 @@
             "type": "string",
             "description": "Link to the user's own private Drive file. Never a redistributable copy of copyrighted material."
           },
+          "assetPath": {
+            "type": "string",
+            "description": "Filename inside the topic directory. The build copies the authored or licensed asset into the generated public image bundle."
+          },
           "note": {
             "type": "string"
           },
@@ -197,7 +201,9 @@
               "pathology",
               "pbs",
               "clinical",
-              "chart"
+              "chart",
+              "algorithm",
+              "table"
             ]
           },
           "sourceClass": {

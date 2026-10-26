@@ -79,6 +79,26 @@ on public.intmed_content_ingest(status,created_at desc);
 create index if not exists intmed_content_ingest_sha_idx
 on public.intmed_content_ingest(sha256) where sha256 is not null;
 
+-- The hint table is installed by telegram_notifications.sql before this inbox exists.
+-- Add the referential link here once both sides are available.
+do $$ begin
+ if to_regclass('public.intmed_bot_topic_hints') is not null and not exists(
+   select 1 from pg_constraint where conname='intmed_bot_topic_hints_ingest_fk'
+ ) then
+  alter table public.intmed_bot_topic_hints
+   add constraint intmed_bot_topic_hints_ingest_fk foreign key(ingest_id)
+   references public.intmed_content_ingest(id) on delete cascade;
+ end if;
+end $$;
+
+-- A Persian routing hint is deliberately stored separately from canonical topic IDs. The
+-- content worker may use it as a suggestion, but must still match against the published taxonomy.
+create table if not exists public.intmed_bot_topic_hints(
+  ingest_id uuid primary key references public.intmed_content_ingest(id) on delete cascade,
+  hint_text text not null check(char_length(hint_text) between 1 and 300),
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.intmed_content_drafts(
   id uuid primary key default gen_random_uuid(),
   ingest_id uuid not null unique references public.intmed_content_ingest(id) on delete cascade,
@@ -101,11 +121,88 @@ create table if not exists public.intmed_content_drafts(
 create index if not exists intmed_content_drafts_status_created_idx
 on public.intmed_content_drafts(status,created_at);
 
+-- One project-wide lease serializes expensive provider calls. Telegram can deliver many
+-- updates in parallel; without this lease every update used to start its own OpenAI request.
+create table if not exists public.intmed_content_worker_lease(
+  lease_key text primary key check(lease_key='worker'),
+  owner uuid,
+  lease_until timestamptz not null default '-infinity'::timestamptz,
+  updated_at timestamptz not null default now()
+);
+insert into public.intmed_content_worker_lease(lease_key) values('worker') on conflict do nothing;
+
+create or replace function public.claim_intmed_content_ingest(requested uuid,lease_owner uuid)
+returns uuid language plpgsql security definer set search_path=public
+as $$
+declare claimed uuid;
+begin
+  if lease_owner is null then raise exception 'lease owner required'; end if;
+  update public.intmed_content_worker_lease
+  set owner=lease_owner,lease_until=now()+interval '10 minutes',updated_at=now()
+  where lease_key='worker' and (lease_until<=now() or owner=lease_owner);
+  if not found then return null; end if;
+
+  select i.id into claimed
+  from public.intmed_content_ingest i
+  left join public.intmed_content_drafts d on d.ingest_id=i.id
+  where (requested is null or i.id=requested)
+    and i.status in ('pending_review','error')
+    and coalesce(d.attempts,0)<20
+    and (
+      d.ingest_id is null or d.status='queued'
+      or (d.status='waiting_provider' and d.error_code in ('provider_rate_limited','provider_quota','provider_unavailable','provider_not_configured'))
+    )
+  order by i.created_at,i.id
+  for update of i skip locked
+  limit 1;
+
+  if claimed is null then
+    update public.intmed_content_worker_lease set owner=null,lease_until=now(),updated_at=now()
+    where lease_key='worker' and owner=lease_owner;
+    return null;
+  end if;
+
+  insert into public.intmed_content_drafts(ingest_id,status,attempts,error_code,updated_at)
+  values(claimed,'processing',1,null,now())
+  on conflict(ingest_id) do update set
+    status='processing',attempts=public.intmed_content_drafts.attempts+1,
+    error_code=null,updated_at=now();
+  update public.intmed_content_ingest set status='processing',error_code=null,updated_at=now()
+  where id=claimed;
+  return claimed;
+end $$;
+
+create or replace function public.release_intmed_content_lease(lease_owner uuid)
+returns void language sql security definer set search_path=public
+as $$
+  update public.intmed_content_worker_lease set owner=null,lease_until=now(),updated_at=now()
+  where lease_key='worker' and owner=lease_owner;
+$$;
+
+-- Normalize the legacy ambiguous error produced by the first worker version. These inputs are
+-- retained for a controlled retry and no longer inflate the permanent-error counter.
+update public.intmed_content_drafts
+set status='waiting_provider',error_code='provider_rate_limited',updated_at=now()
+where status='error' and error_code='provider_429';
+update public.intmed_content_ingest i
+set status='pending_review',error_code='provider_rate_limited',updated_at=now()
+from public.intmed_content_drafts d
+where d.ingest_id=i.id and d.status='waiting_provider' and d.error_code='provider_rate_limited'
+  and i.status='error';
+
 alter table public.intmed_content_ingest enable row level security;
 alter table public.intmed_content_drafts enable row level security;
+alter table public.intmed_bot_topic_hints enable row level security;
+alter table public.intmed_content_worker_lease enable row level security;
 revoke all on public.intmed_content_ingest from public,anon,authenticated;
 revoke all on public.intmed_content_drafts from public,anon,authenticated;
+revoke all on public.intmed_bot_topic_hints from public,anon,authenticated;
+revoke all on public.intmed_content_worker_lease from public,anon,authenticated;
 grant all on public.intmed_content_ingest to service_role;
 grant all on public.intmed_content_drafts to service_role;
+grant all on public.intmed_bot_topic_hints to service_role;
+grant all on public.intmed_content_worker_lease to service_role;
+revoke all on function public.claim_intmed_content_ingest(uuid,uuid),public.release_intmed_content_lease(uuid) from public,anon,authenticated;
+grant execute on function public.claim_intmed_content_ingest(uuid,uuid),public.release_intmed_content_lease(uuid) to service_role;
 
 commit;

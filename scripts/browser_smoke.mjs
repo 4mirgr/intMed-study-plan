@@ -23,11 +23,11 @@ try {
   await page.waitForLoadState("networkidle");
   await page.waitForFunction(() =>
     document.querySelectorAll(".topic-cat").length === 12 &&
-    document.querySelectorAll(".topic-item").length === 141
+    document.querySelectorAll(".topic-item").length === 144
   );
   const categories = await page.locator(".topic-cat").count();
   const topics = await page.locator(".topic-item").count();
-  if (categories !== 12 || topics !== 141) throw new Error(`unexpected taxonomy DOM: ${categories}/${topics}`);
+  if (categories !== 12 || topics !== 144) throw new Error(`unexpected taxonomy DOM: ${categories}/${topics}`);
   if (requested.some(url => url.includes("content-bundle.json"))) throw new Error("legacy bundle was requested");
   if (requested.some(url => /content\/topics\/.+\.json/.test(url))) throw new Error("topic payload fetched eagerly");
 

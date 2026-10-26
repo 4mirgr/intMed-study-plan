@@ -37,6 +37,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   legacy-ticket fallback remains only for old cached clients or an unavailable schema.
 - The installable Persian PWA shell has an explicit offline screen and never caches Auth/API/private
   data. Production Auth now requires at least eight password characters.
+- Telegram now has an inline command menu, Persian free-form topic routing, private login/activity/
+  message alerts, and a serialized provider queue with recoverable retry states instead of parallel
+  AI bursts. Three draft CNS-infection chapters and four original clinical algorithms are published
+  in the canonical content system.
 
 ## Open work, in priority order
 
@@ -56,9 +60,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   high DPI; record page, source, copyright and visual QA. Never upscale a bad thumbnail as a fix.
 - Validate normalized message backfill in production, then move the UI from legacy ticket polling
   to conversation RPCs/Realtime; add native push later. Dual-write keeps the cutover reversible.
-- Deploy and provider-test the reviewed Telegram ingest worker. It now creates a structured,
-  source-linked `draft_ready` record and suggests a canonical topic, but deliberately cannot edit
-  or publish repository content. `OPENAI_API_KEY` is an external production dependency.
+- Provider-test the serialized Telegram ingest worker after deployment by retrying the preserved
+  queue from the bot. The first live batch hit provider HTTP 429; the new worker distinguishes rate
+  limit, quota and provider outages, keeps inputs recoverable, and never edits or publishes canonical
+  content. If it reports `provider_quota`, billing/quota must be fixed before another manual retry.
 
 ### P1 — paid/mobile foundation
 

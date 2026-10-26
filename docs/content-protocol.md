@@ -31,6 +31,9 @@ also follow `AGENTIC_CONTENT.md`.
   image can be extracted directly.
 - Compress photographs as JPEG and flat-color line art as palette PNG. Verify the result
   visually and keep an explicit source/copyright note.
+- For repository-owned visuals, keep the original beside the topic and reference it with
+  `assetPath`; the build copies and hashes it into `docs/content/images/`. Do not hand-edit
+  generated image files.
 - Canonical source JSON may contain a data URI during authoring. The build externalizes it
   into `docs/content/images/`; published per-topic JSON must not contain base64 image data.
 

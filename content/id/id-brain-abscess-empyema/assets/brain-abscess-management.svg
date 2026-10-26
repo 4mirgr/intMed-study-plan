@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1700" viewBox="0 0 1200 1700" role="img" aria-labelledby="title desc">
+  <title id="title">الگوریتم تشخیص و درمان آبسه مغزی</title>
+  <desc id="desc">تصمیم‌گیری تصویربرداری، درمان ضد میکروبی، نمونه‌گیری، جراحی و پیگیری آبسه مغزی</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17142c"/><stop offset="1" stop-color="#213f4b"/></linearGradient>
+    <linearGradient id="hd" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#7868ff"/><stop offset="1" stop-color="#18c6b9"/></linearGradient>
+    <filter id="s"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity=".25"/></filter>
+    <marker id="a" markerWidth="12" markerHeight="12" refX="8" refY="4" orient="auto"><path d="M0 0v8l9-4z" fill="#58d6cd"/></marker>
+    <style>text{font-family:Vazirmatn,Tahoma,Arial,sans-serif;fill:#f4fbff;direction:rtl;unicode-bidi:plaintext}.h{font-size:50px;font-weight:800}.sub{font-size:27px}.t{font-size:29px;font-weight:700}.b{font-size:24px;fill:#dbeef2}.n{font-size:21px;fill:#a8d3da}.box{fill:#172f45;stroke:#4e8294;stroke-width:3}.warn{fill:#482538;stroke:#ff718d;stroke-width:3}.go{fill:#153e3f;stroke:#46d6bd;stroke-width:3}.line{fill:none;stroke:#58d6cd;stroke-width:5;marker-end:url(#a)}</style>
+  </defs>
+  <rect width="1200" height="1700" rx="44" fill="url(#bg)"/>
+  <rect x="55" y="50" width="1090" height="180" rx="34" fill="url(#hd)" filter="url(#s)"/>
+  <text x="600" y="128" text-anchor="middle" class="h">آبسه مغزی: از شک تا پیگیری</text>
+  <text x="600" y="184" text-anchor="middle" class="sub">تب ممکن است غایب باشد؛ سردرد، تشنج یا نقص عصبی فوکال هشداردهنده‌اند</text>
+
+  <rect x="125" y="290" width="950" height="175" rx="30" class="warn" filter="url(#s)"/>
+  <text x="600" y="352" text-anchor="middle" class="t">MRI مغز با contrast و DWI ترجیح دارد</text>
+  <text x="600" y="402" text-anchor="middle" class="b">در وضعیت اورژانسی CT با contrast؛ در ضایعه فضاگیر LP انجام ندهید</text>
+  <text x="600" y="445" text-anchor="middle" class="n">هم‌زمان کشت خون و جست‌وجوی منبع دندانی، سینوسی، گوش، قلب یا ریه</text>
+  <path d="M600 465 V525" class="line"/>
+
+  <rect x="85" y="540" width="1030" height="180" rx="30" class="box" filter="url(#s)"/>
+  <text x="600" y="600" text-anchor="middle" class="t">درمان تجربی را براساس زمینه انتخاب کنید</text>
+  <text x="600" y="650" text-anchor="middle" class="b">اکتساب از جامعه: سفالوسپورین نسل ۳ + مترونیدازول</text>
+  <text x="600" y="695" text-anchor="middle" class="b">پس از جراحی/تروما یا خطر MRSA: افزودن vancomycin؛ پوشش گرم‌منفی مقاوم برحسب زمینه</text>
+  <path d="M600 720 V780" class="line"/>
+
+  <rect x="60" y="795" width="525" height="300" rx="30" class="go" filter="url(#s)"/>
+  <text x="323" y="858" text-anchor="middle" class="t">درمان طبی منتخب</text>
+  <text x="323" y="908" text-anchor="middle" class="b">ضایعه کوچک و در دسترس نبودن کم‌خطر،</text>
+  <text x="323" y="948" text-anchor="middle" class="b">تشخیص محتمل، بیمار پایدار و بدون اثر فشاری مهم</text>
+  <text x="323" y="1000" text-anchor="middle" class="b">پایش نزدیک بالینی و تصویربرداری سریال الزامی است</text>
+  <text x="323" y="1050" text-anchor="middle" class="n">آستانه اندازه مطلق نیست؛ محل و وضعیت بیمار مهم‌تر است</text>
+
+  <rect x="615" y="795" width="525" height="300" rx="30" class="warn" filter="url(#s)"/>
+  <text x="878" y="858" text-anchor="middle" class="t">مشاوره فوری جراحی مغز</text>
+  <text x="878" y="908" text-anchor="middle" class="b">ضایعه بزرگ/اثر فشاری، بدترشدن، تشخیص نامطمئن،</text>
+  <text x="878" y="948" text-anchor="middle" class="b">محل خلفی، پارگی داخل بطنی یا پاسخ ناکافی</text>
+  <text x="878" y="1000" text-anchor="middle" class="b">آسپیراسیون/برداشت و ارسال هوازی، بی‌هوازی، قارچی و پاتولوژی</text>
+  <text x="878" y="1050" text-anchor="middle" class="n">در بیمار پایدار، نمونه را ترجیحاً پیش از تغییر آنتی‌بیوتیک بگیرید</text>
+
+  <path d="M323 1095 V1160 H600" class="line"/>
+  <path d="M878 1095 V1160 H600" class="line"/>
+  <rect x="115" y="1180" width="970" height="245" rx="30" class="box" filter="url(#s)"/>
+  <text x="600" y="1240" text-anchor="middle" class="t">درمان تکمیلی و پایش</text>
+  <text x="600" y="1290" text-anchor="middle" class="b">تنظیم درمان با کشت؛ معمولاً چند هفته درمان IV برحسب تخلیه و پاسخ</text>
+  <text x="600" y="1335" text-anchor="middle" class="b">کورتون فقط برای ادم تهدیدکننده حیات/اثر فشاری؛ درمان تشنج در صورت بروز</text>
+  <text x="600" y="1380" text-anchor="middle" class="n">پروفیلاکسی روتین ضدتشنج و مدت آن باید فردی و با نظر نورولوژی باشد</text>
+  <path d="M600 1425 V1480" class="line"/>
+
+  <rect x="170" y="1495" width="860" height="125" rx="30" class="go" filter="url(#s)"/>
+  <text x="600" y="1550" text-anchor="middle" class="t">پیگیری: معاینه + MRI/CT تا بهبود بالینی و رادیولوژیک</text>
+  <text x="600" y="1592" text-anchor="middle" class="n">فاصله تصویربرداری برحسب شدت، مداخله و پاسخ است؛ تقویم ثابتی برای همه وجود ندارد</text>
+  <text x="600" y="1660" text-anchor="middle" class="n">نمودار آموزشی تألیفی IntMed — تصمیم نهایی تابع متخصص عفونی و جراحی مغز است</text>
+</svg>
