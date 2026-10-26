@@ -103,3 +103,13 @@ vm.runInContext(fs.readFileSync(new URL("../docs/js/intmed-backend.js",import.me
 assert.equal((await wafWindow.IntMedBackend.signIn("doctor@example.com","password")).session.access_token,"waf-access");
 assert.ok(wafFallbackCalls>=2,"403 gateway response did not fall back to the direct project origin");
 console.log("Gateway regression passed: CDN/WAF 403 falls back to the direct secure origin.");
+
+const readonlyStore=new Map(),readonlyTabStore=new Map(),readonlyWindow={
+  INTMED_CONFIG:{supabaseUrl:"https://api.drgerami-md.ir",supabaseFallbackUrl:"https://example.supabase.co",supabaseAnonKey:"anon",authPrimaryTimeoutMs:20,authFallbackTimeoutMs:50},
+  location:{origin:"https://intmed.example",pathname:"/",search:"",hash:""}
+};
+const readonlyNetworkError=Object.create(null,{message:{get:()=>"Failed to fetch"},code:{get:()=>"network_failure"}});
+const readonlyContext=vm.createContext({window:readonlyWindow,fetch:()=>Promise.reject(readonlyNetworkError),localStorage:{getItem:key=>readonlyStore.get(key)||null,setItem:(key,value)=>readonlyStore.set(key,value),removeItem:key=>readonlyStore.delete(key)},sessionStorage:{getItem:key=>readonlyTabStore.get(key)||null,setItem:(key,value)=>readonlyTabStore.set(key,value),removeItem:key=>readonlyTabStore.delete(key)},JSON,Promise,URLSearchParams,encodeURIComponent,setTimeout,clearTimeout,AbortController,console});
+vm.runInContext(fs.readFileSync(new URL("../docs/js/intmed-backend.js",import.meta.url),"utf8"),readonlyContext);
+await assert.rejects(readonlyWindow.IntMedBackend.signUp("doctor@example.com","password123",{}),error=>error.message.includes("مسیرهای امن ثبت‌نام")&&!error.message.includes("only a getter"));
+console.log("Registration regression passed: read-only browser network errors are translated safely.");

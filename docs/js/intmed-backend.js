@@ -51,6 +51,17 @@
     // fallback and applies the same Auth/RLS checks.
     return !error.status || error.status === 403 || error.status === 404 || error.status === 408 || error.status === 425 || error.status >= 500;
   }
+  function withMessage(error, message){
+    // Browser/network errors are not guaranteed to be mutable.  In
+    // particular DOMException.message is a getter in some Chromium builds;
+    // assigning to it in strict mode hides the useful error behind
+    // "Cannot set property message ... which has only a getter".
+    var translated = new Error(message);
+    if(error && error.status != null) translated.status = error.status;
+    if(error && error.code != null) translated.code = error.code;
+    translated.cause = error;
+    return translated;
+  }
   function request(path, options){
     options = options || {};
     var authenticated = options.authenticated !== false;
@@ -108,8 +119,8 @@
       ? auth("token?grant_type=password", {email:username, password:password})
       : request("/functions/v1/intmed-login", {method:"POST", authenticated:false, body:JSON.stringify({username:username,password:password})});
     return login.catch(function(error){
-      if(!error.status && (error.code === "network_timeout" || /fetch|network|load failed|offline|abort/i.test(error.message||"")))error.message="هیچ‌کدام از مسیرهای امن ورود پاسخ ندادند. این مشکل از مسیر شبکه یا سرویس حساب است و به معنی اشتباه بودن رمز نیست؛ کمی بعد دوباره تلاش کنید.";
-      if(error.status === 404) error.message = "ورود با نام کاربری هنوز در سرور فعال نشده است؛ تا تکمیل راه‌اندازی از ایمیل حساب استفاده کنید.";
+      if(!error.status && (error.code === "network_timeout" || /fetch|network|load failed|offline|abort/i.test(error.message||"")))error=withMessage(error,"هیچ‌کدام از مسیرهای امن ورود پاسخ ندادند. این مشکل از مسیر شبکه یا سرویس حساب است و به معنی اشتباه بودن رمز نیست؛ کمی بعد دوباره تلاش کنید.");
+      if(error.status === 404) error=withMessage(error,"ورود با نام کاربری هنوز در سرور فعال نشده است؛ تا تکمیل راه‌اندازی از ایمیل حساب استفاده کنید.");
       throw error;
     }).then(function(value){
       saveSession(value);
@@ -135,7 +146,7 @@
       // definitive rejected refresh requires a fresh password login.
       if(error.status === 400 || error.status === 401 || error.status === 403){
         saveSession(null);
-        error.message = "auth";
+        error = withMessage(error,"auth");
       }
       throw error;
     });
@@ -153,10 +164,10 @@
       return value;
     }).catch(function(error){
       if(error.code === "user_already_exists" || /already registered|already exists|email.*registered|ایمیل.*ثبت/i.test(error.message || "")){
+        error = withMessage(error,"این ایمیل قبلاً ثبت شده است.");
         error.code = "duplicate_email";
-        error.message = "این ایمیل قبلاً ثبت شده است.";
       }
-      if(!error.status && (error.code === "network_timeout" || /fetch|network|load failed|offline|abort/i.test(error.message||"")))error.message="هیچ‌کدام از مسیرهای امن ثبت‌نام پاسخ ندادند. کمی بعد دوباره تلاش کنید؛ مشکل از رمز یا اطلاعات فرم نیست.";
+      if(!error.status && (error.code === "network_timeout" || /fetch|network|load failed|offline|abort/i.test(error.message||"")))error=withMessage(error,"هیچ‌کدام از مسیرهای امن ثبت‌نام پاسخ ندادند. کمی بعد دوباره تلاش کنید؛ مشکل از رمز یا اطلاعات فرم نیست.");
       throw error;
     });
   }
