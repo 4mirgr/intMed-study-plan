@@ -36,7 +36,6 @@ def render(url: str, anon_key: str, browser_url: str | None = None) -> str:
     else:
         browser_url = url
     config = {
-        "supabaseSameOriginPath": "/api",
         "supabaseUrl": browser_url,
         "supabaseFallbackUrl": url if browser_url != url else "",
         "supabaseAnonKey": anon_key,

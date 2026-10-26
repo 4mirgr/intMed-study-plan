@@ -55,14 +55,7 @@
     options = options || {};
     var authenticated = options.authenticated !== false;
     function origins(){
-      // The same-origin /api route is intentionally first. Iranian mobile
-      // networks may reach the site while filtering both the Supabase host and
-      // a dedicated API subdomain. Cloudflare forwards this path to the same
-      // fixed project and the remaining origins stay as automatic fallbacks.
-      var sameOriginPath=config.supabaseSameOriginPath||"/api";
-      var pageOrigin=global.location&&/^https?:\/\//.test(global.location.origin||"")?global.location.origin.replace(/\/$/,""):"";
-      var sameOrigin=/^\/api(?:\/|$)/.test(sameOriginPath)&&pageOrigin?pageOrigin+sameOriginPath:sameOriginPath;
-      var values=[activeOrigin,sameOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
+      var values=[activeOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
       return values;
     }
     function perform(retried){
