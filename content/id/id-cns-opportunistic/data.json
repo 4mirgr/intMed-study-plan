@@ -85,7 +85,8 @@
             {
               "sourceId": "harrison-2025-cns"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:2:1"
         },
         {
           "id": "oppcns-p-006",
