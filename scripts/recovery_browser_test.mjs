@@ -17,8 +17,8 @@ await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}))
 try{
  const base=process.env.INTMED_BASE_URL||'http://127.0.0.1:8765';await page.goto(base);await page.locator('#showForgotLink').click();
  assert.ok(!(await page.locator('#forgotForm').textContent()).includes('واتساپ'));assert.equal(await page.locator('#forgotMobile').count(),0);
- await page.locator('#forgotUser').fill('invalid');await page.locator('#forgotSendEmail').click();assert.equal(sent,0);
- await page.locator('#forgotUser').fill('doctor@example.com');await page.locator('#forgotSendEmail').click();await page.waitForFunction(()=>document.getElementById('forgotStatus').textContent.includes('اگر حسابی'));
+ await page.locator('#forgotUser').fill('invalid');await page.locator('#forgotSendEmail').click();assert.equal(sent,0);await page.waitForFunction(()=>!document.getElementById('forgotSendEmail').disabled);
+ await page.locator('#forgotUser').fill('doctor@example.com');await page.locator('#forgotSendEmail').click();await page.waitForFunction(()=>document.getElementById('forgotStatus').textContent.includes('اگر حسابی')&&!document.getElementById('forgotSendEmail').disabled);
  assert.equal(sent,1);assert.deepEqual(requested.body,{email:'doctor@example.com'});assert.equal(requested.url.searchParams.get('redirect_to'),new URL(base).origin+'/');
  fail=true;await page.locator('#forgotSendEmail').click();await page.waitForFunction(()=>document.getElementById('forgotStatus').textContent.includes('تعداد درخواست'));
  for(const id of ['loginUser','loginPass','signupFullName','signupUser','signupPass','signupDegree','signupSpecialty','signupProvince','signupEmail','forgotUser','recoveryPass','recoveryPassConfirm']){
