@@ -123,10 +123,13 @@
     {key:"ventSim", label:"شبیه‌سازی ونتیلاتور", onlyFor:["crit-vent"]},
     {key:"images", label:"تصاویر مهم"},
     {key:"tables", label:"جداول مهم"},
-    {key:"highlights", label:"نمایش یادداشت‌ها و هایلایت‌ها"}
+    {key:"highlights", label:"هایلایت‌های من", personal:true},
+    {key:"notes", label:"یادداشت‌های شخصی من", personal:true}
   ];
   var contentMap = {}; // loaded lazily: topicId -> content payload
   var contentManifest = {topics:{}};
+  var educationSearchIndex = {topics:{}};
+  var educationSearchPromise = null;
   var topicLoadPromises = {};
 
   // ---------------------------------------------------------------
@@ -313,6 +316,7 @@
     cat.subs.forEach(function(sub){
       var item = document.createElement("div");
       item.className = "topic-item";
+      item.dataset.topicId = sub.id;
 
       var listBtn = document.createElement("div");
       listBtn.className = "topic-list-btn";
@@ -374,6 +378,7 @@
       note.addEventListener("input", function(){
         scheduleNoteWrite(sub.id, function(){
           writeTopicState(sub.id, {status: topicEls[sub.id].status || "نامشخص", note: note.value});
+          updateLearnCounts(sub.id);
         });
       });
       detail.appendChild(note);
@@ -390,7 +395,7 @@
       hlRow.className = "learn-row learn-row-highlights";
       var hlRowLabel = document.createElement("span");
       hlRowLabel.className = "learn-row-highlights-label";
-      hlRowLabel.textContent = "هایلایت و یادداشت‌های شخصی من در این مبحث:";
+      hlRowLabel.textContent = "محتوای شخصی من در این مبحث:";
       hlRow.appendChild(hlRowLabel);
       var learnPanel = document.createElement("div");
       learnPanel.className = "learn-panel";
@@ -401,10 +406,12 @@
         b.type = "button";
         b.className = "learn-btn";
         var personalNotesIcon = lt.key === "highlights"
-          ? '<svg class="learn-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5M9 12h6M9 16h4"/><path d="m4 17-1 4 4-1"/></svg>'
+          ? '<svg class="learn-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 15 9-9 5 5-9 9H4Z"/><path d="m11 8 5 5M3 21h18"/></svg>'
+          : lt.key === "notes"
+          ? '<svg class="learn-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5M9 12h6M9 16h4"/></svg>'
           : '';
         b.innerHTML = personalNotesIcon + '<span class="learn-btn-label">' + lt.label + '</span><span class="cnt" data-lc="'+sub.id+'-'+lt.key+'"></span>';
-        if(lt.key === "highlights") b.setAttribute("aria-label", "نمایش یادداشت‌ها و هایلایت‌های شخصی این مبحث");
+        if(lt.personal) b.setAttribute("aria-label", "نمایش "+lt.label+" در این مبحث");
         b.addEventListener("click", function(e){
           e.stopPropagation();
           if(window.IntMedDashboard)window.IntMedDashboard.stop();
@@ -418,7 +425,7 @@
             b.classList.add("active");
             learnPanel.classList.add("open");
             topicEls[sub.id].openType = lt.key;
-            ensureTopicLoaded(sub.id).then(function(){
+            (lt.personal ? Promise.resolve() : ensureTopicLoaded(sub.id)).then(function(){
               if(topicEls[sub.id].openType === lt.key){renderLearnPanel(sub.id, lt.key);if(window.IntMedDashboard)window.IntMedDashboard.open(sub.id,lt.key);}
             }).catch(function(){
               if(topicEls[sub.id].openType !== lt.key) return;
@@ -427,7 +434,7 @@
           }
         });
         learnBtns[lt.key] = b;
-        if(lt.key === "highlights"){ hlRow.appendChild(b); } else { learnRow.appendChild(b); }
+        if(lt.personal){ hlRow.appendChild(b); } else { learnRow.appendChild(b); }
       });
       detail.appendChild(learnRow);
       detail.appendChild(hlRow);
@@ -462,6 +469,42 @@
   TOPICS.forEach(updateCatStat);
   }
 
+  function normalizeEducationSearch(value){
+    return String(value||"").normalize("NFKC").replace(/ي/g,"ی").replace(/ك/g,"ک").replace(/[\u064b-\u065f\u0670]/g,"").replace(/[\u200c\u200d]/g," ").replace(/[^\p{L}\p{N}]+/gu," ").toLocaleLowerCase("fa").trim();
+  }
+  function filterEducationTopics(){
+    var input=document.getElementById("educationSearch"),status=document.getElementById("educationSearchStatus"),clear=document.getElementById("educationSearchClear");
+    if(!input||!status)return;
+    var query=normalizeEducationSearch(input.value),tokens=query.split(/\s+/).filter(Boolean),matches=0;
+    TOPICS.forEach(function(cat){
+      var categoryMatches=0;
+      cat.subs.forEach(function(sub){
+        var indexed=(educationSearchIndex.topics||{})[sub.id]||{};
+        var haystack=normalizeEducationSearch([cat.label,sub.label,indexed.text||""].join(" "));
+        var visible=!tokens.length||tokens.every(function(token){return haystack.indexOf(token)!==-1;});
+        var topic=topicEls[sub.id];if(topic)topic.itemEl.hidden=!visible;
+        if(visible){matches++;categoryMatches++;}
+      });
+      var categoryEl=topicEls[cat.subs[0]&&cat.subs[0].id]?.itemEl.closest(".topic-cat");
+      if(categoryEl){categoryEl.hidden=categoryMatches===0;if(tokens.length&&categoryMatches)categoryEl.classList.add("open");}
+    });
+    if(clear)clear.hidden=!tokens.length;
+    status.textContent=tokens.length?(matches?faDigits(matches)+" مبحث مرتبط پیدا شد؛ نتیجه‌ها در دسته‌های بازشده نمایش داده می‌شوند.":"مبحثی با این عبارت پیدا نشد؛ واژه کوتاه‌تر یا املای دیگری را امتحان کنید."):faDigits(allTopicIds.length)+" مبحث آموزشی در دسترس است.";
+  }
+  function loadEducationSearchIndex(){
+    if(educationSearchPromise)return educationSearchPromise;
+    educationSearchPromise=fetch("content/search.json").then(function(response){if(!response.ok)throw new Error("search "+response.status);return response.json();}).then(function(value){educationSearchIndex=value||{topics:{}};filterEducationTopics();return educationSearchIndex;}).catch(function(){educationSearchIndex={topics:{}};return educationSearchIndex;});
+    return educationSearchPromise;
+  }
+  function setupEducationSearch(){
+    var input=document.getElementById("educationSearch"),clear=document.getElementById("educationSearchClear");if(!input)return;
+    input.addEventListener("focus",loadEducationSearchIndex,{once:true});
+    input.addEventListener("input",function(){filterEducationTopics();if(input.value.trim())loadEducationSearchIndex();});
+    input.addEventListener("keydown",function(event){if(event.key==="Escape"&&input.value){input.value="";filterEducationTopics();input.focus();}});
+    if(clear)clear.addEventListener("click",function(){input.value="";filterEducationTopics();input.focus();});
+    filterEducationTopics();
+  }
+
   function updateCatStat(cat){
     var good = cat.subs.filter(function(s){ return topicEls[s.id].status === "خوب"; }).length;
     var el = document.querySelector('.cat-stat[data-cat-stat="'+cat.id+'"]');
@@ -476,7 +519,7 @@
     }
     if(!data) return null;
     return LEARN_TYPES.some(function(lt){
-      if(lt.key === "highlights") return false; // personal annotations, not board-prep content
+      if(lt.personal) return false; // personal annotations, not board-prep content
       return (data[lt.key] || []).length > 0;
     });
   }
@@ -1784,6 +1827,7 @@
       });
       contentManifest = results[1] || {topics:{}};
       buildTopicsUI();
+      setupEducationSearch();
       allTopicIds.forEach(function(id){
         updateLearnCounts(id);
         updateContentBadge(id);
@@ -1806,7 +1850,9 @@
     var data = contentMap[topicId] || {};
     var counts = (contentManifest.topics && contentManifest.topics[topicId] && contentManifest.topics[topicId].counts) || {};
     LEARN_TYPES.forEach(function(lt){
-      var n = lt.key === "highlights" ? (myBucket().highlights[topicId] || []).length
+      var personal=getHighlights(topicId),topicState=(myBucket().itemState||{})[topicId]||{};
+      var n = lt.key === "highlights" ? personal.filter(function(h){return h&&h.quote;}).length
+        : lt.key === "notes" ? personal.filter(function(h){return h&&h.note;}).length+(String(topicState.note||"").trim()?1:0)
         : data[lt.key] ? data[lt.key].length : (counts[lt.key] || 0);
       var el = document.querySelector('[data-lc="'+topicId+'-'+lt.key+'"]');
       if(el) el.textContent = n ? faDigits(n) : "";
@@ -1917,7 +1963,7 @@
     var t = topicEls[topicId];
     if(!t) return;
     updateLearnCounts(topicId);
-    if(t.openType === "highlights") renderLearnPanel(topicId, "highlights");
+    if(t.openType === "highlights"||t.openType === "notes") renderLearnPanel(topicId, t.openType);
   }
 
   function commitHighlight(sel, color, note){
@@ -2118,12 +2164,20 @@
   function renderLearnPanel(topicId, type){
     var t = topicEls[topicId];
     if(!t) return;
-    var data = type === "highlights" ? getHighlights(topicId) : ((contentMap[topicId] || {})[type] || []);
+    var topicState=(myBucket().itemState||{})[topicId]||{},personalHighlights=getHighlights(topicId),data;
+    if(type === "highlights") data=personalHighlights.filter(function(h){return h&&h.quote;});
+    else if(type === "notes"){
+      data=[];
+      if(String(topicState.note||"").trim())data.push({id:"topic-note",note:topicState.note,source:"یادداشت کلی مبحث",topicNote:true});
+      personalHighlights.forEach(function(h){if(h&&String(h.note||"").trim())data.push({id:h.id,note:h.note,quote:h.quote||"",source:"یادداشت کنار هایلایت",highlight:h});});
+    }else data=((contentMap[topicId] || {})[type] || []);
     var panel = t.learnPanel;
 
     if(!data.length){
       panel.innerHTML = type === "highlights"
-        ? '<div class="learn-empty">هنوز هایلایت یا یادداشتی برای این مبحث نساختی. متن رو در درسنامه/فلش‌کارت/جدول انتخاب کن تا دکمهٔ هایلایت ظاهر بشه.</div>'
+        ? '<div class="learn-empty">هنوز هایلایتی برای این مبحث نساخته‌اید. متن را در درسنامه، فلش‌کارت، آزمون یا جدول انتخاب کنید.</div>'
+        : type === "notes"
+        ? '<div class="learn-empty">هنوز یادداشت شخصی برای این مبحث ثبت نشده است. از کادر یادداشت مبحث یا دکمهٔ یادداشت کنار هایلایت استفاده کنید.</div>'
         : '<div class="learn-empty">هنوز محتوایی برای این بخش ساخته نشده. در گفتگو با کلود بگو کجا منبعش رو پیدا کنه یا بساز.</div>';
       return;
     }
@@ -2143,7 +2197,7 @@
         quote.textContent = "«" + h.quote + "»";
         var meta = document.createElement("div");
         meta.className = "hl-list-meta";
-        meta.textContent = src + (h.note ? " · " + h.note : "");
+        meta.textContent = src + (h.note ? " · دارای یادداشت شخصی" : "");
         var del = document.createElement("button");
         del.type = "button"; del.className = "hl-list-del"; del.textContent = "حذف";
         del.addEventListener("click", function(){
@@ -2156,6 +2210,26 @@
         });
         row.appendChild(quote); row.appendChild(meta); row.appendChild(del);
         panel.appendChild(row);
+      });
+      return;
+    }
+
+    if(type === "notes"){
+      panel.innerHTML="";
+      data.slice().reverse().forEach(function(entry){
+        var row=document.createElement("div");row.className="hl-list-item";
+        var note=document.createElement("div");note.className="hl-list-quote";note.textContent=entry.note;
+        var meta=document.createElement("div");meta.className="hl-list-meta";meta.textContent=entry.source;
+        row.append(note,meta);
+        if(entry.quote){var context=document.createElement("blockquote");context.className="personal-note-context";context.textContent="متن مرتبط: «"+entry.quote+"»";row.appendChild(context);}
+        var edit=document.createElement("button");edit.type="button";edit.className="hl-list-del";edit.textContent="ویرایش";
+        edit.addEventListener("click",function(){
+          var value=prompt("ویرایش یادداشت:",entry.note);if(value===null)return;
+          if(entry.topicNote){writeTopicState(topicId,{status:t.status||"نامشخص",note:value.trim()});t.note.value=value.trim();}
+          else{entry.highlight.note=value.trim();scheduleFlush(400);}
+          renderLearnPanel(topicId,"notes");updateLearnCounts(topicId);
+        });
+        row.appendChild(edit);panel.appendChild(row);
       });
       return;
     }

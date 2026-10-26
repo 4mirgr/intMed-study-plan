@@ -11,7 +11,8 @@ const browser = await chromium.launch({
   args: ["--no-sandbox", "--disable-dev-shm-usage"],
   ...(systemChromium ? {executablePath: systemChromium} : {})
 });
-const page = await browser.newPage();
+const context = await browser.newContext({serviceWorkers:"block"});
+const page = await context.newPage();
 const requested = [];
 const errors = [];
 page.on("request", request => requested.push(request.url()));
@@ -32,6 +33,23 @@ try {
   if (requested.some(url => /content\/topics\/.+\.json/.test(url))) throw new Error("topic payload fetched eagerly");
 
   await page.evaluate(() => { document.getElementById("loginGate").style.display = "none"; document.getElementById("appRoot").style.display = ""; });
+  if (await page.locator('.education-guide').evaluate(element => element.open)) throw new Error('education guide must be collapsed initially');
+  await page.locator('#educationSearch').fill('انسفالیت');
+  await page.waitForFunction(() => document.getElementById('educationSearchStatus').textContent.includes('مبحث مرتبط'));
+  await page.waitForFunction(() => performance.getEntriesByType('resource').some(entry => new URL(entry.name).pathname.endsWith('/content/search.json')));
+  const encephalitis = page.locator('.topic-item[data-topic-id="id-cns-meningoencephalitis"]');
+  if (await encephalitis.evaluate(element => element.hidden)) throw new Error('infectious encephalitis topic was not found by education search');
+  await page.locator('#educationSearch').fill('نوروتوکسیسیته');
+  await page.waitForFunction(() => document.getElementById('educationSearchStatus').textContent.includes('مبحث مرتبط'));
+  if (await encephalitis.evaluate(element => element.hidden)) throw new Error('full-text education search did not find encephalitis treatment content');
+  await page.locator('#educationSearch').fill('انسفالیت');
+  if (!(await encephalitis.locator('xpath=ancestor::div[contains(@class,"topic-cat")]').getAttribute('class')).includes('open')) throw new Error('infectious category did not open for search result');
+  for (const id of ['id-cns-meningoencephalitis','id-brain-abscess-empyema','id-cns-opportunistic']) {
+    const category = page.locator(`.topic-item[data-topic-id="${id}"]`).locator('xpath=ancestor::div[contains(@class,"topic-cat")]');
+    if (!(await category.locator('.cat-title').textContent()).includes('عفونی')) throw new Error(`${id} is not under infectious diseases`);
+  }
+  await page.locator('#educationSearchClear').click();
+  if (await page.locator('.topic-item[hidden]').count()) throw new Error('clearing education search did not restore topics');
   const topic = page.locator(".topic-item").filter({hasText:"خواندن و تفسیر ECG"});
   await topic.locator(".topic-list-btn").evaluate(element => element.click());
   await topic.locator(".learn-btn").filter({hasText:"درسنامه"}).evaluate(element => element.click());

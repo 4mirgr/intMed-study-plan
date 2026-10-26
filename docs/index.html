@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="intmed.css?v=9a15bdac82e903b6">
+<link rel="stylesheet" href="intmed.css?v=13428be05f9d085c">
 <link rel="stylesheet" href="pwa.css?v=fd05bfbc6b4b22fc">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
@@ -200,6 +200,7 @@
         <div><p class="eyebrow">خبرهای محصول</p><h2 id="siteUpdatesTitle">تازه‌های IntMed</h2><p>قابلیت‌هایی که تجربهٔ مطالعه و مدیریت حساب شما را بهتر می‌کنند.</p></div>
       </div>
       <ol class="site-update-list">
+        <li><span class="update-dot update-dot-green" aria-hidden="true"></span><div><strong>جست‌وجوی کامل آموزش و دفتر شخصی مرتب‌تر</strong><p>نام مباحث و محتوای درس‌ها را جست‌وجو کنید؛ هایلایت‌ها و یادداشت‌ها را جدا ببینید و از هرکدام PDF مستقل بگیرید.</p></div><time datetime="2026-10-26">۴ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-purple" aria-hidden="true"></span><div><strong>کتابخانهٔ تصاویر و الگوریتم‌ها</strong><p>تصاویر، جدول‌ها و الگوریتم‌های مباحث را جست‌وجو، فیلتر و برای مراجعهٔ بعدی ذخیره کنید.</p></div><time datetime="2026-10-24">۲ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-cyan" aria-hidden="true"></span><div><strong>نصب روی دستگاه و دسترسی آفلاین امن</strong><p>نسخهٔ PWA اضافه شد؛ صفحات عمومی ضروری در قطعی موقت شبکه قابل دسترسی‌اند و اطلاعات خصوصی cache نمی‌شوند.</p></div><time datetime="2026-10-24">۲ آبان ۱۴۰۵</time></li>
         <li><span class="update-dot update-dot-green" aria-hidden="true"></span><div><strong>برنامه‌ریزی با تاریخ شمسی و تقویم شخصی</strong><p>هدف مطالعه را ثبت کنید و رویداد را به تقویم دستگاه یا Google Calendar بیفزایید.</p></div><time datetime="2026-10-23">۱ آبان ۱۴۰۵</time></li>
@@ -244,6 +245,11 @@
         <button type="button" id="accountSave" class="profile-save-btn">ذخیره اطلاعات حساب</button><button type="button" id="accountRecovery" class="secondary-action">دریافت لینک تغییر رمز</button>
         <p id="accountStatus" role="status" class="section-caption"></p>
       </details>
+      <section class="account-export-card" aria-labelledby="accountExportTitle">
+        <div><h3 id="accountExportTitle">خروجی دفتر شخصی</h3><p class="section-caption">یادداشت‌ها و هایلایت‌ها فقط از حساب خودتان و در دو فایل PDF مجزا آماده می‌شوند.</p></div>
+        <div class="account-export-actions"><button type="button" id="accountExportNotesPdf" class="secondary-action">PDF یادداشت‌ها</button><button type="button" id="accountExportHighlightsPdf" class="secondary-action">PDF هایلایت‌ها</button></div>
+        <p id="accountExportStatus" role="status" class="section-caption"></p>
+      </section>
       <div class="newsletter-preference"><label><input type="checkbox" id="newsletterOptIn"> خبرنامه</label><p id="newsletterPreferenceStatus" role="status" class="section-caption"></p></div>
       <div class="profile-favorites"><h3>مباحث مورد علاقهٔ من</h3><div id="profileFavorites" class="favorite-list"></div></div>
       </div></details>
@@ -374,7 +380,15 @@
 
   <div class="tab-panel active" id="tabPanelEducation">
     <h2 class="section-title">بخش آموزشی</h2>
-    <p class="section-desc">یک دسته رو باز کن، بعد روی اسم هر سرفصل بزن تا فلش‌کارت/تست/KF‌وPMP/تصاویر/جداولش باز بشه. با لمس قلب، مبحث به علاقه‌مندی‌های داشبوردت اضافه می‌شود. روی برچسب وضعیت هم می‌تونی بدون باز کردن سرفصل کلیک کنی (نامشخص ← ضعیف ← متوسط ← خوب). در درسنامه، فلش‌کارت‌ها، تست‌ها، KF‌وPMP و سلول‌های جدول می‌تونی متن رو انتخاب کنی تا دکمهٔ هایلایت/یادداشت ظاهر بشه — همه زیر «هایلایت‌های من» همون سرفصل جمع می‌شن. اگه جای مبحثی اشتباهه یا زیرشاخه‌ای کمه، در پنل کاربری خود نظرتان را ارسال بفرمایید.</p>
+    <details class="education-guide">
+      <summary><span class="education-guide-icon" aria-hidden="true">✦</span><span><strong>راهنمای استفاده از بخش آموزشی</strong><small>جست‌وجو، مطالعه، تست، هایلایت و یادداشت شخصی</small></span><span class="fold-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="education-guide-body"><ul><li>نام مبحث، نشانهٔ بالینی، درمان یا عبارت داخل درس را در جست‌وجوی زیر بنویسید.</li><li>هر سرفصل را باز کنید و بین درسنامه، فلش‌کارت، آزمون، KF/PMP، تصاویر و جداول جابه‌جا شوید.</li><li>با انتخاب متن می‌توانید هایلایت یا یادداشت بسازید؛ فهرست این دو زیر همان مبحث و در دفتر شخصی شما جداست.</li><li>قلب، مبحث را به علاقه‌مندی‌ها می‌افزاید و برچسب وضعیت مسیر مرور شما را مشخص می‌کند.</li></ul><p>اگر جای مبحثی اشتباه است یا زیرشاخه‌ای کم دارد، از بخش پیام‌ها به مدیریت اطلاع دهید.</p></div>
+    </details>
+    <div class="education-search" role="search">
+      <label for="educationSearch"><span aria-hidden="true">⌕</span><span class="sr-only">جست‌وجو در بخش آموزشی</span><input type="search" id="educationSearch" placeholder="جست‌وجو در نام مباحث و محتوای آموزشی؛ مثلاً انسفالیت یا آبسه مغزی" autocomplete="off"></label>
+      <button type="button" id="educationSearchClear" class="education-search-clear" hidden>پاک‌کردن</button>
+      <p id="educationSearchStatus" role="status" aria-live="polite">همهٔ مباحث نمایش داده می‌شوند.</p>
+    </div>
     <div id="topicsRoot"></div>
   </div>
 
@@ -384,15 +398,15 @@
 </div>
 
 <script src="config.js?v=066d4f9726ed485f"></script>
-<script src="js/intmed-backend.js?v=2e3ce4d50b447607"></script>
+<script src="js/intmed-backend.js?v=95e20e7fcea1f119"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
 <script src="js/intmed-registration.js?v=5115d87c275f66f1"></script>
 <script src="js/intmed-login.js?v=5f03e32e71b1a970"></script>
 <script src="js/intmed-datetime.js?v=c2fdd8f88580b533"></script>
 <script src="js/intmed-exams.js?v=ca47a29078613b9c"></script>
 <script src="js/intmed-library.js?v=a0f5fe5a2f4ba266"></script>
-<script src="js/intmed-dashboard.js?v=e100ccf63354a53b"></script>
+<script src="js/intmed-dashboard.js?v=399f81cf9834a562"></script>
 <script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
 <script src="js/intmed-motion.js?v=5185491e3eeace42"></script>
-<script src="js/intmed-app.js?v=8a86d96845a342cd"></script>
+<script src="js/intmed-app.js?v=919c1353ca9660b3"></script>
 <script src="js/intmed-pwa.js?v=4050a7ab5c891840"></script>

@@ -32,7 +32,10 @@ try{
  states[owner].itemState['favorite:'+topic]={favorite:true};
  states[owner].highlights[topic]=[{id:'own-highlight',loc:'lesson:'+section.id+':'+paragraph.id,quote:paragraph.text,occurrence:0,color:'pink',note:'توضیح هایلایت من'}];
  states[other].itemState[topic]={note:'نباید در دفتر من دیده شود'};
- await page.goto(base);await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));await page.locator('#headerCollapseBtn').click();await page.locator('#tabBtnDashboard').click();
+ await page.goto(base);await page.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('آنلاین'));
+ await page.locator('#accountQuickBtn').click();assert.equal(await page.locator('#accountExportNotesPdf').isVisible(),true);assert.equal(await page.locator('#accountExportHighlightsPdf').isVisible(),true);
+ let notesPopupPromise=page.waitForEvent('popup');await page.locator('#accountExportNotesPdf').click();let notesPopup=await notesPopupPromise;await notesPopup.locator('article').first().waitFor();assert.ok((await notesPopup.locator('body').textContent()).includes('نوشته شخصی من'));assert.ok(!(await notesPopup.locator('body').textContent()).includes('هایلایت‌ها'));await notesPopup.close();
+ await page.locator('#headerCollapseBtn').click();await page.locator('#tabBtnDashboard').click();
  assert.equal(await page.locator('#personalNotes .annotation-card').count(),2);
  assert.equal(await page.locator('#personalHighlights .annotation-card').count(),1);
  assert.ok((await page.locator('#personalNotes').textContent()).includes('خواندن و تفسیر ECG'));
@@ -40,7 +43,7 @@ try{
  await page.locator('#annotationSearch').fill('توضیح');assert.equal(await page.locator('#personalNotes .annotation-card').count(),1);assert.equal(await page.locator('#personalHighlights .annotation-card').count(),0);await page.locator('#annotationSearch').fill('');
  await page.locator('#dashboardFavorites [data-remove-favorite]').click();await page.waitForTimeout(900);
  assert.equal(states[owner].itemState['favorite:'+topic].favorite,false);assert.equal(states[other].itemState['favorite:'+topic].favorite,true);assert.equal(states[owner].itemState[topic].note,'نوشته شخصی من');
- await page.locator('#personalHighlightsFold > summary').click();await page.locator('#personalHighlights .annotation-open').click();await page.locator('mark[data-hl-id="own-highlight"]').waitFor({state:'visible'});assert.equal(await page.locator('mark[data-hl-id="own-highlight"]').evaluate(e=>e===document.activeElement),true);
+ await page.locator('#personalHighlightsFold > summary').click();await page.locator('#personalHighlights .annotation-open').click();await page.locator('mark[data-hl-id="own-highlight"]').waitFor({state:'visible'});assert.equal(await page.locator('mark[data-hl-id="own-highlight"]').evaluate(e=>e===document.activeElement),true);assert.deepEqual(await page.locator('.topic-item').filter({hasText:'خواندن و تفسیر ECG'}).locator('.learn-row-highlights .learn-btn-label').allTextContents(),['هایلایت‌های من','یادداشت‌های شخصی من']);
  await page.locator('#tabBtnDashboard').click();await page.locator('#personalNotes .annotation-card').filter({hasText:'نوشته شخصی من'}).locator('button').click();assert.equal(await page.locator('.topic-note:focus').inputValue(),'نوشته شخصی من');
  await page.evaluate(()=>{localStorage.setItem('bp_theme','light');dispatchEvent(new StorageEvent('storage',{key:'bp_theme',newValue:'light'}));});
  for(const mode of ['dark','night-shift','light']){await page.locator('#themeToggleBtn').click();assert.equal(await page.locator('html').getAttribute('data-theme'),mode);}

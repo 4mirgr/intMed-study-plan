@@ -22,6 +22,7 @@ import re
 import shutil
 import sys
 import tempfile
+import unicodedata
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -485,6 +486,63 @@ def build_library_index(
     return library
 
 
+SEARCHABLE_KEYS = {
+    "heading", "text", "front", "back", "stem", "options", "explanation",
+    "optionExplanations", "title", "vignette", "prompt", "expectedAnswer",
+    "caption", "note", "markdown", "riskFactors", "indicationNote", "rationale",
+    "pitfalls", "trigger", "action", "interpretation",
+}
+
+
+def search_strings(value: Any, *, include: bool = False) -> Iterable[str]:
+    if isinstance(value, str):
+        if include:
+            text = re.sub(r"\s+", " ", value).strip()
+            if text:
+                yield text
+        return
+    if isinstance(value, dict):
+        for key, child in value.items():
+            yield from search_strings(child, include=include or key in SEARCHABLE_KEYS)
+    elif isinstance(value, list):
+        for child in value:
+            yield from search_strings(child, include=include)
+
+
+def normalize_search_terms(value: str) -> list[str]:
+    text = unicodedata.normalize("NFKC", value).replace("ي", "ی").replace("ك", "ک")
+    text = re.sub(r"[\u064b-\u065f\u0670]", "", text).replace("\u200c", " ").replace("\u200d", " ")
+    return [token.casefold() for token in re.split(r"[^\w]+", text) if len(token) > 1]
+
+
+def build_search_index(
+    taxonomy: dict[str, Any], payloads: dict[str, dict[str, Any]], output: Path
+) -> dict[str, Any]:
+    topics: dict[str, Any] = {}
+    for category in taxonomy.get("categories", []):
+        category_label = str(category.get("label", ""))
+        for topic in category.get("topics", []):
+            topic_id = str(topic.get("id", ""))
+            if not topic_id:
+                continue
+            label = str(topic.get("label", ""))
+            values = [category_label, label]
+            payload = payloads.get(topic_id, {})
+            for field in ("lesson", "flashcards", "mcq", "kfPmp", "images", "tables", "ventSim"):
+                values.extend(search_strings(payload.get(field, [])))
+            # Store unique normalized terms rather than repeated prose. The
+            # browser can still intersect multi-word queries, while the lazy
+            # index stays inexpensive on low-end phones.
+            terms: list[str] = []
+            for value in values:
+                terms.extend(normalize_search_terms(value))
+            text = " ".join(dict.fromkeys(terms))[:2500]
+            topics[topic_id] = {"label": label, "category": category_label, "text": text}
+    search = {"version": 1, "topics": topics}
+    write_json(output / "search.json", search, pretty=False)
+    return search
+
+
 def build_to(output: Path) -> dict[str, Any]:
     topics = load_topics()
     taxonomy = read_json(TAXONOMY_PATH)
@@ -516,11 +574,13 @@ def build_to(output: Path) -> dict[str, Any]:
         }
 
     library = build_library_index(taxonomy, payloads, output)
+    search = build_search_index(taxonomy, payloads, output)
 
     taxonomy_bytes = (output / "taxonomy.json").read_bytes()
     build_hash = hashlib.sha256(
         taxonomy_bytes
         + (output / "library.json").read_bytes()
+        + (output / "search.json").read_bytes()
         + "".join(item["sha256"] for item in manifest_topics.values()).encode("ascii")
     ).hexdigest()
     manifest = {
@@ -528,6 +588,7 @@ def build_to(output: Path) -> dict[str, Any]:
         "buildId": build_hash[:16],
         "topics": manifest_topics,
         "library": {"path": "content/library.json", "count": len(library["entries"])},
+        "search": {"path": "content/search.json", "count": len(search["topics"])},
     }
     write_json(output / "manifest.json", manifest, pretty=False)
     return manifest
