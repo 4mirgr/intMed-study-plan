@@ -41,6 +41,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   message alerts, and a serialized provider queue with recoverable retry states instead of parallel
   AI bursts. Three draft CNS-infection chapters and four original clinical algorithms are published
   in the canonical content system.
+- The CNS-infection lesson now exposes separate searchable headings for meningitis, encephalitis,
+  HSV/VZV/West Nile, rabies, Naegleria, post-HSV autoimmune encephalitis, brain abscess/empyema,
+  septic venous thrombosis, PML/SSPE, neurocysticercosis and cerebral toxoplasmosis.
 - The production login gateway is active at `api.drgerami-md.ir`; public probes return the site with
   HTTP 200 and the gateway/Worker with the expected authenticated-service response. The temporary
   same-origin `/api` experiment was removed because GitHub Pages correctly rejects POST with 405.
@@ -68,11 +71,11 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   high DPI; record page, source, copyright and visual QA. Never upscale a bad thumbnail as a fix.
 - Validate normalized message backfill in production, then move the UI from legacy ticket polling
   to conversation RPCs/Realtime; add native push later. Dual-write keeps the cutover reversible.
-- Resolve the OpenAI project limit used by the Telegram ingest worker. A live retry on 2026-10-26
-  still returned `provider_rate_limited`: twelve inputs are preserved, the oldest text item has five
-  attempts and the remaining items one attempt each. Verify project billing/rate limits before one
-  further retry; if the first item still fails, reduce request/token size and record the provider's
-  safe error code before retrying the whole queue.
+- Twelve Telegram content inputs remain preserved after `provider_rate_limited`. OpenAI credit is
+  zero, so a new key alone will not fix processing. Await owner confirmation before enabling manual
+  mode (keep intake/alerts, stop automatic model dispatch); then process sources through direct chat
+  or an authorized private Drive folder. Hosted free-provider fallback requires separate explicit
+  approval of provider and data-handling terms and must never happen silently.
 
 ### P1 — paid/mobile foundation
 

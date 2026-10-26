@@ -28,6 +28,36 @@ inputs only: copy/download the private object into a hashed extraction cache, re
 and provenance, and leave the record unaccepted until the same reviews below pass. A forwarded
 channel name or topic hint is never evidence of medical correctness and never authorizes publish.
 
+### Zero-cost intake and provider boundary
+
+Receiving a Telegram message/file, storing it in the private Supabase inbox, assigning a Persian
+topic hint, and sending signup/login/activity/message alerts use Telegram/Supabase only; they do not
+call a language model. The paid-provider boundary begins only when `intmed-content-worker` submits
+an inbox item to an external model. Do not disable operational alerts to save model tokens.
+
+When no paid API credit is available, keep intake and quarantine working and process content through
+one of these explicit lanes:
+
+1. Attach the source directly to the coordinator chat when available. This is the simplest manual
+   lane and needs no project API key.
+2. Put private source files in an authorized Google Drive folder and send the exact file/folder link.
+   Keep Harrison PDFs and patient/private material out of public repositories.
+3. Use a dedicated GitHub intake folder only for authored or openly licensed, publication-safe text,
+   manifests and images. A commit or pull request remains a review input, never automatic publish.
+4. For unattended local processing, an owner-operated local model (for example Ollama) can prepare a
+   draft, but the same source, clinical, copyright and teacher-review gates still apply.
+
+Free hosted model tiers (Gemini, Cloudflare Workers AI, Groq, OpenRouter free routes, Hugging Face)
+may change quota, region availability, retention and terms without notice. Never silently fall back
+to one or transmit private/book content to it. Add a provider adapter only after the owner explicitly
+approves that provider and its data-handling terms. Creating a new OpenAI key does not add credit or
+remove an organization/project billing limit.
+
+If the owner approves manual mode, gate automatic worker dispatch behind a server-side environment
+flag: Telegram must still save inputs, `/start` and `/status` must remain useful, `/retry` must explain
+that processing is paused, and no queued input may be discarded. Changing this flag or provider is
+an operational decision and requires owner confirmation.
+
 1. **Identify and cache once.** Hash the input and run
    `python3 scripts/content_pipeline.py extract-pdf TOPIC_ID SOURCE.pdf`. Reuse the cached text,
    images and page manifest in later turns; never paste the full PDF into every agent prompt.
