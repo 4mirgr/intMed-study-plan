@@ -103,6 +103,14 @@ self-test and manually confirmed 20-recipient batches. No real messages are sent
 The SQL installation is independent of `setup_dashboard.sql` and does not change existing
 profiles or study data. Run `node scripts/newsletter_test.mjs` for security/regression checks.
 
+### Free local LM Studio content runner
+
+For the private Telegram inbox, install `local_content_runner.sql`, deploy
+`functions/intmed-local-runner/index.ts` with gateway JWT verification off, and follow
+`scripts/local_runner_setup_fa.md`. The function performs its own Auth/admin validation. The Mac
+stores only a refresh token in Keychain and a public API key; never copy `service_role` locally.
+The runner creates review drafts only and leaves paid OpenAI processing disabled.
+
 ### Single install for services and least-privilege policies
 
 Use [the short Persian guide](SETUP_SERVICES_FA.md) and generated `setup_services.sql`

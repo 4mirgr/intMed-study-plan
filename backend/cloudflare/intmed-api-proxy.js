@@ -7,6 +7,7 @@ const ALLOWED_ORIGINS = new Set([
   'https://www.drgerami-md.ir',
 ]);
 const ALLOWED_PREFIXES = ['/auth/v1/', '/rest/v1/', '/functions/v1/'];
+const PRIVATE_INBOX_SIGNED_PREFIX = '/storage/v1/object/sign/intmed-content-inbox/';
 const ALLOWED_METHODS = new Set(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
 
 function cors(origin) {
@@ -38,8 +39,15 @@ export default {
     const upstreamPath = incoming.pathname.startsWith('/api/')
       ? incoming.pathname.slice(4)
       : incoming.pathname;
-    if (!ALLOWED_PREFIXES.some((prefix) => upstreamPath.startsWith(prefix))) {
+    const signedInboxDownload = upstreamPath.startsWith(PRIVATE_INBOX_SIGNED_PREFIX);
+    if (!signedInboxDownload && !ALLOWED_PREFIXES.some((prefix) => upstreamPath.startsWith(prefix))) {
       return new Response('Not found', { status: 404, headers: cors(origin) });
+    }
+    // The local content runner may download only a short-lived, signed object from the
+    // private Telegram inbox. Bucket listing, upload, delete and every other Storage route
+    // remain unavailable through this gateway.
+    if (signedInboxDownload && request.method !== 'GET' && request.method !== 'HEAD') {
+      return new Response('Method not allowed', { status: 405, headers: cors(origin) });
     }
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors(origin) });

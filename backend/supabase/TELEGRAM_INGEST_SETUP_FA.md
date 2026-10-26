@@ -65,3 +65,18 @@ secret. پیام عادی و Forwardشده هر دو قرنطینه می‌شو�
 هیچ تماس واقعی با تلگرام یا Supabase ندارد:
 
 `node scripts/telegram_ingest_test.mjs`
+
+## پردازش رایگان با LM Studio روی مک
+
+1. فایل `local_content_runner.sql` را پس از `telegram_ingest.sql` نصب کنید.
+2. تابع `intmed-local-runner` را deploy کنید. Verify JWT در gateway خاموش می‌ماند، چون خود تابع
+   access token را با Auth و نقش زندهٔ مدیر دوباره اعتبارسنجی می‌کند و با کلیدهای امضای جدید نیز
+   سازگار است.
+3. راهنمای `scripts/local_runner_setup_fa.md` را اجرا کنید. لپ‌تاپ فقط کلید عمومی و refresh token
+   داخل Keychain را دارد؛ `service_role` و توکن بات هرگز به آن داده نمی‌شود.
+4. `INTMED_CONTENT_PROCESSING_ENABLED` را خاموش نگه دارید؛ Runner محلی مستقل از OpenAI صف محفوظ
+   را claim می‌کند و فقط draft قابل بازبینی تحویل می‌دهد.
+
+تست‌های مرتبط:
+
+`node scripts/local_content_runner_test.mjs && node scripts/local_content_runner_sql_test.mjs && python3 -m unittest scripts/local_runner_test.py`

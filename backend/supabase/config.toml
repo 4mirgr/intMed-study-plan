@@ -15,6 +15,11 @@ verify_jwt = false
 [functions.intmed-content-worker]
 verify_jwt = true
 
+# The function validates the token against Auth and the live admin profile. Gateway verification
+# stays off so a future migration to asymmetric Supabase signing keys does not break this bridge.
+[functions.intmed-local-runner]
+verify_jwt = false
+
 # Public signed unsubscribe links; admin actions validate Auth/role inside the handler.
 [functions.intmed-newsletter]
 verify_jwt = false

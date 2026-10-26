@@ -69,10 +69,11 @@ stable API contract. Load only one model at a time and keep concurrency at one.
 
 Every stage returns schema-validated JSON, quotes the source page for factual claims, says
 `insufficient_evidence` instead of filling gaps from memory, and produces a review draft—not a
-publication. The future local runner must bind LM Studio to `127.0.0.1`, pull jobs through an
-admin-authenticated narrow endpoint, and use claim/heartbeat/ack so a slow model cannot duplicate a
-job. Never put `service_role` on the laptop and never expose the LM Studio port through a public
-tunnel. Until that endpoint and runner are implemented and reviewed, use the manual file/Drive lane.
+publication. The implemented runner is `scripts/local_runner.py`; its Persian setup guide is
+`scripts/local_runner_setup_fa.md`. It binds LM Studio to `127.0.0.1`, pulls jobs through the narrow
+admin-authenticated `intmed-local-runner` endpoint, and uses claim/heartbeat/submit so a slow model
+cannot duplicate a job. Never put `service_role` on the laptop or expose the LM Studio port through
+a public tunnel. Local output still passes the same teacher, source and copyright review gates.
 
 The owner approved manual mode on 2026-10-26. Automatic worker dispatch is gated behind the
 server-side `INTMED_CONTENT_PROCESSING_ENABLED` flag and defaults off: Telegram still saves inputs,

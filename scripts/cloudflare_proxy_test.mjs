@@ -39,5 +39,10 @@ const sameOrigin = await worker.fetch(new Request('https://drgerami-md.ir/api/au
 }));
 assert.equal(sameOrigin.status, 200);
 assert.equal(calls[1].url, 'https://upwbktvnybsjugdegjji.supabase.co/auth/v1/health');
-assert.equal(calls.length, 2);
-console.log('Cloudflare proxy passed: fixed upstream, same-origin mobile route, restricted paths, CORS, no cookies or open proxy.');
+const signedInbox = await worker.fetch(new Request('https://api.drgerami-md.ir/storage/v1/object/sign/intmed-content-inbox/private/source.pdf?token=signed-test'));
+assert.equal(signedInbox.status, 200);
+assert.equal(calls[2].url, 'https://upwbktvnybsjugdegjji.supabase.co/storage/v1/object/sign/intmed-content-inbox/private/source.pdf?token=signed-test');
+assert.equal((await worker.fetch(new Request('https://api.drgerami-md.ir/storage/v1/object/sign/another-bucket/file.pdf?token=signed-test'))).status,404);
+assert.equal((await worker.fetch(new Request('https://api.drgerami-md.ir/storage/v1/object/sign/intmed-content-inbox/private/source.pdf?token=signed-test',{method:'DELETE'}))).status,405);
+assert.equal(calls.length, 3);
+console.log('Cloudflare proxy passed: fixed upstream, same-origin mobile route, restricted signed inbox downloads, CORS, no cookies or open proxy.');

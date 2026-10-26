@@ -51,6 +51,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Production Telegram evidence now includes two delivered login alerts and one delivered activity
   alert. The bot chat, webhook secrets and Edge Functions are installed; twelve preserved content
   inputs remain recoverable in `waiting_provider` after repeated OpenAI rate-limit responses.
+- A zero-cost LM Studio runner now uses an admin session, macOS Keychain, atomic five-minute leases,
+  heartbeats and short-lived private-inbox URLs. It processes Qwen/Gemma/DeepSeek sequentially for
+  an 8 GB machine, never receives `service_role`, and can only submit a `draft_ready` review draft.
 
 ## Open work, in priority order
 
@@ -78,11 +81,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   `INTMED_CONTENT_PROCESSING_ENABLED`. Process sources through direct chat or an authorized private
   Drive folder. Hosted free-provider fallback requires separate explicit approval of provider and
   data-handling terms and must never happen silently.
-- The approved zero-cost local direction is LM Studio on the owner's 8 GB computer: Qwen3 4B as the
-  primary structured drafter, Gemma E2B for a constrained Persian style pass, and DeepSeek R1
-  Distill Qwen 7B only for small targeted reviews, one loaded model at a time. The secure
-  admin-authenticated pull/claim/heartbeat runner is not implemented yet; do not expose port 1234
-  or store a Supabase service-role key on the laptop.
+- Install/configure the shipped LM Studio runner on the owner's Mac and process the twelve preserved
+  Telegram inputs. Use Qwen3 4B as primary, Gemma E2B for constrained Persian/vision work and
+  DeepSeek 7B only for targeted review, one loaded model at a time. Keep port 1234 loopback-only.
 
 ### P1 — paid/mobile foundation
 

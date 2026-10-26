@@ -152,6 +152,22 @@ No real Telegram message is sent by automated tests. End-to-end iPhone delivery
 must be checked after the owner installs the function, adds its bot secret,
 starts their private bot chat and chooses it in the admin UI.
 
+### Zero-cost local content runner
+
+`scripts/local_runner.py` connects the private Telegram inbox to an owner-operated LM Studio server
+without exposing a database service key. The CLI signs in as the approved admin, keeps only the
+rotating refresh token in macOS Keychain, and calls the narrow `intmed-local-runner` Edge Function.
+The server checks the live Auth user/profile, atomically claims one item, issues a five-minute lease
+kept alive by heartbeat, and creates a 15-minute signed URL only for the private inbox object.
+Expired work is recoverable. Cloudflare permits GET/HEAD for that exact signed bucket path but no
+Storage listing, upload or deletion.
+
+Qwen performs page-evidenced extraction and draft generation; optional Gemma and DeepSeek passes
+are sequential and constrained for an 8 GB machine. Taxonomy candidates and evidence digests are
+bounded for a 4096-token context. Submit validates the canonical topic, shape and size and forces
+draft status. It writes only `intmed_content_drafts`; no code path publishes canonical content or
+marks medical review complete.
+
 ## Personal notebook and reading palettes
 
 The dashboard notebook derives separate searchable notes/highlight lists from only the
