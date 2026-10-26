@@ -33,7 +33,12 @@ export default {
     if (!ALLOWED_METHODS.has(request.method)) {
       return new Response('Method not allowed', { status: 405, headers: cors(origin) });
     }
-    if (!ALLOWED_PREFIXES.some((prefix) => incoming.pathname.startsWith(prefix))) {
+    // This worker serves both api.drgerami-md.ir/* and the same-origin
+    // drgerami-md.ir/api/* route used on filtered mobile networks.
+    const upstreamPath = incoming.pathname.startsWith('/api/')
+      ? incoming.pathname.slice(4)
+      : incoming.pathname;
+    if (!ALLOWED_PREFIXES.some((prefix) => upstreamPath.startsWith(prefix))) {
       return new Response('Not found', { status: 404, headers: cors(origin) });
     }
     if (request.method === 'OPTIONS') {
@@ -44,7 +49,7 @@ export default {
       return new Response('Request too large', { status: 413, headers: cors(origin) });
     }
 
-    const target = new URL(incoming.pathname + incoming.search, UPSTREAM);
+    const target = new URL(upstreamPath + incoming.search, UPSTREAM);
     const headers = new Headers(request.headers);
     headers.delete('host');
     headers.delete('cf-connecting-ip');

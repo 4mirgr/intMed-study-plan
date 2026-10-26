@@ -16,6 +16,7 @@ function reply(body, status = 200){
 }
 function fetchMock(url, options = {}){
   calls.push({url, options});
+  if(url.startsWith("/api/")) return Promise.reject(new Error("same-origin route unavailable"));
   if(url.startsWith("https://api.drgerami-md.ir")){ gatewayAttempts++; return new Promise(() => {}); }
   if(url.includes("grant_type=refresh_token") && refreshMode === "network") return Promise.reject(new Error("offline"));
   if(url.includes("grant_type=refresh_token") && refreshMode === "invalid") return reply({message:"Invalid refresh"},400);
@@ -92,6 +93,7 @@ const wafStore=new Map(),wafTabStore=new Map(),wafWindow={
   location:{origin:"https://intmed.example",pathname:"/",search:"",hash:""}
 };
 const wafContext=vm.createContext({window:wafWindow,fetch:(url)=>{
+  if(url.startsWith("/api/"))return Promise.reject(new Error("same-origin route unavailable"));
   if(url.startsWith("https://api.drgerami-md.ir"))return reply({message:"Cloudflare access denied"},403);
   wafFallbackCalls++;
   if(url.includes("/auth/v1/token"))return reply({access_token:"waf-access",refresh_token:"waf-refresh",user:{id:userId}});

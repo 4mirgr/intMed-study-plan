@@ -24,6 +24,22 @@
    پاسخ `401` یا JSON سرویس نشان می‌دهد مسیر فعال است؛ خطای DNS یا صفحهٔ Cloudflare
    یعنی فعال‌سازی هنوز کامل نشده است.
 
+## مسیر هم‌دامنه برای اینترنت همراه
+
+دامنهٔ مستقیم Supabase و حتی زیردامنهٔ API ممکن است در بعضی اپراتورها هم‌زمان
+فیلتر شوند. برای اینکه ورود از همان hostname سایت عبور کند، در همان Worker از
+**Settings → Domains & Routes → Add → Route** این Routeها را اضافه کنید:
+
+- `drgerami-md.ir/api/*`
+- `www.drgerami-md.ir/api/*`
+
+Zone باید در Cloudflare فعال و رکوردهای وب در حالت Proxied باشند. Worker پیشوند
+`/api` را حذف و فقط مسیرهای مجاز Auth، REST و Functions همین پروژه را به Supabase
+می‌فرستد؛ هیچ `service_role` یا secret مرورگر در آن وجود ندارد. پس از فعال‌سازی،
+این آدرس باید پاسخ JSON سرویس بدهد:
+
+`https://drgerami-md.ir/api/auth/v1/health`
+
 پس از موفقیت این آزمایش، مقدار عمومی `supabaseUrl` سایت به
 `https://api.drgerami-md.ir` تغییر می‌کند. کلید عمومی anon همان قبلی می‌ماند.
 این تغییر را پیش از فعال‌شدن Worker انجام ندهید، چون ورود همهٔ شبکه‌ها قطع می‌شود.

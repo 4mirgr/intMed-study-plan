@@ -55,7 +55,11 @@
     options = options || {};
     var authenticated = options.authenticated !== false;
     function origins(){
-      var values=[activeOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
+      // The same-origin /api route is intentionally first. Iranian mobile
+      // networks may reach the site while filtering both the Supabase host and
+      // a dedicated API subdomain. Cloudflare forwards this path to the same
+      // fixed project and the remaining origins stay as automatic fallbacks.
+      var values=[activeOrigin,config.supabaseSameOriginPath||"/api",config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return (/^https:\/\//.test(value||"")||/^\/api(?:\/|$)/.test(value||""))&&list.indexOf(value)===index;});
       return values;
     }
     function perform(retried){

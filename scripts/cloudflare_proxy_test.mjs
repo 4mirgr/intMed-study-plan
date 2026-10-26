@@ -29,5 +29,10 @@ assert.equal((await worker.fetch(new Request('https://api.drgerami-md.ir/anythin
 assert.equal((await worker.fetch(new Request('https://api.drgerami-md.ir/rest/v1/profiles', {
   method: 'OPTIONS', headers: { Origin: 'https://drgerami-md.ir' },
 }))).status, 204);
-assert.equal(calls.length, 1);
-console.log('Cloudflare proxy passed: fixed upstream, restricted origins/paths, CORS, no cookies or open proxy.');
+const sameOrigin = await worker.fetch(new Request('https://drgerami-md.ir/api/auth/v1/health', {
+  headers: { Origin: 'https://drgerami-md.ir', apikey: 'public-test' },
+}));
+assert.equal(sameOrigin.status, 200);
+assert.equal(calls[1].url, 'https://upwbktvnybsjugdegjji.supabase.co/auth/v1/health');
+assert.equal(calls.length, 2);
+console.log('Cloudflare proxy passed: fixed upstream, same-origin mobile route, restricted paths, CORS, no cookies or open proxy.');

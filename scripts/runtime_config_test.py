@@ -16,6 +16,7 @@ class RuntimeConfigTest(unittest.TestCase):
         payload = re.fullmatch(r".*window\.INTMED_CONFIG = (\{.*\});\n", output, re.S)
         self.assertIsNotNone(payload)
         config = json.loads(payload.group(1))
+        self.assertEqual(config["supabaseSameOriginPath"], "/api")
         self.assertEqual(config["supabaseUrl"], "https://sample.supabase.co")
         self.assertEqual(config["supabaseFallbackUrl"], "")
         self.assertFalse(config["allowLegacyDemo"])
@@ -24,6 +25,7 @@ class RuntimeConfigTest(unittest.TestCase):
         output = render("https://sample.supabase.co", "a" * 32, DEFAULT_PUBLIC_API_URL)
         payload = re.search(r"window\.INTMED_CONFIG = (\{.*\});", output)
         config = json.loads(payload.group(1))
+        self.assertEqual(config["supabaseSameOriginPath"], "/api")
         self.assertEqual(config["supabaseUrl"], DEFAULT_PUBLIC_API_URL)
         self.assertEqual(config["supabaseFallbackUrl"], "https://sample.supabase.co")
 
