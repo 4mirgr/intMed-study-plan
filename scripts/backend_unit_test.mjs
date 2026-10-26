@@ -85,3 +85,21 @@ refreshMode="invalid";
 await assert.rejects(window.IntMedBackend.profile(), /auth/);
 assert.equal(window.IntMedBackend.session(),null);
 console.log("Session regression passed: automatic refresh, offline session retained, rejected refresh requires login.");
+
+let wafFallbackCalls=0;
+const wafStore=new Map(),wafTabStore=new Map(),wafWindow={
+  INTMED_CONFIG:{supabaseUrl:"https://api.drgerami-md.ir",supabaseFallbackUrl:"https://example.supabase.co",supabaseAnonKey:"anon",authPrimaryTimeoutMs:20,authFallbackTimeoutMs:50},
+  location:{origin:"https://intmed.example",pathname:"/",search:"",hash:""}
+};
+const wafContext=vm.createContext({window:wafWindow,fetch:(url)=>{
+  if(url.startsWith("https://api.drgerami-md.ir"))return reply({message:"Cloudflare access denied"},403);
+  wafFallbackCalls++;
+  if(url.includes("/auth/v1/token"))return reply({access_token:"waf-access",refresh_token:"waf-refresh",user:{id:userId}});
+  if(url.includes("/rest/v1/profiles"))return reply({id:userId,username:"doctor",approved:true,role:"user"});
+  if(url.includes("/functions/v1/intmed-telegram-bot"))return reply({ok:true});
+  throw Error("unexpected WAF fallback request: "+url);
+},localStorage:{getItem:key=>wafStore.get(key)||null,setItem:(key,value)=>wafStore.set(key,value),removeItem:key=>wafStore.delete(key)},sessionStorage:{getItem:key=>wafTabStore.get(key)||null,setItem:(key,value)=>wafTabStore.set(key,value),removeItem:key=>wafTabStore.delete(key)},JSON,Promise,URLSearchParams,encodeURIComponent,setTimeout,clearTimeout,AbortController,console});
+vm.runInContext(fs.readFileSync(new URL("../docs/js/intmed-backend.js",import.meta.url),"utf8"),wafContext);
+assert.equal((await wafWindow.IntMedBackend.signIn("doctor@example.com","password")).session.access_token,"waf-access");
+assert.ok(wafFallbackCalls>=2,"403 gateway response did not fall back to the direct project origin");
+console.log("Gateway regression passed: CDN/WAF 403 falls back to the direct secure origin.");

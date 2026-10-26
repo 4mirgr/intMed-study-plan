@@ -45,7 +45,11 @@
     return Promise.race([fetch(url, optionsWithSignal), timeout]).finally(function(){ clearTimeout(timer); });
   }
   function canTryNextOrigin(error){
-    return !error.status || error.status === 404 || error.status === 408 || error.status === 425 || error.status === 502 || error.status === 503 || error.status === 504;
+    // A CDN/WAF can answer with 403 or Cloudflare-specific 52x/53x statuses
+    // even though Supabase itself is healthy.  Those responses must not pin
+    // the browser to the gateway; the direct project origin remains a safe
+    // fallback and applies the same Auth/RLS checks.
+    return !error.status || error.status === 403 || error.status === 404 || error.status === 408 || error.status === 425 || error.status >= 500;
   }
   function request(path, options){
     options = options || {};
@@ -65,7 +69,7 @@
         // filtered or half-open route can leave login pending forever and the
         // known-good fallback is never attempted.
         var configuredDeadline = index === 0 && candidates.length > 1 ? config.authPrimaryTimeoutMs : config.authFallbackTimeoutMs;
-        var deadline = Math.max(1, Number(configuredDeadline) || 7000);
+        var deadline = Math.max(1, Number(configuredDeadline) || (index === 0 && candidates.length > 1 ? 4500 : 8000));
         return fetchWithDeadline(origin.replace(/\/$/, "") + path, requestOptions, deadline).then(function(response){
         activeOrigin=origin;
         if(response.status === 401 && authenticated && !retried){
@@ -73,7 +77,8 @@
         }
         if(response.status === 204) return null;
         return response.text().then(function(text){
-          var body = text ? JSON.parse(text) : null;
+          var body = null;
+          if(text){try{body=JSON.parse(text);}catch(parseError){body=null;}}
           if(!response.ok){
             var error = new Error((body && (body.msg || body.message || body.error_description)) || ("HTTP " + response.status));
             error.status = response.status;
