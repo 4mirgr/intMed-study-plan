@@ -201,11 +201,32 @@ def recommend_models(models: list[str]) -> dict[str, str]:
     """Choose conservative defaults for the owner's known 8 GB LM Studio model set."""
     def first(*needles: str) -> str:
         return next((model for model in models if all(needle in model.casefold() for needle in needles)), "")
-    primary = first("qwen3", "4b") or first("qwen", "4b") or first("qwen")
+    qwen_instruct = next((model for model in models if "qwen3" in model.casefold()
+                          and "instruct" in model.casefold() and "thinking" not in model.casefold()), "")
     gemma = first("gemma")
     deepseek = first("deepseek")
+    non_thinking_qwen = next((model for model in models if "qwen3" in model.casefold()
+                              and "thinking" not in model.casefold()), "")
+    primary = qwen_instruct or non_thinking_qwen or gemma
     return {"primary_model": primary or (models[0] if models else ""),
             "vision_model": gemma, "style_model": gemma, "review_model": deepseek}
+
+
+def is_thinking_only_model(model: str) -> bool:
+    value = model.casefold()
+    return "thinking" in value and "instruct" not in value
+
+
+def drafting_model(config: dict[str, Any]) -> str:
+    """Avoid a thinking-only model exhausting the JSON token budget on an 8 GB machine."""
+    primary = str(config.get("primary_model") or "")
+    style = str(config.get("style_model") or "")
+    vision = str(config.get("vision_model") or "")
+    if is_thinking_only_model(primary):
+        for candidate in (style, vision):
+            if candidate and not is_thinking_only_model(candidate):
+                return candidate
+    return primary
 
 
 def load_taxonomy() -> list[dict[str, str]]:
@@ -359,7 +380,7 @@ expectedAnswer و reviewStatus دارد. منبع/صفحه برای ادعاها
 
 
 def compact_chunk(config: dict[str, Any], text: str) -> dict[str, Any]:
-    return lm_json(config, config["primary_model"], EXTRACT_SYSTEM, text,
+    return lm_json(config, drafting_model(config), EXTRACT_SYSTEM, text,
                    temperature=0.1, max_tokens=1400)
 
 
@@ -370,7 +391,7 @@ def compact_digest(config: dict[str, Any], chunks: list[dict[str, Any]]) -> str:
         for start in range(0, len(encoded), 4):
             group = "\n".join(encoded[start:start + 4])
             result = lm_json(
-                config, config["primary_model"], EXTRACT_SYSTEM,
+                config, drafting_model(config), EXTRACT_SYSTEM,
                 "این چند استخراج را بدون افزودن دانش تازه ادغام و تکرارها را حذف کن:\n" + group,
                 temperature=0.1, max_tokens=1400,
             )
@@ -444,7 +465,7 @@ def validate_draft(value: Any, allowed_topics: set[str]) -> dict[str, Any]:
 
 def humanize(config: dict[str, Any], draft: dict[str, Any]) -> dict[str, Any]:
     model = str(config.get("style_model") or "").strip()
-    if not model:
+    if not model or model == drafting_model(config):
         return draft
     source = {"title": draft["title"], "sourceSummary": draft["sourceSummary"], "lessonOutline": draft["lessonOutline"]}
     styled = lm_json(
@@ -584,7 +605,7 @@ def process_job(config: dict[str, Any], headers: dict[str, str], job: dict[str, 
     user = ("فهرست topicIdهای مجاز:\n" + topic_list + "\n\nراهنمای فارسی مدیر: " +
             str(job.get("topicHint") or "") + "\nتوضیح فایل: " + str(job.get("caption") or "") +
             "\n\nشواهد استخراج‌شده:\n" + digest[:9000])
-    draft = lm_json(config, config["primary_model"], FINAL_SYSTEM, user,
+    draft = lm_json(config, drafting_model(config), FINAL_SYSTEM, user,
                     temperature=0.3, max_tokens=int(config.get("final_max_tokens", 5000)))
     draft = validate_draft(draft, allowed)
     draft = humanize(config, draft)
@@ -593,6 +614,9 @@ def process_job(config: dict[str, Any], headers: dict[str, str], job: dict[str, 
 
 
 def run_once(config: dict[str, Any]) -> bool:
+    active_model = drafting_model(config)
+    if active_model != config["primary_model"]:
+        print("مدل Qwen Thinking برای JSON مناسب نیست؛ پردازش این مورد با مدل سریع‌تر انجام می‌شود:", active_model)
     headers = auth_headers(config)
     response = runner_api(config, headers, {"action": "claim", "runnerId": config["runner_id"]})
     job = response.get("job") if isinstance(response, dict) else None
@@ -616,7 +640,7 @@ def run_once(config: dict[str, Any]) -> bool:
                 "action": "submit", "runnerId": config["runner_id"],
                 "ingestId": job["ingestId"], "leaseToken": job["leaseToken"],
                 "draft": draft,
-                "extractedText": extracted[:120000], "model": config["primary_model"],
+                "extractedText": extracted[:120000], "model": active_model,
                 "promptVersion": "intmed-local-v1",
                 "modelReport": {"primary": config["primary_model"],
                                 "vision": config.get("vision_model") or None,
@@ -635,7 +659,7 @@ def run_once(config: dict[str, Any]) -> bool:
                 runner_api(config, heartbeat.headers, {
                     "action": "fail", "runnerId": config["runner_id"],
                     "ingestId": job["ingestId"], "leaseToken": job["leaseToken"],
-                    "errorCode": code, "errorMessage": str(exc)[:500], "model": config["primary_model"],
+                    "errorCode": code, "errorMessage": str(exc)[:500], "model": active_model,
                 })
             except RunnerError:
                 pass

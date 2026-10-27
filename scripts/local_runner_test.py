@@ -63,10 +63,19 @@ class LocalRunnerTest(unittest.TestCase):
     def test_known_local_models_are_recommended(self):
         models = ["gemma-4-e2b", "Qwen3-4B-Thinking-2507", "DeepSeek-R1-Distill-Qwen-7B"]
         result = subject.recommend_models(models)
-        self.assertEqual(result["primary_model"], models[1])
+        self.assertEqual(result["primary_model"], models[0])
         self.assertEqual(result["vision_model"], models[0])
         self.assertEqual(result["style_model"], models[0])
         self.assertEqual(result["review_model"], models[2])
+
+    def test_qwen_instruct_is_preferred_over_gemma_and_thinking(self):
+        models = ["qwen/qwen3-4b-thinking-2507", "google/gemma-4-e2b", "qwen/qwen3-4b-instruct-2507"]
+        self.assertEqual(subject.recommend_models(models)["primary_model"], models[2])
+
+    def test_existing_thinking_config_uses_non_thinking_local_fallback(self):
+        config = {"primary_model": "qwen/qwen3-4b-thinking-2507",
+                  "style_model": "google/gemma-4-e2b", "vision_model": "google/gemma-4-e2b"}
+        self.assertEqual(subject.drafting_model(config), "google/gemma-4-e2b")
 
     def test_json_parser_strips_thinking_and_fence(self):
         value = subject.extract_json('<think>private reasoning</think>\n```json\n{"ok":true}\n```')
