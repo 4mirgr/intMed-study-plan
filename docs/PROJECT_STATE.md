@@ -54,6 +54,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - A zero-cost LM Studio runner now uses an admin session, macOS Keychain, atomic five-minute leases,
   heartbeats and short-lived private-inbox URLs. It processes Qwen/Gemma/DeepSeek sequentially for
   an 8 GB machine, never receives `service_role`, and can only submit a `draft_ready` review draft.
+- The admin dashboard includes a private content-review inbox for Telegram/LM Studio drafts. It
+  exposes source preview, model evidence/warnings, topic correction, reviewer notes, rejection and
+  explicit teacher approval. Approval only marks a draft ready for Git integration; the server has
+  no path that publishes canonical medical content directly.
 
 ## Open work, in priority order
 
@@ -75,15 +79,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   high DPI; record page, source, copyright and visual QA. Never upscale a bad thumbnail as a fix.
 - Validate normalized message backfill in production, then move the UI from legacy ticket polling
   to conversation RPCs/Realtime; add native push later. Dual-write keeps the cutover reversible.
-- Twelve Telegram content inputs remain preserved after `provider_rate_limited`. OpenAI credit is
-  zero, so a new key alone will not fix processing. The owner approved manual mode: keep intake and
-  alerts active while automatic model dispatch defaults off behind
-  `INTMED_CONTENT_PROCESSING_ENABLED`. Process sources through direct chat or an authorized private
-  Drive folder. Hosted free-provider fallback requires separate explicit approval of provider and
-  data-handling terms and must never happen silently.
-- Run the shipped one-click macOS installer on the owner's Mac, then process the twelve preserved
-  Telegram inputs. It starts the loopback LM Studio server, recommends Qwen3 4B/Gemma E2B/DeepSeek
-  7B, verifies the admin Keychain session and can install a LaunchAgent. Keep port 1234 loopback-only.
+- The first preserved Telegram batch was processed locally with Gemma into review drafts. Triage
+  these in the admin inbox, clinically review approved candidates, and integrate only source-backed
+  material through the canonical content pipeline. Keep port 1234 loopback-only.
 
 ### P1 — paid/mobile foundation
 

@@ -20,6 +20,10 @@ verify_jwt = true
 [functions.intmed-local-runner]
 verify_jwt = false
 
+# Validates the live user and approved admin profile inside the handler.
+[functions.intmed-content-review]
+verify_jwt = false
+
 # Public signed unsubscribe links; admin actions validate Auth/role inside the handler.
 [functions.intmed-newsletter]
 verify_jwt = false

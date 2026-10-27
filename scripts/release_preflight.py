@@ -27,6 +27,7 @@ REQUIRED_FUNCTIONS = {
     "intmed-study-event": True,
     "intmed-telegram-bot": False,
     "intmed-content-worker": True,
+    "intmed-content-review": False,
     "intmed-purchase-verify": True,
 }
 
@@ -46,6 +47,7 @@ def local_checks(root: Path) -> list[dict]:
         finding("NEWSLETTER_ORIGINS", SITE in newsletter and "https://www.drgerami-md.ir" in newsletter, "Newsletter origin allow-list contains canonical and www domains."),
         finding("CALENDAR_ORIGINS", SITE in calendar and "https://www.drgerami-md.ir" in calendar, "Calendar origin allow-list contains canonical and www domains."),
         finding("NEWSLETTER_PUBLIC_GATEWAY", "[functions.intmed-newsletter]" in config and "verify_jwt = false" in config.split("[functions.intmed-newsletter]", 1)[1].split("[", 1)[0], "Signed unsubscribe function has gateway JWT disabled; handler performs its own checks."),
+        finding("CONTENT_REVIEW_GATEWAY", "[functions.intmed-content-review]" in config and "verify_jwt = false" in config.split("[functions.intmed-content-review]", 1)[1].split("[", 1)[0], "Content review handler validates the live admin session itself."),
         finding("NO_SERVICE_ROLE_BROWSER", "service_role" not in index.lower(), "Browser HTML contains no service-role credential marker."),
         finding("PWA_MANIFEST", 'rel="manifest" href="manifest.webmanifest"' in index, "Persian install manifest is linked."),
     ]

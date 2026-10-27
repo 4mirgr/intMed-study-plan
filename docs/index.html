@@ -10,6 +10,7 @@
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="stylesheet" href="intmed.css?v=4360037f6eb06d74">
+<link rel="stylesheet" href="content-review.css?v=5bd62f744181ac66">
 <link rel="stylesheet" href="pwa.css?v=fd05bfbc6b4b22fc">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
@@ -308,6 +309,13 @@
 
   <div class="tab-panel" id="tabPanelManagement">    <section class="callout dashboard-admin" id="adminPanelCard" style="display:none">
       <div class="section-heading"><h2>مرکز مدیریت</h2><a class="secondary-action" target="_blank" rel="noopener noreferrer" href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/ACCOUNT_UI_SETUP_FA.md">راهنمای فعال‌سازی نام مدیر، بازیابی و تیکت</a><button type="button" id="adminExportStats" class="stats-refresh">خروجی CSV آمار مباحث</button></div>
+      <details class="notification-panel content-review-panel" id="contentReviewPanel" open>
+        <summary><span>صندوق بازبینی محتوای تلگرام</span><span id="contentReviewBadge" class="management-badge" hidden></span></summary>
+        <p class="section-caption">خروجی مدل محلی فقط پیش‌نویس است. «تأیید برای ادغام» آن را عمومی نمی‌کند؛ انتشار نهایی بعد از بازبینی علمی، اعتبارسنجی محتوا و commit انجام می‌شود.</p>
+        <div class="content-review-toolbar"><label>وضعیت <select id="contentReviewFilter"><option value="open">نیازمند رسیدگی</option><option value="draft_ready">آمادهٔ بازبینی</option><option value="approved">تأییدشده برای ادغام</option><option value="rejected">ردشده</option><option value="all">همه</option></select></label><button type="button" id="contentReviewRefresh" class="secondary-action">به‌روزرسانی صندوق</button></div>
+        <p id="contentReviewStatus" class="section-caption" role="status" aria-live="polite">برای دریافت پیش‌نویس‌ها، صندوق را به‌روزرسانی کنید.</p>
+        <div id="contentReviewList" class="content-review-list"></div>
+      </details>
       <details class="notification-panel"><summary>خبرنامهٔ ایمیلی به‌روزرسانی سایت</summary><p id="newsletterAdminStatus" class="section-caption"></p><p class="section-caption">عضویت اختیاری است و کاربر هر زمان می‌تواند آن را لغو کند. پیش از اولین ارسال، سرویس ایمیل را متصل و ارسال آزمایشی را بررسی کنید. هر نوبت حداکثر ۲۰ نفر از مشترکان واجد شرایط را پوشش می‌دهد.</p><div class="newsletter-composer"><label for="newsletterSubject">عنوان خبرنامه</label><input id="newsletterSubject" maxlength="160" placeholder="مثلاً: آزمون‌های تصویری قلب اضافه شد"><label for="newsletterBody">متن خبرنامه</label><textarea id="newsletterBody" maxlength="12000" rows="6" placeholder="تغییرات جدید و لینک مباحث را بنویسید."></textarea><div class="admin-account-actions"><button type="button" data-newsletter-action="status">بررسی اتصال ایمیل</button><button type="button" data-newsletter-action="preview">پیش‌نمایش و تعداد گیرندگان</button><button type="button" data-newsletter-action="test">ارسال آزمایشی فقط به مدیر</button><button type="button" data-newsletter-action="send" id="newsletterSend" disabled>ارسال به حداکثر ۲۰ مشترک بعدی</button><button type="button" id="newsletterNew">خبرنامهٔ جدید</button></div><p id="newsletterDeliveryStatus" role="status" class="section-caption"></p><pre id="newsletterPreview"></pre></div><button type="button" id="newsletterExport" class="secondary-action">خروجی CSV مشترکان فعال</button></details>
       <section class="neon-panel integration-setup" data-panel-color="blue"><h3>راه‌اندازی اعلان‌ها · اتصال سرویس‌دهنده لازم است</h3><div class="integration-status-row"><span id="telegramSetupBadge" class="setup-status">تلگرام: بررسی نشده</span><span id="newsletterSetupBadge" class="setup-status">ایمیل: بررسی نشده</span><button type="button" id="checkServiceConnections" class="secondary-action">بررسی هر دو اتصال</button></div><p class="section-caption">تابع‌ها و زیرساخت سرور نصب شده‌اند. برای فعال‌شدن ارسال، کلیدهای محرمانهٔ سرویس‌دهنده را فقط در Supabase ذخیره کنید؛ رمز یا کلید را در چت یا کد سایت وارد نکنید.</p><ol><li>برای تلگرام، توکن ساخته‌شده با BotFather را با نام <code>TELEGRAM_BOT_TOKEN</code> در <a href="https://supabase.com/dashboard/project/upwbktvnybsjugdegjji/settings/functions" target="_blank" rel="noopener noreferrer">Supabase → Edge Functions → Secrets</a> ثبت کنید.</li><li>برای خبرنامه، کلید Resend، فرستندهٔ تأییدشده و کلید امضا را مطابق راهنما در همان بخش Secrets ثبت کنید.</li><li>سپس در همین پنل «بررسی هر دو اتصال» را بزنید؛ گفت‌وگوی تلگرام را انتخاب و برای هر سرویس یک ارسال آزمایشی انجام دهید.</li></ol><p><a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/TELEGRAM_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم تلگرام</a> · <a href="https://github.com/4mirgr/intMed-study-plan/blob/claude/quirky-ride-mavb6b/backend/supabase/NEWSLETTER_SETUP_FA.md" target="_blank" rel="noopener noreferrer">راهنمای قدم‌به‌قدم ایمیل</a></p><p class="section-caption">نتیجهٔ دکمهٔ بررسی اتصال، وضعیت زندهٔ کلیدها و اتصال هر سرویس را نشان می‌دهد.</p></section>
       <details class="notification-panel"><summary>پیام‌های بازیابی دسترسی <span id="recoveryTicketCount" class="management-badge" hidden></span></summary><button type="button" id="refreshRecoveryTickets">بررسی پیام‌های جدید</button><p id="recoveryAdminStatus" role="status"></p><div id="recoveryAdminList"></div></details><div id="adminOverview" class="metric-grid"></div>
@@ -352,6 +360,16 @@
       <div id="adminUsersPanel"></div>
       <div id="adminTicketsPanel" style="display:none"></div>
     </section></div>
+  <dialog id="contentReviewDialog" class="content-review-dialog" aria-labelledby="contentReviewDialogTitle">
+    <form method="dialog" class="content-review-dialog-head"><div><p class="eyebrow">بازبینی کنترل‌شده</p><h2 id="contentReviewDialogTitle">پیش‌نویس محتوا</h2></div><button value="close" class="library-viewer-close" aria-label="بستن">×</button></form>
+    <p id="contentReviewDialogMeta" class="section-caption"></p>
+    <div id="contentReviewSource" class="content-review-source"></div>
+    <div class="content-review-fields"><label>عنوان<input id="contentReviewTitle" maxlength="240"></label><label>مبحث مقصد<select id="contentReviewTopic"><option value="">انتخاب نشده</option></select></label><label class="content-review-wide">خلاصهٔ منبع<textarea id="contentReviewSummary" maxlength="4000" rows="4"></textarea></label><label class="content-review-wide">یادداشت بازبین<textarea id="contentReviewNote" maxlength="4000" rows="3" placeholder="اصلاحات علمی، دلیل رد یا توضیح تصمیم"></textarea></label></div>
+    <div id="contentReviewDraftBody" class="content-review-draft-body"></div>
+    <label class="content-review-confirm"><input type="checkbox" id="contentReviewConfirm"> من این محتوا، شواهد و مبحث مقصد را بازبینی کرده‌ام و تأیید می‌کنم فقط برای ادغام فنی آماده شود.</label>
+    <p id="contentReviewActionStatus" class="section-caption" role="status" aria-live="polite"></p>
+    <div class="content-review-actions"><button type="button" data-review-action="save" class="secondary-action">ذخیرهٔ ویرایش</button><button type="button" data-review-action="approve" class="profile-save-btn">تأیید برای ادغام</button><button type="button" data-review-action="reject" class="content-review-reject">رد پیش‌نویس</button><button type="button" data-review-action="reopen" class="secondary-action">بازگرداندن به بازبینی</button><button type="button" id="contentReviewExport" class="secondary-action">خروجی JSON</button></div>
+  </dialog>
   <div class="tab-panel library-panel" id="tabPanelLibrary" aria-labelledby="libraryTitle">
     <section class="library-hero">
       <div><p class="eyebrow">مرور تصویری و تصمیم‌گیری بالینی</p><h2 id="libraryTitle">کتابخانهٔ تصاویر و الگوریتم‌ها</h2><p>تصاویر، جداول و الگوریتم‌های مباحث را یک‌جا جست‌وجو کنید و مستقیم به درس مربوط بروید.</p></div>
@@ -399,6 +417,7 @@
 
 <script src="config.js?v=066d4f9726ed485f"></script>
 <script src="js/intmed-backend.js?v=95e20e7fcea1f119"></script>
+<script src="js/intmed-content-review.js?v=d215b1592e4d74d8"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
 <script src="js/intmed-registration.js?v=5115d87c275f66f1"></script>
 <script src="js/intmed-login.js?v=5f03e32e71b1a970"></script>

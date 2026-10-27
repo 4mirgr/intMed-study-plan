@@ -113,6 +113,15 @@ The runner creates review drafts only and leaves paid OpenAI processing disabled
 On macOS, double-click `scripts/setup_intmed_lmstudio.command` for server discovery, recommended
 model selection, Keychain login verification and optional LaunchAgent background execution.
 
+### Admin content-review inbox
+
+Apply `content_review.sql`, then deploy `functions/intmed-content-review/index.ts` as
+`intmed-content-review` with gateway JWT verification disabled. The handler validates the current
+Auth user and live approved admin profile before reading any private inbox data. An approval only
+changes the private draft status to `approved`; it never writes public lesson files. The browser
+review panel supports source preview, topic correction, reviewer notes, rejection and explicit
+teacher approval with an audit trail.
+
 ### Single install for services and least-privilege policies
 
 Use [the short Persian guide](SETUP_SERVICES_FA.md) and generated `setup_services.sql`
