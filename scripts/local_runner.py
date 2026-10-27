@@ -430,14 +430,25 @@ def vision_digest(config: dict[str, Any], path: Path, mime: str, caption: str) -
 def validate_draft(value: Any, allowed_topics: set[str]) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise RunnerError("پیش‌نویس شیء JSON نیست.")
-    required = {"suggestedTopicId", "confidence", "title", "sourceSummary", "medicalWarnings",
-                "lessonOutline", "mcqDrafts", "kfDrafts", "imageCandidates", "sourceEvidence",
-                "insufficientEvidence"}
-    if not required.issubset(value):
-        raise RunnerError("پیش‌نویس بعضی فیلدهای اجباری را ندارد: " + ", ".join(sorted(required - set(value))))
-    for key in ("medicalWarnings", "lessonOutline", "mcqDrafts", "kfDrafts", "imageCandidates", "sourceEvidence", "insufficientEvidence"):
-        if not isinstance(value[key], list):
-            raise RunnerError(f"{key} باید آرایه باشد.")
+    core = {"title", "sourceSummary"}
+    if not core.issubset(value):
+        raise RunnerError("پیش‌نویس بعضی فیلدهای اصلی را ندارد: " + ", ".join(sorted(core - set(value))))
+    array_fields = ("medicalWarnings", "lessonOutline", "mcqDrafts", "kfDrafts",
+                    "imageCandidates", "sourceEvidence", "insufficientEvidence")
+    normalized: list[str] = []
+    for key in array_fields:
+        current = value.get(key)
+        if isinstance(current, list):
+            continue
+        if current is None or current == "":
+            value[key] = []
+        else:
+            value[key] = [current]
+        normalized.append(key)
+    if normalized:
+        value["medicalWarnings"].append("قالب فیلدهای زیر بدون حذف محتوا به آرایه تبدیل شد: " + ", ".join(normalized))
+    value.setdefault("suggestedTopicId", None)
+    value.setdefault("confidence", 0)
     topic = value["suggestedTopicId"]
     if topic is not None and topic not in allowed_topics:
         value["suggestedTopicId"] = None

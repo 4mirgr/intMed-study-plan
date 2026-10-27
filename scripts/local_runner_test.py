@@ -115,6 +115,17 @@ class LocalRunnerTest(unittest.TestCase):
         self.assertEqual(result["mcqDrafts"][0]["reviewStatus"], "draft")
         self.assertEqual(result["kfDrafts"][0]["reviewStatus"], "draft")
 
+    def test_draft_validation_normalizes_small_model_array_shape(self):
+        draft = {"suggestedTopicId": None, "confidence": .4, "title": "تصویر", "sourceSummary": "خلاصه",
+                 "medicalWarnings": None, "lessonOutline": "یافتهٔ قابل مشاهده", "mcqDrafts": None,
+                 "kfDrafts": [], "imageCandidates": {"description": "لام خون"},
+                 "sourceEvidence": None, "insufficientEvidence": "تشخیص قطعی از تصویر ممکن نیست"}
+        result = subject.validate_draft(draft, set())
+        self.assertEqual(result["insufficientEvidence"], ["تشخیص قطعی از تصویر ممکن نیست"])
+        self.assertEqual(result["lessonOutline"], ["یافتهٔ قابل مشاهده"])
+        self.assertEqual(result["imageCandidates"], [{"description": "لام خون"}])
+        self.assertTrue(any("به آرایه تبدیل شد" in warning for warning in result["medicalWarnings"]))
+
     def test_taxonomy_candidates_keep_relevant_persian_topic_and_limit_context(self):
         rows = [{"id": f"topic-{index}", "label": f"مبحث {index}", "category": "سایر"} for index in range(100)]
         rows.append({"id": "id-cns", "label": "انسفالیت و مننژیت", "category": "عفونی"})
