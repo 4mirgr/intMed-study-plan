@@ -81,9 +81,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   `INTMED_CONTENT_PROCESSING_ENABLED`. Process sources through direct chat or an authorized private
   Drive folder. Hosted free-provider fallback requires separate explicit approval of provider and
   data-handling terms and must never happen silently.
-- Install/configure the shipped LM Studio runner on the owner's Mac and process the twelve preserved
-  Telegram inputs. Use Qwen3 4B as primary, Gemma E2B for constrained Persian/vision work and
-  DeepSeek 7B only for targeted review, one loaded model at a time. Keep port 1234 loopback-only.
+- Run the shipped one-click macOS installer on the owner's Mac, then process the twelve preserved
+  Telegram inputs. It starts the loopback LM Studio server, recommends Qwen3 4B/Gemma E2B/DeepSeek
+  7B, verifies the admin Keychain session and can install a LaunchAgent. Keep port 1234 loopback-only.
 
 ### P1 — paid/mobile foundation
 

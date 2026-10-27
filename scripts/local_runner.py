@@ -168,6 +168,17 @@ def list_models(config: dict[str, Any]) -> list[str]:
     return [str(row.get("id")) for row in (result.get("data", []) if isinstance(result, dict) else []) if row.get("id")]
 
 
+def recommend_models(models: list[str]) -> dict[str, str]:
+    """Choose conservative defaults for the owner's known 8 GB LM Studio model set."""
+    def first(*needles: str) -> str:
+        return next((model for model in models if all(needle in model.casefold() for needle in needles)), "")
+    primary = first("qwen3", "4b") or first("qwen", "4b") or first("qwen")
+    gemma = first("gemma")
+    deepseek = first("deepseek")
+    return {"primary_model": primary or (models[0] if models else ""),
+            "vision_model": gemma, "style_model": gemma, "review_model": deepseek}
+
+
 def load_taxonomy() -> list[dict[str, str]]:
     value = request_json("https://drgerami-md.ir/content/taxonomy.json", timeout=30)
     topics: list[dict[str, str]] = []
@@ -585,6 +596,12 @@ def setup(path: Path) -> None:
     if not models:
         raise RunnerError("هیچ مدل بارگذاری‌شده‌ای در LM Studio دیده نشد.")
     print("مدل‌ها:\n" + "\n".join(f"  {index + 1}. {model}" for index, model in enumerate(models)))
+    recommended = recommend_models(models)
+    print("\nپیشنهاد خودکار برای رم ۸ گیگ:")
+    print("  مدل اصلی:", recommended["primary_model"] or "پیدا نشد")
+    print("  تصویر/ویرایش:", recommended["vision_model"] or "خاموش")
+    print("  بازبینی اختیاری:", recommended["review_model"] or "خاموش")
+    use_recommended = input("همین انتخاب امن استفاده شود؟ [Y/n]: ").strip().casefold() not in {"n", "no", "خیر"}
     def choose(label: str, required: bool = False) -> str:
         raw = input(label).strip()
         if not raw and not required:
@@ -593,10 +610,14 @@ def setup(path: Path) -> None:
             return models[int(raw) - 1]
         except (ValueError, IndexError):
             raise RunnerError("شمارهٔ مدل معتبر نیست.") from None
-    primary = choose("شمارهٔ Qwen اصلی: ", True)
-    vision = choose("شمارهٔ مدل vision/Gemma (اختیاری، Enter برای خاموش): ")
-    style = choose("شمارهٔ Gemma برای ویراستاری (اختیاری): ")
-    review = choose("شمارهٔ DeepSeek برای بازبینی (اختیاری و کند): ")
+    if use_recommended:
+        primary, vision, style, review = (recommended[key] for key in
+                                          ("primary_model", "vision_model", "style_model", "review_model"))
+    else:
+        primary = choose("شمارهٔ Qwen اصلی: ", True)
+        vision = choose("شمارهٔ مدل vision/Gemma (اختیاری، Enter برای خاموش): ")
+        style = choose("شمارهٔ Gemma برای ویراستاری (اختیاری): ")
+        review = choose("شمارهٔ DeepSeek برای بازبینی (اختیاری و کند): ")
     email = input("ایمیل حساب مدیر IntMed: ").strip()
     password = getpass.getpass("رمز حساب مدیر (فقط همین لحظه): ")
     auth = request_json(supabase_url + "/auth/v1/token?grant_type=password", method="POST",

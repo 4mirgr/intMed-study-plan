@@ -56,6 +56,7 @@ jobs:
       - run: node scripts/local_content_runner_test.mjs
       - run: node scripts/local_content_runner_sql_test.mjs
       - run: python3 -m unittest scripts/local_runner_test.py
+      - run: python3 -m unittest scripts/local_runner_macos_test.py
       - run: node scripts/newsletter_test.mjs
       - run: python3 scripts/runtime_config_test.py
       - run: python3 scripts/smoke_test.py

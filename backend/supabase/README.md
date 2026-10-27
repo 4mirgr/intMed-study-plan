@@ -110,6 +110,8 @@ For the private Telegram inbox, install `local_content_runner.sql`, deploy
 `scripts/local_runner_setup_fa.md`. The function performs its own Auth/admin validation. The Mac
 stores only a refresh token in Keychain and a public API key; never copy `service_role` locally.
 The runner creates review drafts only and leaves paid OpenAI processing disabled.
+On macOS, double-click `scripts/setup_intmed_lmstudio.command` for server discovery, recommended
+model selection, Keychain login verification and optional LaunchAgent background execution.
 
 ### Single install for services and least-privilege policies
 

@@ -26,6 +26,14 @@ class LocalRunnerTest(unittest.TestCase):
         with mock.patch.object(subject, "request_json", return_value=payload):
             self.assertEqual(subject.load_taxonomy(), [{"id": "id-cns", "label": "انسفالیت", "category": "عفونی"}])
 
+    def test_known_local_models_are_recommended(self):
+        models = ["gemma-4-e2b", "Qwen3-4B-Thinking-2507", "DeepSeek-R1-Distill-Qwen-7B"]
+        result = subject.recommend_models(models)
+        self.assertEqual(result["primary_model"], models[1])
+        self.assertEqual(result["vision_model"], models[0])
+        self.assertEqual(result["style_model"], models[0])
+        self.assertEqual(result["review_model"], models[2])
+
     def test_json_parser_strips_thinking_and_fence(self):
         value = subject.extract_json('<think>private reasoning</think>\n```json\n{"ok":true}\n```')
         self.assertEqual(value, {"ok": True})
