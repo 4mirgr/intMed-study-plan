@@ -52,6 +52,22 @@ class LocalRunnerTest(unittest.TestCase):
         value = subject.extract_json('<think>private reasoning</think>\n```json\n{"ok":true}\n```')
         self.assertEqual(value, {"ok": True})
 
+    def test_lm_chat_enforces_json_and_recovers_qwen_reasoning_field(self):
+        response = {"choices": [{"finish_reason": "stop", "message": {
+            "content": "", "reasoning_content": '<think>hidden</think> {"ok":true}'}}]}
+        with mock.patch.object(subject, "request_json", return_value=response) as requested:
+            value = subject.lm_chat({"lmstudio_url": "http://127.0.0.1:1234/v1"}, "qwen", [],
+                                    temperature=0.1, max_tokens=200)
+        self.assertEqual(json.loads(value), {"ok": True})
+        payload = requested.call_args.kwargs["body"]
+        self.assertEqual(payload["response_format"]["type"], "json_schema")
+        self.assertFalse(payload["chat_template_kwargs"]["enable_thinking"])
+
+    def test_lm_json_does_not_run_valid_request_twice(self):
+        with mock.patch.object(subject, "lm_chat", return_value='{"ok":true}') as chat:
+            self.assertEqual(subject.lm_json({}, "qwen", "system", "user"), {"ok": True})
+        self.assertEqual(chat.call_count, 1)
+
     def test_page_chunks_preserve_page_markers(self):
         chunks = subject.page_chunks(["الف" * 60, "ب" * 60], limit=90)
         self.assertGreaterEqual(len(chunks), 2)

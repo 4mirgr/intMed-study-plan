@@ -68,6 +68,9 @@ Runner در حالت watch هر ۲۰ ثانیه صف را بررسی می‌کن
 - PDF: با `pdftotext` و حفظ `[PAGE n]` استخراج می‌شود؛ PDF اسکن‌شده نیازمند OCR است.
 - تصویر: فقط وقتی `vision_model` در setup تعیین شده باشد.
 - تمام ادعاها باید quote/page داشته باشند؛ نبود شاهد با `insufficientEvidence` ثبت می‌شود.
+- برای Qwen Thinking، Runner حالت thinking را در مراحل JSON خاموش و Structured Output رسمی LM Studio
+  را فعال می‌کند؛ اگر نسخه‌ای از LM Studio JSON را در `reasoning_content` برگرداند، فقط خود شیء JSON
+  استخراج می‌شود و chain-of-thought ذخیره نخواهد شد.
 - Runner برای جا شدن در context چهار هزار، taxonomy را به حداکثر ۴۰ مبحث نزدیک و digest را به
   حدود ۹ هزار نویسه محدود می‌کند؛ اعتبار topic نهایی دوباره روی سرور با taxonomy کامل سنجیده می‌شود.
 - ویراستار Gemma اجازهٔ تغییر عدد/دوز ندارد؛ Runner خروجی دارای تغییر عدد را رد می‌کند.

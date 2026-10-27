@@ -239,19 +239,37 @@ def extract_json(text: str) -> dict[str, Any]:
 
 def lm_chat(config: dict[str, Any], model: str, messages: list[dict[str, Any]], *,
             temperature: float, max_tokens: int) -> str:
+    schema = {"type": "object", "additionalProperties": True}
     result = request_json(
         config["lmstudio_url"] + "/chat/completions", method="POST",
         body={"model": model, "messages": messages, "temperature": temperature,
-              "max_tokens": max_tokens, "stream": False},
+              "max_tokens": max_tokens, "stream": False,
+              "chat_template_kwargs": {"enable_thinking": False},
+              "response_format": {"type": "json_schema", "json_schema": {
+                  "name": "intmed_response", "strict": False, "schema": schema}}},
         timeout=int(config.get("model_timeout_seconds", 900)),
     )
     try:
-        content = result["choices"][0]["message"]["content"]
+        choice = result["choices"][0]
+        message = choice["message"]
+        content = message.get("content", "")
     except (TypeError, KeyError, IndexError):
         raise RunnerError("پاسخ LM Studio ساختار شناخته‌شده‌ای ندارد.") from None
     if isinstance(content, list):
         content = "\n".join(str(part.get("text", "")) for part in content if isinstance(part, dict))
-    return str(content or "")
+    # Some LM Studio/Qwen builds route a valid structured result to a reasoning field even
+    # when content is empty. Extract only the JSON object; never persist chain-of-thought.
+    candidates = [str(content or ""), str(message.get("reasoning_content") or ""),
+                  str(message.get("reasoning") or "")]
+    for candidate in candidates:
+        if not candidate.strip():
+            continue
+        try:
+            return json.dumps(extract_json(candidate), ensure_ascii=False)
+        except RunnerError:
+            pass
+    finish = str(choice.get("finish_reason") or "unknown")
+    return str(content or candidates[1] or candidates[2] or f"LM Studio finish_reason={finish}")
 
 
 def lm_json(config: dict[str, Any], model: str, system: str, user: Any, *,
