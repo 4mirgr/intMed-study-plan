@@ -1,4 +1,6 @@
 import json
+import hashlib
+import io
 import sys
 import tempfile
 import unittest
@@ -34,6 +36,24 @@ class LocalRunnerTest(unittest.TestCase):
         request = opened.call_args.args[0]
         self.assertEqual(request.get_header("Origin"), subject.SITE_ORIGIN)
         self.assertEqual(request.get_header("User-agent"), "IntMedLocalRunner/1.1")
+
+    def test_signed_download_retries_fixed_supabase_after_gateway_403(self):
+        denied = subject.urllib.error.HTTPError("https://api.drgerami-md.ir/file", 403, "Forbidden", {}, io.BytesIO())
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.side_effect = [b"image-bytes", b""]
+        job = {"downloadUrl": subject.FALLBACK_SUPABASE_URL +
+               "/storage/v1/object/sign/intmed-content-inbox/private/image.jpg?token=signed",
+               "sha256": hashlib.sha256(b"image-bytes").hexdigest()}
+        with tempfile.TemporaryDirectory() as folder, \
+             mock.patch.object(subject.urllib.request, "urlopen", side_effect=[denied, response]) as opened:
+            destination = Path(folder) / "image.jpg"
+            subject.download_source({"supabase_url": "https://api.drgerami-md.ir"}, job, destination)
+            self.assertEqual(destination.read_bytes(), b"image-bytes")
+        self.assertEqual(opened.call_count, 2)
+        first, second = (call.args[0] for call in opened.call_args_list)
+        self.assertEqual(first.host, "api.drgerami-md.ir")
+        self.assertEqual(second.host, "upwbktvnybsjugdegjji.supabase.co")
+        self.assertEqual(first.get_header("Origin"), subject.SITE_ORIGIN)
 
     def test_taxonomy_is_flattened(self):
         payload = {"categories": [{"label": "عفونی", "topics": [{"id": "id-cns", "label": "انسفالیت"}]}]}

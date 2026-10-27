@@ -42,15 +42,19 @@ class RunnerError(RuntimeError):
     """Expected, user-readable runner failure."""
 
 
+def remote_request_headers(url: str, accept: str) -> dict[str, str]:
+    parsed = urllib.parse.urlparse(url)
+    result = {"Accept": accept}
+    if parsed.hostname == "api.drgerami-md.ir" or (parsed.hostname or "").endswith(".supabase.co"):
+        result.update({"Origin": SITE_ORIGIN, "User-Agent": "IntMedLocalRunner/1.1"})
+    return result
+
+
 def request_json(url: str, *, method: str = "GET", headers: dict[str, str] | None = None,
                  body: Any = None, timeout: int = 90) -> Any:
     payload = None if body is None else json.dumps(body, ensure_ascii=False).encode("utf-8")
-    parsed = urllib.parse.urlparse(url)
-    remote_headers = {"Accept": "application/json"}
-    if parsed.hostname == "api.drgerami-md.ir" or (parsed.hostname or "").endswith(".supabase.co"):
-        remote_headers.update({"Origin": SITE_ORIGIN, "User-Agent": "IntMedLocalRunner/1.1"})
     req = urllib.request.Request(url, data=payload, method=method,
-                                 headers={**remote_headers, **(headers or {})})
+                                 headers={**remote_request_headers(url, "application/json"), **(headers or {})})
     if payload is not None:
         req.add_header("Content-Type", "application/json")
     try:
@@ -478,25 +482,40 @@ def download_source(config: dict[str, Any], job: dict[str, Any], destination: Pa
     url = str(job.get("downloadUrl") or "")
     parsed = urllib.parse.urlparse(url)
     expected_host = urllib.parse.urlparse(config["supabase_url"]).hostname
+    fallback_host = urllib.parse.urlparse(FALLBACK_SUPABASE_URL).hostname
     signed_prefix = "/storage/v1/object/sign/intmed-content-inbox/"
     if parsed.scheme != "https" or not parsed.hostname or not parsed.path.startswith(signed_prefix):
         raise RunnerError("آدرس دانلود امضاشده خارج از bucket خصوصی مورد انتظار است.")
-    if parsed.hostname != expected_host:
-        url = urllib.parse.urlunparse(parsed._replace(netloc=expected_host or "", scheme="https"))
-    req = urllib.request.Request(url, headers={"Accept": "application/octet-stream"})
-    try:
-        with urllib.request.urlopen(req, timeout=120) as response, destination.open("wb") as target:
-            total = 0
-            while True:
-                chunk = response.read(1024 * 1024)
-                if not chunk:
-                    break
-                total += len(chunk)
-                if total > MAX_SOURCE_BYTES:
-                    raise RunnerError("فایل از سقف ۲۰ مگابایت بزرگ‌تر است.")
-                target.write(chunk)
-    except urllib.error.URLError as exc:
-        raise RunnerError(f"دانلود فایل ناموفق بود: {exc.reason}") from None
+    allowed_hosts = {host for host in (expected_host, fallback_host) if host}
+    if parsed.hostname not in allowed_hosts:
+        raise RunnerError("میزبان دانلود امضاشده متعلق به پروژه نیست.")
+    hosts = list(dict.fromkeys(host for host in (expected_host, parsed.hostname, fallback_host) if host))
+    last_error = "مسیر امن پاسخ نداد"
+    downloaded = False
+    for host in hosts:
+        candidate = urllib.parse.urlunparse(parsed._replace(netloc=host, scheme="https"))
+        req = urllib.request.Request(candidate, headers=remote_request_headers(candidate, "application/octet-stream"))
+        try:
+            with urllib.request.urlopen(req, timeout=120) as response, destination.open("wb") as target:
+                total = 0
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    total += len(chunk)
+                    if total > MAX_SOURCE_BYTES:
+                        raise RunnerError("فایل از سقف ۲۰ مگابایت بزرگ‌تر است.")
+                    target.write(chunk)
+            downloaded = True
+            break
+        except urllib.error.HTTPError as exc:
+            last_error = f"HTTP {exc.code}"
+            if exc.code != 403:
+                break
+        except urllib.error.URLError as exc:
+            last_error = str(exc.reason)
+    if not downloaded:
+        raise RunnerError(f"دانلود فایل ناموفق بود: {last_error}")
     expected = str(job.get("sha256") or "")
     if expected and hashlib.sha256(destination.read_bytes()).hexdigest() != expected:
         raise RunnerError("هش فایل دانلودشده با رکورد صندوق مطابقت ندارد.")
