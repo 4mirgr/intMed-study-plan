@@ -32,6 +32,8 @@ from typing import Any
 APP = "intmed-local-runner"
 KEYCHAIN_SERVICE = "ir.drgerami.intmed.local-runner"
 DEFAULT_CONFIG = Path.home() / ".config" / APP / "config.json"
+FALLBACK_SUPABASE_URL = "https://upwbktvnybsjugdegjji.supabase.co"
+SITE_ORIGIN = "https://drgerami-md.ir"
 MAX_SOURCE_BYTES = 20 * 1024 * 1024
 CHUNK_CHARS = 6500
 
@@ -43,8 +45,12 @@ class RunnerError(RuntimeError):
 def request_json(url: str, *, method: str = "GET", headers: dict[str, str] | None = None,
                  body: Any = None, timeout: int = 90) -> Any:
     payload = None if body is None else json.dumps(body, ensure_ascii=False).encode("utf-8")
+    parsed = urllib.parse.urlparse(url)
+    remote_headers = {"Accept": "application/json"}
+    if parsed.hostname == "api.drgerami-md.ir" or (parsed.hostname or "").endswith(".supabase.co"):
+        remote_headers.update({"Origin": SITE_ORIGIN, "User-Agent": "IntMedLocalRunner/1.1"})
     req = urllib.request.Request(url, data=payload, method=method,
-                                 headers={"Accept": "application/json", **(headers or {})})
+                                 headers={**remote_headers, **(headers or {})})
     if payload is not None:
         req.add_header("Content-Type", "application/json")
     try:
@@ -87,6 +93,7 @@ def load_config(path: Path) -> dict[str, Any]:
     except (OSError, ValueError) as exc:
         raise RunnerError(f"تنظیمات قابل خواندن نیست: {exc}") from None
     config["supabase_url"] = validate_supabase_url(str(config.get("supabase_url", "")))
+    config["auth_url"] = validate_supabase_url(str(config.get("auth_url") or config["supabase_url"]))
     config["lmstudio_url"] = validate_lm_url(str(config.get("lmstudio_url", "http://127.0.0.1:1234/v1")))
     if not config.get("publishable_key") or not config.get("primary_model"):
         raise RunnerError("publishable_key و primary_model باید در تنظیمات باشند.")
@@ -144,11 +151,19 @@ def keychain_get(account: str) -> str:
 
 def auth_headers(config: dict[str, Any]) -> dict[str, str]:
     refresh = keychain_get(keychain_account(config))
-    auth = request_json(
-        config["supabase_url"] + "/auth/v1/token?grant_type=refresh_token",
-        method="POST", headers={"apikey": config["publishable_key"]},
-        body={"refresh_token": refresh}, timeout=30,
-    )
+    endpoints = list(dict.fromkeys([config.get("auth_url") or config["supabase_url"],
+                                    config["supabase_url"], FALLBACK_SUPABASE_URL]))
+    auth = None
+    for index, endpoint in enumerate(endpoints):
+        try:
+            auth = request_json(
+                endpoint + "/auth/v1/token?grant_type=refresh_token", method="POST",
+                headers={"apikey": config["publishable_key"]}, body={"refresh_token": refresh}, timeout=30)
+            config["auth_url"] = endpoint
+            break
+        except RunnerError as exc:
+            if index == len(endpoints) - 1 or not retryable_gateway_error(exc):
+                raise
     if not isinstance(auth, dict) or not auth.get("access_token") or not auth.get("refresh_token"):
         raise RunnerError("تازه‌سازی نشست مدیر ناموفق بود.")
     if auth["refresh_token"] != refresh and platform.system() == "Darwin":
@@ -157,10 +172,20 @@ def auth_headers(config: dict[str, Any]) -> dict[str, str]:
 
 
 def runner_api(config: dict[str, Any], headers: dict[str, str], body: dict[str, Any], timeout: int = 60) -> Any:
-    return request_json(
-        config["supabase_url"] + "/functions/v1/intmed-local-runner",
-        method="POST", headers=headers, body=body, timeout=timeout,
-    )
+    endpoints = list(dict.fromkeys([config["supabase_url"], FALLBACK_SUPABASE_URL]))
+    for index, endpoint in enumerate(endpoints):
+        try:
+            return request_json(endpoint + "/functions/v1/intmed-local-runner",
+                                method="POST", headers=headers, body=body, timeout=timeout)
+        except RunnerError as exc:
+            if index == len(endpoints) - 1 or not retryable_gateway_error(exc):
+                raise
+    raise RunnerError("هیچ مسیر امنی برای Runner پاسخ نداد.")
+
+
+def retryable_gateway_error(error: Exception) -> bool:
+    message = str(error)
+    return message.startswith("HTTP 403:") or message.startswith("اتصال برقرار نشد:")
 
 
 def list_models(config: dict[str, Any]) -> list[str]:
@@ -591,7 +616,8 @@ def setup(path: Path) -> None:
     if not publishable:
         raise RunnerError("کلید عمومی Supabase پیدا یا وارد نشد.")
     lm_url = validate_lm_url(input("LM Studio URL [http://127.0.0.1:1234/v1]: ").strip() or "http://127.0.0.1:1234/v1")
-    provisional = {"supabase_url": supabase_url, "publishable_key": publishable, "lmstudio_url": lm_url}
+    provisional = {"supabase_url": supabase_url, "auth_url": supabase_url,
+                   "publishable_key": publishable, "lmstudio_url": lm_url}
     models = list_models(provisional)
     if not models:
         raise RunnerError("هیچ مدل بارگذاری‌شده‌ای در LM Studio دیده نشد.")
@@ -620,8 +646,17 @@ def setup(path: Path) -> None:
         review = choose("شمارهٔ DeepSeek برای بازبینی (اختیاری و کند): ")
     email = input("ایمیل حساب مدیر IntMed: ").strip()
     password = getpass.getpass("رمز حساب مدیر (فقط همین لحظه): ")
-    auth = request_json(supabase_url + "/auth/v1/token?grant_type=password", method="POST",
-                        headers={"apikey": publishable}, body={"email": email, "password": password}, timeout=30)
+    try:
+        auth = request_json(supabase_url + "/auth/v1/token?grant_type=password", method="POST",
+                            headers={"apikey": publishable}, body={"email": email, "password": password}, timeout=30)
+    except RunnerError as exc:
+        if supabase_url != FALLBACK_SUPABASE_URL and retryable_gateway_error(exc):
+            print("مسیر سفارشی ورود توسط شبکه رد شد؛ تلاش امن از مسیر مستقیم همین پروژه…")
+            provisional["auth_url"] = FALLBACK_SUPABASE_URL
+            auth = request_json(FALLBACK_SUPABASE_URL + "/auth/v1/token?grant_type=password", method="POST",
+                                headers={"apikey": publishable}, body={"email": email, "password": password}, timeout=30)
+        else:
+            raise
     password = ""
     if not auth.get("refresh_token"):
         raise RunnerError("ورود مدیر ناموفق بود.")

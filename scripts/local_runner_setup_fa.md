@@ -83,6 +83,8 @@ python3 -m unittest scripts/local_runner_test.py
 
 - `connection refused`: Local Server در LM Studio روشن نیست یا پورت 1234 نیست.
 - `Admin required`: حساب setup مدیر تأییدشدهٔ IntMed نیست.
+- `HTTP 403` هنگام ورود: Runner ابتدا هدر مجاز سایت را می‌فرستد و در صورت مسدودشدن مسیر
+  Cloudflare، خودکار فقط به دامنهٔ ثابت همین پروژه در Supabase سوییچ می‌کند؛ رمز همچنان ذخیره نمی‌شود.
 - `vision_model_required`: مدل تصویر در setup انتخاب نشده است.
 - `brew install poppler`: برای PDF لازم است و هزینه/API ندارد.
 - برای تعویض مدل‌ها setup را دوباره اجرا کنید؛ آیتم‌های صف حذف نمی‌شوند.

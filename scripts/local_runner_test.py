@@ -21,6 +21,20 @@ class LocalRunnerTest(unittest.TestCase):
         with self.assertRaises(subject.RunnerError):
             subject.validate_supabase_url("https://example.com")
 
+    def test_gateway_403_and_network_failures_allow_fixed_project_fallback(self):
+        self.assertTrue(subject.retryable_gateway_error(subject.RunnerError("HTTP 403: request failed")))
+        self.assertTrue(subject.retryable_gateway_error(subject.RunnerError("اتصال برقرار نشد: timeout")))
+        self.assertFalse(subject.retryable_gateway_error(subject.RunnerError("HTTP 400: Invalid login credentials")))
+
+    def test_remote_requests_identify_the_site_origin(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = b'{"ok":true}'
+        with mock.patch.object(subject.urllib.request, "urlopen", return_value=response) as opened:
+            subject.request_json("https://api.drgerami-md.ir/auth/v1/health")
+        request = opened.call_args.args[0]
+        self.assertEqual(request.get_header("Origin"), subject.SITE_ORIGIN)
+        self.assertEqual(request.get_header("User-agent"), "IntMedLocalRunner/1.1")
+
     def test_taxonomy_is_flattened(self):
         payload = {"categories": [{"label": "عفونی", "topics": [{"id": "id-cns", "label": "انسفالیت"}]}]}
         with mock.patch.object(subject, "request_json", return_value=payload):
