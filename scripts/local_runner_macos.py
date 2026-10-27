@@ -25,8 +25,8 @@ MODELS_URL = "http://127.0.0.1:1234/v1/models"
 def require_macos() -> None:
     if platform.system() != "Darwin":
         raise RuntimeError("این نصب‌کننده فقط برای macOS است.")
-    if sys.version_info < (3, 11):
-        raise RuntimeError("Python 3.11 یا جدیدتر لازم است.")
+    if sys.version_info < (3, 9):
+        raise RuntimeError("Python 3.9 یا جدیدتر لازم است.")
 
 
 def lms_path() -> str:

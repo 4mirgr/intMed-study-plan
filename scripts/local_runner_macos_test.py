@@ -1,3 +1,4 @@
+import ast
 import plistlib
 import sys
 import tempfile
@@ -26,6 +27,11 @@ class MacRunnerSetupTest(unittest.TestCase):
         with mock.patch.object(subject.shutil, "which", return_value=None), \
              mock.patch.object(subject.Path, "is_file", return_value=True):
             self.assertTrue(subject.lms_path().endswith("/.lmstudio/bin/lms"))
+
+    def test_runner_sources_parse_as_python_39(self):
+        for name in ("local_runner.py", "local_runner_macos.py"):
+            source = (Path(__file__).resolve().parent / name).read_text("utf-8")
+            ast.parse(source, filename=name, feature_version=(3, 9))
 
 
 if __name__ == "__main__":

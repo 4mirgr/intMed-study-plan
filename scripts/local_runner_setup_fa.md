@@ -5,7 +5,7 @@
 
 ## پیش‌نیازها
 
-- macOS، Python 3.11 یا جدیدتر و LM Studio
+- macOS، Python 3.9 یا جدیدتر و LM Studio (نسخهٔ Python موجود در بیشتر مک‌ها کافی است)
 - فعال‌کردن Local Server در LM Studio فقط روی `127.0.0.1:1234`
 - برای PDF یکی از این دو: `python3 -m pip install PyMuPDF` (پیشنهادی) یا `brew install poppler`
 - تابع `intmed-local-runner` و migration مربوطه باید قبلاً روی Supabase نصب شده باشند.
