@@ -708,7 +708,15 @@ def ensure_publish_checkout() -> None:
     branch = git_run("branch", "--show-current")
     if branch != PUBLISH_BRANCH:
         raise RunnerError(f"انتشار فقط روی شاخهٔ {PUBLISH_BRANCH} مجاز است؛ شاخهٔ فعلی {branch or 'نامشخص'} است.")
-    if git_run("status", "--porcelain"):
+    # Finder can recreate .DS_Store at any time. It is not project content and
+    # must never block an otherwise clean, controlled publication checkout.
+    dirty = []
+    for row in git_run("status", "--porcelain", "--untracked-files=all").splitlines():
+        path = row[3:].strip().strip('"') if len(row) > 3 else row
+        if path.rsplit("/", 1)[-1] == ".DS_Store":
+            continue
+        dirty.append(row)
+    if dirty:
         raise RunnerError("پوشهٔ پروژه تغییرات ثبت‌نشده دارد؛ قبل از انتشار آن‌ها را بررسی و commit کنید.")
     git_run("pull", "--ff-only", "origin", PUBLISH_BRANCH)
 
