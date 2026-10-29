@@ -795,7 +795,6 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
 
 
 def run_publish_once(config: dict[str, Any], headers: dict[str, str] | None = None) -> bool:
-    ensure_publish_checkout()
     headers = headers or auth_headers(config)
     response = runner_api(config, headers, {"action": "claim_publish", "runnerId": config["runner_id"]})
     job = response.get("job") if isinstance(response, dict) else None
@@ -804,6 +803,9 @@ def run_publish_once(config: dict[str, Any], headers: dict[str, str] | None = No
         return False
     draft_id, title = str(job.get("draftId") or ""), str(job.get("title") or "محتوای بازبینی‌شده")
     try:
+        # Avoid a network/git operation on every idle poll. The checkout only
+        # needs verification and fast-forwarding after a publish job exists.
+        ensure_publish_checkout()
         integrate_publish_job(config, job)
         # The checkout must be clean before publication. Staging both generated
         # trees therefore captures versioned build assets without unrelated work.
