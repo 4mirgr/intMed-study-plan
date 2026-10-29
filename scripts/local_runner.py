@@ -629,14 +629,20 @@ def process_job(config: dict[str, Any], headers: dict[str, str], job: dict[str, 
 
 
 def run_once(config: dict[str, Any]) -> bool:
+    headers = auth_headers(config)
+    # An explicit admin publication decision outranks new inbox analysis. This
+    # prevents a busy Telegram inbox from starving the publication queue, and
+    # publishing reviewed material does not require LM Studio to be loaded.
+    if run_publish_once(config, headers, announce_empty=False):
+        return True
     active_model = drafting_model(config)
     if active_model != config["primary_model"]:
         print("مدل Qwen Thinking برای JSON مناسب نیست؛ پردازش این مورد با مدل سریع‌تر انجام می‌شود:", active_model)
-    headers = auth_headers(config)
     response = runner_api(config, headers, {"action": "claim", "runnerId": config["runner_id"]})
     job = response.get("job") if isinstance(response, dict) else None
     if not job:
-        return run_publish_once(config, headers)
+        print("صف پردازش و انتشار خالی است.")
+        return False
     job = dict(job)
     job["ingestId"] = job.get("ingestId") or job.get("id")
     job["leaseToken"] = job.get("leaseToken") or response.get("leaseToken")
@@ -757,7 +763,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
         download_source(config, {"downloadUrl": source.get("downloadUrl"), "sha256": source.get("sha256")}, asset)
         payload.setdefault("images", []).append({"id": item_id, "caption": str(job.get("title") or label),
             "assetPath": asset_rel.as_posix(), "note": str(job.get("sourceSummary") or ""),
-            "kind": "clinical" if kind == "image" else kind, "sourceClass": source_class,
+            "kind": kind, "sourceClass": source_class,
             "copyright": rights, "reviewStatus": "reviewed", "sourceRefs": [{"sourceId": source_id}]})
     else:
         summary = publish_text(job.get("sourceSummary"))
@@ -794,12 +800,14 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
             raise RunnerError("آزمون انتشار ناموفق بود: " + result.stdout.strip()[-900:])
 
 
-def run_publish_once(config: dict[str, Any], headers: dict[str, str] | None = None) -> bool:
+def run_publish_once(config: dict[str, Any], headers: dict[str, str] | None = None,
+                     announce_empty: bool = True) -> bool:
     headers = headers or auth_headers(config)
     response = runner_api(config, headers, {"action": "claim_publish", "runnerId": config["runner_id"]})
     job = response.get("job") if isinstance(response, dict) else None
     if not job:
-        print("صف محلی و صف انتشار خالی است.")
+        if announce_empty:
+            print("صف انتشار خالی است.")
         return False
     draft_id, title = str(job.get("draftId") or ""), str(job.get("title") or "محتوای بازبینی‌شده")
     try:

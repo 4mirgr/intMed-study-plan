@@ -185,7 +185,40 @@ class LocalRunnerTest(unittest.TestCase):
             saved = json.loads(topic.read_text("utf-8"))
             self.assertEqual(saved["images"][0]["kind"], "pbs")
             self.assertEqual(saved["images"][0]["sourceClass"], "authored")
+            self.assertEqual(saved["images"][0]["note"], job["sourceSummary"])
             self.assertTrue((topic.parent / saved["images"][0]["assetPath"]).is_file())
+
+    def test_educational_image_kind_is_preserved_for_topic_and_library(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            topic = root / "content/endo/endo-diabetes-complications/data.json"
+            topic.parent.mkdir(parents=True)
+            topic.write_text(json.dumps({"topicId": "endo-diabetes-complications", "category": "endo",
+                "sources": [], "images": [], "lesson": [], "mcq": [], "kfPmp": []}), "utf-8")
+            summary = "توضیح بازبینی‌شده‌ای که باید زیر تصویر آموزشی در خود فصل و کتابخانه نمایش داده شود."
+            job = {"draftId": "22222222-2222-4222-8222-222222222222", "title": "عوارض عروقی دیابت",
+                "sourceSummary": summary, "draft": {},
+                "target": {"categoryId": "endo", "topicId": "endo-diabetes-complications",
+                           "topicLabel": "عوارض دیابت", "isNew": False, "kind": "image",
+                           "sourceClass": "authored", "rightsNote": "تصویر تألیفی IntMed"},
+                "source": {"kind": "image", "mimeType": "image/png", "filename": "diagram.png",
+                           "downloadUrl": subject.FALLBACK_SUPABASE_URL + "/storage/v1/object/sign/intmed-content-inbox/x?token=y"}}
+            completed = mock.MagicMock(returncode=0, stdout="ok")
+            with mock.patch.object(subject, "ROOT", root), \
+                 mock.patch.object(subject, "download_source", side_effect=lambda _c, _j, path: path.write_bytes(b"png")), \
+                 mock.patch.object(subject.subprocess, "run", return_value=completed):
+                subject.integrate_publish_job({"supabase_url": subject.FALLBACK_SUPABASE_URL}, job)
+            image = json.loads(topic.read_text("utf-8"))["images"][0]
+            self.assertEqual(image["kind"], "image")
+            self.assertEqual(image["note"], summary)
+
+    def test_run_once_prioritizes_approved_publish_queue(self):
+        with mock.patch.object(subject, "auth_headers", return_value={"Authorization": "Bearer test"}), \
+             mock.patch.object(subject, "run_publish_once", return_value=True) as publish, \
+             mock.patch.object(subject, "runner_api") as intake:
+            self.assertTrue(subject.run_once({"runner_id": "runner", "primary_model": "gemma"}))
+        publish.assert_called_once()
+        intake.assert_not_called()
 
     def test_private_harrison_image_cannot_enter_public_bundle(self):
         with tempfile.TemporaryDirectory() as folder:

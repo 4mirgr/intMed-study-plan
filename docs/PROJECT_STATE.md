@@ -64,6 +64,12 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Study-state synchronization now treats a gateway HTTP 405 on PATCH as retryable and falls back to
   the fixed direct project origin, preventing notes/highlights from remaining in an error state when
   an older gateway route handles login but rejects state updates.
+- Publication invariants: an explicit admin publish request has priority over new Telegram analysis;
+  it remains durable while the owner runner is offline and is normally claimed within one poll after
+  the runner returns. Every visual target (`image`, `clinical`, `radiology`, `pathology`, `PBS`,
+  `algorithm`, `table`, `tracing`, `chart`) is stored in the selected topic's canonical `images`
+  collection, so it appears both in that lesson's «تصاویر مهم» tab and in the global library. The
+  reviewed title is the caption and the reviewed golden summary is the visible note under the image.
 
 ## Open work, in priority order
 
