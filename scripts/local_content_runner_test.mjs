@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-let handler,admin=true,claimed=true,completed=false,failed=false,heartbeat=false;
-const user='11111111-1111-4111-8111-111111111111',ingest='22222222-2222-4222-8222-222222222222',env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'server-secret',SUPABASE_ANON_KEY:'public-key'};
+let handler,admin=true,claimed=true,completed=false,failed=false,heartbeat=false,publishCompleted=false,publishFailed=false;
+const user='11111111-1111-4111-8111-111111111111',ingest='22222222-2222-4222-8222-222222222222',publishDraft='44444444-4444-4444-8444-444444444444',env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'server-secret',SUPABASE_ANON_KEY:'public-key'};
 const fetchMock=async(url,options={})=>{
  if(url==='https://drgerami-md.ir/content/taxonomy.json')return Response.json({categories:[{label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]});
  if(url.endsWith('/auth/v1/user'))return options.headers.Authorization==='Bearer good-token'?Response.json({id:user}):new Response('{}',{status:401});
  if(url.includes('/rest/v1/profiles?'))return Response.json([{role:admin?'admin':'user',approved:true,rejected:false}]);
  if(url.includes('/rpc/claim_intmed_local_content'))return Response.json(claimed?ingest:null);
+ if(url.includes('/rpc/claim_intmed_content_publish'))return Response.json(publishDraft);
+ if(url.includes('/rest/v1/intmed_content_drafts?'))return Response.json([{id:publishDraft,ingest_id:ingest,topic_id:'id-cns-meningoencephalitis',title:'تصویر CNS',source_summary:'خلاصهٔ کامل و بازبینی‌شده',draft_json:{lessonOutline:[]},target_category_id:'id',target_topic_label:'مننژیت و انسفالیت',target_topic_is_new:false,target_content_kind:'pbs',target_source_class:'authored',target_rights_note:'تألیفی IntMed',intmed_content_ingest:{kind:'text',mime_type:'text/plain',content_text:'منبع'}}]);
+ if(url.includes('/rpc/complete_intmed_content_publish')){publishCompleted=true;return Response.json(true);}
+ if(url.includes('/rpc/fail_intmed_content_publish')){publishFailed=true;return Response.json(true);}
  if(url.includes('/rest/v1/intmed_content_ingest?'))return Response.json([{id:ingest,kind:'text',mime_type:'text/plain',original_filename:null,storage_path:null,content_text:'متن نمونه',caption:'شرح',suggested_topic_id:null,sha256:null,byte_size:18,is_forwarded:false}]);
  if(url.includes('/rest/v1/intmed_bot_topic_hints?'))return Response.json([{hint_text:'انسفالیت'}]);
  if(url.includes('/rpc/heartbeat_intmed_local_content')){heartbeat=true;return Response.json(true);}
@@ -22,9 +26,12 @@ response=await call({action:'heartbeat',ingestId:ingest,leaseToken:'33333333-333
 const draft={suggestedTopicId:'id-cns-meningoencephalitis',confidence:.8,title:'انسفالیت',sourceSummary:'خلاصه',medicalWarnings:[],lessonOutline:['درس'],mcqDrafts:[{stem:'سؤال',options:['۱','۲','۳','۴'],correctIndex:0,explanation:'شرح'}],kfDrafts:[],imageCandidates:[],sourceEvidence:[]};
 response=await call({action:'submit',ingestId:ingest,leaseToken:'33333333-3333-4333-8333-333333333333',model:'qwen3',draft});assert.equal(response.status,200);assert.equal(completed,true);
 response=await call({action:'fail',ingestId:ingest,leaseToken:'33333333-3333-4333-8333-333333333333',errorCode:'timeout',model:'qwen3'});assert.equal(response.status,200);assert.equal(failed,true);
+response=await call({action:'claim_publish',runnerId:'macbook.local'});assert.equal(response.status,200);result=await response.json();assert.equal(result.job.draftId,publishDraft);assert.equal(result.job.target.kind,'pbs');
+response=await call({action:'complete_publish',runnerId:'macbook.local',draftId:publishDraft,commit:'abcdef1234',title:'تصویر CNS'});assert.equal(response.status,200);assert.equal(publishCompleted,true);
+response=await call({action:'fail_publish',runnerId:'macbook.local',draftId:publishDraft,errorMessage:'validation failed'});assert.equal(response.status,200);assert.equal(publishFailed,true);
 response=await call({action:'submit',ingestId:ingest,leaseToken:'33333333-3333-4333-8333-333333333333',model:'qwen3',draft:{...draft,reviewStatus:'reviewed'}});assert.equal(response.status,400);
 response=await call({action:'status'},'bad-token');assert.equal(response.status,401);admin=false;response=await call({action:'status'});assert.equal(response.status,403);
 const sql=fs.readFileSync('backend/supabase/local_content_runner.sql','utf8'),config=fs.readFileSync('backend/supabase/config.toml','utf8');
 assert.match(sql,/intmed_content_local_jobs/);assert.match(sql,/enable row level security/);assert.match(sql,/revoke all on public\.intmed_content_local_jobs from public,anon,authenticated/);assert.match(sql,/claim_intmed_local_content/);assert.match(sql,/heartbeat_intmed_local_content/);assert.match(sql,/local_lease_expired/);assert.match(sql,/interval '15 minutes'/);assert.match(config,/\[functions\.intmed-local-runner\][\s\S]*verify_jwt = false/);
-assert.doesNotMatch(fs.readFileSync('backend/supabase/functions/intmed-local-runner/index.ts','utf8'),/OPENAI_API_KEY|auto-publish/);
-console.log('Local content runner bridge passed: admin JWT, atomic lease/heartbeat, signed-source boundary, draft validation, failure release and no client service key.');
+assert.doesNotMatch(fs.readFileSync('backend/supabase/functions/intmed-local-runner/index.ts','utf8'),/OPENAI_API_KEY|service_role.*client/i);
+console.log('Local content runner bridge passed: admin JWT, draft lease, controlled publish claim/result, signed-source boundary and no client service key.');

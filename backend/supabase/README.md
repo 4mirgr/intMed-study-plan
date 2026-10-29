@@ -109,7 +109,9 @@ For the private Telegram inbox, install `local_content_runner.sql`, deploy
 `functions/intmed-local-runner/index.ts` with gateway JWT verification off, and follow
 `scripts/local_runner_setup_fa.md`. The function performs its own Auth/admin validation. The Mac
 stores only a refresh token in Keychain and a public API key; never copy `service_role` locally.
-The runner creates review drafts only and leaves paid OpenAI processing disabled.
+The runner creates review drafts and, only after an approved admin presses the publication button,
+claims a separate publish job, updates canonical content, runs validate/build/check, and pushes the
+target branch. Paid OpenAI processing remains disabled; publication itself does not call a model.
 On macOS, double-click `scripts/setup_intmed_lmstudio.command` for server discovery, recommended
 model selection, Keychain login verification and optional LaunchAgent background execution.
 
@@ -117,10 +119,14 @@ model selection, Keychain login verification and optional LaunchAgent background
 
 Apply `content_review.sql`, then deploy `functions/intmed-content-review/index.ts` as
 `intmed-content-review` with gateway JWT verification disabled. The handler validates the current
-Auth user and live approved admin profile before reading any private inbox data. An approval only
-changes the private draft status to `approved`; it never writes public lesson files. The browser
-review panel supports source preview, topic correction, reviewer notes, rejection and explicit
-teacher approval with an audit trail.
+Auth user and live approved admin profile before reading any private inbox data. Approval changes
+the private draft status to `approved`; a separate explicit publication action queues the owner-run
+local publisher. The browser
+review panel supports Persian topic search, a controlled new-topic proposal, visual routing
+(including the dedicated PBS gallery kind), image-rights classification, source preview, a
+source-backed golden-summary paragraph, reviewer notes, rejection and explicit teacher approval
+with an audit trail. The publisher can create an approved new taxonomy topic, routes visual assets
+to the selected gallery kind, and refuses private Harrison assets or images without a rights note.
 
 ### Single install for services and least-privilege policies
 

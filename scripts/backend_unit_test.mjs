@@ -104,6 +104,15 @@ assert.equal((await wafWindow.IntMedBackend.signIn("doctor@example.com","passwor
 assert.ok(wafFallbackCalls>=2,"403 gateway response did not fall back to the direct project origin");
 console.log("Gateway regression passed: CDN/WAF 403 falls back to the direct secure origin.");
 
+const patchStore=new Map([["intmed_supabase_session",JSON.stringify({access_token:"patch-access",refresh_token:"patch-refresh",user:{id:userId}})]]),patchTabStore=new Map(),patchCalls=[];
+const patchWindow={INTMED_CONFIG:{supabaseUrl:"https://api.drgerami-md.ir",supabaseFallbackUrl:"https://example.supabase.co",supabaseAnonKey:"anon",authPrimaryTimeoutMs:20,authFallbackTimeoutMs:50}};
+const patchContext=vm.createContext({window:patchWindow,fetch:(url,options={})=>{patchCalls.push({url,options});if(url.startsWith("https://api.drgerami-md.ir")&&options.method==="PATCH")return reply({message:"Method not allowed"},405);if(url.includes("/study_state")&&options.method==="PATCH")return reply([{state:{},updated_at:"2026-10-29T00:00:01Z"}]);if(url.includes("/study_state"))return reply([{state:{},updated_at:"2026-10-29T00:00:00Z"}]);if(url.includes("/profiles"))return reply([{id:userId,approved:true,role:"user"}]);if(url.includes("/tickets"))return reply([]);if(url.includes("/functions/v1/intmed-telegram-bot"))return reply({ok:true});throw Error("unexpected PATCH fallback request: "+url);},localStorage:{getItem:key=>patchStore.get(key)||null,setItem:(key,value)=>patchStore.set(key,value),removeItem:key=>patchStore.delete(key)},sessionStorage:{getItem:key=>patchTabStore.get(key)||null,setItem:(key,value)=>patchTabStore.set(key,value),removeItem:key=>patchTabStore.delete(key)},JSON,Promise,Set,Date,URLSearchParams,encodeURIComponent,setTimeout,clearTimeout,AbortController,console});
+vm.runInContext(fs.readFileSync(new URL("../docs/js/intmed-backend.js",import.meta.url),"utf8"),patchContext);
+const patchState=await patchWindow.IntMedBackend.loadLegacyState();patchState.users[userId].itemState.note={note:"persist"};await patchWindow.IntMedBackend.saveLegacyState(patchState);
+assert.ok(patchCalls.some(call=>call.url.startsWith("https://api.drgerami-md.ir")&&call.options.method==="PATCH"));
+assert.ok(patchCalls.some(call=>call.url.startsWith("https://example.supabase.co")&&call.options.method==="PATCH"));
+console.log("Synchronization regression passed: gateway PATCH 405 falls back and preserves highlights/state.");
+
 const readonlyStore=new Map(),readonlyTabStore=new Map(),readonlyWindow={
   INTMED_CONFIG:{supabaseUrl:"https://api.drgerami-md.ir",supabaseFallbackUrl:"https://example.supabase.co",supabaseAnonKey:"anon",authPrimaryTimeoutMs:20,authFallbackTimeoutMs:50},
   location:{origin:"https://intmed.example",pathname:"/",search:"",hash:""}

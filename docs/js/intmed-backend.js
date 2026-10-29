@@ -49,7 +49,10 @@
     // even though Supabase itself is healthy.  Those responses must not pin
     // the browser to the gateway; the direct project origin remains a safe
     // fallback and applies the same Auth/RLS checks.
-    return !error.status || error.status === 403 || error.status === 404 || error.status === 408 || error.status === 425 || error.status >= 500;
+    // 405 is also retryable here: an older/custom gateway deployment may accept Auth POSTs
+    // while still rejecting PATCH used by study-state/highlight synchronization. The direct
+    // project endpoint applies the same JWT/RLS checks and is the safe fallback.
+    return !error.status || error.status === 403 || error.status === 404 || error.status === 405 || error.status === 408 || error.status === 425 || error.status >= 500;
   }
   function withMessage(error, message){
     // Browser/network errors are not guaranteed to be mutable.  In

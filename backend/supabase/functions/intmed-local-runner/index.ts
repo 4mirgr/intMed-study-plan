@@ -1,4 +1,4 @@
-// Narrow admin-authenticated bridge for a localhost LM Studio runner. It never publishes content.
+// Narrow admin-authenticated bridge for a localhost LM Studio runner and controlled publisher.
 const headers={'Content-Type':'application/json','Cache-Control':'no-store'};
 const SITE='https://drgerami-md.ir';
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -27,6 +27,8 @@ Deno.serve(async req=>{
   const action=String(body.action||'status');
   const ingestId=String(body.ingestId||''),leaseId=String(body.leaseToken||'');
   if(['heartbeat','submit','fail'].includes(action)&&(!uuid.test(ingestId)||!uuid.test(leaseId)))return reply(400,{message:'Invalid lease'});
+  const publishDraftId=String(body.draftId||'');
+  if(['complete_publish','fail_publish'].includes(action)&&!uuid.test(publishDraftId))return reply(400,{message:'Invalid publish draft'});
   try{
     if(action==='status'){
       const rows=await db('intmed_content_local_jobs?claimed_by=eq.'+user.id+'&state=eq.active&select=ingest_id,runner_id,lease_until,last_heartbeat_at,model&order=updated_at.desc&limit=1');
@@ -47,6 +49,32 @@ Deno.serve(async req=>{
         const value=await signed.json(),relative=String(value.signedURL||value.signedUrl||'');downloadUrl=relative.startsWith('http')?relative:base+'/storage/v1'+(relative.startsWith('/')?'':'/')+relative;
       }
       return reply(200,{ok:true,leaseToken:lease,leaseSeconds:300,job:{id:item.id,kind:item.kind,mimeType:item.mime_type,filename:text(item.original_filename,180),byteSize:Number(item.byte_size)||0,sha256:item.sha256||null,caption:text(item.caption,1500),topicHint:text(hints[0]?.hint_text||item.suggested_topic_id,300),contentText:item.kind==='text'?String(item.content_text||''):null,downloadUrl,forwarded:!!item.is_forwarded,source:{type:item.source_type||null,name:text(item.source_name,300)}}});
+    }
+    if(action==='claim_publish'){
+      const runnerId=text(body.runnerId,80);if(!runner.test(runnerId))return reply(400,{message:'Invalid runner id'});
+      const claimed=await db('rpc/claim_intmed_content_publish','POST',{claimant:user.id,local_runner_id:runnerId});
+      if(!claimed)return reply(200,{ok:true,job:null,reason:'empty_or_busy'});
+      const rows=await db('intmed_content_drafts?id=eq.'+claimed+'&status=eq.publishing&select=id,ingest_id,topic_id,title,source_summary,draft_json,target_category_id,target_topic_label,target_topic_is_new,target_content_kind,target_source_class,target_rights_note,reviewed_at,intmed_content_ingest(kind,mime_type,original_filename,storage_path,content_text,caption,sha256,source_type,source_name)&limit=1'),draft=rows[0];
+      if(!draft){await db('rpc/fail_intmed_content_publish','POST',{target_draft:claimed,claimant:user.id,local_runner_id:runnerId,failure:'publish draft unavailable'});return reply(409,{message:'Publish draft unavailable'});}
+      const item=draft.intmed_content_ingest||{};let downloadUrl=null;
+      if(item.kind!=='text'){
+        const path=String(item.storage_path||'');if(!path){await db('rpc/fail_intmed_content_publish','POST',{target_draft:claimed,claimant:user.id,local_runner_id:runnerId,failure:'source unavailable'});return reply(409,{message:'Source unavailable'});}
+        const signed=await fetch(base+'/storage/v1/object/sign/intmed-content-inbox/'+path.split('/').map(encodeURIComponent).join('/'),{method:'POST',headers:server,body:JSON.stringify({expiresIn:900})});
+        if(!signed.ok){await db('rpc/fail_intmed_content_publish','POST',{target_draft:claimed,claimant:user.id,local_runner_id:runnerId,failure:'could not sign source'});return reply(503,{message:'Could not sign source'});}
+        const value=await signed.json(),relative=String(value.signedURL||value.signedUrl||'');downloadUrl=relative.startsWith('http')?relative:base+'/storage/v1'+(relative.startsWith('/')?'':'/')+relative;
+      }
+      return reply(200,{ok:true,job:{draftId:draft.id,ingestId:draft.ingest_id,title:draft.title,sourceSummary:draft.source_summary,draft:draft.draft_json,target:{categoryId:draft.target_category_id,topicId:draft.topic_id,topicLabel:draft.target_topic_label,isNew:!!draft.target_topic_is_new,kind:draft.target_content_kind,sourceClass:draft.target_source_class,rightsNote:draft.target_rights_note},source:{kind:item.kind,mimeType:item.mime_type,filename:text(item.original_filename,180),sha256:item.sha256||null,contentText:item.kind==='text'?String(item.content_text||''):null,downloadUrl,sourceType:item.source_type||null,sourceName:text(item.source_name,300)}}});
+    }
+    if(action==='complete_publish'){
+      const runnerId=text(body.runnerId,80),commit=text(body.commit,80);if(!runner.test(runnerId)||!commit)return reply(400,{message:'Invalid publish result'});
+      const done=await db('rpc/complete_intmed_content_publish','POST',{target_draft:publishDraftId,claimant:user.id,local_runner_id:runnerId,commit_sha:commit});
+      if(done)await notify('🚀 محتوای تأییدشده روی سایت منتشر شد.\nعنوان: '+text(body.title,180)+'\nCommit: '+commit);
+      return done?reply(200,{ok:true,status:'published'}):reply(409,{message:'Publish claim expired'});
+    }
+    if(action==='fail_publish'){
+      const runnerId=text(body.runnerId,80),failure=text(body.errorMessage||'publisher failed',1000);if(!runner.test(runnerId))return reply(400,{message:'Invalid runner id'});
+      const failed=await db('rpc/fail_intmed_content_publish','POST',{target_draft:publishDraftId,claimant:user.id,local_runner_id:runnerId,failure});
+      return failed?reply(200,{ok:true,status:'publish_error'}):reply(409,{message:'Publish claim expired'});
     }
     if(action==='heartbeat'){
       const alive=await db('rpc/heartbeat_intmed_local_content','POST',{target_ingest:ingestId,lease_owner:leaseId,claimant:user.id});

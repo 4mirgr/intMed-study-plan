@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Owner-operated IntMed content runner for a loopback-only LM Studio server.
+"""Owner-operated IntMed content runner and controlled publisher.
 
-The runner never receives a Supabase service key and never publishes content.  It authenticates as
-an approved IntMed admin, claims one quarantined inbox item through the narrow Edge Function, keeps
-the lease alive while a local model works, and submits a schema-checked review draft.
+The runner never receives a Supabase service key. It authenticates as
+an approved IntMed admin, creates schema-checked review drafts, and publishes only drafts explicitly
+approved and queued by the admin. Publishing runs the canonical pipeline before git push.
 """
 from __future__ import annotations
 
@@ -36,6 +36,8 @@ FALLBACK_SUPABASE_URL = "https://upwbktvnybsjugdegjji.supabase.co"
 SITE_ORIGIN = "https://drgerami-md.ir"
 MAX_SOURCE_BYTES = 20 * 1024 * 1024
 CHUNK_CHARS = 6500
+ROOT = Path(__file__).resolve().parents[1]
+PUBLISH_BRANCH = "claude/quirky-ride-mavb6b"
 
 
 class RunnerError(RuntimeError):
@@ -374,6 +376,8 @@ FINAL_SYSTEM = """تو عامل پیش‌نویس IntMed هستی. فقط با �
 اضافه نکن. topicId فقط از فهرست مجاز یا null است. همهٔ سؤالات reviewStatus=draft هستند. پاسخ فقط یک
 JSON معتبر با کلیدهای suggestedTopicId, confidence, title, sourceSummary, medicalWarnings,
 lessonOutline, mcqDrafts, kfDrafts, imageCandidates, sourceEvidence, insufficientEvidence باشد.
+sourceSummary باید یک پاراگراف فارسی منسجم، اختصاصی و مرتبط با همین محتوا باشد؛ در ۲ تا ۴ جمله
+مهم‌ترین نکات طلایی دارای شاهد را جمع‌بندی کند، عبارت کلی و تبلیغاتی نداشته باشد و دانستهٔ بیرونی نیفزاید.
 هر MCQ دقیقاً stem/options چهارعضوی/correctIndex/explanation/reviewStatus دارد. هر KF فقط prompt و
 expectedAnswer و reviewStatus دارد. منبع/صفحه برای ادعاها را در sourceEvidence نگه دار. لحن فارسی
 روان و آموزشی باشد، اما عدد، دوز یا ادعای بدون شاهد نساز. reasoning را در خروجی ننویس."""
@@ -632,8 +636,7 @@ def run_once(config: dict[str, Any]) -> bool:
     response = runner_api(config, headers, {"action": "claim", "runnerId": config["runner_id"]})
     job = response.get("job") if isinstance(response, dict) else None
     if not job:
-        print("صف محلی خالی است.")
-        return False
+        return run_publish_once(config, headers)
     job = dict(job)
     job["ingestId"] = job.get("ingestId") or job.get("id")
     job["leaseToken"] = job.get("leaseToken") or response.get("leaseToken")
@@ -675,6 +678,152 @@ def run_once(config: dict[str, Any]) -> bool:
             except RunnerError:
                 pass
             raise
+
+
+def git_run(*args: str, check: bool = True) -> str:
+    result = subprocess.run(["git", *args], cwd=ROOT, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, text=True, check=False)
+    if check and result.returncode:
+        raise RunnerError("Git ناموفق بود: " + (result.stdout.strip()[-700:] or "unknown error"))
+    return result.stdout.strip()
+
+
+def publish_text(value: Any) -> str:
+    if isinstance(value, str):
+        return re.sub(r"\s+", " ", value).strip()
+    if isinstance(value, dict):
+        for key in ("text", "claim", "title", "heading", "summary"):
+            if value.get(key):
+                return publish_text(value[key])
+    return ""
+
+
+def ensure_publish_checkout() -> None:
+    branch = git_run("branch", "--show-current")
+    if branch != PUBLISH_BRANCH:
+        raise RunnerError(f"انتشار فقط روی شاخهٔ {PUBLISH_BRANCH} مجاز است؛ شاخهٔ فعلی {branch or 'نامشخص'} است.")
+    if git_run("status", "--porcelain"):
+        raise RunnerError("پوشهٔ پروژه تغییرات ثبت‌نشده دارد؛ قبل از انتشار آن‌ها را بررسی و commit کنید.")
+    git_run("pull", "--ff-only", "origin", PUBLISH_BRANCH)
+
+
+def add_source(payload: dict[str, Any], source_id: str, title: str,
+               source_class: str, note: str) -> None:
+    sources = payload.setdefault("sources", [])
+    if not any(isinstance(row, dict) and row.get("id") == source_id for row in sources):
+        sources.append({"id": source_id, "title": title or "ورودی بازبینی‌شدهٔ تلگرام",
+                        "type": "telegram-review", "sourceClass": source_class,
+                        "note": note[:1000]})
+
+
+def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
+    target = job.get("target") if isinstance(job.get("target"), dict) else {}
+    topic_id, category = str(target.get("topicId") or ""), str(target.get("categoryId") or "")
+    label, kind = str(target.get("topicLabel") or "").strip(), str(target.get("kind") or "lesson")
+    source_class, rights = str(target.get("sourceClass") or ""), str(target.get("rightsNote") or "").strip()
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]{1,79}", topic_id) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,39}", category):
+        raise RunnerError("مسیر مبحث برای انتشار معتبر نیست.")
+    topic_file = ROOT / "content" / category / topic_id / "data.json"
+    if bool(target.get("isNew")) and not topic_file.exists():
+        result = subprocess.run([sys.executable, str(ROOT / "scripts/content_pipeline.py"), "init-topic",
+                                 category, topic_id, "--label", label], cwd=ROOT, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        if result.returncode:
+            raise RunnerError("ساخت مبحث جدید ناموفق بود: " + result.stdout.strip()[-600:])
+    if not topic_file.is_file():
+        raise RunnerError("فایل canonical مبحث مقصد پیدا نشد.")
+    payload = json.loads(topic_file.read_text("utf-8"))
+    draft = job.get("draft") if isinstance(job.get("draft"), dict) else {}
+    source = job.get("source") if isinstance(job.get("source"), dict) else {}
+    short = str(job.get("draftId") or "")[:12]
+    source_id, item_id = "review-source-" + short, "review-item-" + short
+    source_title = str(source.get("filename") or source.get("sourceName") or job.get("title") or "منبع تلگرام")
+    add_source(payload, source_id, source_title, source_class or "authored", rights or "بازبینی مدیر")
+    visual = kind in {"image", "pbs", "algorithm", "table", "tracing", "radiology", "pathology", "clinical", "chart"}
+    if visual:
+        if source_class == "harrison-private":
+            raise RunnerError("دارایی خصوصی هاریسون قابل انتشار در bundle عمومی نیست.")
+        if source_class not in {"authored", "open-license"} or len(rights) < 5:
+            raise RunnerError("مجوز/منبع تصویر برای انتشار عمومی کامل نیست.")
+        if not str(source.get("mimeType") or "").startswith("image/") or not source.get("downloadUrl"):
+            raise RunnerError("برای مقصد تصویری باید یک فایل تصویر اصلی بازبینی‌شده وجود داشته باشد.")
+        suffix = Path(str(source.get("filename") or "image.jpg")).suffix.lower()
+        if suffix not in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}:
+            suffix = ".jpg"
+        asset_name = item_id + suffix
+        asset_rel = Path("assets") / asset_name
+        asset = topic_file.parent / asset_rel
+        asset.parent.mkdir(parents=True, exist_ok=True)
+        download_source(config, {"downloadUrl": source.get("downloadUrl"), "sha256": source.get("sha256")}, asset)
+        payload.setdefault("images", []).append({"id": item_id, "caption": str(job.get("title") or label),
+            "assetPath": asset_rel.as_posix(), "note": str(job.get("sourceSummary") or ""),
+            "kind": "clinical" if kind == "image" else kind, "sourceClass": source_class,
+            "copyright": rights, "reviewStatus": "reviewed", "sourceRefs": [{"sourceId": source_id}]})
+    else:
+        summary = publish_text(job.get("sourceSummary"))
+        outline = [publish_text(row) for row in (draft.get("lessonOutline") or [])]
+        paragraphs = [value for value in [summary, *outline] if value]
+        if paragraphs:
+            payload.setdefault("lesson", []).append({"id": item_id, "heading": str(job.get("title") or label),
+                "paragraphs": [{"id": item_id + "-p" + str(index + 1), "text": value,
+                                "sourceRefs": [{"sourceId": source_id}]} for index, value in enumerate(paragraphs)]})
+        for index, row in enumerate(draft.get("mcqDrafts") or []):
+            if not isinstance(row, dict) or len(row.get("options") or []) != 4:
+                continue
+            question = {key: row[key] for key in ("stem", "options", "correctIndex", "explanation", "optionExplanations") if key in row}
+            question.update({"id": item_id + "-mcq-" + str(index + 1), "reviewStatus": "reviewed",
+                             "sourceRefs": [{"sourceId": source_id}]})
+            payload.setdefault("mcq", []).append(question)
+        kf = [row for row in (draft.get("kfDrafts") or []) if isinstance(row, dict) and row.get("prompt") and row.get("expectedAnswer")]
+        if kf:
+            payload.setdefault("kfPmp", []).append({"id": item_id + "-kf", "title": str(job.get("title") or label),
+                "vignette": summary, "sourceRefs": [{"sourceId": source_id}],
+                "steps": [{"id": item_id + "-kf-" + str(index + 1), "prompt": row["prompt"],
+                           "expectedAnswer": row["expectedAnswer"], "sourceRefs": [{"sourceId": source_id}]}
+                          for index, row in enumerate(kf)]})
+        if not paragraphs and not payload.get("mcq") and not kf:
+            raise RunnerError("پیش‌نویس محتوای قابل ادغام ندارد.")
+    topic_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    for command in ([sys.executable, "scripts/content_pipeline.py", "validate"],
+                    [sys.executable, "scripts/content_pipeline.py", "build"],
+                    [sys.executable, "scripts/content_pipeline.py", "check"],
+                    [sys.executable, "scripts/version_assets.py"]):
+        result = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                text=True, check=False)
+        if result.returncode:
+            raise RunnerError("آزمون انتشار ناموفق بود: " + result.stdout.strip()[-900:])
+
+
+def run_publish_once(config: dict[str, Any], headers: dict[str, str] | None = None) -> bool:
+    ensure_publish_checkout()
+    headers = headers or auth_headers(config)
+    response = runner_api(config, headers, {"action": "claim_publish", "runnerId": config["runner_id"]})
+    job = response.get("job") if isinstance(response, dict) else None
+    if not job:
+        print("صف محلی و صف انتشار خالی است.")
+        return False
+    draft_id, title = str(job.get("draftId") or ""), str(job.get("title") or "محتوای بازبینی‌شده")
+    try:
+        integrate_publish_job(config, job)
+        # The checkout must be clean before publication. Staging both generated
+        # trees therefore captures versioned build assets without unrelated work.
+        git_run("add", "content", "docs")
+        git_run("commit", "-m", "Publish reviewed content: " + title[:100])
+        commit = git_run("rev-parse", "HEAD")
+        git_run("push", "origin", PUBLISH_BRANCH)
+        result = runner_api(config, headers, {"action": "complete_publish", "runnerId": config["runner_id"],
+                            "draftId": draft_id, "commit": commit, "title": title})
+        if not result.get("ok"):
+            raise RunnerError("ثبت نتیجهٔ انتشار در سرور ناموفق بود.")
+        print("منتشر شد:", title, commit[:10])
+        return True
+    except Exception as exc:
+        try:
+            runner_api(config, headers, {"action": "fail_publish", "runnerId": config["runner_id"],
+                       "draftId": draft_id, "errorMessage": str(exc)[:1000]})
+        except RunnerError:
+            pass
+        raise
 
 
 def setup(path: Path) -> None:
@@ -752,6 +901,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("models")
     sub.add_parser("status")
     sub.add_parser("once")
+    sub.add_parser("publish-once")
     watch = sub.add_parser("watch")
     watch.add_argument("--poll-seconds", type=int)
     args = parser.parse_args(argv)
@@ -770,6 +920,9 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.command == "once":
             run_once(config)
+            return 0
+        if args.command == "publish-once":
+            run_publish_once(config)
             return 0
         interval = max(10, min(300, args.poll_seconds or int(config.get("poll_seconds", 20))))
         stopped = False

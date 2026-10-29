@@ -28,6 +28,7 @@ await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,asyn
  if(u.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
  if(u.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:[]});
  if(u.pathname==='/functions/v1/intmed-telegram-bot')return route.fulfill({json:{ok:true}});
+ if(u.pathname==='/functions/v1/intmed-content-review')return route.fulfill({json:{items:[],counts:{}}});
  throw Error('Unexpected request '+u.pathname);
 });
 await page.route('**/rest/v1/intmed_recovery_tickets?*',r=>r.fulfill({json:[]}));

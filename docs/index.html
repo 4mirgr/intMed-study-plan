@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="stylesheet" href="intmed.css?v=4360037f6eb06d74">
-<link rel="stylesheet" href="content-review.css?v=5bd62f744181ac66">
+<link rel="stylesheet" href="content-review.css?v=3ea2103e27051044">
 <link rel="stylesheet" href="pwa.css?v=fd05bfbc6b4b22fc">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
@@ -312,7 +312,7 @@
       <details class="notification-panel content-review-panel" id="contentReviewPanel" open>
         <summary><span>صندوق بازبینی محتوای تلگرام</span><span id="contentReviewBadge" class="management-badge" hidden></span></summary>
         <p class="section-caption">خروجی مدل محلی فقط پیش‌نویس است. «تأیید برای ادغام» آن را عمومی نمی‌کند؛ انتشار نهایی بعد از بازبینی علمی، اعتبارسنجی محتوا و commit انجام می‌شود.</p>
-        <div class="content-review-toolbar"><label>وضعیت <select id="contentReviewFilter"><option value="open">نیازمند رسیدگی</option><option value="draft_ready">آمادهٔ بازبینی</option><option value="approved">تأییدشده برای ادغام</option><option value="rejected">ردشده</option><option value="all">همه</option></select></label><button type="button" id="contentReviewRefresh" class="secondary-action">به‌روزرسانی صندوق</button></div>
+        <div class="content-review-toolbar"><label>وضعیت <select id="contentReviewFilter"><option value="open">نیازمند رسیدگی</option><option value="draft_ready">آمادهٔ بازبینی</option><option value="approved">تأییدشده برای ادغام</option><option value="publish_requested">در صف انتشار</option><option value="published">منتشرشده</option><option value="publish_error">خطای انتشار</option><option value="rejected">ردشده</option><option value="all">همه</option></select></label><button type="button" id="contentReviewRefresh" class="secondary-action">به‌روزرسانی صندوق</button></div>
         <p id="contentReviewStatus" class="section-caption" role="status" aria-live="polite">برای دریافت پیش‌نویس‌ها، صندوق را به‌روزرسانی کنید.</p>
         <div id="contentReviewList" class="content-review-list"></div>
       </details>
@@ -364,11 +364,28 @@
     <form method="dialog" class="content-review-dialog-head"><div><p class="eyebrow">بازبینی کنترل‌شده</p><h2 id="contentReviewDialogTitle">پیش‌نویس محتوا</h2></div><button value="close" class="library-viewer-close" aria-label="بستن">×</button></form>
     <p id="contentReviewDialogMeta" class="section-caption"></p>
     <div id="contentReviewSource" class="content-review-source"></div>
-    <div class="content-review-fields"><label>عنوان<input id="contentReviewTitle" maxlength="240"></label><label>مبحث مقصد<select id="contentReviewTopic"><option value="">انتخاب نشده</option></select></label><label class="content-review-wide">خلاصهٔ منبع<textarea id="contentReviewSummary" maxlength="4000" rows="4"></textarea></label><label class="content-review-wide">یادداشت بازبین<textarea id="contentReviewNote" maxlength="4000" rows="3" placeholder="اصلاحات علمی، دلیل رد یا توضیح تصمیم"></textarea></label></div>
+    <div class="content-review-fields">
+      <label>عنوان<input id="contentReviewTitle" maxlength="240"></label>
+      <label class="content-review-topic-field">مبحث مقصد
+        <input id="contentReviewTopicSearch" list="contentReviewTopicOptions" autocomplete="off" maxlength="300" placeholder="نام مبحث را جست‌وجو کنید">
+        <datalist id="contentReviewTopicOptions"></datalist><input id="contentReviewTopic" type="hidden">
+        <small id="contentReviewTopicHint">یکی از پیشنهادها را انتخاب کنید.</small>
+        <button type="button" id="contentReviewNewTopicToggle" class="content-review-inline-action">＋ ساخت مبحث جدید</button>
+      </label>
+      <div id="contentReviewNewTopicFields" class="content-review-new-topic content-review-wide" hidden>
+        <label>بخش مبحث جدید<select id="contentReviewNewTopicCategory"></select></label>
+        <label>نام مبحث جدید<input id="contentReviewNewTopicLabel" maxlength="160" placeholder="مثلاً اختلالات پلاکتی"></label>
+        <p>مبحث پس از تأیید، هنگام ادغام فنی در taxonomy و ساختار canonical ساخته می‌شود؛ صرف ذخیره یا تأیید، آن را عمومی نمی‌کند.</p>
+      </div>
+      <label>نوع مقصد<select id="contentReviewTargetKind"><option value="lesson">درس / متن</option><option value="image">تصویر آموزشی</option><option value="pbs">PBS · لام خون محیطی</option><option value="algorithm">الگوریتم</option><option value="table">جدول</option><option value="tracing">نوار و tracing</option><option value="radiology">رادیولوژی</option><option value="pathology">پاتولوژی</option><option value="clinical">تصویر بالینی</option><option value="chart">نمودار</option></select></label>
+      <label id="contentReviewSourceClassField" hidden>حق استفادهٔ تصویر<select id="contentReviewSourceClass"><option value="">انتخاب کنید</option><option value="harrison-private">هاریسون · فقط خصوصی</option><option value="authored">تألیفی IntMed</option><option value="open-license">دارای مجوز باز</option></select><input id="contentReviewRightsNote" maxlength="600" placeholder="منبع/مجوز یا توضیح تألیفی"></label>
+      <label class="content-review-wide">خلاصهٔ نکات طلایی<textarea id="contentReviewSummary" maxlength="4000" rows="4" placeholder="یک پاراگراف دقیق و مرتبط با مهم‌ترین نکات این محتوا"></textarea><button type="button" id="contentReviewSummarySuggest" class="content-review-inline-action">بازسازی از شواهد پیش‌نویس</button></label>
+      <label class="content-review-wide">یادداشت بازبین<textarea id="contentReviewNote" maxlength="4000" rows="3" placeholder="اصلاحات علمی، دلیل رد یا توضیح تصمیم"></textarea></label>
+    </div>
     <div id="contentReviewDraftBody" class="content-review-draft-body"></div>
     <label class="content-review-confirm"><input type="checkbox" id="contentReviewConfirm"> من این محتوا، شواهد و مبحث مقصد را بازبینی کرده‌ام و تأیید می‌کنم فقط برای ادغام فنی آماده شود.</label>
     <p id="contentReviewActionStatus" class="section-caption" role="status" aria-live="polite"></p>
-    <div class="content-review-actions"><button type="button" data-review-action="save" class="secondary-action">ذخیرهٔ ویرایش</button><button type="button" data-review-action="approve" class="profile-save-btn">تأیید برای ادغام</button><button type="button" data-review-action="reject" class="content-review-reject">رد پیش‌نویس</button><button type="button" data-review-action="reopen" class="secondary-action">بازگرداندن به بازبینی</button><button type="button" id="contentReviewExport" class="secondary-action">خروجی JSON</button></div>
+    <div class="content-review-actions"><button type="button" data-review-action="save" class="secondary-action">ذخیرهٔ ویرایش</button><button type="button" data-review-action="approve" class="profile-save-btn">تأیید برای ادغام</button><button type="button" data-review-action="publish" id="contentReviewPublish" class="profile-save-btn">انتشار روی سایت</button><button type="button" data-review-action="reject" class="content-review-reject">رد پیش‌نویس</button><button type="button" data-review-action="reopen" class="secondary-action">بازگرداندن به بازبینی</button><button type="button" id="contentReviewExport" class="secondary-action">خروجی JSON</button></div>
   </dialog>
   <div class="tab-panel library-panel" id="tabPanelLibrary" aria-labelledby="libraryTitle">
     <section class="library-hero">
@@ -416,8 +433,8 @@
 </div>
 
 <script src="config.js?v=066d4f9726ed485f"></script>
-<script src="js/intmed-backend.js?v=95e20e7fcea1f119"></script>
-<script src="js/intmed-content-review.js?v=d215b1592e4d74d8"></script>
+<script src="js/intmed-backend.js?v=70c5648e9845edf4"></script>
+<script src="js/intmed-content-review.js?v=51dc2b5e21c644d2"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
 <script src="js/intmed-registration.js?v=5115d87c275f66f1"></script>
 <script src="js/intmed-login.js?v=5f03e32e71b1a970"></script>

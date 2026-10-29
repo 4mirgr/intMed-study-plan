@@ -162,6 +162,44 @@ class LocalRunnerTest(unittest.TestCase):
             result = subject.humanize({"style_model": "gemma"}, draft)
         self.assertEqual(result["title"], "دوز ۱۰")
 
+    def test_approved_pbs_image_is_routed_to_canonical_gallery(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            topic = root / "content/heme/heme-iron-anemia/data.json"
+            topic.parent.mkdir(parents=True)
+            topic.write_text(json.dumps({"topicId": "heme-iron-anemia", "category": "heme",
+                "sources": [], "images": [], "lesson": [], "mcq": [], "kfPmp": []}), "utf-8")
+            job = {"draftId": "11111111-1111-4111-8111-111111111111", "title": "لام خون محیطی",
+                "sourceSummary": "خلاصهٔ مرتبط و بازبینی‌شدهٔ لام خون محیطی برای کتابخانهٔ آموزشی.", "draft": {},
+                "target": {"categoryId": "heme", "topicId": "heme-iron-anemia", "topicLabel": "آنمی فقر آهن",
+                           "isNew": False, "kind": "pbs", "sourceClass": "authored",
+                           "rightsNote": "تصویر تألیفی IntMed و مجاز برای انتشار عمومی"},
+                "source": {"kind": "image", "mimeType": "image/png", "filename": "smear.png",
+                           "downloadUrl": subject.FALLBACK_SUPABASE_URL + "/storage/v1/object/sign/intmed-content-inbox/x?token=y"}}
+            def download(_config, _job, destination):
+                destination.write_bytes(b"png")
+            completed = mock.MagicMock(returncode=0, stdout="ok")
+            with mock.patch.object(subject, "ROOT", root), mock.patch.object(subject, "download_source", side_effect=download), \
+                 mock.patch.object(subject.subprocess, "run", return_value=completed):
+                subject.integrate_publish_job({"supabase_url": subject.FALLBACK_SUPABASE_URL}, job)
+            saved = json.loads(topic.read_text("utf-8"))
+            self.assertEqual(saved["images"][0]["kind"], "pbs")
+            self.assertEqual(saved["images"][0]["sourceClass"], "authored")
+            self.assertTrue((topic.parent / saved["images"][0]["assetPath"]).is_file())
+
+    def test_private_harrison_image_cannot_enter_public_bundle(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            topic = root / "content/heme/heme-iron-anemia/data.json"
+            topic.parent.mkdir(parents=True)
+            topic.write_text(json.dumps({"topicId": "heme-iron-anemia", "category": "heme", "sources": [], "images": []}), "utf-8")
+            job = {"draftId": "11111111-1111-4111-8111-111111111111", "title": "PBS", "draft": {},
+                "target": {"categoryId": "heme", "topicId": "heme-iron-anemia", "topicLabel": "آنمی",
+                           "kind": "pbs", "sourceClass": "harrison-private", "rightsNote": "Harrison private"},
+                "source": {"mimeType": "image/png", "downloadUrl": "https://example.invalid"}}
+            with mock.patch.object(subject, "ROOT", root), self.assertRaisesRegex(subject.RunnerError, "هاریسون"):
+                subject.integrate_publish_job({}, job)
+
 
 if __name__ == "__main__":
     unittest.main()
