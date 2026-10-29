@@ -14,6 +14,7 @@ await context.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,a
  if(url.pathname==='/rest/v1/tickets')return route.fulfill({json:[]});
  if(url.pathname==='/rest/v1/intmed_conversations')return route.fulfill({json:[]});
  if(url.pathname==='/functions/v1/intmed-telegram-bot')return route.fulfill({json:{ok:true}});
+ if(url.pathname==='/functions/v1/intmed-content-review')return route.fulfill({json:{items:[],counts:{}}});
  throw Error('Unexpected request '+url.pathname);
 });
 await context.route('**/rest/v1/intmed_recovery_tickets?*',route=>route.fulfill({json:[]}));
