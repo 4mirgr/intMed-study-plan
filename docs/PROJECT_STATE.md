@@ -70,6 +70,12 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   `algorithm`, `table`, `tracing`, `chart`) is stored in the selected topic's canonical `images`
   collection, so it appears both in that lesson's «تصاویر مهم» tab and in the global library. The
   reviewed title is the caption and the reviewed golden summary is the visible note under the image.
+- Controlled review defaults to an existing taxonomy topic. The new-topic form stays hidden and is
+  offered only after a typed destination has no exact match; it is an explicit fallback, never a
+  required field. From `draft_ready`, the admin can use one «تأیید و انتشار روی سایت» action, which
+  records the scientific approval and then queues publication while the dialog follows the result.
+  Harmless Finder `.DS_Store` files are ignored by the publisher, but every real uncommitted project
+  file still blocks publication to protect user work.
 
 ## Open work, in priority order
 
