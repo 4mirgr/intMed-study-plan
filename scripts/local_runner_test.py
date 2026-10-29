@@ -220,6 +220,18 @@ class LocalRunnerTest(unittest.TestCase):
         publish.assert_called_once()
         intake.assert_not_called()
 
+    def test_publish_checkout_ignores_only_finder_metadata(self):
+        with mock.patch.object(subject, "git_run", side_effect=[
+                subject.PUBLISH_BRANCH, "?? .DS_Store\n?? content/cardio/.DS_Store", ""] ) as git:
+            subject.ensure_publish_checkout()
+        git.assert_called_with("pull", "--ff-only", "origin", subject.PUBLISH_BRANCH)
+
+    def test_publish_checkout_rejects_real_untracked_content(self):
+        with mock.patch.object(subject, "git_run", side_effect=[
+                subject.PUBLISH_BRANCH, "?? .DS_Store\n?? content/new-topic/data.json"]):
+            with self.assertRaisesRegex(subject.RunnerError, "تغییرات ثبت‌نشده"):
+                subject.ensure_publish_checkout()
+
     def test_private_harrison_image_cannot_enter_public_bundle(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
