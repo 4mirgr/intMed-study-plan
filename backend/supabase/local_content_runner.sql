@@ -118,7 +118,9 @@ begin
     title=excluded.title,source_summary=excluded.source_summary,extracted_text=excluded.extracted_text,
     draft_json=excluded.draft_json,provider='lmstudio',model=excluded.model,
     prompt_version=excluded.prompt_version,error_code=null,updated_at=now();
-  update public.intmed_content_ingest set status='pending_review',error_code=null,updated_at=now()
+  -- The source has completed machine analysis. Human review continues on the
+  -- draft row, so it must no longer occupy an active Telegram ingest slot.
+  update public.intmed_content_ingest set status='accepted',error_code=null,updated_at=now()
   where id=target_ingest;
   update public.intmed_content_local_jobs set state='submitted',model=left(model_name,160),
     lease_until=now(),updated_at=now() where ingest_id=target_ingest and lease_id=lease_owner;

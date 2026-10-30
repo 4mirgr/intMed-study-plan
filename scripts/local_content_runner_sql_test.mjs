@@ -34,6 +34,7 @@ result=await db.query(`select public.complete_intmed_local_content($1,$2,$3,$4::
 assert.equal(result.rows[0].value,true);
 result=await db.query(`select status,provider,model,prompt_version from intmed_content_drafts where ingest_id=$1`,[ingest]);
 assert.deepEqual(result.rows[0],{status:'draft_ready',provider:'lmstudio',model:'qwen',prompt_version:'intmed-local-v1'});
+assert.equal((await db.query(`select status from intmed_content_ingest where id=$1`,[ingest])).rows[0].status,'accepted');
 
 await db.exec(`set role authenticated;`);
 await assert.rejects(db.query('select * from public.intmed_content_local_jobs'),/permission denied/);
