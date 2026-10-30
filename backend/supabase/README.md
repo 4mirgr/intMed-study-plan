@@ -109,19 +109,23 @@ For the private Telegram inbox, install `local_content_runner.sql`, deploy
 `functions/intmed-local-runner/index.ts` with gateway JWT verification off, and follow
 `scripts/local_runner_setup_fa.md`. The function performs its own Auth/admin validation. The Mac
 stores only a refresh token in Keychain and a public API key; never copy `service_role` locally.
-The runner creates review drafts and, only after an approved admin presses the publication button,
-claims a separate publish job, updates canonical content, runs validate/build/check, and pushes the
+The runner creates review drafts. After an approved admin presses the publication button,
+publication is dispatched by `intmed-content-review` through
+`intmed-content-publisher` to `.github/workflows/publish-content.yml`; GitHub Actions updates
+canonical content, runs validate/build/check, and pushes the
 target branch. Paid OpenAI processing remains disabled; publication itself does not call a model.
 On macOS, double-click `scripts/setup_intmed_lmstudio.command` for server discovery, recommended
 model selection, Keychain login verification and optional LaunchAgent background execution.
 
 ### Admin content-review inbox
 
-Apply `content_review.sql`, then deploy `functions/intmed-content-review/index.ts` as
-`intmed-content-review` with gateway JWT verification disabled. The handler validates the current
+Apply `content_review.sql` and `cloud_content_publish.sql`, then deploy
+`functions/intmed-content-review/index.ts` and `functions/intmed-content-publisher/index.ts` with
+gateway JWT verification disabled. Set the fine-grained, Actions-write-only repository token as
+the Edge secret `INTMED_GITHUB_ACTIONS_TOKEN`. The review handler validates the current
 Auth user and live approved admin profile before reading any private inbox data. Approval changes
-the private draft status to `approved`; a separate explicit publication action queues the owner-run
-local publisher. The browser
+the private draft status to `approved`; a separate explicit publication action dispatches the
+serialized cloud publisher. The browser
 review panel supports Persian topic search, a controlled new-topic proposal, visual routing
 (including the dedicated PBS gallery kind), image-rights classification, source preview, a
 source-backed golden-summary paragraph, reviewer notes, rejection and explicit teacher approval

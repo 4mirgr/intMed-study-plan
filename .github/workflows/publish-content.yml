@@ -1,62 +1,46 @@
 name: Publish Approved Content
+
 on:
   workflow_dispatch:
     inputs:
-      content_id:
-        description: "شناسه محتوای تأییدشده"
+      draft_id:
+        description: Reviewed draft UUID
         required: true
-      target_topic:
-        description: "مبحث مقصد (مثلاً cardiology)"
+        type: string
+      capability:
+        description: Short-lived one-draft capability
         required: true
-      mode:
-        description: "append | insert | image-gallery"
-        required: true
-        default: "append"
-      position:
-        description: "برای insert: شماره بخش یا کلید"
-        required: false
-      requested_by:
-        description: "ادمین درخواست‌دهنده (برای audit)"
-        required: true
+        type: string
 
 permissions:
   contents: write
-  actions: write
+
+concurrency:
+  group: intmed-content-publisher
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          ref: claude/quirky-ride-mavb6b
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
+        with:
+          python-version: "3.11"
 
-      - name: Verify approval state
-        run: python3 scripts/verify_approved.py "${{ inputs.content_id }}"
+      - name: Install validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema>=4.20,<5'
 
-      - name: Apply to content
+      - name: Publish reviewed draft
+        env:
+          INTMED_PUBLISH_ENDPOINT: https://upwbktvnybsjugdegjji.supabase.co/functions/v1/intmed-content-publisher
+          INTMED_DRAFT_ID: ${{ inputs.draft_id }}
+          INTMED_PUBLISH_CAPABILITY: ${{ inputs.capability }}
         run: |
-          python3 scripts/apply_published.py \
-            --content-id "${{ inputs.content_id }}" \
-            --topic "${{ inputs.target_topic }}" \
-            --mode "${{ inputs.mode }}" \
-            --position "${{ inputs.position }}"
-
-      - name: Validate & Build
-        run: |
-          python3 scripts/content_pipeline.py validate
-          python3 scripts/content_pipeline.py build
-          python3 scripts/content_pipeline.py check
-
-      - name: Commit & push
-        run: |
-          git config user.name  "intmed-publisher[bot]"
-          git config user.email "publisher@intmed.local"
-          git add content/ docs/
-          git commit -m "publish: ${{ inputs.content_id }} → ${{ inputs.target_topic }} (${{ inputs.mode }}) by ${{ inputs.requested_by }}"
-          git push
-
-      - name: Deploy (reuses existing deploy workflow)
-        run: echo "push triggers validate-and-deploy.yml"
+          echo "::add-mask::$INTMED_PUBLISH_CAPABILITY"
+          python scripts/publish_reviewed_content.py

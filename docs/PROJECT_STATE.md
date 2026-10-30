@@ -53,35 +53,35 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   inputs were recovered from the paid-provider failures and converted locally to review drafts.
 - A zero-cost LM Studio runner now uses an admin session, macOS Keychain, atomic five-minute leases,
   heartbeats and short-lived private-inbox URLs. It processes Qwen/Gemma/DeepSeek sequentially for
-  an 8 GB machine and never receives `service_role`. It submits `draft_ready` review drafts and can
-  claim only publication jobs explicitly approved and queued by the administrator.
+  an 8 GB machine and never receives `service_role`. It submits `draft_ready` review drafts; it no
+  longer claims publication jobs.
 - The admin dashboard includes a private content-review inbox for Telegram/LM Studio drafts. It
   exposes source preview, model evidence/warnings, Persian topic search, controlled new-topic
   proposals, visual/PBS routing, rights classification, a source-backed golden-summary paragraph,
   reviewer notes, rejection and explicit teacher approval. A separate «انتشار روی سایت» action
-  queues the local publisher, which creates/updates canonical content, validates/builds it, then
-  commits and pushes. The browser and server still cannot bypass the teacher gate or publish directly.
+  dispatches a short-lived, one-draft capability to GitHub Actions, which creates/updates canonical
+  content, validates/builds it, then commits and pushes. The localhost runner is now limited to
+  extraction and draft generation; a dirty or offline Mac cannot block an approved publication.
+  The browser and server still cannot bypass the teacher gate.
 - Study-state synchronization now treats a gateway HTTP 405 on PATCH as retryable and falls back to
   the fixed direct project origin, preventing notes/highlights from remaining in an error state when
   an older gateway route handles login but rejects state updates.
-- Publication invariants: an explicit admin publish request has priority over new Telegram analysis;
-  it remains durable while the owner runner is offline and is normally claimed within one poll after
-  the runner returns. Every visual target (`image`, `clinical`, `radiology`, `pathology`, `PBS`,
+- Publication invariants: an explicit admin publish request is dispatched to a serialized GitHub
+  Actions workflow and its durable status is reflected in the review panel. Every visual target
+  (`image`, `clinical`, `radiology`, `pathology`, `PBS`,
   `algorithm`, `table`, `tracing`, `chart`) is stored in the selected topic's canonical `images`
   collection, so it appears both in that lesson's «تصاویر مهم» tab and in the global library. The
   reviewed title is the caption and the reviewed golden summary is the visible note under the image.
 - Controlled review defaults to an existing taxonomy topic. The new-topic form stays hidden and is
   offered only after a typed destination has no exact match; it is an explicit fallback, never a
   required field. From `draft_ready`, the admin can use one «تأیید و انتشار روی سایت» action, which
-  records the scientific approval and then queues publication while the dialog follows the result.
-  Harmless Finder `.DS_Store` files are ignored by the publisher, but every real uncommitted project
-  file still blocks publication to protect user work.
+  records the scientific approval and dispatches publication while the dialog follows the result.
+  Local Finder files and unrelated working-tree changes cannot affect the cloud publisher.
 - A planned topic may already exist in taxonomy before its canonical `data.json` exists. The first
   controlled publication now materializes the empty canonical package automatically and then runs the
   normal validate/build/check gates; it no longer fails with «فایل canonical مبحث مقصد پیدا نشد».
-- macOS setup/watch now self-checks the pinned `jsonschema` publishing dependency. A retry may resume
-  only dirty files inside the exact target topic left by the same failed integration, and stable IDs
-  make that retry idempotent; unrelated dirty files continue to block publication.
+- macOS setup/watch remains responsible only for the zero-cost LM Studio analysis queue. Cloud
+  publication uses stable item IDs, so an explicitly retried workflow remains idempotent.
 
 ## Open work, in priority order
 
