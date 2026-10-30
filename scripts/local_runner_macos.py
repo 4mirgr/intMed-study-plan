@@ -116,6 +116,12 @@ def launchctl(*args: str) -> subprocess.CompletedProcess:
                           stderr=subprocess.DEVNULL, check=False)
 
 
+def stop_orphan_runners() -> None:
+    """Stop only this checkout's legacy child watch process, if one survived bootout."""
+    subprocess.run(["/usr/bin/pkill", "-TERM", "-f", str(RUNNER) + " watch"],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+
+
 def install_service() -> None:
     require_macos()
     PLIST.parent.mkdir(parents=True, exist_ok=True)
@@ -125,6 +131,7 @@ def install_service() -> None:
     os.chmod(PLIST, 0o600)
     domain = f"gui/{os.getuid()}"
     launchctl("bootout", domain, str(PLIST))
+    stop_orphan_runners()
     result = launchctl("bootstrap", domain, str(PLIST))
     if result.returncode:
         raise RuntimeError("فعال‌سازی اجرای پس‌زمینه ناموفق بود.")
@@ -135,6 +142,7 @@ def install_service() -> None:
 def uninstall_service() -> None:
     require_macos()
     launchctl("bootout", f"gui/{os.getuid()}", str(PLIST))
+    stop_orphan_runners()
     if PLIST.exists():
         PLIST.unlink()
     print("اجرای خودکار غیرفعال شد؛ تنظیمات حساب و صف حذف نشدند.")
@@ -170,7 +178,9 @@ def service_watch() -> int:
     if not start_server(False):
         print("LM Studio آماده نیست؛ Runner بعداً توسط launchd دوباره تلاش می‌کند.", file=sys.stderr)
         return 75
-    return subprocess.run([sys.executable, str(RUNNER), "watch"], cwd=ROOT, check=False).returncode
+    os.chdir(ROOT)
+    os.execv(sys.executable, [sys.executable, str(RUNNER), "watch"])
+    return 75
 
 
 def main() -> int:

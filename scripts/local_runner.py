@@ -726,7 +726,8 @@ def ensure_publish_checkout(job: dict[str, Any] | None = None) -> None:
             print("ادامهٔ انتشار نیمه‌تمام قبلی برای همان مبحث…")
             return
     if dirty:
-        raise RunnerError("پوشهٔ پروژه تغییرات ثبت‌نشده دارد؛ قبل از انتشار آن‌ها را بررسی و commit کنید.")
+        blocked = "، ".join(row[3:].strip().strip('"') for row in dirty[:6] if len(row) > 3)
+        raise RunnerError("پوشهٔ پروژه تغییرات ثبت‌نشدهٔ نامرتبط دارد: " + (blocked or "مسیر نامشخص"))
     git_run("pull", "--ff-only", "origin", PUBLISH_BRANCH)
 
 

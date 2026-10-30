@@ -33,6 +33,13 @@ class MacRunnerSetupTest(unittest.TestCase):
             source = (Path(__file__).resolve().parent / name).read_text("utf-8")
             ast.parse(source, filename=name, feature_version=(3, 9))
 
+    def test_orphan_cleanup_is_scoped_to_this_checkout(self):
+        with mock.patch.object(subject.subprocess, "run") as run:
+            subject.stop_orphan_runners()
+        command = run.call_args.args[0]
+        self.assertEqual(command[:3], ["/usr/bin/pkill", "-TERM", "-f"])
+        self.assertEqual(command[3], str(subject.RUNNER) + " watch")
+
 
 if __name__ == "__main__":
     unittest.main()
