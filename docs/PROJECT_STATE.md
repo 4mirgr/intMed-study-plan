@@ -34,6 +34,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   review issue; it cannot modify medical content.
 - The secure Telegram inbox accepts authorized direct/forwarded text, PDF and images into a private
   quarantine queue. It records privacy-limited provenance and never auto-publishes content.
+- The Telegram 30-item safety cap counts only sources still awaiting or undergoing machine analysis.
+  Once a draft is produced the source becomes `accepted`; human review/publication status is tracked
+  separately and can no longer leave the ingest queue falsely full.
 - Normalized conversations/messages/read cursors are now the primary message UI; a temporary
   legacy-ticket fallback remains only for old cached clients or an unavailable schema.
 - The installable Persian PWA shell has an explicit offline screen and never caches Auth/API/private
