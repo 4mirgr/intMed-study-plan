@@ -1,0 +1,37 @@
+{
+  "topicId": "endo-adrenal-insufficiency",
+  "category": "endo",
+  "sourceNote": "",
+  "sources": [
+    {
+      "id": "review-source-8f1b66a2-212",
+      "title": "telegram-64.jpg",
+      "type": "telegram-review",
+      "sourceClass": "authored",
+      "note": "intmed"
+    }
+  ],
+  "flashcards": [],
+  "mcq": [],
+  "kfPmp": [],
+  "images": [
+    {
+      "id": "review-item-8f1b66a2-212",
+      "caption": "علل و یافته‌های تومورهای آدرنال",
+      "assetPath": "assets/review-item-8f1b66a2-212.jpg",
+      "note": "این سند به یافته‌های مختلفی از تومورها و تغییرات در غدد آدرنال، مانند ضایعات، هایپرپلازی‌های چندگانه و شرایط مرتبط با آن‌ها اشاره دارد.",
+      "kind": "table",
+      "sourceClass": "authored",
+      "copyright": "intmed",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-8f1b66a2-212"
+        }
+      ]
+    }
+  ],
+  "tables": [],
+  "lesson": [],
+  "ventSim": []
+}
