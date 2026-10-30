@@ -9,6 +9,13 @@
       "type": "telegram-review",
       "sourceClass": "authored",
       "note": "intmed"
+    },
+    {
+      "id": "review-source-7197e012-845",
+      "title": "telegram-464.jpg",
+      "type": "telegram-review",
+      "sourceClass": "open-license",
+      "note": "Intmed"
     }
   ],
   "flashcards": [],
@@ -27,6 +34,21 @@
       "sourceRefs": [
         {
           "sourceId": "review-source-8f1b66a2-212"
+        }
+      ]
+    },
+    {
+      "id": "review-item-7197e012-845",
+      "caption": "Hyper aldosterone",
+      "assetPath": "assets/review-item-7197e012-845.jpg",
+      "note": "این متن به علل و یافته‌های بالادرموسترونیسم می‌پردازد. این شرایط می‌تواند ناشی از تومورهای مختلفی باشد، از جمله آدنوماهای تولیدکننده آلدوسترون به صورت یک‌جانبه، هیپرپلازی دوطرفه آدرنال، کارسینومهای آدرنوکورتیکال و تومورهای دیگر مانند تومورهای ترشحکننده آلدوسترون در مکان‌های غیرمعمول. همچنین، هیپرآلدوسترونیسم خانوادگی (FH) نیز به عنوان یکی از این موارد مطرح شده است.",
+      "kind": "algorithm",
+      "sourceClass": "open-license",
+      "copyright": "Intmed",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-7197e012-845"
         }
       ]
     }
