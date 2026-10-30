@@ -1,5 +1,5 @@
 import {createRequire} from 'node:module';import assert from 'node:assert/strict';import fs from 'node:fs';
-const schema=JSON.parse(fs.readFileSync('content/_schema/topic-content.schema.json','utf8'));assert.ok(schema.properties.images.items.properties.kind.enum.includes('pbs'));assert.deepEqual(schema.properties.images.items.properties.sourceClass.enum,['harrison-private','authored','open-license']);assert.match(fs.readFileSync('scripts/content_pipeline.py','utf8'),/"pbs"/);
+const schema=JSON.parse(fs.readFileSync('content/_schema/topic-content.schema.json','utf8'));assert.ok(schema.properties.images.items.properties.kind.enum.includes('image'));assert.ok(schema.properties.images.items.properties.kind.enum.includes('pbs'));assert.deepEqual(schema.properties.images.items.properties.sourceClass.enum,['harrison-private','authored','open-license']);assert.match(fs.readFileSync('scripts/content_pipeline.py','utf8'),/"pbs"/);
 const {chromium}=createRequire(import.meta.url)('playwright'),exe=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 const browser=await chromium.launch({headless:true,...(exe?{executablePath:exe}:{})}),owner='11111111-1111-4111-8111-111111111111';
 const state={itemState:{},highlights:{},meta:{}},context=await browser.newContext({viewport:{width:390,height:844}});

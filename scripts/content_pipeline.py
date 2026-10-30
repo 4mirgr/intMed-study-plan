@@ -456,7 +456,7 @@ def build_library_index(
             if isinstance(image, dict) and image.get("id"):
                 image_text = " ".join([str(image.get("caption", "")), str(image.get("note", ""))])
                 declared = str(image.get("kind", ""))
-                if declared in {"tracing", "radiology", "pathology", "pbs", "clinical", "chart", "algorithm", "table"}:
+                if declared in {"image", "tracing", "radiology", "pathology", "pbs", "clinical", "chart", "algorithm", "table"}:
                     kind = declared
                 elif re.search(r"ecg|ekg|tracing|نوار قلب", image_text, re.IGNORECASE):
                     kind = "tracing"
