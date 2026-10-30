@@ -232,6 +232,26 @@ class LocalRunnerTest(unittest.TestCase):
             with self.assertRaisesRegex(subject.RunnerError, "تغییرات ثبت‌نشده"):
                 subject.ensure_publish_checkout()
 
+    def test_publish_materializes_existing_taxonomy_placeholder(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            topic = root / "content/endo/endo-diabetes-complications/data.json"
+            job = {"draftId": "33333333-3333-4333-8333-333333333333",
+                "title": "عوارض عروقی دیابت", "sourceSummary": "خلاصهٔ بازبینی‌شده و معتبر برای آغاز مبحث عوارض دیابت و ثبت محتوای آموزشی آن.",
+                "draft": {"lessonOutline": ["مرور ساختاریافتهٔ عوارض عروقی دیابت"]},
+                "target": {"categoryId": "endo", "topicId": "endo-diabetes-complications",
+                           "topicLabel": "عوارض دیابت", "isNew": False, "kind": "lesson",
+                           "sourceClass": "", "rightsNote": ""},
+                "source": {"kind": "text", "filename": "telegram.txt"}}
+            completed = mock.MagicMock(returncode=0, stdout="ok")
+            with mock.patch.object(subject, "ROOT", root), \
+                 mock.patch.object(subject.subprocess, "run", return_value=completed):
+                subject.integrate_publish_job({}, job)
+            saved = json.loads(topic.read_text("utf-8"))
+            self.assertEqual(saved["topicId"], "endo-diabetes-complications")
+            self.assertEqual(saved["category"], "endo")
+            self.assertEqual(saved["lesson"][0]["heading"], "عوارض عروقی دیابت")
+
     def test_private_harrison_image_cannot_enter_public_bundle(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

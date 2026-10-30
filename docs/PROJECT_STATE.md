@@ -76,6 +76,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   records the scientific approval and then queues publication while the dialog follows the result.
   Harmless Finder `.DS_Store` files are ignored by the publisher, but every real uncommitted project
   file still blocks publication to protect user work.
+- A planned topic may already exist in taxonomy before its canonical `data.json` exists. The first
+  controlled publication now materializes the empty canonical package automatically and then runs the
+  normal validate/build/check gates; it no longer fails with «فایل canonical مبحث مقصد پیدا نشد».
 
 ## Open work, in priority order
 

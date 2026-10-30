@@ -730,6 +730,24 @@ def add_source(payload: dict[str, Any], source_id: str, title: str,
                         "note": note[:1000]})
 
 
+def create_existing_topic_package(topic_file: Path, category: str, topic_id: str) -> None:
+    """Materialize a taxonomy placeholder without adding a duplicate taxonomy entry."""
+    topic_file.parent.mkdir(parents=True, exist_ok=True)
+    topic_file.write_text(json.dumps({
+        "topicId": topic_id,
+        "category": category,
+        "sourceNote": "",
+        "sources": [],
+        "flashcards": [],
+        "mcq": [],
+        "kfPmp": [],
+        "images": [],
+        "tables": [],
+        "lesson": [],
+        "ventSim": [],
+    }, ensure_ascii=False, indent=2) + "\n", "utf-8")
+
+
 def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
     target = job.get("target") if isinstance(job.get("target"), dict) else {}
     topic_id, category = str(target.get("topicId") or ""), str(target.get("categoryId") or "")
@@ -744,6 +762,11 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
         if result.returncode:
             raise RunnerError("ساخت مبحث جدید ناموفق بود: " + result.stdout.strip()[-600:])
+    elif not topic_file.exists():
+        # Taxonomy intentionally contains some planned topics before their first
+        # canonical lesson package exists. First publication materializes that
+        # package; validation below still rejects any category/topic mismatch.
+        create_existing_topic_package(topic_file, category, topic_id)
     if not topic_file.is_file():
         raise RunnerError("فایل canonical مبحث مقصد پیدا نشد.")
     payload = json.loads(topic_file.read_text("utf-8"))
