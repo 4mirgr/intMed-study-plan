@@ -85,6 +85,17 @@ def pdf_support() -> str:
     return "PyMuPDF" if result.returncode == 0 else "ندارد؛ متن و تصویر همچنان کار می‌کنند"
 
 
+def publishing_support() -> str:
+    if importlib.util.find_spec("jsonschema"):
+        return "jsonschema"
+    print("نصب ابزار اعتبارسنجی انتشار (jsonschema)…")
+    result = subprocess.run([sys.executable, "-m", "pip", "install", "--user", "jsonschema>=4.20,<5"], check=False)
+    importlib.invalidate_caches()
+    if result.returncode or not importlib.util.find_spec("jsonschema"):
+        raise RuntimeError("نصب jsonschema ناموفق بود؛ انتشار کنترل‌شده بدون اعتبارسنجی انجام نمی‌شود.")
+    return "jsonschema"
+
+
 def plist_payload() -> dict:
     return {
         "Label": LABEL,
@@ -140,6 +151,7 @@ def bootstrap() -> None:
         raise RuntimeError("سرور LM Studio روی 127.0.0.1:1234 پاسخ نداد.")
     print("✓ اتصال محلی LM Studio برقرار است.")
     print("✓ پشتیبانی PDF:", pdf_support())
+    print("✓ اعتبارسنجی انتشار:", publishing_support())
     setup = subprocess.run([sys.executable, str(RUNNER), "setup"], cwd=ROOT, check=False)
     if setup.returncode:
         raise RuntimeError("تنظیم حساب کامل نشد؛ هیچ سرویس پس‌زمینه‌ای نصب نشد.")
@@ -154,6 +166,7 @@ def bootstrap() -> None:
 
 def service_watch() -> int:
     require_macos()
+    publishing_support()
     if not start_server(False):
         print("LM Studio آماده نیست؛ Runner بعداً توسط launchd دوباره تلاش می‌کند.", file=sys.stderr)
         return 75

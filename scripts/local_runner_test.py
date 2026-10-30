@@ -208,7 +208,10 @@ class LocalRunnerTest(unittest.TestCase):
                  mock.patch.object(subject, "download_source", side_effect=lambda _c, _j, path: path.write_bytes(b"png")), \
                  mock.patch.object(subject.subprocess, "run", return_value=completed):
                 subject.integrate_publish_job({"supabase_url": subject.FALLBACK_SUPABASE_URL}, job)
-            image = json.loads(topic.read_text("utf-8"))["images"][0]
+                subject.integrate_publish_job({"supabase_url": subject.FALLBACK_SUPABASE_URL}, job)
+            images = json.loads(topic.read_text("utf-8"))["images"]
+            self.assertEqual(len(images), 1)
+            image = images[0]
             self.assertEqual(image["kind"], "image")
             self.assertEqual(image["note"], summary)
 
@@ -225,6 +228,14 @@ class LocalRunnerTest(unittest.TestCase):
                 subject.PUBLISH_BRANCH, "?? .DS_Store\n?? content/cardio/.DS_Store", ""] ) as git:
             subject.ensure_publish_checkout()
         git.assert_called_with("pull", "--ff-only", "origin", subject.PUBLISH_BRANCH)
+
+    def test_publish_checkout_resumes_only_same_topic_changes(self):
+        job = {"target": {"categoryId": "endo", "topicId": "endo-diabetes-complications"}}
+        with mock.patch.object(subject, "git_run", side_effect=[subject.PUBLISH_BRANCH,
+                " M content/endo/endo-diabetes-complications/data.json\n"
+                "?? content/endo/endo-diabetes-complications/assets/review.png"] ) as git:
+            subject.ensure_publish_checkout(job)
+        self.assertEqual(git.call_count, 2)
 
     def test_publish_checkout_rejects_real_untracked_content(self):
         with mock.patch.object(subject, "git_run", side_effect=[

@@ -11,6 +11,7 @@ import argparse
 import base64
 import getpass
 import hashlib
+import importlib.util
 import json
 import os
 import platform
@@ -704,7 +705,7 @@ def publish_text(value: Any) -> str:
     return ""
 
 
-def ensure_publish_checkout() -> None:
+def ensure_publish_checkout(job: dict[str, Any] | None = None) -> None:
     branch = git_run("branch", "--show-current")
     if branch != PUBLISH_BRANCH:
         raise RunnerError(f"انتشار فقط روی شاخهٔ {PUBLISH_BRANCH} مجاز است؛ شاخهٔ فعلی {branch or 'نامشخص'} است.")
@@ -716,9 +717,29 @@ def ensure_publish_checkout() -> None:
         if path.rsplit("/", 1)[-1] == ".DS_Store":
             continue
         dirty.append(row)
+    if dirty and job:
+        target = job.get("target") if isinstance(job.get("target"), dict) else {}
+        category, topic_id = str(target.get("categoryId") or ""), str(target.get("topicId") or "")
+        allowed = f"content/{category}/{topic_id}/"
+        paths = [row[3:].strip().strip('"') for row in dirty if len(row) > 3]
+        if allowed != "content///" and paths and all(path.startswith(allowed) for path in paths):
+            print("ادامهٔ انتشار نیمه‌تمام قبلی برای همان مبحث…")
+            return
     if dirty:
         raise RunnerError("پوشهٔ پروژه تغییرات ثبت‌نشده دارد؛ قبل از انتشار آن‌ها را بررسی و commit کنید.")
     git_run("pull", "--ff-only", "origin", PUBLISH_BRANCH)
+
+
+def ensure_publish_validator() -> None:
+    if importlib.util.find_spec("jsonschema"):
+        return
+    print("نصب خودکار ابزار اعتبارسنجی انتشار (jsonschema)…")
+    result = subprocess.run([sys.executable, "-m", "pip", "install", "--user", "jsonschema>=4.20,<5"],
+                            cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            text=True, check=False)
+    importlib.invalidate_caches()
+    if result.returncode or not importlib.util.find_spec("jsonschema"):
+        raise RunnerError("نصب jsonschema ناموفق بود: " + result.stdout.strip()[-600:])
 
 
 def add_source(payload: dict[str, Any], source_id: str, title: str,
@@ -776,6 +797,15 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
     source_id, item_id = "review-source-" + short, "review-item-" + short
     source_title = str(source.get("filename") or source.get("sourceName") or job.get("title") or "منبع تلگرام")
     add_source(payload, source_id, source_title, source_class or "authored", rights or "بازبینی مدیر")
+    # A retry updates the same stable item rather than duplicating it.
+    payload["images"] = [row for row in payload.get("images", [])
+                         if not isinstance(row, dict) or row.get("id") != item_id]
+    payload["lesson"] = [row for row in payload.get("lesson", [])
+                         if not isinstance(row, dict) or row.get("id") != item_id]
+    payload["mcq"] = [row for row in payload.get("mcq", [])
+                      if not isinstance(row, dict) or not str(row.get("id") or "").startswith(item_id + "-mcq-")]
+    payload["kfPmp"] = [row for row in payload.get("kfPmp", [])
+                        if not isinstance(row, dict) or row.get("id") != item_id + "-kf"]
     visual = kind in {"image", "pbs", "algorithm", "table", "tracing", "radiology", "pathology", "clinical", "chart"}
     if visual:
         if source_class == "harrison-private":
@@ -821,6 +851,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
         if not paragraphs and not payload.get("mcq") and not kf:
             raise RunnerError("پیش‌نویس محتوای قابل ادغام ندارد.")
     topic_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    ensure_publish_validator()
     for command in ([sys.executable, "scripts/content_pipeline.py", "validate"],
                     [sys.executable, "scripts/content_pipeline.py", "build"],
                     [sys.executable, "scripts/content_pipeline.py", "check"],
@@ -844,7 +875,7 @@ def run_publish_once(config: dict[str, Any], headers: dict[str, str] | None = No
     try:
         # Avoid a network/git operation on every idle poll. The checkout only
         # needs verification and fast-forwarding after a publish job exists.
-        ensure_publish_checkout()
+        ensure_publish_checkout(job)
         integrate_publish_job(config, job)
         # The checkout must be clean before publication. Staging both generated
         # trees therefore captures versioned build assets without unrelated work.

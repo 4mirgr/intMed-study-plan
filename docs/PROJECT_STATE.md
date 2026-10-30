@@ -79,6 +79,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - A planned topic may already exist in taxonomy before its canonical `data.json` exists. The first
   controlled publication now materializes the empty canonical package automatically and then runs the
   normal validate/build/check gates; it no longer fails with «فایل canonical مبحث مقصد پیدا نشد».
+- macOS setup/watch now self-checks the pinned `jsonschema` publishing dependency. A retry may resume
+  only dirty files inside the exact target topic left by the same failed integration, and stable IDs
+  make that retry idempotent; unrelated dirty files continue to block publication.
 
 ## Open work, in priority order
 
