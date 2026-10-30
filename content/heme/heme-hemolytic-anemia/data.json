@@ -560,7 +560,23 @@
       ]
     }
   ],
-  "images": [],
+  "images": [
+    {
+      "id": "review-item-6e34994b-426",
+      "caption": "انواع آنمی همولیتیک اتوایمیون",
+      "assetPath": "assets/review-item-6e34994b-426.jpg",
+      "note": "آنمی همولیتیک اتوایمیون (AIHA) از تخریب گلبول‌های قرمز توسط آنتی‌بادی‌های خودی ایجاد می‌شود و طبقه‌بندی اصلی آن بر پایهٔ دمای اثر آنتی‌بادی، ایزوتایپ آنتی‌بادی و الگوی Direct Coombs (DAT) است؛ شایع‌ترین انواع آن Warm AIHA و Cold agglutinin disease (CAD) هستند.  نکات تشخیصی و بالینی آزمون کلیدی تشخیص Direct Coombs (DAT) است؛ آنمی همولیتیک با LDH بالا، غیرمستقیم بیلی‌روبین بالا، هاپتوگلوبین پایین و رتیکولوسیتosis تظاهر می‌کند.  Warm AIHA می‌تواند اولیه باشد یا ثانویه به SLE، لنفوما، CLL، داروها یا عفونت‌ها؛ CAD اغلب با لنفوپرولیفراسیون کلونال B-cell یا پس از عفونت مایکوپلاسما/EBV دیده می‌شود.  Evans syndrome یعنی AIHA همراه با ترومبوسیتوپنی اتوایمیون (یا حداقل دو سیتوپنی اتوایمیون) و سیر شدیدتر/عودکننده‌تری دارد.  در بیماران شدید، تزریق خون با احتیاط و با مشورت بانک خون انجام می‌شود، زیرا کراس‌مچ ممکن است دشوار باشد؛ در warm AIHA نباید تزریق خون به‌دلیل مثبت‌بودن DAT به‌تعویق افتد.  به‌طور خلاصه آزمونی: IgG + DAT مثبت = Warm AIHA و پاسخ به استروئید؛ C3d تنها = CAD یا PCH؛ اگلوتیناسیون با سرما = CAD؛ هموگلوبینوری حاد کودک + Donath–Landsteiner = PCH؛ AIHA + ITP = Evans syndrome",
+      "kind": "image",
+      "sourceClass": "authored",
+      "copyright": "intmed",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-6e34994b-426"
+        }
+      ]
+    }
+  ],
   "tables": [
     {
       "title": "Table 105-1 — Classification of Hemolytic Anemias",
@@ -719,6 +735,15 @@
           "legacyLoc": "lesson:5:0"
         }
       ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "review-source-6e34994b-426",
+      "title": "telegram-150.jpg",
+      "type": "telegram-review",
+      "sourceClass": "authored",
+      "note": "intmed"
     }
   ]
 }
