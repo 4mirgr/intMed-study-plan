@@ -9,6 +9,13 @@
       "type": "telegram-review",
       "sourceClass": "authored",
       "note": "Intmed"
+    },
+    {
+      "id": "review-source-ab47817c-507",
+      "title": "telegram-444.jpg",
+      "type": "telegram-review",
+      "sourceClass": "authored",
+      "note": "Intmed"
     }
   ],
   "flashcards": [],
@@ -27,6 +34,21 @@
       "sourceRefs": [
         {
           "sourceId": "review-source-b85356a9-8c1"
+        }
+      ]
+    },
+    {
+      "id": "review-item-ab47817c-507",
+      "caption": "ویژگی‌های مورفولوژی پلاکت‌ها",
+      "assetPath": "assets/review-item-ab47817c-507.jpg",
+      "note": "این شواهد به تنوع در شکل و اندازه پلاکت‌ها اشاره می‌کنند. شامل پدیده‌هایی مانند سیتالیتیز پلاکت‌ها، وجود پلاکت‌های کوچک (میکروترومبوسیت‌ها) در بیماران با سندرم ویسکوت-آلدرسون، و همچنین مشاهده پلاکت‌های غول‌آسا و عجیب با وکیولاسیون در بیماران مبتلا به سندرم میلودیسپلاستیک است. علاوه بر این، شواهد به پلاکت‌های بزرگ و adherent اشاره دارند که در شرایط خاصی مانند سندرم برنارد-سولیِر یا آنومالی مای-هگلین مشاهده می‌شوند.",
+      "kind": "pbs",
+      "sourceClass": "authored",
+      "copyright": "Intmed",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-ab47817c-507"
         }
       ]
     }
