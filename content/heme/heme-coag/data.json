@@ -1,0 +1,37 @@
+{
+  "topicId": "heme-coag",
+  "category": "heme",
+  "sourceNote": "",
+  "sources": [
+    {
+      "id": "review-source-f53bedc7-6ac",
+      "title": "telegram-469.jpg",
+      "type": "telegram-review",
+      "sourceClass": "authored",
+      "note": "Intmed"
+    }
+  ],
+  "flashcards": [],
+  "mcq": [],
+  "kfPmp": [],
+  "images": [
+    {
+      "id": "review-item-f53bedc7-6ac",
+      "caption": "(TTP)",
+      "assetPath": "assets/review-item-f53bedc7-6ac.jpg",
+      "note": "تترومبوز تیتتی (TTP) یک وضعیت ترومبوتیک است که به تجمع پلاکت‌ها در بافت‌ها اشاره دارد. این بیماری یک اختلال خونریزی و ترومبوز ایجاد می‌کند که نیاز به تشخیص و درمان مناسب دارد.",
+      "kind": "image",
+      "sourceClass": "authored",
+      "copyright": "Intmed",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-f53bedc7-6ac"
+        }
+      ]
+    }
+  ],
+  "tables": [],
+  "lesson": [],
+  "ventSim": []
+}
