@@ -23,6 +23,13 @@
       "type": "telegram-review",
       "sourceClass": "authored",
       "note": "Intmed"
+    },
+    {
+      "id": "review-source-05a4c4a0-d98",
+      "title": "telegram-505.jpg",
+      "type": "telegram-review",
+      "sourceClass": "authored",
+      "note": "Intmed"
     }
   ],
   "flashcards": [],
@@ -71,6 +78,21 @@
       "sourceRefs": [
         {
           "sourceId": "review-source-51acb56f-bf4"
+        }
+      ]
+    },
+    {
+      "id": "review-item-05a4c4a0-d98",
+      "caption": "Giant plt",
+      "assetPath": "assets/review-item-05a4c4a0-d98.jpg",
+      "note": "این بخش به بررسی وجود سلول‌های غیرطبیعی در لکه‌های خونی می‌پردازد. شواهد نشان می‌دهد که وجود سلول‌های غیرطبیعی در این نمونه‌ها مشاهده شده است.",
+      "kind": "pbs",
+      "sourceClass": "authored",
+      "copyright": "Intmed",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-05a4c4a0-d98"
         }
       ]
     }
