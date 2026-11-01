@@ -657,7 +657,23 @@
       ]
     }
   ],
-  "images": [],
+  "images": [
+    {
+      "id": "review-item-3c09a6be-ee6",
+      "caption": "ویژگی‌های سلولی در نمونه CML",
+      "assetPath": "assets/review-item-3c09a6be-ee6.jpg",
+      "note": "این شواهد به وجود سلول‌هایی با هسته غیرعادی و رنگدانه تیره در نمونه اشاره می‌کند. همچنین، وجود یک ساختار سلولی با هسته بزرگ و رنگدانه تیره به عنوان یک ویژگی کلیدی مورد تأکید قرار گرفته است.",
+      "kind": "pbs",
+      "sourceClass": "authored",
+      "copyright": "Intmed",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-3c09a6be-ee6"
+        }
+      ]
+    }
+  ],
   "tables": [
     {
       "title": "Table 110-2 — Medical Therapeutic Options in Chronic Myeloid Leukemia",
@@ -828,6 +844,15 @@
           "legacyLoc": "lesson:8:0"
         }
       ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "review-source-3c09a6be-ee6",
+      "title": "telegram-517.jpg",
+      "type": "telegram-review",
+      "sourceClass": "authored",
+      "note": "Intmed"
     }
   ]
 }
