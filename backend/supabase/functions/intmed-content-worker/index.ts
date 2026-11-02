@@ -33,7 +33,7 @@ Deno.serve(async req=>{
   try{
     const taxonomyResponse=await fetch(SITE+'/content/taxonomy.json',{headers:{Accept:'application/json'}});if(!taxonomyResponse.ok)throw Error('taxonomy');
     const taxonomy=await taxonomyResponse.json(),topics=[];for(const category of taxonomy.categories||[])for(const topic of category.topics||[])topics.push({id:topic.id,label:topic.label,category:category.label});
-    const allowed=new Set(topics.map(topic=>topic.id)),geminiKey=Deno.env.get('GEMINI_API_KEY'),openaiKey=Deno.env.get('OPENAI_API_KEY'),preferred=(Deno.env.get('INTMED_CONTENT_PROVIDER')||'gemini').toLowerCase(),provider=preferred==='openai'&&openaiKey?'openai':geminiKey?'gemini':openaiKey?'openai':'',model=provider==='gemini'?(Deno.env.get('INTMED_GEMINI_MODEL')||'gemini-2.5-flash'):(Deno.env.get('INTMED_CONTENT_MODEL')||'gpt-5-mini'),limit=requested?1:3;
+    const allowed=new Set(topics.map(topic=>topic.id)),geminiKey=Deno.env.get('GEMINI_API_KEY'),openaiKey=Deno.env.get('OPENAI_API_KEY'),preferred=(Deno.env.get('INTMED_CONTENT_PROVIDER')||'gemini').toLowerCase(),provider=preferred==='openai'?(openaiKey?'openai':''):preferred==='auto'?(geminiKey?'gemini':openaiKey?'openai':''):(geminiKey?'gemini':''),model=provider==='gemini'?(Deno.env.get('INTMED_GEMINI_MODEL')||'gemini-2.5-flash'):(Deno.env.get('INTMED_CONTENT_MODEL')||'gpt-5-mini'),limit=requested?1:3;
     for(let index=0;index<limit;index++){
       const itemId=await db('rpc/claim_intmed_content_ingest','POST',{requested:requested||null,lease_owner:leaseOwner});
       if(!itemId)break;claimedAny=true;claimedCount++;

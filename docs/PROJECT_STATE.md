@@ -88,7 +88,7 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   publication uses stable item IDs, so an explicitly retried workflow remains idempotent.
 - The content worker now prefers Gemini for online multimodal analysis and can read typed text,
   images/handwriting and PDFs up to the Telegram inbox limit, producing Persian lesson sections,
-  flashcards, MCQs and KF/PMP drafts. OpenAI remains an optional fallback; user activity alerts do
+  flashcards, MCQs and KF/PMP drafts. OpenAI is used only when explicitly selected; user activity alerts do
   not call either model. LM Studio is therefore optional, not part of the normal cloud path.
 
 ## Open work, in priority order
