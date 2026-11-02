@@ -9,7 +9,7 @@ const page=await browser.newPage();
 await page.setContent(`<!doctype html><html lang="fa" dir="rtl"><body>
 <button id="tabBtnManagement">مدیریت</button><span id="managementBadge" hidden></span>
 <details id="contentReviewPanel" open><span id="contentReviewBadge" hidden></span><select id="contentReviewFilter"><option value="open">open</option></select><button id="contentReviewRefresh">refresh</button><p id="contentReviewStatus"></p><div id="contentReviewList"></div></details>
-<dialog id="contentReviewDialog"><form method="dialog"><button>×</button></form><h2 id="contentReviewDialogTitle"></h2><p id="contentReviewDialogMeta"></p><div id="contentReviewSource"></div><input id="contentReviewTitle"><input id="contentReviewTopicSearch" list="contentReviewTopicOptions"><datalist id="contentReviewTopicOptions"></datalist><input id="contentReviewTopic" type="hidden"><small id="contentReviewTopicHint"></small><button id="contentReviewNewTopicToggle">new</button><div id="contentReviewNewTopicFields" hidden><select id="contentReviewNewTopicCategory"></select><input id="contentReviewNewTopicLabel"></div><select id="contentReviewTargetKind"><option value="lesson">lesson</option><option value="image">image</option><option value="pbs">pbs</option></select><label id="contentReviewSourceClassField" hidden><select id="contentReviewSourceClass"><option value=""></option><option value="authored">authored</option></select><input id="contentReviewRightsNote"></label><textarea id="contentReviewSummary"></textarea><button id="contentReviewSummarySuggest">summary</button><textarea id="contentReviewNote"></textarea><div id="contentReviewDraftBody"></div><input type="checkbox" id="contentReviewConfirm"><p id="contentReviewActionStatus"></p><button data-review-action="save">save</button><button data-review-action="approve">approve</button><button data-review-action="publish" id="contentReviewPublish">publish</button><button data-review-action="reject">reject</button><button data-review-action="reopen">reopen</button><button id="contentReviewExport">export</button></dialog>
+<dialog id="contentReviewDialog"><form method="dialog"><button>×</button></form><h2 id="contentReviewDialogTitle"></h2><p id="contentReviewDialogMeta"></p><div id="contentReviewSource"></div><input id="contentReviewTitle"><input id="contentReviewTopicSearch"><select id="contentReviewCategory"></select><select id="contentReviewTopicSelect"></select><input id="contentReviewTopic" type="hidden"><small id="contentReviewTopicHint"></small><button id="contentReviewNewTopicToggle">new</button><div id="contentReviewNewTopicFields" hidden><select id="contentReviewNewTopicCategory"></select><input id="contentReviewNewTopicLabel"></div><select id="contentReviewTargetKind"><option value="lesson">lesson</option><option value="image">image</option><option value="pbs">pbs</option></select><input id="contentReviewSourceClass" type="hidden"><input id="contentReviewRightsNote" type="hidden"><textarea id="contentReviewSummary"></textarea><button id="contentReviewSummarySuggest">summary</button><input id="contentReviewNote" type="hidden"><div id="contentReviewDraftBody"></div><input type="checkbox" id="contentReviewConfirm"><p id="contentReviewActionStatus"></p><button data-review-action="save">save</button><button data-review-action="publish" id="contentReviewPublish">publish</button><button data-review-action="reject">reject</button></dialog>
 </body></html>`);
 await page.evaluate(()=>{
   window.__calls=[];
@@ -25,7 +25,8 @@ assert.match(await page.textContent('#contentReviewList'),/انسفالیت/);
 await page.click('[data-review-id]');
 await page.waitForSelector('#contentReviewDialog[open]');
 assert.equal(await page.inputValue('#contentReviewTopic'),'id-cns-meningoencephalitis');
-assert.match(await page.inputValue('#contentReviewTopicSearch'),/مننژیت و انسفالیت/);
+assert.equal(await page.inputValue('#contentReviewCategory'),'id');
+assert.equal(await page.inputValue('#contentReviewTopicSelect'),'id-cns-meningoencephalitis');
 assert.ok((await page.inputValue('#contentReviewSummary')).length>=60);
 assert.equal(await page.locator('#contentReviewNewTopicToggle').isVisible(),false);
 await page.fill('#contentReviewTopicSearch','انسفالیت‌های نوپدید');
@@ -34,8 +35,6 @@ await page.click('#contentReviewNewTopicToggle');
 await page.selectOption('#contentReviewNewTopicCategory','id');
 await page.fill('#contentReviewNewTopicLabel','انسفالیت‌های نوپدید');
 await page.selectOption('#contentReviewTargetKind','pbs');
-await page.selectOption('#contentReviewSourceClass','authored');
-await page.fill('#contentReviewRightsNote','تصویر تألیفی و مجاز برای انتشار عمومی');
 await page.check('#contentReviewConfirm');
 assert.equal(await page.locator('#contentReviewPublish').isVisible(),true);
 assert.match(await page.textContent('#contentReviewPublish'),/تأیید و انتشار/);
@@ -50,7 +49,7 @@ assert.equal(approve.newTopicCategoryId,'id');
 assert.equal(approve.newTopicLabel,'انسفالیت‌های نوپدید');
 assert.equal(approve.targetKind,'pbs');
 assert.equal(approve.sourceClass,'authored');
-assert.match(approve.rightsNote,/تألیفی/);
+assert.match(approve.rightsNote,/مدیر IntMed/);
 const publish=(await page.evaluate(()=>window.__calls)).find(call=>call.action==='publish');
 assert.equal(publish.confirmPublish,true);
 assert.equal(publish.targetKind,'pbs');

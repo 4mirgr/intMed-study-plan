@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="stylesheet" href="intmed.css?v=4360037f6eb06d74">
-<link rel="stylesheet" href="content-review.css?v=af9c62b2d1e5198c">
+<link rel="stylesheet" href="content-review.css?v=aa8f3d54789ad93b">
 <link rel="stylesheet" href="pwa.css?v=fd05bfbc6b4b22fc">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
@@ -366,26 +366,30 @@
     <div id="contentReviewSource" class="content-review-source"></div>
     <div class="content-review-fields">
       <label>عنوان<input id="contentReviewTitle" maxlength="240"></label>
-      <label class="content-review-topic-field">مبحث مقصد
-        <input id="contentReviewTopicSearch" list="contentReviewTopicOptions" autocomplete="off" maxlength="300" placeholder="نام مبحث را جست‌وجو کنید">
-        <datalist id="contentReviewTopicOptions"></datalist><input id="contentReviewTopic" type="hidden">
-        <small id="contentReviewTopicHint">یکی از پیشنهادها را انتخاب کنید.</small>
+      <fieldset class="content-review-topic-field content-review-wide"><legend>محل انتشار</legend>
+        <label class="content-review-topic-search">جست‌وجوی سریع<input id="contentReviewTopicSearch" type="search" autocomplete="off" maxlength="300" placeholder="نام درس یا مبحث را بنویسید…"></label>
+        <div class="content-review-topic-route">
+          <label>دستهٔ آموزشی<select id="contentReviewCategory"></select></label>
+          <label>درس / مبحث<select id="contentReviewTopicSelect"></select></label>
+        </div>
+        <input id="contentReviewTopic" type="hidden">
+        <small id="contentReviewTopicHint">ابتدا دسته و سپس مبحث را انتخاب کنید؛ یا از جست‌وجوی بالا کمک بگیرید.</small>
         <button type="button" id="contentReviewNewTopicToggle" class="content-review-inline-action" hidden>مبحث موردنظر پیدا نشد؟ افزودن در شاخهٔ دلخواه</button>
-      </label>
+      </fieldset>
       <div id="contentReviewNewTopicFields" class="content-review-new-topic content-review-wide" hidden>
         <label>بخش مبحث جدید<select id="contentReviewNewTopicCategory"></select></label>
         <label>نام مبحث جدید<input id="contentReviewNewTopicLabel" maxlength="160" placeholder="مثلاً اختلالات پلاکتی"></label>
         <p>مبحث پس از تأیید، هنگام ادغام فنی در taxonomy و ساختار canonical ساخته می‌شود؛ صرف ذخیره یا تأیید، آن را عمومی نمی‌کند.</p>
       </div>
       <label>نوع مقصد<select id="contentReviewTargetKind"><option value="lesson">درس / متن</option><option value="image">تصویر آموزشی</option><option value="pbs">PBS · لام خون محیطی</option><option value="algorithm">الگوریتم</option><option value="table">جدول</option><option value="tracing">نوار و tracing</option><option value="radiology">رادیولوژی</option><option value="pathology">پاتولوژی</option><option value="clinical">تصویر بالینی</option><option value="chart">نمودار</option></select></label>
-      <label id="contentReviewSourceClassField" hidden>حق استفادهٔ تصویر<select id="contentReviewSourceClass"><option value="">انتخاب کنید</option><option value="harrison-private">هاریسون · فقط خصوصی</option><option value="authored">تألیفی IntMed</option><option value="open-license">دارای مجوز باز</option></select><input id="contentReviewRightsNote" maxlength="600" placeholder="منبع/مجوز یا توضیح تألیفی"></label>
+      <input id="contentReviewSourceClass" type="hidden"><input id="contentReviewRightsNote" type="hidden">
       <label class="content-review-wide">خلاصهٔ نکات طلایی<textarea id="contentReviewSummary" maxlength="4000" rows="4" placeholder="یک پاراگراف دقیق و مرتبط با مهم‌ترین نکات این محتوا"></textarea><button type="button" id="contentReviewSummarySuggest" class="content-review-inline-action">بازسازی از شواهد پیش‌نویس</button></label>
-      <label class="content-review-wide">یادداشت بازبین<textarea id="contentReviewNote" maxlength="4000" rows="3" placeholder="اصلاحات علمی، دلیل رد یا توضیح تصمیم"></textarea></label>
+      <input id="contentReviewNote" type="hidden">
     </div>
     <div id="contentReviewDraftBody" class="content-review-draft-body"></div>
-    <label class="content-review-confirm"><input type="checkbox" id="contentReviewConfirm"> من محتوا، شواهد و مبحث مقصد را بازبینی علمی کرده‌ام و اجازهٔ ادغام و انتشار آن را می‌دهم.</label>
+    <label class="content-review-confirm"><input type="checkbox" id="contentReviewConfirm"> محتوای آماده، محل انتشار و در صورت وجود تصویر، اجازهٔ استفاده از فایل بارگذاری‌شده را بررسی کرده‌ام.</label>
     <p id="contentReviewActionStatus" class="section-caption" role="status" aria-live="polite"></p>
-    <div class="content-review-actions"><button type="button" data-review-action="save" class="secondary-action">ذخیرهٔ ویرایش</button><button type="button" data-review-action="approve" class="profile-save-btn">تأیید برای ادغام</button><button type="button" data-review-action="publish" id="contentReviewPublish" class="profile-save-btn">انتشار روی سایت</button><button type="button" data-review-action="reject" class="content-review-reject">رد پیش‌نویس</button><button type="button" data-review-action="reopen" class="secondary-action">بازگرداندن به بازبینی</button><button type="button" id="contentReviewExport" class="secondary-action">خروجی JSON</button></div>
+    <div class="content-review-actions"><button type="button" data-review-action="save" class="secondary-action">ذخیره برای بعد</button><button type="button" data-review-action="publish" id="contentReviewPublish" class="profile-save-btn">تأیید و انتشار روی سایت</button><button type="button" data-review-action="reject" class="content-review-reject">حذف از صف بازبینی</button></div>
   </dialog>
   <div class="tab-panel library-panel" id="tabPanelLibrary" aria-labelledby="libraryTitle">
     <section class="library-hero">
@@ -434,7 +438,7 @@
 
 <script src="config.js?v=066d4f9726ed485f"></script>
 <script src="js/intmed-backend.js?v=70c5648e9845edf4"></script>
-<script src="js/intmed-content-review.js?v=8a1af8d642921d9d"></script>
+<script src="js/intmed-content-review.js?v=337224fe94676d18"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
 <script src="js/intmed-registration.js?v=5115d87c275f66f1"></script>
 <script src="js/intmed-login.js?v=5f03e32e71b1a970"></script>

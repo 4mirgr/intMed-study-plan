@@ -807,6 +807,8 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                       if not isinstance(row, dict) or not str(row.get("id") or "").startswith(item_id + "-mcq-")]
     payload["kfPmp"] = [row for row in payload.get("kfPmp", [])
                         if not isinstance(row, dict) or row.get("id") != item_id + "-kf"]
+    payload["flashcards"] = [row for row in payload.get("flashcards", [])
+                             if not isinstance(row, dict) or not str(row.get("id") or "").startswith(item_id + "-fc-")]
     visual = kind in {"image", "pbs", "algorithm", "table", "tracing", "radiology", "pathology", "clinical", "chart"}
     if visual:
         if source_class == "harrison-private":
@@ -842,6 +844,18 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
             question.update({"id": item_id + "-mcq-" + str(index + 1), "reviewStatus": "reviewed",
                              "sourceRefs": [{"sourceId": source_id}]})
             payload.setdefault("mcq", []).append(question)
+        flashcard_count = 0
+        for index, row in enumerate(draft.get("flashcardDrafts") or []):
+            if not isinstance(row, dict) or not row.get("front") or not row.get("back"):
+                continue
+            payload.setdefault("flashcards", []).append({
+                "id": item_id + "-fc-" + str(index + 1),
+                "front": publish_text(row.get("front")),
+                "back": publish_text(row.get("back")),
+                "tags": [publish_text(tag) for tag in (row.get("tags") or []) if publish_text(tag)][:8],
+                "sourceRefs": [{"sourceId": source_id}],
+            })
+            flashcard_count += 1
         kf = [row for row in (draft.get("kfDrafts") or []) if isinstance(row, dict) and row.get("prompt") and row.get("expectedAnswer")]
         if kf:
             payload.setdefault("kfPmp", []).append({"id": item_id + "-kf", "title": str(job.get("title") or label),
@@ -849,7 +863,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                 "steps": [{"id": item_id + "-kf-" + str(index + 1), "prompt": row["prompt"],
                            "expectedAnswer": row["expectedAnswer"], "sourceRefs": [{"sourceId": source_id}]}
                           for index, row in enumerate(kf)]})
-        if not paragraphs and not payload.get("mcq") and not kf:
+        if not paragraphs and not payload.get("mcq") and not kf and not flashcard_count:
             raise RunnerError("پیش‌نویس محتوای قابل ادغام ندارد.")
     topic_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8")
     ensure_publish_validator()

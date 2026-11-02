@@ -1,6 +1,6 @@
 /* IntMed public-shell service worker. Never cache authenticated or private responses. */
 'use strict';
-const VERSION='intmed-pwa-v1';
+const VERSION='intmed-pwa-v2-logo';
 const SHELL=VERSION+'-shell',PUBLIC=VERSION+'-public';
 const PRECACHE=['./offline.html','./manifest.webmanifest','./assets/logo.png','./assets/pwa-192.png','./assets/pwa-512.png','./assets/pwa-maskable-512.png','./content/manifest.json','./content/taxonomy.json'];
 const PUBLIC_PATHS=['/assets/','/js/','/content/'];

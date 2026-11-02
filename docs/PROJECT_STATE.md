@@ -58,10 +58,11 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   heartbeats and short-lived private-inbox URLs. It processes Qwen/Gemma/DeepSeek sequentially for
   an 8 GB machine and never receives `service_role`. It submits `draft_ready` review drafts; it no
   longer claims publication jobs.
-- The admin dashboard includes a private content-review inbox for Telegram/LM Studio drafts. It
-  exposes source preview, model evidence/warnings, Persian topic search, controlled new-topic
-  proposals, visual/PBS routing, rights classification, a source-backed golden-summary paragraph,
-  reviewer notes, rejection and explicit teacher approval. A separate «انتشار روی سایت» action
+- The admin dashboard includes a private content-review inbox for Telegram/online drafts. The
+  manager-facing flow is intentionally short: preview the prepared lesson/questions/flashcards,
+  search or choose category then topic, choose the content kind, and approve publication. Technical
+  evidence/warnings and automatic rights metadata remain stored for audit but no longer clutter the
+  routing form. A separate «انتشار روی سایت» action
   dispatches a short-lived, one-draft capability to GitHub Actions, which creates/updates canonical
   content, validates/builds it, then commits and pushes. The localhost runner is now limited to
   extraction and draft generation; a dirty or offline Mac cannot block an approved publication.
@@ -85,6 +86,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   normal validate/build/check gates; it no longer fails with «فایل canonical مبحث مقصد پیدا نشد».
 - macOS setup/watch remains responsible only for the zero-cost LM Studio analysis queue. Cloud
   publication uses stable item IDs, so an explicitly retried workflow remains idempotent.
+- The content worker now prefers Gemini for online multimodal analysis and can read typed text,
+  images/handwriting and PDFs up to the Telegram inbox limit, producing Persian lesson sections,
+  flashcards, MCQs and KF/PMP drafts. OpenAI remains an optional fallback; user activity alerts do
+  not call either model. LM Studio is therefore optional, not part of the normal cloud path.
 
 ## Open work, in priority order
 
