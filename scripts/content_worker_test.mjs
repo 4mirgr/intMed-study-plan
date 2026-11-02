@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-let handler,saved=[],claimed=false,released=0;const ingestId='11111111-1111-4111-8111-111111111111',env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-secret',SUPABASE_ANON_KEY:'anon'};
+let handler,saved=[],claimed=false,released=0;const ingestId='11111111-1111-4111-8111-111111111111',env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-secret',SUPABASE_ANON_KEY:'anon',INTMED_CONTENT_PROCESSING_ENABLED:'false'};
 const fetchMock=async(url,options={})=>{
  if(url==='https://drgerami-md.ir/content/taxonomy.json')return Response.json({categories:[{label:'هماتولوژی',topics:[{id:'heme-iron-anemia',label:'آنمی فقر آهن'}]}]});
  if(url.includes('/rest/v1/rpc/claim_intmed_content_ingest')){if(claimed)return Response.json(null);claimed=true;return Response.json(ingestId);}
@@ -21,4 +21,4 @@ const sql=fs.readFileSync('backend/supabase/telegram_ingest.sql','utf8'),bot=fs.
 assert.match(sql,/intmed_content_drafts/);assert.match(sql,/enable row level security/);assert.match(bot,/intmed-content-worker/);assert.match(config,/\[functions\.intmed-content-worker\][\s\S]*verify_jwt = true/);assert.ok(!fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8').includes('auto-publish'));
 assert.match(sql,/claim_intmed_content_ingest/);assert.match(sql,/skip locked/i);const worker=fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8');assert.match(worker,/provider_rate_limited/);assert.match(worker,/status:'accepted'/);
 assert.match(worker,/GEMINI_API_KEY/);assert.match(worker,/generativelanguage\.googleapis\.com/);assert.match(worker,/responseJsonSchema/);assert.match(worker,/flashcardDrafts/);assert.match(worker,/20971520/);
-assert.match(bot,/INTMED_CONTENT_PROCESSING_ENABLED/);console.log('Content worker passed: manual mode default, service-only queue, provider-safe waiting state, canonical taxonomy lookup, structured review draft and no repository publication.');
+assert.match(bot,/INTMED_CONTENT_PROCESSING_ENABLED/);assert.match(bot,/Always wake the worker/);console.log('Content worker passed: explicit maintenance mode, automatic production queue, provider-safe waiting state, canonical taxonomy lookup, structured review draft and no repository publication.');

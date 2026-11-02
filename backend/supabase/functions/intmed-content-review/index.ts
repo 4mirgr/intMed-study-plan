@@ -66,6 +66,13 @@ Deno.serve(async req=>{
       }
       return reply(200,{draft,sourceUrl});
     }
+    if(action==='generate'){
+      const revision=Number(input.revision);if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0))return reply(409,{message:'این پیش‌نویس تغییر کرده؛ آن را دوباره باز کنید.'});
+      const outputSet=new Set(['lesson','flashcards','mcq','kf']),outputs=Array.isArray(input.outputs)?[...new Set(input.outputs.map(value=>clean(value,20)).filter(value=>outputSet.has(value)))]:[];
+      if(!outputs.length)return reply(400,{message:'حداقل یک خروجی را انتخاب کنید.'});
+      const generated=await fetch(base+'/functions/v1/intmed-content-generator',{method:'POST',headers:{...server,Authorization:'Bearer '+service},body:JSON.stringify({draftId,outputs})}),result=await generated.json().catch(()=>({}));
+      return reply(generated.ok?200:generated.status,{...result,message:clean(result.message||(generated.ok?'خروجی‌ها ساخته شد.':'ساخت خروجی انجام نشد.'),240)});
+    }
     if(!['save','approve','publish','reject','reopen'].includes(action))return reply(400,{message:'عملیات ناشناخته است.'});
     const before=String(draft.status||''),revision=Number(input.revision);
     if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0))return reply(409,{message:'این پیش‌نویس در جای دیگری تغییر کرده؛ فهرست را تازه کنید.'});

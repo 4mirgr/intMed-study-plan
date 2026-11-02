@@ -6,7 +6,9 @@ Deno.serve(async req=>{
   if(req.method!=='POST')return reply(405,{ok:false});
   const url=Deno.env.get('SUPABASE_URL'),service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   const token=Deno.env.get('TELEGRAM_BOT_TOKEN'),secret=Deno.env.get('TELEGRAM_WEBHOOK_SECRET'),anon=Deno.env.get('SUPABASE_ANON_KEY');
-  const processingEnabled=Deno.env.get('INTMED_CONTENT_PROCESSING_ENABLED')==='true';
+  // Automatic processing is the normal production mode. Keep an explicit escape hatch
+  // for maintenance, but do not silently strand inbox items when the optional flag is absent.
+  const processingEnabled=Deno.env.get('INTMED_CONTENT_PROCESSING_ENABLED')!=='false';
   if(!url||!service||!token||!secret)return reply(503,{ok:false});
   function same(a,b){if(typeof a!=='string'||a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0;}
   const raw=await req.text();if(raw.length>262144)return reply(413,{ok:false});
@@ -15,11 +17,12 @@ Deno.serve(async req=>{
   async function telegram(method,body){const r=await fetch('https://api.telegram.org/bot'+token+'/'+method,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),v=await r.json();if(!r.ok||!v.ok)throw Error('telegram');return v.result;}
   const menu={inline_keyboard:[[{text:'📥 وضعیت صف',callback_data:'menu:status'},{text:'🏷 تعیین مبحث',callback_data:'topic:set'}],[{text:processingEnabled?'🔄 پردازش دوباره':'🧾 پردازش دستی',callback_data:'queue:retry'},{text:'راهنما',callback_data:'menu:help'}]]};
   async function say(chat,text,reply_markup=menu){try{return await telegram('sendMessage',{chat_id:chat,text,reply_markup,link_preview_options:{is_disabled:true}});}catch{return null;}}
-  function kickWorker(){
+  function kickWorker(ingestId=null){
     if(!processingEnabled)return false;
     // The worker claims one project-wide lease; a burst of Telegram updates therefore remains
     // a serial queue instead of becoming concurrent provider requests.
-    const task=fetch(url+'/functions/v1/intmed-content-worker',{method:'POST',headers:{apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'},body:'{}'}).catch(()=>null);
+    const body=ingestId&&/^[0-9a-f-]{36}$/i.test(String(ingestId))?{ingestId:String(ingestId)}:{};
+    const task=fetch(url+'/functions/v1/intmed-content-worker',{method:'POST',headers:{apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'},body:JSON.stringify(body)}).catch(()=>null);
     const runtime=globalThis.EdgeRuntime;if(runtime&&typeof runtime.waitUntil==='function')runtime.waitUntil(task);
     return true;
   }
@@ -111,10 +114,18 @@ Deno.serve(async req=>{
     }
     if(command==='/retry'||callbackData==='queue:retry'){
       if(!processingEnabled){await say(chat,'🧾 پردازش خودکار فعلاً خاموش است. ورودی‌های شما محفوظ‌اند و دریافت متن، PDF، تصویر و Forward همچنان فعال است. برای پردازش، فایل را از صندوق خصوصی در اختیار هماهنگ‌کننده قرار دهید.');return reply(200,{ok:true,command:'retry',queued:0,manual:true});}
-      const drafts=await db('intmed_content_drafts?status=in.(error,waiting_provider)&error_code=in.(provider_429,provider_rate_limited,provider_quota,provider_unavailable,provider_not_configured)&select=ingest_id&limit=30');
+      const drafts=await db('intmed_content_drafts?status=in.(error,waiting_provider)&error_code=in.(provider_404,provider_model_unavailable,provider_rate_limited,provider_quota,provider_unavailable,provider_not_configured)&select=ingest_id&limit=30');
       for(const draft of drafts){await db('intmed_content_drafts?ingest_id=eq.'+draft.ingest_id,'PATCH',{status:'waiting_provider',error_code:'provider_rate_limited',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});await db('intmed_content_ingest?id=eq.'+draft.ingest_id,'PATCH',{status:'pending_review',error_code:'provider_rate_limited',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});}
-      if(drafts.length)kickWorker();
-      await say(chat,drafts.length?'🔄 '+drafts.length+' ورودی متوقف‌شده بر اثر محدودیت موقت سرویس، دوباره وارد صف شد.':'موردی با خطای محدودیت موقت برای تلاش دوباره وجود ندارد.');
+      const pending=await db('intmed_content_ingest?status=eq.pending_review&select=id,kind&order=created_at.desc&limit=30');
+      // Always wake the worker: fresh Telegram items may not have a draft row yet.
+      // Previously /retry did nothing for exactly that state and left PDFs pending forever.
+      // Prefer the newest requested item so an old backlog cannot hide the file the
+      // administrator has just asked to retry. The worker continues the rest serially.
+      const priority=pending.find(item=>item.kind==='pdf')||pending.find(item=>item.kind==='image')||pending[0];
+      const started=kickWorker(priority?.id||null);
+      await say(chat,started
+        ?'🔄 پردازش صف دوباره آغاز شد. '+drafts.length+' مورد متوقف‌شده و '+pending.length+' ورودی در انتظار بررسی شد.'
+        :'🧾 پردازش خودکار خاموش است؛ ورودی‌ها محفوظ مانده‌اند.');
       return reply(200,{ok:true,command:'retry',queued:drafts.length});
     }
     const existing=await db('intmed_content_ingest?telegram_update_id=eq.'+updateId+'&select=id,status');
@@ -132,7 +143,7 @@ Deno.serve(async req=>{
       const id=crypto.randomUUID(),hint=topicHint(content);
       await db('intmed_content_ingest','POST',{id,telegram_update_id:updateId,telegram_chat_id:chat,telegram_message_id:Number(message.message_id),telegram_file_id:null,telegram_file_unique_id:null,kind:'text',original_filename:null,mime_type:'text/plain',byte_size:bytes.length,storage_path:null,sha256:hex(await crypto.subtle.digest('SHA-256',bytes)),content_text:content,caption:null,suggested_topic_id:hint,status:'pending_review',...originFields},{Prefer:'return=minimal'});
       const freeHint=await attachHint(id,chat);
-      kickWorker();
+      kickWorker(id);
       await say(chat,'✅ متن'+(origin?' فورواردشده':'')+' در صف بازبینی ثبت شد.\nشناسه: '+id.slice(0,8)+(freeHint?'\nراهنمای فارسی: '+freeHint:hint?'\nمبحث پیشنهادی: '+hint:'')+'\nانتشار فقط پس از بازبینی انجام می‌شود.');
       return reply(200,{ok:true,queued:true,id,kind:'text'});
     }else{await say(chat,'فقط متن، PDF یا تصویر JPEG/PNG/WebP پذیرفته می‌شود.');return reply(200,{ok:true,ignored:true});}
@@ -152,7 +163,7 @@ Deno.serve(async req=>{
       const stored=await fetch(url+'/storage/v1/object/intmed-content-inbox/'+path,{method:'POST',headers:{apikey:service,Authorization:'Bearer '+service,'Content-Type':mime,'x-upsert':'false'},body:bytes});if(!stored.ok)throw Error('storage');
       await db('intmed_content_ingest?id=eq.'+id,'PATCH',{sha256:digest,status:'pending_review',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});
       const freeHint=await attachHint(id,chat);
-      kickWorker();
+      kickWorker(id);
       await say(chat,'✅ فایل'+(origin?' فورواردشده':'')+' دریافت و قرنطینه شد.\nشناسه: '+id.slice(0,8)+(freeHint?'\nراهنمای فارسی: '+freeHint:hint?'\nمبحث پیشنهادی: '+hint:'\nبرای تعیین مسیر فارسی، دکمه «تعیین مبحث» را پیش از ارسال فایل بزنید.')+'\nانتشار فقط پس از بازبینی انجام می‌شود.');
       return reply(200,{ok:true,queued:true,id,kind});
     }catch{

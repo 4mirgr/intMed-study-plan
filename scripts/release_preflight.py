@@ -27,6 +27,7 @@ REQUIRED_FUNCTIONS = {
     "intmed-study-event": True,
     "intmed-telegram-bot": False,
     "intmed-content-worker": True,
+    "intmed-content-generator": True,
     "intmed-content-review": False,
     "intmed-purchase-verify": True,
 }

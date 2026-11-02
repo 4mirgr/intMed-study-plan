@@ -386,6 +386,17 @@
       <label class="content-review-wide">خلاصهٔ نکات طلایی<textarea id="contentReviewSummary" maxlength="4000" rows="4" placeholder="یک پاراگراف دقیق و مرتبط با مهم‌ترین نکات این محتوا"></textarea><button type="button" id="contentReviewSummarySuggest" class="content-review-inline-action">بازسازی از شواهد پیش‌نویس</button></label>
       <input id="contentReviewNote" type="hidden">
     </div>
+    <fieldset class="content-review-generation" id="contentReviewGeneration"><legend>مرحلهٔ دوم · چه چیزی ساخته شود؟</legend>
+      <p>فقط خروجی‌هایی که واقعاً لازم دارید انتخاب کنید؛ این کار مصرف اعتبار و زمان را کم می‌کند.</p>
+      <div class="content-review-generation-options">
+        <label><input type="checkbox" name="contentReviewOutput" value="lesson"> درسنامهٔ کامل</label>
+        <label><input type="checkbox" name="contentReviewOutput" value="flashcards"> فلش‌کارت</label>
+        <label><input type="checkbox" name="contentReviewOutput" value="mcq"> سؤال چهارگزینه‌ای</label>
+        <label><input type="checkbox" name="contentReviewOutput" value="kf"> KF / PMP</label>
+      </div>
+      <button type="button" id="contentReviewGenerate" class="content-review-inline-action">ساخت خروجی‌های انتخاب‌شده</button>
+      <small id="contentReviewGenerationStatus"></small>
+    </fieldset>
     <div id="contentReviewDraftBody" class="content-review-draft-body"></div>
     <label class="content-review-confirm"><input type="checkbox" id="contentReviewConfirm"> محتوای آماده، محل انتشار و در صورت وجود تصویر، اجازهٔ استفاده از فایل بارگذاری‌شده را بررسی کرده‌ام.</label>
     <p id="contentReviewActionStatus" class="section-caption" role="status" aria-live="polite"></p>
