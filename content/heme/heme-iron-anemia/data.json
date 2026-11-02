@@ -520,7 +520,23 @@
       ]
     }
   ],
-  "images": [],
+  "images": [
+    {
+      "id": "review-item-c1433cb6-273",
+      "caption": "Rbc",
+      "assetPath": "assets/review-item-c1433cb6-273.jpg",
+      "note": "در تفسیر اسمیر خون محیطی، انکلوزیون‌های RBC را باید از سلول‌های نابالغ و تغییرات شکل افتراق داد: Howell–Jolly body بقایای DNA به‌شکل یک نقطهٔ گرد و بنفش داخل RBC است و به‌طور کلاسیک در اسپلنکتومی یا هیپواسپلنی، از جمله داسی‌شکل، دیده می‌شود؛ در مقابل، NRBC یک پیش‌ساز اریتروئیدی با هستهٔ کامل است، نه صرفاً بقایای هسته، و حضور آن در خون بزرگسالان بیانگر استرس شدید مغز استخوان مانند همولیز، خونریزی یا هیپوکسی است؛ همراهی NRBC با سلول‌های نابالغ میلوئیدی، نمای لوکواریترُوبلاستیک ایجاد می‌کند و مطرح‌کنندهٔ میلوفیبروز یا ارتشاح مغز استخوان است.  Heinz bodies تجمع هموگلوبین دناتوره در آسیب اکسیداتیو، به‌ویژه کمبود G6PD، هستند که با رنگ‌آمیزی سوپراویتال دیده می‌شوند و برداشت آن‌ها توسط طحال موجب ایجاد bite cell می‌شود؛ basophilic stippling تجمع RNA ریبوزومی به‌شکل نقاط متعدد منتشر است و سه ارتباط آزمونی مهم آن مسمومیت با سرب، تالاسمی و آنمی سیدروبلاستیک هستند؛ Pappenheimer bodies گرانول‌های حاوی آهن، معمولاً خوشه‌ای و نزدیک حاشیهٔ سلول‌اند که با Prussian blue مثبت می‌شوند و در سیدروبلاستیک آنمی و پس از اسپلنکتومی دیده می‌شوند؛ بنابراین کلید حفظی افتراق این است: Howell–Jolly = DNA، stippling = RNA، Heinz = Hb دناتوره و Pappenheimer = آهن.",
+      "kind": "pbs",
+      "sourceClass": "authored",
+      "copyright": "Intmwd",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-c1433cb6-273"
+        }
+      ]
+    }
+  ],
   "tables": [
     {
       "title": "Table 102-3 — Laboratory Biomarkers for Differential Diagnosis of Iron Deficiency",
@@ -694,6 +710,15 @@
           "legacyLoc": "lesson:6:0"
         }
       ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "review-source-c1433cb6-273",
+      "title": "telegram-447.jpg",
+      "type": "telegram-review",
+      "sourceClass": "authored",
+      "note": "Intmwd"
     }
   ]
 }
