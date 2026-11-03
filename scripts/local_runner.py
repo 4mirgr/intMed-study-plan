@@ -802,7 +802,9 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
     payload["images"] = [row for row in payload.get("images", [])
                          if not isinstance(row, dict) or row.get("id") != item_id]
     payload["lesson"] = [row for row in payload.get("lesson", [])
-                         if not isinstance(row, dict) or row.get("id") != item_id]
+                         if not isinstance(row, dict) or
+                         (row.get("id") != item_id and
+                          not str(row.get("id") or "").startswith(item_id + "-lesson-"))]
     payload["mcq"] = [row for row in payload.get("mcq", [])
                       if not isinstance(row, dict) or not str(row.get("id") or "").startswith(item_id + "-mcq-")]
     payload["kfPmp"] = [row for row in payload.get("kfPmp", [])
@@ -831,12 +833,35 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
             "copyright": rights, "reviewStatus": "reviewed", "sourceRefs": [{"sourceId": source_id}]})
     else:
         summary = publish_text(job.get("sourceSummary"))
-        outline = [publish_text(row) for row in (draft.get("lessonOutline") or [])]
-        paragraphs = [value for value in [summary, *outline] if value]
-        if paragraphs:
-            payload.setdefault("lesson", []).append({"id": item_id, "heading": str(job.get("title") or label),
-                "paragraphs": [{"id": item_id + "-p" + str(index + 1), "text": value,
-                                "sourceRefs": [{"sourceId": source_id}]} for index, value in enumerate(paragraphs)]})
+        lesson_count = 0
+        lesson_drafts = [row for row in (draft.get("lessonDrafts") or []) if isinstance(row, dict)]
+        for section_index, section in enumerate(lesson_drafts):
+            section_id = item_id + "-lesson-" + str(section_index + 1)
+            paragraphs = [publish_text(value) for value in (section.get("paragraphs") or [])]
+            key_points = [publish_text(value) for value in (section.get("keyPoints") or [])]
+            paragraphs = [value for value in paragraphs if value]
+            if key_points:
+                paragraphs.append("نکات کلیدی: " + "؛ ".join(value for value in key_points if value))
+            if not paragraphs:
+                continue
+            payload.setdefault("lesson", []).append({
+                "id": section_id,
+                "heading": publish_text(section.get("heading")) or str(job.get("title") or label),
+                "paragraphs": [{"id": section_id + "-p" + str(index + 1), "text": value,
+                                "sourceRefs": [{"sourceId": source_id}]}
+                               for index, value in enumerate(paragraphs)],
+            })
+            lesson_count += 1
+        # Backward-compatible fallback for drafts made before rich lesson sections existed.
+        if not lesson_count:
+            outline = [publish_text(row) for row in (draft.get("lessonOutline") or [])]
+            paragraphs = [value for value in [summary, *outline] if value]
+            if paragraphs:
+                payload.setdefault("lesson", []).append({"id": item_id, "heading": str(job.get("title") or label),
+                    "paragraphs": [{"id": item_id + "-p" + str(index + 1), "text": value,
+                                    "sourceRefs": [{"sourceId": source_id}]} for index, value in enumerate(paragraphs)]})
+                lesson_count = 1
+        mcq_count = 0
         for index, row in enumerate(draft.get("mcqDrafts") or []):
             if not isinstance(row, dict) or len(row.get("options") or []) != 4:
                 continue
@@ -844,6 +869,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
             question.update({"id": item_id + "-mcq-" + str(index + 1), "reviewStatus": "reviewed",
                              "sourceRefs": [{"sourceId": source_id}]})
             payload.setdefault("mcq", []).append(question)
+            mcq_count += 1
         flashcard_count = 0
         for index, row in enumerate(draft.get("flashcardDrafts") or []):
             if not isinstance(row, dict) or not row.get("front") or not row.get("back"):
@@ -863,7 +889,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                 "steps": [{"id": item_id + "-kf-" + str(index + 1), "prompt": row["prompt"],
                            "expectedAnswer": row["expectedAnswer"], "sourceRefs": [{"sourceId": source_id}]}
                           for index, row in enumerate(kf)]})
-        if not paragraphs and not payload.get("mcq") and not kf and not flashcard_count:
+        if not lesson_count and not mcq_count and not kf and not flashcard_count:
             raise RunnerError("پیش‌نویس محتوای قابل ادغام ندارد.")
     topic_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8")
     ensure_publish_validator()

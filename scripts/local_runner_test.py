@@ -238,6 +238,32 @@ class LocalRunnerTest(unittest.TestCase):
             self.assertEqual(saved["flashcards"][0]["front"], "یافتهٔ کلیدی چیست؟")
             self.assertEqual(saved["flashcards"][0]["sourceRefs"][0]["sourceId"], "review-source-33333333-333")
 
+    def test_rich_lesson_sections_are_published_and_replace_prior_retry(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            topic = root / "content/id/id-cns-meningoencephalitis/data.json"
+            topic.parent.mkdir(parents=True)
+            topic.write_text(json.dumps({"topicId": "id-cns-meningoencephalitis", "category": "id",
+                "sources": [], "images": [], "flashcards": [], "lesson": [], "mcq": [], "kfPmp": []}), "utf-8")
+            job = {"draftId": "44444444-4444-4444-8444-444444444444", "title": "انسفالیت",
+                "sourceSummary": "خلاصه", "draft": {"lessonDrafts": [
+                    {"heading": "تعریف", "paragraphs": ["درگیری پارانشیم مغز با اختلال عملکرد عصبی تظاهر می‌کند."],
+                     "keyPoints": ["آسیکلوویر تجربی را به تأخیر نیندازید"]},
+                    {"heading": "تشخیص", "paragraphs": ["MRI و CSF ارکان بررسی هستند."], "keyPoints": []}],
+                    "flashcardDrafts": [], "mcqDrafts": [], "kfDrafts": []},
+                "target": {"categoryId": "id", "topicId": "id-cns-meningoencephalitis",
+                    "topicLabel": "مننژیت و انسفالیت", "isNew": False, "kind": "lesson",
+                    "sourceClass": "", "rightsNote": ""},
+                "source": {"kind": "text", "mimeType": "text/plain", "filename": "telegram.txt"}}
+            completed = mock.MagicMock(returncode=0, stdout="ok")
+            with mock.patch.object(subject, "ROOT", root), mock.patch.object(subject.subprocess, "run", return_value=completed):
+                subject.integrate_publish_job({}, job)
+                subject.integrate_publish_job({}, job)
+            lesson = json.loads(topic.read_text("utf-8"))["lesson"]
+            self.assertEqual(len(lesson), 2)
+            self.assertEqual(lesson[0]["heading"], "تعریف")
+            self.assertIn("نکات کلیدی", lesson[0]["paragraphs"][-1]["text"])
+
     def test_run_once_prioritizes_approved_publish_queue(self):
         with mock.patch.object(subject, "auth_headers", return_value={"Authorization": "Bearer test"}), \
              mock.patch.object(subject, "run_publish_once", return_value=True) as publish, \
