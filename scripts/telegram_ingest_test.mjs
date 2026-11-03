@@ -29,6 +29,7 @@ const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:k=>env[k]}},
   if(options.method==='PATCH'){Object.assign(rows.find(r=>url.includes('id=eq.'+r.id)),JSON.parse(options.body));return new Response(null,{status:204});}
   const update=/telegram_update_id=eq.(\d+)/.exec(url);if(update)return Response.json(rows.filter(r=>r.telegram_update_id===Number(update[1])).map(r=>({id:r.id,status:r.status})));
   if(url.includes('status=in.(quarantined,pending_review,processing)&select=id'))return Response.json(rows.filter(r=>['quarantined','pending_review','processing'].includes(r.status)).slice(0,31).map(r=>({id:r.id})));
+  if(url.includes('status=eq.pending_review'))return Response.json(rows.filter(r=>r.status==='pending_review').slice(-30).reverse().map(r=>({id:r.id,kind:r.kind})));
   if(url.includes('status=in.'))return Response.json(rows.map(r=>({status:r.status})));
  }
  if(url.includes('/getFile')){getFiles++;return Response.json({ok:true,result:{file_path:'documents/source.pdf'}});}
@@ -47,7 +48,7 @@ const post=(body,secret='webhook-secret')=>handler(new Request('https://test/fun
 let r=await post(update(1,'999',{text:'forwarded secret',forward_origin:{type:'hidden_user',sender_user_name:'Hidden',date:1700000000}}));assert.equal(r.status,200);assert.equal(rows.length,0);assert.equal(messages.length,0,'unconfigured chat received response');
 r=await post(update(2,'123',{text:'/help'}),'wrong');assert.equal(r.status,403,'An invalid Telegram secret must be rejected before any user-event handling');
 r=await post(update(3,'123',{text:'/start'}));assert.equal(r.status,200);assert.ok(messages.at(-1).text.includes('Forward'));
-assert.match(messages.at(-1).text,/پردازش هوشمند خودکار فعلاً خاموش است/);assert.equal(workerCalls,0,'/start must not wake the content worker');
+assert.match(messages.at(-1).text,/پردازش هوشمند خودکار فعال است/);assert.equal(workerCalls,0,'/start must not wake the content worker');
 const menuButtons=messages.at(-1).reply_markup.inline_keyboard.flat();
 assert.deepEqual(menuButtons.map(button=>button.callback_data),['menu:status','topic:set','queue:retry','menu:help']);
 
@@ -73,13 +74,14 @@ r=await post(update(9,'123',{document:{...doc,file_id:'spoof',file_name:'spoof.p
 downloadBytes=new TextEncoder().encode('%PDF-1.7 synthetic');
 
 r=await post({update_id:34,callback_query:{id:'callback-2',data:'menu:status',message:{message_id:34,chat:{id:'123',type:'private'}}}});assert.ok(messages.at(-1).text.includes('در صف تحلیل یا بازبینی'));
-assert.match(messages.at(-1).text,/حالت پردازش: دستی/);
+assert.match(messages.at(-1).text,/حالت پردازش: خودکار/);
 while(rows.filter(row=>['quarantined','pending_review','processing'].includes(row.status)).length<30)rows.push({...rows[0],id:randomUUID(),telegram_update_id:100+rows.length,status:'pending_review'});
 r=await post(update(11,'123',{document:{...doc,file_id:'rate'}}));assert.equal((await r.json()).rateLimited,true);assert.equal(stored,1);
 assert.ok(rows.every(row=>row.status!=='accepted'),'ingest auto-published content');
 
 const retryId=randomUUID();drafts.push({ingest_id:retryId,status:'error',error_code:'provider_429'});rows.push({...rows[0],id:retryId,status:'error',error_code:'worker_failed'});
-r=await post({update_id:35,callback_query:{id:'callback-3',data:'queue:retry',message:{message_id:35,chat:{id:'123',type:'private'}}}});assert.deepEqual(await r.json(),{ok:true,command:'retry',queued:0,manual:true});assert.equal(drafts.at(-1).status,'error');assert.equal(rows.at(-1).status,'error');assert.equal(workerCalls,0);
+const beforeRetryWorkerCalls=workerCalls;
+r=await post({update_id:35,callback_query:{id:'callback-3',data:'queue:retry',message:{message_id:35,chat:{id:'123',type:'private'}}}});assert.deepEqual(await r.json(),{ok:true,command:'retry',queued:1});assert.equal(drafts.at(-1).status,'waiting_provider');assert.equal(rows.at(-1).status,'pending_review');assert.equal(workerCalls,beforeRetryWorkerCalls+1);
 
 const userEvent=body=>handler(new Request('https://test/functions/v1/intmed-telegram-bot',{method:'POST',headers:{Authorization:'Bearer valid-user-jwt'},body:JSON.stringify(body)}));
 r=await userEvent({event:'login'});assert.equal((await r.json()).sent,true);assert.match(messages.at(-1).text,/ورود کاربر/);assert.ok(!messages.at(-1).text.includes('private@example.com'),'Email leaked into login notification');
