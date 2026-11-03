@@ -396,7 +396,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyIndex": 0
         },
         {
           "id": "review-item-99a23a0d-064-kf-2",
@@ -406,7 +407,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyIndex": 1
         }
       ]
     }
@@ -511,7 +513,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:0"
         },
         {
           "id": "review-item-99a23a0d-064-p2",
@@ -520,7 +523,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:1"
         },
         {
           "id": "review-item-99a23a0d-064-p3",
@@ -529,7 +533,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:2"
         },
         {
           "id": "review-item-99a23a0d-064-p4",
@@ -538,7 +543,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:3"
         },
         {
           "id": "review-item-99a23a0d-064-p5",
@@ -547,7 +553,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:4"
         },
         {
           "id": "review-item-99a23a0d-064-p6",
@@ -556,7 +563,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:5"
         },
         {
           "id": "review-item-99a23a0d-064-p7",
@@ -565,7 +573,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:6"
         },
         {
           "id": "review-item-99a23a0d-064-p8",
@@ -574,7 +583,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:7"
         },
         {
           "id": "review-item-99a23a0d-064-p9",
@@ -583,7 +593,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:8"
         },
         {
           "id": "review-item-99a23a0d-064-p10",
@@ -592,7 +603,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:9"
         },
         {
           "id": "review-item-99a23a0d-064-p11",
@@ -601,7 +613,8 @@
             {
               "sourceId": "review-source-99a23a0d-064"
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:10"
         }
       ]
     }
