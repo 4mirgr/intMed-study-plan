@@ -81,9 +81,24 @@ def extract_pdf(raw: bytes) -> dict[str, Any]:
         pages: list[dict[str, Any]] = []
         figures: list[dict[str, Any]] = []
         warnings: list[str] = []
+        rtl_pages: list[int] = []
         for index in range(document.page_count):
             page = document.load_page(index)
-            content = page.get_text("text", sort=True).replace("\x00", "").strip()
+            # Spatial top-left sorting imposes LTR word order on Persian PDFs.
+            # Prefer the PDF creator's sequence when Arabic/Hebrew letters form
+            # a meaningful part of the page; never reverse characters or doses.
+            creator_text = page.get_text("text", sort=False).replace("\x00", "").strip()
+            letters = sum(character.isalpha() for character in creator_text)
+            rtl_letters = sum(character.isalpha() and
+                              ("\u0590" <= character <= "\u08ff" or
+                               "\ufb1d" <= character <= "\ufdff" or
+                               "\ufe70" <= character <= "\ufeff")
+                              for character in creator_text)
+            if letters and rtl_letters / letters >= .15:
+                content = creator_text
+                rtl_pages.append(index + 1)
+            else:
+                content = page.get_text("text", sort=True).replace("\x00", "").strip()
             if len(content) > 100_000:
                 raise ProcessingError("pdf_page_text_limit")
             useful = sum(character.isalnum() for character in content)
@@ -92,6 +107,7 @@ def extract_pdf(raw: bytes) -> dict[str, Any]:
             method = "needs_ocr" if unreadable else "native_text"
             if not content and not page.get_images() and not page.get_drawings():
                 method = "blank_page"
+                unreadable = False
             lines = [line.strip() for line in content.splitlines() if line.strip()]
             pages.append({"page": index + 1, "heading": (lines[0] if lines else "")[:240],
                           "text": content, "unreadable": unreadable, "method": method})
@@ -111,6 +127,8 @@ def extract_pdf(raw: bytes) -> dict[str, Any]:
                                     "sha256": hashlib.sha256(image_data["image"]).hexdigest()})
         if any(page["unreadable"] for page in pages):
             warnings.append("برخی صفحات متن خوانای کافی ندارند و به OCR یا بررسی تصویر نیاز دارند.")
+        if rtl_pages:
+            warnings.append("ترتیب ثبت‌شدهٔ متن فارسی/راست‌به‌چپ در PDF حفظ شد؛ ترتیب خواندن باید با صفحهٔ منبع تطبیق داده شود.")
         if figures:
             warnings.append("فهرست تصاویر از PDF استخراج شده؛ فایل تصاویر هنوز برای انتشار انتخاب یا تأیید نشده است.")
         result = {"pageCount": document.page_count, "pages": pages,

@@ -30,6 +30,11 @@ response=await call({action:'claim_publish',runnerId:'macbook.local'});assert.eq
 response=await call({action:'complete_publish',runnerId:'macbook.local',draftId:publishDraft,commit:'abcdef1234',title:'تصویر CNS'});assert.equal(response.status,200);assert.equal(publishCompleted,true);
 response=await call({action:'fail_publish',runnerId:'macbook.local',draftId:publishDraft,errorMessage:'validation failed'});assert.equal(response.status,200);assert.equal(publishFailed,true);
 response=await call({action:'submit',ingestId:ingest,leaseToken:'33333333-3333-4333-8333-333333333333',model:'qwen3',draft:{...draft,reviewStatus:'reviewed'}});assert.equal(response.status,400);
+env.GEMINI_API_KEY='configured-cloud-key';
+response=await call({action:'claim',runnerId:'macbook.local'});result=await response.json();assert.equal(result.job,null);assert.equal(result.mode,'cloud');
+env.INTMED_CONTENT_PROCESSING_ENABLED='false';
+response=await call({action:'claim',runnerId:'macbook.local'});result=await response.json();assert.equal(result.job.id,ingest,'explicit manual mode retains local fallback');
+delete env.GEMINI_API_KEY;delete env.INTMED_CONTENT_PROCESSING_ENABLED;
 response=await call({action:'status'},'bad-token');assert.equal(response.status,401);admin=false;response=await call({action:'status'});assert.equal(response.status,403);
 const sql=fs.readFileSync('backend/supabase/local_content_runner.sql','utf8'),config=fs.readFileSync('backend/supabase/config.toml','utf8');
 assert.match(sql,/intmed_content_local_jobs/);assert.match(sql,/enable row level security/);assert.match(sql,/revoke all on public\.intmed_content_local_jobs from public,anon,authenticated/);assert.match(sql,/claim_intmed_local_content/);assert.match(sql,/heartbeat_intmed_local_content/);assert.match(sql,/local_lease_expired/);assert.match(sql,/interval '15 minutes'/);assert.match(config,/\[functions\.intmed-local-runner\][\s\S]*verify_jwt = false/);

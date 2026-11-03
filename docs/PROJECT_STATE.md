@@ -138,6 +138,14 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Fixed a production-only legacy handoff restriction in `claim_intmed_content_ingest`: explicit
   service/admin requests can resume processing/error/draft-ready sources, while ordinary polls
   cannot reopen completed drafts and published drafts remain excluded.
+- Live generation pilot also completed through the capability-scoped cloud workflow: all 28
+  chunks (seven per output) persisted; 16 lesson sections, 46 flashcards, 19 MCQs and 33 KF draft
+  prompts are available in the osteoporosis review draft. These are generated drafts, not a
+  clinical-quality benchmark or teacher approval, and were not automatically published.
+- RTL extraction now retains PDF creator order rather than imposing left-to-right spatial
+  sorting; numeric/dose sequences are never reversed. Source layout still needs comparison
+  with the original. A configured active cloud provider prevents old laptop watchers from
+  claiming new inbox work; explicit maintenance/manual mode preserves the local fallback.
 
 ### P0 — release correctness
 

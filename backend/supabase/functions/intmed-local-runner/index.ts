@@ -35,6 +35,9 @@ Deno.serve(async req=>{
       return reply(200,{ok:true,active:rows[0]||null});
     }
     if(action==='claim'){
+      // Cloud processing owns the inbox while enabled; an older laptop watcher must
+      // not race native extraction or consume queued sources with a local model.
+      if(Deno.env.get('INTMED_CONTENT_PROCESSING_ENABLED')!=='false'&&Deno.env.get('GEMINI_API_KEY'))return reply(200,{job:null,mode:'cloud',message:'پردازش ابری فعال است؛ نیازی به اجرای مدل محلی نیست.'});
       const runnerId=text(body.runnerId,80);if(!runner.test(runnerId))return reply(400,{message:'Invalid runner id'});
       const lease=crypto.randomUUID(),claimed=await db('rpc/claim_intmed_local_content','POST',{claimant:user.id,new_lease:lease,local_runner_id:runnerId});
       if(!claimed)return reply(200,{ok:true,job:null,reason:'empty_or_busy'});

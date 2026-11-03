@@ -33,7 +33,7 @@ class NativeContentProcessorTest(unittest.TestCase):
         self.assertIn("heading\nSecond line", extraction["pages"][0]["text"])
         self.assertFalse(extraction["pages"][0]["unreadable"])
         self.assertEqual(extraction["pages"][0]["method"], "native_text")
-        self.assertTrue(extraction["pages"][1]["unreadable"])
+        self.assertFalse(extraction["pages"][1]["unreadable"])
         self.assertEqual(extraction["pages"][1]["method"], "blank_page")
         self.assertEqual(extraction["pages"][2]["method"], "needs_ocr")
         image = extraction["figures"][0]
@@ -42,6 +42,24 @@ class NativeContentProcessorTest(unittest.TestCase):
         self.assertRegex(image["sha256"], r"^[0-9a-f]{64}$")
         self.assertNotIn("image", image)
         self.assertNotIn("base64", json.dumps(extraction))
+
+    def test_rtl_prefers_creator_sequence_without_reversing_doses(self):
+        logical = "1- خانم با سابقه مصرف دارو مراجعه می‌کند.\nDose 10 mg/kg every 8 hours; Hb=7.5"
+        visual = "میکند مراجعه دارو مصرف سابقه با خانم -1\nhours 8 every mg/kg 10 Dose; Hb=7.5"
+        page = mock.MagicMock()
+        page.get_text.side_effect = lambda _kind, sort: visual if sort else logical
+        page.get_images.return_value = []
+        document = mock.MagicMock()
+        document.__enter__.return_value = document
+        document.needs_pass = False
+        document.page_count = 1
+        document.load_page.return_value = page
+        with mock.patch.object(pymupdf, "open", return_value=document):
+            result = subject.extract_pdf(b"synthetic")
+        self.assertEqual(result["pages"][0]["text"], logical)
+        self.assertIn("10 mg/kg every 8 hours; Hb=7.5", result["pages"][0]["text"])
+        page.get_text.assert_called_once_with("text", sort=False)
+        self.assertTrue(any("ترتیب" in warning for warning in result["warnings"]))
 
     def test_invalid_and_encrypted_pdf_fail_explicitly(self):
         with self.assertRaisesRegex(subject.ProcessingError, "pdf_invalid"):
