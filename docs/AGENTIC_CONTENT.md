@@ -23,6 +23,25 @@ pushes, and checks production.
 
 ## PDF to published topic
 
+### Approved revision, 2026-11-03
+
+Telegram remains intake. Extract/cache source material once, map it into topic-sized packages,
+create the lesson first and derive assessments from that saved lesson plus source evidence.
+Separate role configuration (`INTMED_EXTRACTION_MODEL`, `INTMED_LESSON_MODEL`,
+`INTMED_ASSESSMENT_MODEL`) must retain current provider defaults until a representative benchmark
+justifies a change. Do not silently send source files to another provider.
+
+The initial revision checkpoint validates model-reported page inventories, rejects truncated
+responses, persists lesson completion before assessment generation, preserves page references,
+and provides human-readable editable review artifacts. These checks are structural, not clinical
+verification. `documentExtraction.quality.actualPageCountVerified` remains false until a PDF parser
+counts the actual pages. Generation still uses synchronous requests in this checkpoint.
+
+Next implementation gates: parser/native extraction and selective OCR, durable resumable jobs,
+multi-topic mapping and figure extraction/routing, independent claim/question review, and a
+three-input benchmark with teacher-approved reference output. Progress and remaining scope are
+recorded in `PROJECT_STATE.md`; do not describe the complete factory as finished prematurely.
+
 Sources may arrive as a local upload or as an authorized Telegram inbox item. Telegram records are
 inputs only: copy/download the private object into a hashed extraction cache, retain its ingest ID
 and provenance, and leave the record unaccepted until the same reviews below pass. A forwarded

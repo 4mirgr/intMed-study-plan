@@ -248,7 +248,7 @@ class LocalRunnerTest(unittest.TestCase):
             job = {"draftId": "44444444-4444-4444-8444-444444444444", "title": "انسفالیت",
                 "sourceSummary": "خلاصه", "draft": {"lessonDrafts": [
                     {"heading": "تعریف", "paragraphs": ["درگیری پارانشیم مغز با اختلال عملکرد عصبی تظاهر می‌کند."],
-                     "keyPoints": ["آسیکلوویر تجربی را به تأخیر نیندازید"]},
+                     "keyPoints": ["آسیکلوویر تجربی را به تأخیر نیندازید"], "sourcePages": [1, 2]},
                     {"heading": "تشخیص", "paragraphs": ["MRI و CSF ارکان بررسی هستند."], "keyPoints": []}],
                     "flashcardDrafts": [], "mcqDrafts": [], "kfDrafts": []},
                 "target": {"categoryId": "id", "topicId": "id-cns-meningoencephalitis",
@@ -263,6 +263,8 @@ class LocalRunnerTest(unittest.TestCase):
             self.assertEqual(len(lesson), 2)
             self.assertEqual(lesson[0]["heading"], "تعریف")
             self.assertIn("نکات کلیدی", lesson[0]["paragraphs"][-1]["text"])
+            self.assertEqual(lesson[0]["paragraphs"][0]["sourceRefs"][0]["pages"], [1, 2])
+            self.assertEqual(lesson[0]["paragraphs"][0]["legacyLoc"], "lesson:0:0")
 
     def test_run_once_prioritizes_approved_publish_queue(self):
         with mock.patch.object(subject, "auth_headers", return_value={"Authorization": "Bearer test"}), \

@@ -2,8 +2,49 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {stripTypeScriptTypes} from 'node:module';
 const {chromium}=createRequire(import.meta.url)('playwright');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+// Exercise the real service handler: editing must preserve provenance, reject
+// malformed answer keys and reject a concurrent update instead of overwriting it.
+let handler,concurrent=false,patches=[],workerResult={processed:1};
+const draftId='11111111-1111-4111-8111-111111111111',adminId='22222222-2222-4222-8222-222222222222';
+const stored={id:draftId,status:'approved',review_revision:7,intmed_content_ingest:{id:adminId,status:'accepted'},draft_json:{sourceEvidence:['page 4'],generation:{phase:'generated'},mcqDrafts:[{stem:'old',options:['a','b','c','d'],correctIndex:0,explanation:'old',sourcePages:[4],sourceRefs:[{sourceId:'original',page:4}]}]}};
+const serviceFetch=async(url,options={})=>{
+  if(url.endsWith('/auth/v1/user'))return Response.json({id:adminId});
+  if(url.includes('/rest/v1/profiles?'))return Response.json([{role:'admin',approved:true,rejected:false}]);
+  if(url.includes('/rest/v1/intmed_content_drafts?')){
+    if(options.method==='PATCH'){patches.push({url,value:JSON.parse(options.body)});return Response.json(concurrent?[]:[{...stored,...JSON.parse(options.body)}]);}
+    return Response.json([stored]);
+  }
+  if(url.includes('/rest/v1/intmed_content_ingest?'))return Response.json([{id:adminId,status:'pending_review'}]);
+  if(url.endsWith('/functions/v1/intmed-content-worker'))return Response.json(workerResult);
+  throw Error('Unexpected service URL '+url);
+};
+const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:key=>({SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'secret',SUPABASE_ANON_KEY:'anon'})[key]}},fetch:serviceFetch,Response,Request,TextEncoder,URL,crypto,console});
+vm.runInContext(stripTypeScriptTypes(fs.readFileSync(path.join(root,'backend/supabase/functions/intmed-content-review/index.ts'),'utf8')),context);
+const edit={action:'save_artifacts',draftId,revision:7,artifacts:{mcqDrafts:[{index:0,value:{stem:'edited',options:['a','b','c','d'],correctIndex:2,explanation:'new',sourceRefs:[{sourceId:'forged'}]}}]}};
+const request=body=>handler(new Request('https://project.supabase.co/functions/v1/intmed-content-review',{method:'POST',headers:{authorization:'Bearer admin','content-type':'application/json'},body:JSON.stringify(body)}));
+let response=await request(edit);assert.equal(response.status,200);
+let saved=(await response.json()).draft;assert.equal(saved.status,'draft_ready');assert.equal(saved.review_revision,8);assert.deepEqual(saved.draft_json.mcqDrafts[0].sourceRefs,[{sourceId:'original',page:4}]);assert.deepEqual(saved.draft_json.sourceEvidence,['page 4']);assert.deepEqual(saved.draft_json.generation,{phase:'generated'});assert.equal(saved.draft_json.mcqDrafts[0].correctIndex,2);assert.match(patches[0].url,/review_revision=eq.7/);assert.match(patches[0].url,/status=in/);
+assert.equal((await request({...edit,revision:6})).status,409);
+assert.equal((await request({...edit,artifacts:{mcqDrafts:[{index:0,value:{...edit.artifacts.mcqDrafts[0].value,correctIndex:9}}]}})).status,400);
+assert.equal((await request({...edit,artifacts:{mcqDrafts:[{index:0,value:{...edit.artifacts.mcqDrafts[0].value,options:['same','same','c','d']}}]}})).status,400);
+concurrent=true;assert.equal((await request(edit)).status,409);
+concurrent=false;
+stored.draft_json.lessonDrafts=[{heading:'old lesson',paragraphs:['old text'],keyPoints:[],sourcePages:[4]}];
+stored.draft_json.flashcardDrafts=[{front:'old',back:'answer'}];
+const unchangedLesson=await request({...edit,artifacts:{...edit.artifacts,lessonDrafts:[{index:0,value:{heading:'old lesson',paragraphs:['old text'],keyPoints:[]}}]}});
+assert.equal(unchangedLesson.status,200);const unchangedDraft=(await unchangedLesson.json()).draft;assert.equal(unchangedDraft.draft_json.mcqDrafts[0].stem,'edited');assert.equal(unchangedDraft.draft_json.flashcardDrafts.length,1);
+const revised=await request({...edit,artifacts:{lessonDrafts:[{index:0,value:{heading:'new lesson',paragraphs:['new text'],keyPoints:[]}}]}});
+assert.equal(revised.status,200);const revisedDraft=(await revised.json()).draft;assert.deepEqual(revisedDraft.draft_json.mcqDrafts,[]);assert.deepEqual(revisedDraft.draft_json.flashcardDrafts,[]);assert.deepEqual(revisedDraft.draft_json.lessonDrafts[0].sourcePages,[4]);
+assert.equal((await request({action:'reanalyze',draftId,revision:7})).status,400);
+assert.equal((await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true})).status,202);
+workerResult={processed:0,reason:'empty_or_busy'};
+assert.equal((await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true})).status,202);
+assert.equal(patches.at(-1).value.status,'error');assert.equal(patches.at(-1).value.error_code,'reanalysis_dispatch_failed');assert.match(patches.at(-1).url,/review_revision=eq.8/);
 const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH||undefined});
 const page=await browser.newPage();
 await page.setContent(`<!doctype html><html lang="fa" dir="rtl"><body>
@@ -15,7 +56,7 @@ await page.evaluate(()=>{
   window.__calls=[];
   window.INTMED_CONFIG={supabaseUrl:'https://example.supabase.co',supabaseAnonKey:'public-test-key'};
   let draft={id:'11111111-1111-4111-8111-111111111111',ingest_id:'22222222-2222-4222-8222-222222222222',status:'draft_ready',topic_id:'id-cns-meningoencephalitis',topic_confidence:.9,title:'انسفالیت',source_summary:'خلاصه',review_revision:0,updated_at:'2026-10-27T10:00:00Z',model:'gemma',draft_json:{lessonOutline:['تعریف و رویکرد تشخیصی انسفالیت ویروسی'],lessonDrafts:[{heading:'رویکرد',paragraphs:['متن کامل درسنامه'],keyPoints:['MRI و CSF']}],documentExtraction:{pageCount:2,pages:[{page:1,heading:'تعریف',text:'تب و تغییر سطح هوشیاری',unreadable:false},{page:2,heading:'تشخیص',text:'MRI و CSF',unreadable:false}],warnings:[]},sourceEvidence:[{claim:'تب و تغییر سطح هوشیاری از تظاهرات مهم هستند'},{claim:'MRI و بررسی CSF در ارزیابی تشخیصی نقش دارند'}],medicalWarnings:['نیازمند بازبینی'],insufficientEvidence:[],mcqDrafts:[],kfDrafts:[],imageCandidates:[]},intmed_content_ingest:{kind:'photo',mime_type:'image/png',content_text:'متن منبع'}};
-  window.fetch=async (url,options)=>{if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]})};const payload=JSON.parse(options.body);window.__calls.push(payload);if(payload.action==='list')return {ok:true,status:200,text:async()=>JSON.stringify({items:[draft],counts:{[draft.status]:1}})};if(payload.action==='detail')return {ok:true,status:200,text:async()=>JSON.stringify({draft,sourceUrl:null})};if(payload.action==='generate'){draft={...draft,review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,mcqDrafts:[{stem:'نمونه',options:['الف','ب','ج','د'],correctIndex:0,explanation:'شرح'}],generation:{phase:'generated',generated:payload.outputs}}};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};}draft={...draft,status:payload.action==='approve'?'approved':payload.action==='publish'?'publish_requested':'draft_ready',review_revision:draft.review_revision+1,target_topic_is_new:payload.createTopic,target_topic_label:payload.newTopicLabel,target_category_id:payload.newTopicCategoryId,target_content_kind:payload.targetKind,target_source_class:payload.sourceClass,target_rights_note:payload.rightsNote,source_summary:payload.sourceSummary};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};};
+  window.fetch=async (url,options)=>{if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]})};const payload=JSON.parse(options.body);window.__calls.push(payload);if(payload.action==='list')return {ok:true,status:200,text:async()=>JSON.stringify({items:[draft],counts:{[draft.status]:1}})};if(payload.action==='detail')return {ok:true,status:200,text:async()=>JSON.stringify({draft,sourceUrl:null})};if(payload.action==='save_artifacts'){if(window.__rejectEdit)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};const json={...draft.draft_json};Object.keys(payload.artifacts).forEach(kind=>{json[kind]=payload.artifacts[kind].map(change=>({...draft.draft_json[kind][change.index],...change.value}));});draft={...draft,status:'draft_ready',draft_json:json,review_revision:draft.review_revision+1};return {ok:true,status:200,text:async()=>JSON.stringify({message:'اصلاحات ذخیره شد',draft})};}if(payload.action==='generate'){draft={...draft,review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,mcqDrafts:[{stem:'نمونه',options:['الف','ب','ج','د'],correctIndex:0,explanation:'شرح'}],generation:{phase:'generated',generated:payload.outputs}}};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};}draft={...draft,status:payload.action==='approve'?'approved':payload.action==='publish'?'publish_requested':'draft_ready',review_revision:draft.review_revision+1,target_topic_is_new:payload.createTopic,target_topic_label:payload.newTopicLabel,target_category_id:payload.newTopicCategoryId,target_content_kind:payload.targetKind,target_source_class:payload.sourceClass,target_rights_note:payload.rightsNote,source_summary:payload.sourceSummary};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};};
   window.IntMedBackend={session:()=>({access_token:'test-token'}),refreshSession:async()=>({access_token:'test-token'})};
 });
 await page.addScriptTag({path:path.join(root,'docs/js/intmed-content-review.js')});
@@ -30,10 +71,27 @@ assert.equal(await page.inputValue('#contentReviewTopicSelect'),'id-cns-meningoe
 assert.ok((await page.inputValue('#contentReviewSummary')).length>=60);
 assert.match(await page.textContent('#contentReviewDraftBody'),/2 از 2 صفحه/);
 assert.match(await page.textContent('#contentReviewDraftBody'),/متن کامل درسنامه/);
+await page.fill('[data-artifact-field="paragraphs"]','متن اصلاح‌شدهٔ درسنامه\n\nپاراگراف دوم');
+await page.check('[name="contentReviewOutput"][value="mcq"]');
+await page.click('#contentReviewGenerate');
+assert.match(await page.textContent('#contentReviewActionStatus'),/ابتدا اصلاحات/);
+assert.equal((await page.evaluate(()=>window.__calls)).filter(call=>call.action==='generate').length,0);
+await page.evaluate(()=>{window.__rejectEdit=true;});
+await page.click('#contentReviewSaveArtifacts');
+await page.waitForFunction(()=>document.getElementById('contentReviewArtifactStatus').textContent.includes('تغییر کرده'));
+assert.equal(await page.inputValue('[data-artifact-field="paragraphs"]'),'متن اصلاح‌شدهٔ درسنامه\n\nپاراگراف دوم');
+await page.evaluate(()=>{window.__rejectEdit=false;});
+await page.click('#contentReviewSaveArtifacts');
+await page.waitForFunction(()=>document.getElementById('contentReviewActionStatus').textContent.includes('اصلاحات ذخیره شد'));
+assert.equal(await page.inputValue('[data-artifact-field="paragraphs"]'),'متن اصلاح‌شدهٔ درسنامه\n\nپاراگراف دوم');
 await page.check('[name="contentReviewOutput"][value="mcq"]');
 await page.click('#contentReviewGenerate');
 await page.waitForFunction(()=>window.__calls.some(call=>call.action==='generate'));
 assert.match(await page.textContent('#contentReviewDraftBody'),/نمونه/);
+await page.click('[data-artifact-kind="mcqDrafts"] .review-artifact-delete');
+await page.click('#contentReviewSaveArtifacts');
+await page.waitForFunction(()=>window.__calls.filter(call=>call.action==='save_artifacts').length===3);
+assert.equal((await page.evaluate(()=>window.__calls)).filter(call=>call.action==='save_artifacts').at(-1).artifacts.mcqDrafts.length,0);
 assert.equal(await page.locator('#contentReviewNewTopicToggle').isVisible(),false);
 await page.fill('#contentReviewTopicSearch','انسفالیت‌های نوپدید');
 assert.equal(await page.locator('#contentReviewNewTopicToggle').isVisible(),true);

@@ -95,6 +95,24 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ## Open work, in priority order
 
+### Content-factory revision checkpoint (2026-11-03)
+
+- Owner approved the staged revision after the architecture audit. Keep Telegram intake. Do not
+  infer medical correctness or end-to-end completeness from a green build.
+- Implemented: model-reported page inventory checks and reusable-extraction quality flags;
+  lesson-first generation with a persisted lesson checkpoint; page-linked assessments; independent
+  extraction/lesson/assessment model configuration preserving existing defaults; readable editable
+  artifact review with optimistic revision checks; publication waits for matching live manifest
+  and topic bytes. Authored content still requires the teacher's final approval.
+- Remaining acceptance work: parser-verified PDF pages; native text/figure extraction with OCR only
+  where needed; durable asynchronous generation jobs with resumable chunks and quota-aware retry;
+  multi-topic routing; embedded figure routing; independent evidence/clinical checking; comparison
+  of a typed PDF, scanned/handwritten input and a visual/table-heavy file against teacher references.
+- Current extraction coverage is explicitly model-reported, NOT proof that all actual PDF pages
+  were read. Current generation requests remain synchronous; the persisted lesson checkpoint
+  protects completed work but is not a durable task queue. No unbenchmarked model is advertised
+  as more accurate. Existing historical drafts need explicit reanalysis where no page map exists.
+
 ### P0 — release correctness
 
 - Keep GitHub validation/deployment green; investigate any failing SQL/browser test before calling

@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -16,6 +18,33 @@ ENDPOINT = os.environ.get("INTMED_PUBLISH_ENDPOINT", "").rstrip("/")
 DRAFT_ID = os.environ.get("INTMED_DRAFT_ID", "")
 CAPABILITY = os.environ.get("INTMED_PUBLISH_CAPABILITY", "")
 BRANCH = "claude/quirky-ride-mavb6b"
+
+
+def verify_live_topic(topic_id: str, *, timeout: int = 480) -> None:
+    """Do not report publication until both public index and payload match this build."""
+    with open(os.path.join(ROOT, "docs/content/manifest.json"), encoding="utf-8") as handle:
+        expected = json.load(handle)["topics"][topic_id]
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            suffix = "?publication=" + str(time.time_ns())
+            request = urllib.request.Request("https://drgerami-md.ir/content/manifest.json" + suffix,
+                                             headers={"Cache-Control": "no-cache"})
+            with urllib.request.urlopen(request, timeout=20) as response:
+                manifest = json.load(response)
+            if manifest.get("topics", {}).get(topic_id, {}).get("sha256") == expected["sha256"]:
+                # Use the locally generated path, never a URL supplied by a remote response.
+                request = urllib.request.Request("https://drgerami-md.ir/" + expected["path"] + suffix,
+                                                 headers={"Cache-Control": "no-cache"})
+                with urllib.request.urlopen(request, timeout=20) as response:
+                    digest = hashlib.sha256(response.read()).hexdigest()
+                if digest == expected["sha256"]:
+                    return
+        except (OSError, ValueError, KeyError):
+            pass
+        if time.monotonic() >= deadline:
+            raise RunnerError("تغییرات در GitHub ثبت شد اما تأیید نمایش نسخهٔ جدید روی سایت به پایان نرسید؛ انتشار را دوباره بررسی کنید.")
+        time.sleep(5)
 
 
 def api(payload: dict) -> dict:
@@ -62,6 +91,7 @@ def main() -> int:
             git("commit", "-m", "Publish reviewed content: " + str(job.get("title") or DRAFT_ID)[:100])
         commit = git("rev-parse", "HEAD")
         git("push", "origin", "HEAD:" + BRANCH)
+        verify_live_topic(str(job.get("target", {}).get("topicId") or ""))
         api({"action": "result", "draftId": DRAFT_ID, "capability": CAPABILITY,
              "ok": True, "commit": commit})
         print("Published", DRAFT_ID, commit)

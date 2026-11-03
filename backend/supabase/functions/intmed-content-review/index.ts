@@ -11,6 +11,40 @@ const object=(value:unknown):value is Record<string,unknown>=>!!value&&typeof va
 const clean=(value:unknown,limit:number)=>String(value??'').normalize('NFKC').replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,limit);
 const SITE='https://drgerami-md.ir';
 
+// Only teaching fields are editable. Provenance, source evidence and pipeline metadata
+// are copied from the stored original, never accepted from the browser.
+function editArtifacts(input:unknown,previous:Record<string,unknown>){
+  if(!object(input))throw Error('artifacts_invalid');
+  const fields=['lessonDrafts','flashcardDrafts','mcqDrafts','kfDrafts'];
+  if(Object.keys(input).some(key=>!fields.includes(key)))throw Error('artifacts_field');
+  const text=(value:unknown,max=12000)=>{if(typeof value!=='string'||!value.trim()||value.length>max)throw Error('artifacts_text');return value.trim();};
+  const strings=(value:unknown,min:number,max:number)=>{if(!Array.isArray(value)||value.length<min||value.length>max)throw Error('artifacts_array');return value.map(item=>text(item));};
+  const result={...previous};
+  for(const field of fields){
+    if(!(field in input))continue;
+    const changes=input[field],old=Array.isArray(previous[field])?previous[field] as unknown[]:[];
+    if(!Array.isArray(changes)||changes.length>500)throw Error('artifacts_array');
+    const seen=new Set<number>();
+    result[field]=changes.map(change=>{
+      if(!object(change)||!Number.isInteger(change.index)||Number(change.index)<0||Number(change.index)>=old.length||seen.has(Number(change.index))||!object(change.value))throw Error('artifacts_index');
+      const index=Number(change.index);seen.add(index);
+      const original=old[index];if(!object(original))throw Error('artifacts_original');
+      const value=change.value;let editable:Record<string,unknown>;
+      if(field==='lessonDrafts')editable={heading:text(value.heading,240),paragraphs:strings(value.paragraphs,1,100),keyPoints:strings(value.keyPoints,0,50)};
+      else if(field==='flashcardDrafts')editable={front:text(value.front),back:text(value.back),tags:strings(value.tags,0,20)};
+      else if(field==='mcqDrafts'){
+        if(!Number.isInteger(value.correctIndex)||Number(value.correctIndex)<0||Number(value.correctIndex)>3)throw Error('artifacts_answer');
+        const options=strings(value.options,4,4);
+        if(new Set(options.map(option=>option.normalize('NFKC').replace(/\s+/g,' ').toLocaleLowerCase('fa'))).size!==4)throw Error('artifacts_duplicate_options');
+        editable={stem:text(value.stem),options,correctIndex:value.correctIndex,explanation:text(value.explanation)};
+        if(Array.isArray(original.optionExplanations))editable.optionExplanations=strings(value.optionExplanations,4,4);
+      }else editable={prompt:text(value.prompt),expectedAnswer:text(value.expectedAnswer)};
+      return {...original,...editable,reviewStatus:'draft'};
+    });
+  }
+  return result;
+}
+
 Deno.serve(async req=>{
   const origin=req.headers.get('origin')||'';
   const cors={'Access-Control-Allow-Origin':allowedOrigins.has(origin)?origin:'https://drgerami-md.ir','Access-Control-Allow-Headers':'apikey, content-type, authorization','Access-Control-Allow-Methods':'POST, OPTIONS','Vary':'Origin','Cache-Control':'no-store'};
@@ -18,7 +52,7 @@ Deno.serve(async req=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
   if(req.method!=='POST')return reply(405,{message:'Method not allowed'});
   if(origin&&!allowedOrigins.has(origin))return reply(403,{message:'Origin not allowed'});
-  if(Number(req.headers.get('content-length')||0)>80_000)return reply(413,{message:'درخواست بیش از حد بزرگ است.'});
+  if(Number(req.headers.get('content-length')||0)>1_000_000)return reply(413,{message:'درخواست بیش از حد بزرگ است.'});
   const base=Deno.env.get('SUPABASE_URL'),service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),anon=Deno.env.get('SUPABASE_ANON_KEY');
   if(!base||!service||!anon)return reply(503,{message:'سرویس بازبینی پیکربندی نشده است.'});
   const authorization=req.headers.get('authorization')||'';
@@ -38,6 +72,7 @@ Deno.serve(async req=>{
   if(profiles.length!==1||profiles[0].role!=='admin'||profiles[0].approved!==true||profiles[0].rejected===true)return reply(403,{message:'دسترسی مدیر لازم است.'});
   let input:Record<string,unknown>;try{input=await req.json();}catch{return reply(400,{message:'درخواست نامعتبر است.'});}
   if(!object(input))return reply(400,{message:'درخواست نامعتبر است.'});
+  if(new TextEncoder().encode(JSON.stringify(input)).length>1_000_000)return reply(413,{message:'درخواست بیش از حد بزرگ است.'});
   const action=clean(input.action||'list',30),draftId=clean(input.draftId,40);
   const statuses=new Set(['draft_ready','approved','publish_requested','publishing','published','publish_error','rejected','waiting_provider','processing','error']);
   let taxonomyCache:Record<string,unknown>|null=null;
@@ -66,11 +101,56 @@ Deno.serve(async req=>{
       }
       return reply(200,{draft,sourceUrl});
     }
+    if(action==='save_artifacts'){
+      const revision=Number(input.revision);
+      if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0))return reply(409,{message:'نسخهٔ محتوا تغییر کرده؛ پیش‌نویس را دوباره باز کنید.'});
+      if(!['draft_ready','approved','publish_error'].includes(String(draft.status)))return reply(409,{message:'ویرایش در این وضعیت ممکن نیست؛ ابتدا پیش‌نویس را بازگشایی کنید.'});
+      let draftJson:Record<string,unknown>;
+      try{draftJson=editArtifacts(input.artifacts,object(draft.draft_json)?draft.draft_json:{});}catch{return reply(400,{message:'محتوا معتبر نیست؛ عنوان، متن و چهار گزینه و پاسخ صحیح سؤال‌ها را بررسی کنید.'});}
+      const previous=object(draft.draft_json)?draft.draft_json:{};
+      const lessonText=(value:unknown)=>(Array.isArray(value)?value:[]).map(row=>object(row)?{heading:row.heading,paragraphs:row.paragraphs,keyPoints:row.keyPoints}:row);
+      const lessonChanged=JSON.stringify(lessonText(draftJson.lessonDrafts))!==JSON.stringify(lessonText(previous.lessonDrafts));
+      if(lessonChanged){
+        draftJson.flashcardDrafts=[];draftJson.mcqDrafts=[];draftJson.kfDrafts=[];
+        const generation=object(draftJson.generation)?draftJson.generation:{};
+        draftJson.generation={...generation,generated:Array.isArray(draftJson.lessonDrafts)&&draftJson.lessonDrafts.length?['lesson']:[],assessmentsInvalidatedAt:new Date().toISOString()};
+      }
+      const saved=await db('intmed_content_drafts?id=eq.'+draftId+'&review_revision=eq.'+revision+'&status=in.(draft_ready,approved,publish_error)','PATCH',{
+        draft_json:draftJson,status:'draft_ready',review_revision:revision+1,reviewed_by:null,reviewed_at:null,
+        updated_at:new Date().toISOString(),publish_error:null,
+      },{Prefer:'return=representation'}) as Array<Record<string,unknown>>;
+      if(!saved.length)return reply(409,{message:'نسخهٔ محتوا تغییر کرده؛ پیش‌نویس را دوباره باز کنید.'});
+      return reply(200,{ok:true,draft:saved[0],message:lessonChanged?'درسنامه اصلاح شد؛ آزمون و فلش‌کارت‌های وابسته پاک شدند و باید از متن جدید دوباره ساخته شوند.':'اصلاحات محتوا ذخیره شد؛ برای انتشار تأیید نهایی لازم است.'});
+    }
+    if(action==='reanalyze'){
+      const revision=Number(input.revision);
+      if(input.confirmReanalysis!==true)return reply(400,{message:'تأیید بازخوانی فایل اصلی لازم است.'});
+      if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0)||!['draft_ready','approved','publish_error','error','waiting_provider'].includes(String(draft.status)))return reply(409,{message:'پیش‌نویس تغییر کرده یا اکنون قابل بازخوانی نیست؛ آن را دوباره باز کنید.'});
+      const source=object(draft.intmed_content_ingest)?draft.intmed_content_ingest:{};
+      if(!uuid.test(String(source.id||'')))return reply(400,{message:'منبع اصلی پیش‌نویس موجود نیست.'});
+      const claimed=await db('intmed_content_drafts?id=eq.'+draftId+'&review_revision=eq.'+revision+'&status=eq.'+encodeURIComponent(String(draft.status)),'PATCH',{status:'processing',review_revision:revision+1,reviewed_by:null,reviewed_at:null,error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=representation'}) as Array<Record<string,unknown>>;
+      if(!claimed.length)return reply(409,{message:'پیش‌نویس تغییر کرده؛ دوباره باز کنید.'});
+      try{
+        const released=await db('intmed_content_ingest?id=eq.'+source.id+'&status=in.(accepted,pending_review,error)','PATCH',{status:'pending_review',error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=representation'}) as Array<Record<string,unknown>>;
+        if(!released.length)throw Error('source_busy');
+        const work=fetch(base+'/functions/v1/intmed-content-worker',{method:'POST',headers:server,body:JSON.stringify({ingestId:source.id})}).then(async response=>{
+          if(!response.ok)throw Error('worker_'+response.status);
+          const result=await response.json();
+          if(result.reason==='manual_mode'||result.reason==='empty_or_busy'||(!result.processed&&!result.waitingProvider&&!result.failed))throw Error('processing_not_started');
+        }).catch(async()=>{await db('intmed_content_drafts?id=eq.'+draftId+'&status=eq.processing&review_revision=eq.'+(revision+1),'PATCH',{status:'error',error_code:'reanalysis_dispatch_failed',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});});
+        const runtime=(globalThis as unknown as {EdgeRuntime?:{waitUntil:(promise:Promise<unknown>)=>void}}).EdgeRuntime;
+        if(runtime)runtime.waitUntil(work);else await work;
+        return reply(202,{ok:true,draft:claimed[0],message:'بازخوانی منبع آغاز شد؛ پس از آماده‌شدن، این پیش‌نویس را دوباره باز کنید. مطالب فعلی سایت تغییر نمی‌کنند.'});
+      }catch{
+        await db('intmed_content_drafts?id=eq.'+draftId+'&status=eq.processing&review_revision=eq.'+(revision+1),'PATCH',{status:'error',error_code:'reanalysis_source_busy',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});
+        return reply(409,{message:'منبع در حال پردازش است یا آمادهٔ بازخوانی نیست؛ کمی بعد فهرست را تازه کنید.'});
+      }
+    }
     if(action==='generate'){
       const revision=Number(input.revision);if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0))return reply(409,{message:'این پیش‌نویس تغییر کرده؛ آن را دوباره باز کنید.'});
       const outputSet=new Set(['lesson','flashcards','mcq','kf']),outputs=Array.isArray(input.outputs)?[...new Set(input.outputs.map(value=>clean(value,20)).filter(value=>outputSet.has(value)))]:[];
       if(!outputs.length)return reply(400,{message:'حداقل یک خروجی را انتخاب کنید.'});
-      const generated=await fetch(base+'/functions/v1/intmed-content-generator',{method:'POST',headers:{...server,Authorization:'Bearer '+service},body:JSON.stringify({draftId,outputs})}),result=await generated.json().catch(()=>({}));
+      const generated=await fetch(base+'/functions/v1/intmed-content-generator',{method:'POST',headers:{...server,Authorization:'Bearer '+service},body:JSON.stringify({draftId,outputs,revision})}),result=await generated.json().catch(()=>({}));
       return reply(generated.ok?200:generated.status,{...result,message:clean(result.message||(generated.ok?'خروجی‌ها ساخته شد.':'ساخت خروجی انجام نشد.'),240)});
     }
     if(!['save','approve','publish','reject','reopen'].includes(action))return reply(400,{message:'عملیات ناشناخته است.'});

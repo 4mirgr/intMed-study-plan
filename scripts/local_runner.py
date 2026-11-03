@@ -796,6 +796,11 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
     source = job.get("source") if isinstance(job.get("source"), dict) else {}
     short = str(job.get("draftId") or "")[:12]
     source_id, item_id = "review-source-" + short, "review-item-" + short
+    def source_refs(row):
+        pages = row.get("sourcePages") if isinstance(row, dict) else None
+        pages = list(dict.fromkeys(page for page in (pages or [])
+                                  if isinstance(page, int) and not isinstance(page, bool) and page > 0))
+        return [{"sourceId": source_id, **({"pages": pages} if pages else {})}]
     source_title = str(source.get("filename") or source.get("sourceName") or job.get("title") or "منبع تلگرام")
     add_source(payload, source_id, source_title, source_class or "authored", rights or "بازبینی مدیر")
     # A retry updates the same stable item rather than duplicating it.
@@ -848,7 +853,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                 "id": section_id,
                 "heading": publish_text(section.get("heading")) or str(job.get("title") or label),
                 "paragraphs": [{"id": section_id + "-p" + str(index + 1), "text": value,
-                                "sourceRefs": [{"sourceId": source_id}]}
+                                "sourceRefs": source_refs(section)}
                                for index, value in enumerate(paragraphs)],
             })
             lesson_count += 1
@@ -867,7 +872,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                 continue
             question = {key: row[key] for key in ("stem", "options", "correctIndex", "explanation", "optionExplanations") if key in row}
             question.update({"id": item_id + "-mcq-" + str(index + 1), "reviewStatus": "reviewed",
-                             "sourceRefs": [{"sourceId": source_id}]})
+                             "sourceRefs": source_refs(row)})
             payload.setdefault("mcq", []).append(question)
             mcq_count += 1
         flashcard_count = 0
@@ -879,7 +884,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                 "front": publish_text(row.get("front")),
                 "back": publish_text(row.get("back")),
                 "tags": [publish_text(tag) for tag in (row.get("tags") or []) if publish_text(tag)][:8],
-                "sourceRefs": [{"sourceId": source_id}],
+                "sourceRefs": source_refs(row),
             })
             flashcard_count += 1
         kf = [row for row in (draft.get("kfDrafts") or []) if isinstance(row, dict) and row.get("prompt") and row.get("expectedAnswer")]
@@ -887,10 +892,12 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
             payload.setdefault("kfPmp", []).append({"id": item_id + "-kf", "title": str(job.get("title") or label),
                 "vignette": summary, "sourceRefs": [{"sourceId": source_id}],
                 "steps": [{"id": item_id + "-kf-" + str(index + 1), "prompt": row["prompt"],
-                           "expectedAnswer": row["expectedAnswer"], "sourceRefs": [{"sourceId": source_id}]}
+                           "expectedAnswer": row["expectedAnswer"], "sourceRefs": source_refs(row)}
                           for index, row in enumerate(kf)]})
         if not lesson_count and not mcq_count and not kf and not flashcard_count:
             raise RunnerError("پیش‌نویس محتوای قابل ادغام ندارد.")
+    from content_pipeline import migrate_topic
+    migrate_topic(payload)
     topic_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8")
     ensure_publish_validator()
     for command in ([sys.executable, "scripts/content_pipeline.py", "validate"],
