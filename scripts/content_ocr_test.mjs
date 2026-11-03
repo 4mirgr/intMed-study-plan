@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const code=fs.readFileSync('backend/supabase/functions/intmed-content-jobs/ocr.ts','utf8').replace('export async function','async function');
+let calls=0,finish='STOP';
+const context=vm.createContext({Deno:{env:{get:key=>({GEMINI_API_KEY:'private',INTMED_EXTRACTION_MODEL:'ocr-role'}[key])}},atob,fetch:async(url,options)=>{
+  calls++;assert.match(url,/ocr-role/);
+  const body=JSON.parse(options.body);assert.equal(body.contents[0].parts[1].inlineData.mimeType,'image/png');
+  return Response.json({candidates:[{finishReason:finish,content:{parts:[{text:JSON.stringify({text:'دوز ۱۰ mg\nهر ۸ ساعت',unreadable:false,warnings:[]})}]}}]});
+},Response});
+vm.runInContext(code,context);
+const png=Buffer.alloc(24);Buffer.from('89504e470d0a1a0a','hex').copy(png);png.writeUInt32BE(1200,16);png.writeUInt32BE(1600,20);
+const input={page:2,imageBase64:png.toString('base64')};
+const result=await context.ocrPage(input,{});
+assert.equal(result.text,'دوز ۱۰ mg\nهر ۸ ساعت');assert.equal(result.page,2);assert.equal(result.method,'gemini_ocr');
+await assert.rejects(()=>context.ocrPage({...input,page:0},{}),/page_invalid/);
+await assert.rejects(()=>context.ocrPage({...input,imageBase64:Buffer.from('not png').toString('base64')},{}),/png_required/);
+png.writeUInt32BE(9000,16);await assert.rejects(()=>context.ocrPage({...input,imageBase64:png.toString('base64')},{}),/dimensions/);
+assert.equal(calls,1,'invalid images must not call provider');
+finish='MAX_TOKENS';await assert.rejects(()=>context.ocrPage(input,{}),/incomplete/);
+console.log('Selective OCR passed: existing role, preserved transcription, input bounds and incomplete-response rejection.');

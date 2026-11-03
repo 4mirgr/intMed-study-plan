@@ -8,13 +8,13 @@ const lesson={lessonDrafts:[{heading:'تشخیص',paragraphs:['درگیری پا
 const mcq={mcqDrafts:[{stem:'بررسی مناسب چیست؟',options:['MRI','ECG','اسپیرومتری','کولونوسکوپی'],correctIndex:0,explanation:'با توجه به درگیری عصبی MRI مناسب است.',optionExplanations:['بررسی مغز','بررسی قلب','بررسی ریه','بررسی کولون'],sourcePages:[1]}]};
 const extraction={pageCount:1,pages:[{page:1,heading:'انسفالیت',text:'درگیری پارانشیم مغز؛ بررسی MRI و CSF',unreadable:false}],quality:{canReuseText:true}};
 
-async function run({outputs=['mcq'],draftJson={documentExtraction:extraction},conflict=false,finishReason='STOP',responses=[lesson,mcq],kind='pdf',providerStatus=200,failOnCall=0}={}){
+async function run({outputs=['mcq'],draftJson={documentExtraction:extraction},conflict=false,finishReason='STOP',responses=[lesson,mcq],kind='pdf',providerStatus=200,failOnCall=0,requests=[{}]}={}){
   let handler,modelCalls=[],storageCalls=0,writes=[],row={id,ingest_id:id,status:'draft_ready',title:'انسفالیت',review_revision:2,draft_json:structuredClone(draftJson)};
   const env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service',GEMINI_API_KEY:'test',INTMED_LESSON_MODEL:'lesson-model',INTMED_ASSESSMENT_MODEL:'assessment-model'};
   const fetchMock=async(url,options={})=>{
     if(url.includes('/rest/v1/intmed_content_drafts?')){
       if(options.method==='PATCH'){
-        assert.match(url,/review_revision=eq\.[23]/);
+        assert.match(url,/review_revision=eq\.\d+/);
         assert.match(url,/status=in\.\(draft_ready,approved,publish_error\)/);
         assert.equal(options.headers.Prefer,'return=representation');
         if(conflict)return Response.json([]);
@@ -34,8 +34,12 @@ async function run({outputs=['mcq'],draftJson={documentExtraction:extraction},co
   };
   const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:key=>env[key]}},fetch:fetchMock,Request,Response,TextEncoder,Uint8Array,btoa,console});
   vm.runInContext(code,context);
-  const response=await handler(new Request('https://project.supabase.co/generate',{method:'POST',headers:{authorization:'Bearer service'},body:JSON.stringify({draftId:id,outputs})}));
-  return {status:response.status,result:await response.json(),modelCalls,storageCalls,writes};
+  const history=[];
+  for(const request of requests){
+    const response=await handler(new Request('https://project.supabase.co/generate',{method:'POST',headers:{authorization:'Bearer service'},body:JSON.stringify({draftId:id,outputs,...request})}));
+    history.push({status:response.status,result:await response.json()});
+  }
+  return {...history.at(-1),history,modelCalls,storageCalls,writes,context};
 }
 
 let value=await run();
@@ -73,4 +77,34 @@ value=await run({outputs:['mcq'],draftJson:{documentExtraction:extraction,...les
 assert.equal(value.result.code,'duplicate_mcq_options');
 value=await run({draftJson:{},outputs:['lesson']});
 assert.equal(value.status,409);assert.equal(value.result.code,'source_page_map_required');assert.equal(value.modelCalls.length,0);
+
+const native={pageCount:5,pages:Array.from({length:5},(_,index)=>({page:index+1,heading:'بخش '+(index+1),text:String(index+1).repeat(3000),unreadable:false})),quality:{canReuseText:true,actualPageCountVerified:true}};
+const lessonOne={lessonDrafts:[{...lesson.lessonDrafts[0],heading:'بخش اول',sourcePages:[1,2,3,4]}]};
+const lessonTwo={lessonDrafts:[{...lesson.lessonDrafts[0],heading:'بخش دوم',sourcePages:[5]}]};
+const chunkRequest={chunkIndex:0,runId:'job-11111111',outputs:['lesson']};
+value=await run({draftJson:{documentExtraction:native,...mcq},outputs:['lesson'],responses:[lessonOne,lessonTwo],requests:[chunkRequest,{...chunkRequest,chunkIndex:1},{...chunkRequest,chunkIndex:1}]});
+assert.equal(value.status,200);assert.equal(value.history[0].result.complete,false);assert.equal(value.history[0].result.nextChunkIndex,1);
+assert.equal(value.result.complete,true);assert.equal(value.result.reused,true,'replaying saved chunk must avoid another model request');
+assert.equal(value.modelCalls.length,2);assert.equal(value.writes.length,2);
+assert.equal(value.result.draft.draft_json.lessonDrafts.length,2,'later chunks must retain earlier lesson sections');
+assert.equal(value.result.draft.draft_json.lessonDrafts[0].heading,'بخش اول');
+assert.equal(value.result.draft.draft_json.lessonDrafts[1].heading,'بخش دوم');
+assert.deepEqual(value.writes[0].draft_json.mcqDrafts,[],'first new lesson chunk must invalidate old assessments');
+const sources=value.modelCalls.map(call=>JSON.parse(call.body.contents[0].parts[1].text.split('\n').slice(1).join('\n')));
+assert.deepEqual(sources.map(rows=>rows.map(row=>row.page)),[[1,2,3,4],[5]]);
+assert.equal(value.modelCalls[0].body.generationConfig.maxOutputTokens,8192);
+assert.equal(value.result.draft.draft_json.generation.chunkProgress.lesson.complete,true);
+
+value=await run({draftJson:{documentExtraction:native},requests:[{...chunkRequest,chunkIndex:1}]});
+assert.equal(value.status,409);assert.equal(value.result.code,'previous_chunk_incomplete');assert.equal(value.modelCalls.length,0);
+value=await run({draftJson:{documentExtraction:native},requests:[{...chunkRequest,chunkIndex:9}]});
+assert.equal(value.status,400);assert.equal(value.result.code,'invalid_chunk_index');assert.equal(value.modelCalls.length,0);
+value=await run({draftJson:{documentExtraction:{...native,quality:{canReuseText:false}}},requests:[chunkRequest]});
+assert.equal(value.status,409);assert.equal(value.result.code,'source_ocr_required');assert.equal(value.modelCalls.length,0);
+const longText='پ'.repeat(28001),split=value.context.sourceChunks([{page:7,heading:'صفحه طولانی',text:longText}]);
+assert.equal(split.length,3);assert.equal(split.flat().map(part=>part.text).join(''),longText,'long pages must preserve every character');
+assert.equal(split[2][0].page,7);assert.equal(split[2][0].startOffset,24000);
+const withBlank={pageCount:2,pages:[{...extraction.pages[0],method:'native_text'},{page:2,text:'',heading:'',method:'blank_page',unreadable:false}],quality:{canReuseText:true}};
+value=await run({draftJson:{documentExtraction:withBlank},outputs:['lesson'],responses:[lesson],requests:[chunkRequest]});
+assert.equal(value.status,200);assert.equal(value.storageCalls,0);assert.equal(value.result.totalChunks,1,'confirmed blank pages should not become model tasks');
 console.log('Content generator passed: lesson-first checkpoint, role-specific models, evidence-linked assessments, cached source reuse, stale edit protection and incomplete/invalid output rejection.');

@@ -1,0 +1,41 @@
+name: Process private content job
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: Private content job UUID
+        required: true
+        type: string
+      capability:
+        description: Short-lived capability for this job only
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intmed-content-job-${{ inputs.job_id }}
+  cancel-in-progress: false
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/quirky-ride-mavb6b
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install native PDF parser
+        run: python -m pip install --disable-pip-version-check 'PyMuPDF==1.26.5'
+      - name: Process one private job
+        env:
+          INTMED_CONTENT_JOB_ID: ${{ inputs.job_id }}
+          INTMED_CONTENT_JOB_CAPABILITY: ${{ inputs.capability }}
+        run: |
+          echo "::add-mask::$INTMED_CONTENT_JOB_CAPABILITY"
+          python scripts/process_content_job.py

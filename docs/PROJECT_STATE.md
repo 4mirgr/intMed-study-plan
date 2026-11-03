@@ -113,6 +113,24 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   protects completed work but is not a durable task queue. No unbenchmarked model is advertised
   as more accurate. Existing historical drafts need explicit reanalysis where no page map exists.
 
+### Durable content processing (2026-11-03)
+
+- Added service-only `intmed_content_jobs`, capability-scoped read-only GitHub processing workflow,
+  actual PDF parsing with PyMuPDF, selective OCR for nonblank unreadable pages, cached OCR results,
+  parser-verified page inventory and preserved source text. Source files and text stay private;
+  workflows do not receive a model API key or Supabase service key and publish no source artifacts.
+- Generation now runs independently of the review browser, in bounded chunks of four pages or
+  12,000 characters. Every completed chunk is persisted. Retry resumes the same run and avoids
+  redoing completed chunks; lesson completion precedes its assessments. The admin panel resumes
+  progress polling on reopening and prevents concurrent edits/publication while a job is active.
+- Figures are inventoried from embedded streams with page, dimensions and hash. Figure binaries,
+  per-figure rights review and publication routing are NOT yet integrated. A figure inventory
+  is not a published gallery entry.
+- Still open: multi-topic splitting/routing within one file; private figure selection and asset
+  publication; independent scientific/assessment review; representative model comparison with
+  teacher-approved reference output. OCR correctness and scientific quality require separate
+  acceptance; parser-verified page counts alone prove neither.
+
 ### P0 — release correctness
 
 - Keep GitHub validation/deployment green; investigate any failing SQL/browser test before calling

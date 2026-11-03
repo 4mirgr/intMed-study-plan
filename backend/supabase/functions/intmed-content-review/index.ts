@@ -99,7 +99,12 @@ Deno.serve(async req=>{
         const signed=await fetch(base+'/storage/v1/object/sign/intmed-content-inbox/'+path.split('/').map(encodeURIComponent).join('/'),{method:'POST',headers:server,body:JSON.stringify({expiresIn:900})});
         if(signed.ok){const value=await signed.json(),relative=String(value.signedURL||value.signedUrl||'');sourceUrl=relative.startsWith('http')?relative:base+'/storage/v1'+(relative.startsWith('/')?'':'/')+relative;}
       }
-      return reply(200,{draft,sourceUrl});
+      const jobs=await db('intmed_content_jobs?draft_id=eq.'+draftId+'&select=id,kind,status,outputs,progress,error,created_at,updated_at&order=created_at.desc&limit=1') as Array<Record<string,unknown>>;
+      return reply(200,{draft,sourceUrl,job:jobs[0]||null});
+    }
+    if(['save_artifacts','save','approve','publish','reject','reopen'].includes(action)){
+      const active=await db('intmed_content_jobs?draft_id=eq.'+draftId+'&status=in.(queued,running)&select=id&limit=1') as Array<Record<string,unknown>>;
+      if(active.length)return reply(409,{message:'پردازش این منبع هنوز ادامه دارد؛ پس از پایان آن محتوا را ویرایش یا منتشر کنید.'});
     }
     if(action==='save_artifacts'){
       const revision=Number(input.revision);
@@ -128,6 +133,11 @@ Deno.serve(async req=>{
       if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0)||!['draft_ready','approved','publish_error','error','waiting_provider'].includes(String(draft.status)))return reply(409,{message:'پیش‌نویس تغییر کرده یا اکنون قابل بازخوانی نیست؛ آن را دوباره باز کنید.'});
       const source=object(draft.intmed_content_ingest)?draft.intmed_content_ingest:{};
       if(!uuid.test(String(source.id||'')))return reply(400,{message:'منبع اصلی پیش‌نویس موجود نیست.'});
+      if(source.kind==='pdf'||source.mime_type==='application/pdf'){
+        const queued=await fetch(base+'/functions/v1/intmed-content-jobs',{method:'POST',headers:server,body:JSON.stringify({action:'dispatch',kind:'extract',draftId,ingestId:source.id,revision})});
+        const result=await queued.json().catch(()=>({}));
+        return reply(queued.status,{...result,draft,message:clean(result.message||(queued.ok?'بازخوانی PDF در صف پردازش ثبت شد؛ با بستن صفحه ادامه می‌یابد.':'شروع بازخوانی PDF انجام نشد.'),240)});
+      }
       const claimed=await db('intmed_content_drafts?id=eq.'+draftId+'&review_revision=eq.'+revision+'&status=eq.'+encodeURIComponent(String(draft.status)),'PATCH',{status:'processing',review_revision:revision+1,reviewed_by:null,reviewed_at:null,error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=representation'}) as Array<Record<string,unknown>>;
       if(!claimed.length)return reply(409,{message:'پیش‌نویس تغییر کرده؛ دوباره باز کنید.'});
       try{
@@ -150,8 +160,8 @@ Deno.serve(async req=>{
       const revision=Number(input.revision);if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0))return reply(409,{message:'این پیش‌نویس تغییر کرده؛ آن را دوباره باز کنید.'});
       const outputSet=new Set(['lesson','flashcards','mcq','kf']),outputs=Array.isArray(input.outputs)?[...new Set(input.outputs.map(value=>clean(value,20)).filter(value=>outputSet.has(value)))]:[];
       if(!outputs.length)return reply(400,{message:'حداقل یک خروجی را انتخاب کنید.'});
-      const generated=await fetch(base+'/functions/v1/intmed-content-generator',{method:'POST',headers:{...server,Authorization:'Bearer '+service},body:JSON.stringify({draftId,outputs,revision})}),result=await generated.json().catch(()=>({}));
-      return reply(generated.ok?200:generated.status,{...result,message:clean(result.message||(generated.ok?'خروجی‌ها ساخته شد.':'ساخت خروجی انجام نشد.'),240)});
+      const generated=await fetch(base+'/functions/v1/intmed-content-jobs',{method:'POST',headers:server,body:JSON.stringify({action:'dispatch',kind:'generate',draftId,outputs,revision})}),result=await generated.json().catch(()=>({}));
+      return reply(generated.status,{...result,draft,message:clean(result.message||(generated.ok?'تولید محتوا در صف ثبت شد؛ با بستن صفحه هم ادامه می‌یابد.':'ثبت درخواست تولید انجام نشد.'),240)});
     }
     if(!['save','approve','publish','reject','reopen'].includes(action))return reply(400,{message:'عملیات ناشناخته است.'});
     const before=String(draft.status||''),revision=Number(input.revision);

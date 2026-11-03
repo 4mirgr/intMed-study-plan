@@ -9,7 +9,7 @@ const {chromium}=createRequire(import.meta.url)('playwright');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 // Exercise the real service handler: editing must preserve provenance, reject
 // malformed answer keys and reject a concurrent update instead of overwriting it.
-let handler,concurrent=false,patches=[],workerResult={processed:1};
+let handler,concurrent=false,patches=[],workerResult={processed:1},jobDispatches=[],jobsActive=false;
 const draftId='11111111-1111-4111-8111-111111111111',adminId='22222222-2222-4222-8222-222222222222';
 const stored={id:draftId,status:'approved',review_revision:7,intmed_content_ingest:{id:adminId,status:'accepted'},draft_json:{sourceEvidence:['page 4'],generation:{phase:'generated'},mcqDrafts:[{stem:'old',options:['a','b','c','d'],correctIndex:0,explanation:'old',sourcePages:[4],sourceRefs:[{sourceId:'original',page:4}]}]}};
 const serviceFetch=async(url,options={})=>{
@@ -20,6 +20,8 @@ const serviceFetch=async(url,options={})=>{
     return Response.json([stored]);
   }
   if(url.includes('/rest/v1/intmed_content_ingest?'))return Response.json([{id:adminId,status:'pending_review'}]);
+  if(url.includes('/rest/v1/intmed_content_jobs?'))return Response.json(jobsActive?[{id:adminId,status:'running'}]:[]);
+  if(url.endsWith('/functions/v1/intmed-content-jobs')){jobDispatches.push(JSON.parse(options.body));return Response.json({jobId:adminId,status:'queued'},{status:202});}
   if(url.endsWith('/functions/v1/intmed-content-worker'))return Response.json(workerResult);
   throw Error('Unexpected service URL '+url);
 };
@@ -34,6 +36,10 @@ assert.equal((await request({...edit,artifacts:{mcqDrafts:[{index:0,value:{...ed
 assert.equal((await request({...edit,artifacts:{mcqDrafts:[{index:0,value:{...edit.artifacts.mcqDrafts[0].value,options:['same','same','c','d']}}]}})).status,400);
 concurrent=true;assert.equal((await request(edit)).status,409);
 concurrent=false;
+jobsActive=true;
+assert.equal((await request(edit)).status,409,'active processing must block edits from another browser tab');
+assert.equal((await request({action:'publish',draftId,revision:7})).status,409,'active processing must block publication of old artifacts');
+jobsActive=false;
 stored.draft_json.lessonDrafts=[{heading:'old lesson',paragraphs:['old text'],keyPoints:[],sourcePages:[4]}];
 stored.draft_json.flashcardDrafts=[{front:'old',back:'answer'}];
 const unchangedLesson=await request({...edit,artifacts:{...edit.artifacts,lessonDrafts:[{index:0,value:{heading:'old lesson',paragraphs:['old text'],keyPoints:[]}}]}});
@@ -45,6 +51,13 @@ assert.equal((await request({action:'reanalyze',draftId,revision:7,confirmReanal
 workerResult={processed:0,reason:'empty_or_busy'};
 assert.equal((await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true})).status,202);
 assert.equal(patches.at(-1).value.status,'error');assert.equal(patches.at(-1).value.error_code,'reanalysis_dispatch_failed');assert.match(patches.at(-1).url,/review_revision=eq.8/);
+response=await request({action:'generate',draftId,revision:7,outputs:['mcq']});
+assert.equal(response.status,202);assert.equal((await response.json()).jobId,adminId);
+assert.equal(jobDispatches.at(-1).kind,'generate');assert.equal(jobDispatches.at(-1).revision,7);
+stored.intmed_content_ingest.kind='pdf';stored.intmed_content_ingest.mime_type='application/pdf';
+response=await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true});
+assert.equal(response.status,202);assert.equal(jobDispatches.at(-1).kind,'extract');
+stored.intmed_content_ingest.kind='text';
 const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH||undefined});
 const page=await browser.newPage();
 await page.setContent(`<!doctype html><html lang="fa" dir="rtl"><body>
@@ -55,8 +68,8 @@ await page.setContent(`<!doctype html><html lang="fa" dir="rtl"><body>
 await page.evaluate(()=>{
   window.__calls=[];
   window.INTMED_CONFIG={supabaseUrl:'https://example.supabase.co',supabaseAnonKey:'public-test-key'};
-  let draft={id:'11111111-1111-4111-8111-111111111111',ingest_id:'22222222-2222-4222-8222-222222222222',status:'draft_ready',topic_id:'id-cns-meningoencephalitis',topic_confidence:.9,title:'انسفالیت',source_summary:'خلاصه',review_revision:0,updated_at:'2026-10-27T10:00:00Z',model:'gemma',draft_json:{lessonOutline:['تعریف و رویکرد تشخیصی انسفالیت ویروسی'],lessonDrafts:[{heading:'رویکرد',paragraphs:['متن کامل درسنامه'],keyPoints:['MRI و CSF']}],documentExtraction:{pageCount:2,pages:[{page:1,heading:'تعریف',text:'تب و تغییر سطح هوشیاری',unreadable:false},{page:2,heading:'تشخیص',text:'MRI و CSF',unreadable:false}],warnings:[]},sourceEvidence:[{claim:'تب و تغییر سطح هوشیاری از تظاهرات مهم هستند'},{claim:'MRI و بررسی CSF در ارزیابی تشخیصی نقش دارند'}],medicalWarnings:['نیازمند بازبینی'],insufficientEvidence:[],mcqDrafts:[],kfDrafts:[],imageCandidates:[]},intmed_content_ingest:{kind:'photo',mime_type:'image/png',content_text:'متن منبع'}};
-  window.fetch=async (url,options)=>{if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]})};const payload=JSON.parse(options.body);window.__calls.push(payload);if(payload.action==='list')return {ok:true,status:200,text:async()=>JSON.stringify({items:[draft],counts:{[draft.status]:1}})};if(payload.action==='detail')return {ok:true,status:200,text:async()=>JSON.stringify({draft,sourceUrl:null})};if(payload.action==='save_artifacts'){if(window.__rejectEdit)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};const json={...draft.draft_json};Object.keys(payload.artifacts).forEach(kind=>{json[kind]=payload.artifacts[kind].map(change=>({...draft.draft_json[kind][change.index],...change.value}));});draft={...draft,status:'draft_ready',draft_json:json,review_revision:draft.review_revision+1};return {ok:true,status:200,text:async()=>JSON.stringify({message:'اصلاحات ذخیره شد',draft})};}if(payload.action==='generate'){draft={...draft,review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,mcqDrafts:[{stem:'نمونه',options:['الف','ب','ج','د'],correctIndex:0,explanation:'شرح'}],generation:{phase:'generated',generated:payload.outputs}}};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};}draft={...draft,status:payload.action==='approve'?'approved':payload.action==='publish'?'publish_requested':'draft_ready',review_revision:draft.review_revision+1,target_topic_is_new:payload.createTopic,target_topic_label:payload.newTopicLabel,target_category_id:payload.newTopicCategoryId,target_content_kind:payload.targetKind,target_source_class:payload.sourceClass,target_rights_note:payload.rightsNote,source_summary:payload.sourceSummary};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};};
+  let job=null,pendingOutputs=[];let draft={id:'11111111-1111-4111-8111-111111111111',ingest_id:'22222222-2222-4222-8222-222222222222',status:'draft_ready',topic_id:'id-cns-meningoencephalitis',topic_confidence:.9,title:'انسفالیت',source_summary:'خلاصه',review_revision:0,updated_at:'2026-10-27T10:00:00Z',model:'gemma',draft_json:{lessonOutline:['تعریف و رویکرد تشخیصی انسفالیت ویروسی'],lessonDrafts:[{heading:'رویکرد',paragraphs:['متن کامل درسنامه'],keyPoints:['MRI و CSF']}],documentExtraction:{pageCount:2,pages:[{page:1,heading:'تعریف',text:'تب و تغییر سطح هوشیاری',unreadable:false},{page:2,heading:'تشخیص',text:'MRI و CSF',unreadable:false}],warnings:[]},sourceEvidence:[{claim:'تب و تغییر سطح هوشیاری از تظاهرات مهم هستند'},{claim:'MRI و بررسی CSF در ارزیابی تشخیصی نقش دارند'}],medicalWarnings:['نیازمند بازبینی'],insufficientEvidence:[],mcqDrafts:[],kfDrafts:[],imageCandidates:[]},intmed_content_ingest:{kind:'photo',mime_type:'image/png',content_text:'متن منبع'}};
+  window.fetch=async (url,options)=>{if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]})};const payload=JSON.parse(options.body);window.__calls.push(payload);if(payload.action==='list')return {ok:true,status:200,text:async()=>JSON.stringify({items:[draft],counts:{[draft.status]:1}})};if(payload.action==='detail'){if(job&&job.status==='queued'&&window.__finishJob){job={...job,status:'completed',progress:{completedOutputs:pendingOutputs}};draft={...draft,review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,mcqDrafts:[{stem:'نمونه',options:['الف','ب','ج','د'],correctIndex:0,explanation:'شرح'}],generation:{phase:'generated',generated:pendingOutputs}}};}return {ok:true,status:200,text:async()=>JSON.stringify({draft,sourceUrl:null,job})};}if(payload.action==='save_artifacts'){if(window.__rejectEdit)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};const json={...draft.draft_json};Object.keys(payload.artifacts).forEach(kind=>{json[kind]=payload.artifacts[kind].map(change=>({...draft.draft_json[kind][change.index],...change.value}));});draft={...draft,status:'draft_ready',draft_json:json,review_revision:draft.review_revision+1};return {ok:true,status:200,text:async()=>JSON.stringify({message:'اصلاحات ذخیره شد',draft})};}if(payload.action==='generate'){pendingOutputs=payload.outputs;job={id:'job-1',kind:'generate',status:'queued',progress:{}};return {ok:true,status:202,text:async()=>JSON.stringify({jobId:job.id,status:job.status,progress:job.progress,draft})};}draft={...draft,status:payload.action==='approve'?'approved':payload.action==='publish'?'publish_requested':'draft_ready',review_revision:draft.review_revision+1,target_topic_is_new:payload.createTopic,target_topic_label:payload.newTopicLabel,target_category_id:payload.newTopicCategoryId,target_content_kind:payload.targetKind,target_source_class:payload.sourceClass,target_rights_note:payload.rightsNote,source_summary:payload.sourceSummary};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};};
   window.IntMedBackend={session:()=>({access_token:'test-token'}),refreshSession:async()=>({access_token:'test-token'})};
 });
 await page.addScriptTag({path:path.join(root,'docs/js/intmed-content-review.js')});
@@ -87,6 +100,14 @@ assert.equal(await page.inputValue('[data-artifact-field="paragraphs"]'),'متن
 await page.check('[name="contentReviewOutput"][value="mcq"]');
 await page.click('#contentReviewGenerate');
 await page.waitForFunction(()=>window.__calls.some(call=>call.action==='generate'));
+await page.waitForFunction(()=>document.getElementById('contentReviewGenerationStatus').textContent.includes('می‌توانید صفحه را ببندید'));
+assert.equal(await page.locator('#contentReviewPublish').isDisabled(),true);
+await page.evaluate(()=>document.getElementById('contentReviewDialog').close());
+await page.click('[data-review-id]');
+await page.waitForSelector('#contentReviewDialog[open]');
+await page.waitForFunction(()=>document.getElementById('contentReviewGenerationStatus').textContent.includes('در صف پردازش'));
+await page.evaluate(()=>{window.__finishJob=true;});
+await page.waitForSelector('[data-artifact-kind="mcqDrafts"]',{timeout:12000});
 assert.match(await page.textContent('#contentReviewDraftBody'),/نمونه/);
 await page.click('[data-artifact-kind="mcqDrafts"] .review-artifact-delete');
 await page.click('#contentReviewSaveArtifacts');

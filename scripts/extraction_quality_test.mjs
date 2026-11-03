@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const source=fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8');
 const ingestId='11111111-1111-4111-8111-111111111111';
-async function run({extraction,finishReason='STOP',raw,kind='pdf'}){
+async function run({extraction,finishReason='STOP',raw,kind='image',native,dispatchOk=true}){
   const saves=[],updates=[],calls=[];let handler,claimed=false;
   const env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service',SUPABASE_ANON_KEY:'anon',GEMINI_API_KEY:'model-key',INTMED_EXTRACTION_MODEL:'test-extractor'};
   const fetch=async(url,options={})=>{
@@ -18,6 +18,8 @@ async function run({extraction,finishReason='STOP',raw,kind='pdf'}){
     }
     if(url.includes('/intmed_bot_topic_hints?'))return Response.json([]);
     if(url.includes('/intmed_content_drafts?on_conflict=')){saves.push(JSON.parse(options.body));return new Response(null,{status:204});}
+    if(url.includes('/intmed_content_drafts?ingest_id='))return Response.json(native?[{id:ingestId,review_revision:0,draft_json:{documentExtraction:native}}]:[]);
+    if(url.endsWith('/functions/v1/intmed-content-jobs'))return Response.json({jobId:ingestId,status:'queued'},{status:dispatchOk?202:503});
     if(url.includes('/storage/v1/object/'))return new Response('%PDF-1.7 source');
     if(url.includes('generativelanguage.googleapis.com'))return Response.json({candidates:[{finishReason,content:{parts:[{text:raw??JSON.stringify({title:'عنوان',sourceSummary:'خلاصه',suggestedTopicId:'id-cns',confidence:.8,documentExtraction:extraction})}]}}]});
     throw Error('Unexpected mock URL: '+url);
@@ -63,3 +65,24 @@ for(const input of [{extraction:complete,finishReason:'MAX_TOKENS'},{raw:'{"titl
   assert.ok(!failed.updates.some(update=>update.status==='accepted'),'failed source must remain retryable');
 }
 console.log('Extraction quality passed: model-reported coverage, missing/duplicate/unreadable pages, limits, multiline text, role selection and truncated-response recovery.');
+
+const queued=await run({kind:'pdf',extraction:complete});
+assert.equal(queued.response.processed,1);
+assert.ok(queued.calls.some(call=>call.url.endsWith('/functions/v1/intmed-content-jobs')));
+assert.ok(!queued.calls.some(call=>call.url.includes('generativelanguage.googleapis.com')),'PDF must be counted by parser before model analysis');
+assert.equal(queued.saves.at(-1).status,'processing');
+const failedDispatch=await run({kind:'pdf',dispatchOk:false});
+assert.equal(failedDispatch.response.failed,1);
+assert.equal(failedDispatch.saves.at(-1).error_code,'native_extraction_dispatch_failed');
+const native={...complete,quality:{actualPageCountVerified:true,countBasis:'pdf_parser',canReuseText:true},figures:[{page:1,width:500,height:400}]};
+const parsed=await run({kind:'pdf',native,extraction:{pageCount:99,pages:[page(99,'wrong model text')]}});
+const parsedDraft=parsed.saves.find(save=>save.status==='draft_ready');
+assert.equal(parsedDraft.draft_json.documentExtraction.pageCount,2);
+assert.equal(parsedDraft.draft_json.documentExtraction.quality.actualPageCountVerified,true);
+assert.equal(parsedDraft.draft_json.documentExtraction.pages[0].text,complete.pages[0].text);
+assert.ok(!parsed.calls.some(call=>call.url.includes('/storage/v1/object/')),'native text should not redownload full PDF');
+const unreadableNative={...native,pages:[page(1),{...page(2,''),unreadable:true}],quality:{...native.quality,canReuseText:false,unreadablePages:[2]}};
+const ocr=await run({kind:'pdf',native:unreadableNative,extraction:complete});
+assert.equal(ocr.saves.find(save=>save.status==='draft_ready').draft_json.documentExtraction.pages[1].unreadable,true);
+assert.ok(!ocr.calls.some(call=>call.url.includes('/storage/v1/object/')),'unreadable native source must not cause another whole-PDF OCR request');
+assert.ok(!ocr.calls.some(call=>call.url.endsWith('/functions/v1/intmed-content-jobs')),'a scanned native PDF must not be redispatched forever');

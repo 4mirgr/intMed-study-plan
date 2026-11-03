@@ -66,9 +66,21 @@ Deno.serve(async req=>{
       const items=await db('intmed_content_ingest?id=eq.'+encodeURIComponent(itemId)+'&status=eq.processing&select=id,kind,mime_type,original_filename,storage_path,content_text,caption,suggested_topic_id,sha256,byte_size&limit=1'),item=items[0];
       if(!item){await release();break;}
       const hintRows=await db('intmed_bot_topic_hints?ingest_id=eq.'+item.id+'&select=hint_text&limit=1'),persianHint=safeText(hintRows[0]?.hint_text,300);
+      let nativeExtraction=null;
+      if(item.kind==='pdf'){
+        const drafts=await db('intmed_content_drafts?ingest_id=eq.'+encodeURIComponent(item.id)+'&select=id,review_revision,draft_json&limit=1');
+        const extraction=drafts[0]?.draft_json?.documentExtraction;
+        if(extraction?.quality?.actualPageCountVerified===true&&extraction?.quality?.countBasis==='pdf_parser'&&Number.isInteger(extraction.pageCount)&&Array.isArray(extraction.pages)&&extraction.pages.length===extraction.pageCount)nativeExtraction=extraction;
+        if(!nativeExtraction){
+          const dispatched=await fetch(base+'/functions/v1/intmed-content-jobs',{method:'POST',headers:sh,body:JSON.stringify({action:'dispatch',kind:'extract',ingestId:item.id,...(drafts[0]?{draftId:drafts[0].id,revision:Number(drafts[0].review_revision||0)}:{})})});
+          if(!dispatched.ok){await save(item.id,{status:'error',error_code:'native_extraction_dispatch_failed'});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'error',error_code:'native_extraction_dispatch_failed',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});failed++;await release();continue;}
+          await save(item.id,{status:'processing',error_code:null});
+          processed++;await release();continue;
+        }
+      }
       // Exact duplicates are common when Telegram delivery is retried. Reuse the reviewed
       // machine draft instead of paying the provider to analyze identical bytes again.
-      if(item.sha256){
+      if(item.sha256&&!nativeExtraction){
         const duplicates=await db('intmed_content_ingest?sha256=eq.'+encodeURIComponent(item.sha256)+'&id=neq.'+encodeURIComponent(item.id)+'&status=eq.accepted&select=id&order=updated_at.desc&limit=1');
         if(duplicates[0]){
           const cached=await db('intmed_content_drafts?ingest_id=eq.'+encodeURIComponent(duplicates[0].id)+'&status=eq.draft_ready&select=topic_id,topic_confidence,title,source_summary,extracted_text,draft_json&limit=1');
@@ -82,10 +94,14 @@ Deno.serve(async req=>{
       if(!provider){await save(item.id,{status:'waiting_provider',error_code:'provider_not_configured',provider:'online',model:null});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'pending_review',error_code:'provider_not_configured',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});waiting++;await release();break;}
       await save(item.id,{status:'processing',error_code:null,provider,model});
       try{
+        const nativeSourceText=nativeExtraction?nativeExtraction.pages.map(page=>'صفحه '+page.page+'\n'+page.text).join('\n\n'):null;
         const topicList=topics.map(t=>t.id+' | '+t.category+' | '+t.label).join('\n'),instructions='شما مرحلهٔ اول آماده‌سازی محتوای پزشکی IntMed هستید. تمام صفحات PDF، متن تایپی، دست‌نویس، جدول، سؤال و تصویر را صفحه‌به‌صفحه دقیق بررسی کنید، اما هنوز درسنامهٔ نهایی، فلش‌کارت، سؤال چهارگزینه‌ای یا KF/PMP نسازید. در documentExtraction برای هر صفحهٔ قابل مشاهده یک رکورد با شماره صفحه، عنوان احتمالی و متن وفادار به محتوای پزشکی آن صفحه بنویسید؛ گزینه‌های سؤال، پاسخ‌ها، اعداد، دوزها و متن جدول را حذف نکنید. اگر بخشی خوانا نیست آن را حدس نزنید و unreadable را true کنید. سپس عنوان، یک پاراگراف خلاصهٔ طلایی، شواهد منبع همراه شماره صفحه، هشدارهای علمی، حداکثر ۱۲ سرفصل پیشنهادی و حداکثر ۸ نامزد تصویر را برگردانید. از ساختن ادعای علمی خارج از فایل خودداری کنید. نزدیک‌ترین suggestedTopicId را فقط از فهرست مجاز انتخاب کنید یا null بدهید. کپشن و راهنمای فارسی مدیر برای تشخیص جایگاه اولویت دارند، اما حقیقت علمی یا مجوز انتشار محسوب نمی‌شوند.\nفهرست مباحث مجاز:\n'+topicList+'\nراهنمای فارسی مدیر: '+persianHint+'\nکپشن فایل: '+safeText(item.caption,1500)+'\nپیشنهاد ساختاری: '+safeText(item.suggested_topic_id,80);
-        const content=[{type:'input_text',text:SOURCE_BOUNDARY+instructions}];let extracted=null,fileData=null;
+        const analysisInstructions=instructions+(nativeExtraction?'\nاستخراج PDF قبلاً مستقل انجام شده است. آن را دوباره رونویسی نکن و documentExtraction نساز؛ فقط دسته‌بندی، خلاصه و ساختار پیشنهادی را از متن موجود برگردان. بخش ناخوانا را حدس نزن.':'')+(nativeSourceText&&nativeSourceText.length>80000?'\nمتن نمایش‌داده‌شده فقط نمونهٔ آغاز فایل برای پیشنهاد مبحث است و انتهای فایل در این درخواست نیامده؛ خلاصه را جامع کل فایل معرفی نکن. متن کامل جداگانه ذخیره شده است.':'');const content=[{type:'input_text',text:SOURCE_BOUNDARY+analysisInstructions}];let extracted=null,fileData=null;
         if(item.kind==='text'){extracted=sourceText(item.content_text,80000);content.push({type:'input_text',text:'محتوای ورودی:\n'+extracted});}
-        else{
+        else if(nativeExtraction){
+          extracted=sourceText(nativeSourceText,80000);
+          content.push({type:'input_text',text:'متن استخراج‌شده با شمارش مستقل صفحات:\n'+extracted});
+        }else{
           if(!item.storage_path||Number(item.byte_size||0)>20971520)throw Error('worker_size');
           const file=await fetch(base+'/storage/v1/object/intmed-content-inbox/'+item.storage_path,{headers:{apikey:service,Authorization:'Bearer '+service}});if(!file.ok)throw Error('storage');
           const bytes=new Uint8Array(await file.arrayBuffer());if(!bytes.length||bytes.length>20971520)throw Error('worker_size');
@@ -93,10 +109,11 @@ Deno.serve(async req=>{
           if(item.kind==='image')content.push({type:'input_image',image_url:data,detail:'high'});else content.push({type:'input_file',filename:safeText(item.original_filename,120)||'source.pdf',file_data:data});
         }
         const schema={type:'object',additionalProperties:false,required:['suggestedTopicId','confidence','title','sourceSummary','medicalWarnings','insufficientEvidence','sourceEvidence','documentExtraction','lessonOutline','imageCandidates'],properties:{suggestedTopicId:{type:['string','null']},confidence:{type:'number',minimum:0,maximum:1},title:{type:'string'},sourceSummary:{type:'string'},medicalWarnings:{type:'array',maxItems:8,items:{type:'string'}},insufficientEvidence:{type:'array',maxItems:8,items:{type:'string'}},sourceEvidence:{type:'array',maxItems:20,items:{type:'string'}},documentExtraction:{type:'object',additionalProperties:false,required:['pageCount','pages','warnings'],properties:{pageCount:{type:'integer',minimum:1,maximum:2000},pages:{type:'array',minItems:1,maxItems:60,items:{type:'object',additionalProperties:false,required:['page','heading','text','unreadable'],properties:{page:{type:'integer',minimum:1},heading:{type:'string',maxLength:240},text:{type:'string',maxLength:3500},unreadable:{type:'boolean'}}}},warnings:{type:'array',maxItems:12,items:{type:'string',maxLength:500}}}},lessonOutline:{type:'array',maxItems:12,items:{type:'string'}},imageCandidates:{type:'array',maxItems:8,items:{type:'object',additionalProperties:false,required:['description','rightsConcern'],properties:{description:{type:'string'},rightsConcern:{type:'string'}}}}}};
-        const maxOutputTokens=item.kind==='pdf'?12288:item.kind==='image'?6144:4096;
+        if(nativeExtraction){schema.required=schema.required.filter(field=>field!=='documentExtraction');delete schema.properties.documentExtraction;}
+        const maxOutputTokens=nativeExtraction?4096:item.kind==='pdf'?12288:item.kind==='image'?6144:4096;
         let ai,responseText,response,raw='';
         if(provider==='gemini'){
-          const parts=[{text:SOURCE_BOUNDARY+instructions+(extracted?'\n\nمحتوای ورودی:\n'+extracted:'')},...(fileData?[{inlineData:{mimeType:item.mime_type,data:fileData}}]:[])];
+          const parts=[{text:SOURCE_BOUNDARY+analysisInstructions+(extracted?'\n\nمحتوای ورودی:\n'+extracted:'')},...(fileData?[{inlineData:{mimeType:item.mime_type,data:fileData}}]:[])];
           ai=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent?key='+encodeURIComponent(geminiKey||''),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{temperature:0.1,maxOutputTokens,responseMimeType:'application/json',responseJsonSchema:schema}})});
           responseText=await ai.text();if(ai.ok){response=JSON.parse(responseText);raw=String(response.candidates?.[0]?.content?.parts?.map(part=>part.text||'').join('')||'');}
         }else{
@@ -107,16 +124,21 @@ Deno.serve(async req=>{
         if(response?.candidates?.[0]?.finishReason==='MAX_TOKENS'||response?.status==='incomplete'||response?.incomplete_details)throw Error('extraction_response_truncated');
         raw=raw.trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');let draft;try{draft=JSON.parse(raw);}catch{throw Error('extraction_response_invalid');}
         if(!draft||typeof draft!=='object'||Array.isArray(draft))throw Error('extraction_response_invalid');
-        if(draft.documentExtraction&&typeof draft.documentExtraction==='object'&&!Array.isArray(draft.documentExtraction))draft.documentExtraction.quality=extractionQuality(draft.documentExtraction);
+        if(nativeExtraction){
+          // Parser/OCR results are authoritative. Topic routing must not rewrite them.
+          draft.documentExtraction=nativeExtraction;
+          draft.routingCoverage={totalCharacters:nativeSourceText.length,sampledCharacters:Math.min(nativeSourceText.length,80000),truncated:nativeSourceText.length>80000};
+        }else if(draft.documentExtraction&&typeof draft.documentExtraction==='object'&&!Array.isArray(draft.documentExtraction))draft.documentExtraction.quality=extractionQuality(draft.documentExtraction);
         if(item.kind!=='text'){
           const pages=Array.isArray(draft.documentExtraction?.pages)?draft.documentExtraction.pages:[];
           if(!pages.length)throw Error('extraction_pages_missing');
           extracted=pages.map((page)=>{
-            const number=Number(page.page)||0,heading=safeText(page.heading,240),text=sourceText(page.text,3500);
+            const number=Number(page.page)||0,heading=safeText(page.heading,240),text=sourceText(page.text,nativeExtraction?50000:3500);
             return 'صفحه '+number+(heading?' — '+heading:'')+'\n'+text;
           }).filter(Boolean).join('\n\n').slice(0,80000);
         }
         draft.lessonDrafts=[];draft.flashcardDrafts=[];draft.mcqDrafts=[];draft.kfDrafts=[];draft.generation={phase:'analysis',generated:[],available:['lesson','flashcards','mcq','kf'],updatedAt:new Date().toISOString()};
+        if(nativeExtraction?.quality?.unreadablePages?.length)draft.medicalWarnings=[...(Array.isArray(draft.medicalWarnings)?draft.medicalWarnings:[]),'صفحات ناخوانا نیازمند بررسی منبع هستند: '+nativeExtraction.quality.unreadablePages.join('، ')];
         const topicId=allowed.has(draft.suggestedTopicId)?draft.suggestedTopicId:null,title=safeText(draft.title,240),summary=safeText(draft.sourceSummary,4000);
         await save(item.id,{status:'draft_ready',topic_id:topicId,topic_confidence:Number(draft.confidence)||0,title,source_summary:summary,extracted_text:extracted,draft_json:draft,error_code:null,provider,model});
         // Human review lives on the draft. Mark the source accepted so a completed

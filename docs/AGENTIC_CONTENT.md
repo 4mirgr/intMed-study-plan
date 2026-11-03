@@ -42,6 +42,20 @@ multi-topic mapping and figure extraction/routing, independent claim/question re
 three-input benchmark with teacher-approved reference output. Progress and remaining scope are
 recorded in `PROJECT_STATE.md`; do not describe the complete factory as finished prematurely.
 
+The subsequent durable-processing implementation adds `intmed-content-jobs`,
+`process-content.yml` and `scripts/process_content_job.py`. It counts actual PDF pages, extracts
+native text once and applies the existing approved Gemini provider only to unreadable nonblank
+pages. Native blank pages are retained without invented text. It stores parser-verified extraction
+and OCR cache privately. Role-specific generation proceeds in bounded, persisted chunks; retries
+reuse the original run ID and completed chunks, while browser closure cannot terminate the job.
+No source data is committed to GitHub or uploaded as a workflow artifact. GitHub gets only an
+expiring single-job capability; service/model keys remain in Supabase. This capability is never
+returned by the admin status endpoint. A diagnostic job may read an existing PDF and record
+extraction metrics without changing that source's draft or published content.
+
+This does not yet implement multi-topic publication or image-binary routing. Embedded figure
+metadata is an inventory only. Model comparison and independent clinical review remain open.
+
 Sources may arrive as a local upload or as an authorized Telegram inbox item. Telegram records are
 inputs only: copy/download the private object into a hashed extraction cache, retain its ingest ID
 and provenance, and leave the record unaccepted until the same reviews below pass. A forwarded
@@ -94,11 +108,10 @@ admin-authenticated `intmed-local-runner` endpoint, and uses claim/heartbeat/sub
 cannot duplicate a job. Never put `service_role` on the laptop or expose the LM Studio port through
 a public tunnel. Local output still passes the same teacher, source and copyright review gates.
 
-The owner approved manual mode on 2026-10-26. Automatic worker dispatch is gated behind the
-server-side `INTMED_CONTENT_PROCESSING_ENABLED` flag and defaults off: Telegram still saves inputs,
-`/start` and `/status` remain useful, `/retry` explains that processing is paused, and no queued input
-is discarded. Re-enabling this flag or changing provider is a separate operational decision and
-requires owner confirmation.
+The owner initially approved manual mode on 2026-10-26, then approved automatic cloud processing
+and its revision. `INTMED_CONTENT_PROCESSING_ENABLED=false` is the explicit maintenance switch.
+Intake remains available while processing is paused. Model/provider changes outside the approved
+configuration still require the owner's decision; operational alerts do not consume model tokens.
 
 1. **Identify and cache once.** Hash the input and run
    `python3 scripts/content_pipeline.py extract-pdf TOPIC_ID SOURCE.pdf`. Reuse the cached text,

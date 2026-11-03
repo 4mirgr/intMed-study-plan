@@ -1,0 +1,153 @@
+import hashlib
+import base64
+import io
+import json
+from pathlib import Path
+import sys
+import unittest
+from unittest import mock
+import urllib.error
+
+import pymupdf
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import process_content_job as subject
+
+
+class NativeContentProcessorTest(unittest.TestCase):
+    def make_pdf(self):
+        with pymupdf.open() as document:
+            page = document.new_page()
+            page.insert_text((40, 40), "Clinical test heading\nSecond line contains diagnostic source evidence.")
+            document.new_page()
+            page = document.new_page()
+            pixmap = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 40, 40), False)
+            pixmap.clear_with(120)
+            page.insert_image(pymupdf.Rect(40, 40, 80, 80), stream=pixmap.tobytes("png"))
+            return document.tobytes()
+
+    def test_counts_real_pages_extracts_native_text_and_inventory(self):
+        extraction = subject.extract_pdf(self.make_pdf())
+        self.assertEqual(extraction["pageCount"], 3)
+        self.assertEqual([page["page"] for page in extraction["pages"]], [1, 2, 3])
+        self.assertIn("heading\nSecond line", extraction["pages"][0]["text"])
+        self.assertFalse(extraction["pages"][0]["unreadable"])
+        self.assertEqual(extraction["pages"][0]["method"], "native_text")
+        self.assertTrue(extraction["pages"][1]["unreadable"])
+        self.assertEqual(extraction["pages"][1]["method"], "blank_page")
+        self.assertEqual(extraction["pages"][2]["method"], "needs_ocr")
+        image = extraction["figures"][0]
+        self.assertEqual(image["page"], 3)
+        self.assertEqual(image["width"], 40)
+        self.assertRegex(image["sha256"], r"^[0-9a-f]{64}$")
+        self.assertNotIn("image", image)
+        self.assertNotIn("base64", json.dumps(extraction))
+
+    def test_invalid_and_encrypted_pdf_fail_explicitly(self):
+        with self.assertRaisesRegex(subject.ProcessingError, "pdf_invalid"):
+            subject.extract_pdf(b"not a PDF")
+        with pymupdf.open(stream=self.make_pdf(), filetype="pdf") as document:
+            encrypted = document.tobytes(encryption=pymupdf.PDF_ENCRYPT_AES_256,
+                                         user_pw="test-password", owner_pw="owner-password")
+        with self.assertRaisesRegex(subject.ProcessingError, "pdf_password_required"):
+            subject.extract_pdf(encrypted)
+
+    def test_rejects_foreign_and_traversal_download_urls(self):
+        base = "https://" + subject.SOURCE_HOST
+        valid = base + "/storage/v1/object/sign/intmed-content-inbox/source.pdf?token=test"
+        self.assertEqual(subject.validate_source_url(valid), valid)
+        for url in [valid.replace(subject.SOURCE_HOST, "example.test"),
+                    valid.replace("https:", "http:"),
+                    valid.replace("source.pdf", "%2e%2e/source.pdf"),
+                    valid.replace("intmed-content-inbox", "another-bucket"),
+                    valid.split("?")[0], valid + "#fragment"]:
+            with self.subTest(url=url), self.assertRaises(subject.ProcessingError):
+                subject.validate_source_url(url)
+
+    def test_source_download_verifies_hash_and_limits_size(self):
+        raw = self.make_pdf()
+        url = "https://" + subject.SOURCE_HOST + "/storage/v1/object/sign/intmed-content-inbox/a.pdf?token=test"
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = raw
+        response.__enter__.return_value.geturl.return_value = url
+        source = {"downloadUrl": url, "mimeType": "application/pdf", "sha256": hashlib.sha256(raw).hexdigest()}
+        with mock.patch.object(subject.urllib.request, "build_opener") as builder:
+            builder.return_value.open.return_value = response
+            self.assertEqual(subject.download_source(source), raw)
+            with self.assertRaisesRegex(subject.ProcessingError, "source_hash_mismatch"):
+                subject.download_source({**source, "sha256": "0" * 64})
+            response.__enter__.return_value.read.return_value = b"x" * (subject.MAX_SOURCE_BYTES + 1)
+            with self.assertRaisesRegex(subject.ProcessingError, "source_size_invalid"):
+                subject.download_source(source)
+
+    def test_redirects_are_never_followed(self):
+        with self.assertRaisesRegex(subject.ProcessingError, "source_redirect_blocked"):
+            subject.NoRedirect().redirect_request(None, None, 302, "Found", {}, "https://elsewhere.test")
+
+    def test_quota_retries_bounded_and_does_not_log_private_detail(self):
+        denied = urllib.error.HTTPError(subject.ENDPOINT, 429, "limit", {"Retry-After": "100"}, io.BytesIO(b"secret detail"))
+        result = mock.MagicMock()
+        result.__enter__.return_value.read.return_value = b'{"ok":true}'
+        with mock.patch.object(subject.urllib.request, "urlopen", side_effect=[denied, result]) as opened, \
+             mock.patch.object(subject.time, "sleep") as sleep:
+            self.assertTrue(subject.api("id", "cap", "generate_step", output="lesson")["ok"])
+            self.assertEqual(opened.call_count, 2)
+            sleep.assert_called_once_with(30)
+        with mock.patch.object(subject.urllib.request, "urlopen", side_effect=denied) as opened, \
+             mock.patch.object(subject.time, "sleep"):
+            with self.assertRaisesRegex(subject.ProcessingError, "job_api_http_429") as error:
+                subject.api("id", "cap", "generate_step", output="lesson")
+            self.assertEqual(opened.call_count, 3)
+            self.assertNotIn("secret", str(error.exception))
+
+    def test_generation_resumes_only_unfinished_outputs_in_order(self):
+        job = {"kind": "generate", "outputs": ["mcq", "lesson", "flashcards"],
+               "progress": {"completedOutputs": ["lesson"]}}
+        with mock.patch.object(subject, "api", side_effect=[{"job": job}, {"ok": True, "outputComplete": True}, {"ok": True, "completed": True}]) as api:
+            subject.process_job("id", "cap")
+        self.assertEqual([call.args[2] for call in api.call_args_list], ["claim", "generate_step", "generate_step"])
+        self.assertEqual([call.kwargs["output"] for call in api.call_args_list[1:]], ["flashcards", "mcq"])
+
+    def test_extract_job_sends_extraction_only_to_private_bridge(self):
+        job = {"kind": "extract", "source": {"downloadUrl": "private"}}
+        with mock.patch.object(subject, "api", side_effect=[{"job": job}, {"page": 3, "text": "OCR recovered diagnostic information", "unreadable": False}, {"ok": True}]) as api, \
+             mock.patch.object(subject, "download_source", return_value=self.make_pdf()):
+            subject.process_job("id", "cap")
+        self.assertEqual(api.call_args.args[2], "extract_result")
+        self.assertEqual(api.call_args.kwargs["extraction"]["pageCount"], 3)
+
+    def test_selective_ocr_only_sends_image_page_and_reuses_cached_pages(self):
+        raw = self.make_pdf()
+        native = subject.extract_pdf(raw)
+        with mock.patch.object(subject, "api", return_value={"page": 3, "text": "Recovered scan content", "unreadable": False}) as api:
+            result = subject.apply_selective_ocr(raw, native, {}, "id", "cap")
+        api.assert_called_once()
+        self.assertEqual(api.call_args.args[2], "ocr_page")
+        self.assertEqual(api.call_args.kwargs["page"], 3)
+        image = base64.b64decode(api.call_args.kwargs["imageBase64"])
+        self.assertLessEqual(len(image), 2 * 1024 * 1024)
+        with pymupdf.open(stream=image, filetype="png") as document:
+            self.assertLessEqual(max(document[0].rect.width, document[0].rect.height), 1601)
+        self.assertEqual(result["pages"][0]["method"], "native_text")
+        self.assertEqual(result["pages"][1]["text"], "")
+        self.assertEqual(result["pages"][2]["method"], "gemini_ocr")
+        with mock.patch.object(subject, "api") as api:
+            result = subject.apply_selective_ocr(raw, subject.extract_pdf(raw),
+                {"progress": {"ocrPages": {"3": {"page": 3, "text": "Cached scan content", "unreadable": False}}}}, "id", "cap")
+        api.assert_not_called()
+        self.assertEqual(result["pages"][2]["text"], "Cached scan content")
+
+    def test_generation_chunk_loop_resumes_until_output_complete(self):
+        job = {"kind": "generate", "outputs": ["lesson"], "progress": {"nextChunkIndex": {"lesson": 2}}}
+        with mock.patch.object(subject, "api", side_effect=[{"job": job},
+                {"outputComplete": False, "nextChunkIndex": 3}, {"outputComplete": True, "completed": True}]) as api:
+            subject.process_job("id", "cap")
+        self.assertEqual(api.call_count, 3)
+        with mock.patch.object(subject, "api", side_effect=[{"job": job},
+                {"outputComplete": False, "nextChunkIndex": 2}]):
+            with self.assertRaisesRegex(subject.ProcessingError, "generation_chunk_not_advancing"):
+                subject.process_job("id", "cap")
+
+
+if __name__ == "__main__":
+    unittest.main()
