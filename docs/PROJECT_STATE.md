@@ -91,6 +91,8 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   flashcards, MCQs and KF/PMP drafts. OpenAI is used only when explicitly selected; user activity alerts do
   not call either model. LM Studio is therefore optional, not part of the normal cloud path.
 
+- Multimodal PDF analysis now records page-by-page extraction (including page count and unreadable-page flags), uses a PDF-sized output budget, and feeds the full extracted evidence into a second-stage generator. Generated lessons contain real titled sections, paragraphs and key points; publication writes those sections plus selected MCQ/flashcard/KF outputs into the chosen canonical topic. Dynamic topic/index payloads are network-first with exact versioned cache keys, so a successful publication is no longer hidden behind an older PWA cache.
+
 ## Open work, in priority order
 
 ### P0 — release correctness
