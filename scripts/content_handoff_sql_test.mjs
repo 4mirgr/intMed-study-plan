@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {PGlite} from '@electric-sql/pglite';
+const db=new PGlite();
+await db.exec(`
+create table public.intmed_content_ingest(id uuid primary key,status text,error_code text,created_at timestamptz default now(),updated_at timestamptz default now());
+create table public.intmed_content_drafts(ingest_id uuid primary key,status text,attempts int default 0,error_code text,updated_at timestamptz default now());
+create table public.intmed_content_worker_lease(lease_key text primary key,owner uuid,lease_until timestamptz,updated_at timestamptz default now());
+insert into public.intmed_content_worker_lease values('worker',null,'-infinity',now());
+`);
+const sql=fs.readFileSync('backend/supabase/telegram_ingest.sql','utf8');
+await db.exec(sql.slice(sql.indexOf('create or replace function public.claim_intmed_content_ingest'),sql.indexOf('create or replace function public.release_intmed_content_lease')));
+const id='11111111-1111-4111-8111-111111111111',owner='22222222-2222-4222-8222-222222222222';
+await db.query('insert into public.intmed_content_ingest(id,status) values($1,$2)',[id,'pending_review']);
+await db.query('insert into public.intmed_content_drafts(ingest_id,status) values($1,$2)',[id,'processing']);
+const claim=async requested=>(await db.query('select public.claim_intmed_content_ingest($1,$2) as id',[requested,owner])).rows[0].id;
+assert.equal(await claim(null),null,'automatic polling must not reopen existing processing draft');
+assert.equal(await claim(id),id,'explicit parser handoff must be claimable');
+await db.exec("update public.intmed_content_ingest set status='pending_review'; update public.intmed_content_drafts set status='published';");
+assert.equal(await claim(id),null,'explicit handoff must not rewrite published content');
+await db.exec("update public.intmed_content_drafts set status='error';");
+assert.equal(await claim(id),id,'explicit retry recovers an errored source');
+await db.exec("update public.intmed_content_ingest set status='pending_review'; update public.intmed_content_drafts set status='processing'; update public.intmed_content_worker_lease set owner='33333333-3333-4333-8333-333333333333',lease_until=now()+interval '5 minutes';");
+assert.equal(await claim(id),null,'another active worker lease remains protected');
+await db.close();
+console.log('Native handoff SQL passed: explicit routing recovery, automatic-poll and published-content protections, exclusive worker lease.');

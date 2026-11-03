@@ -151,6 +151,9 @@ begin
     and (
       d.ingest_id is null or d.status='queued'
       or (d.status='waiting_provider' and d.error_code in ('provider_rate_limited','provider_quota','provider_unavailable','provider_not_configured'))
+      -- Explicit service/admin retries must also accept the parser handoff state.
+      -- Automatic polls cannot reopen a completed or reviewed draft.
+      or (requested is not null and d.status in ('processing','error','draft_ready'))
     )
   order by i.created_at,i.id
   for update of i skip locked

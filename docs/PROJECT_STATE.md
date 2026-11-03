@@ -130,6 +130,14 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   publication; independent scientific/assessment review; representative model comparison with
   teacher-approved reference output. OCR correctness and scientific quality require separate
   acceptance; parser-verified page counts alone prove neither.
+- Live extraction smoke passed on the existing osteoporosis PDF: 15 actual pages, 68,060 native
+  text characters, 19 embedded-figure records, no OCR required. A diagnostic run left the
+  published draft unchanged; a subsequent explicit pilot reopened only its review draft and
+  completed native extraction plus topic routing. The public lesson remains unchanged pending
+  teacher review of the rebuilt draft.
+- Fixed a production-only legacy handoff restriction in `claim_intmed_content_ingest`: explicit
+  service/admin requests can resume processing/error/draft-ready sources, while ordinary polls
+  cannot reopen completed drafts and published drafts remain excluded.
 
 ### P0 — release correctness
 
