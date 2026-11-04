@@ -535,6 +535,56 @@
           "sourceId": "review-source-c1433cb6-273"
         }
       ]
+    },
+    {
+      "id": "pbs-iron-deficiency-uthman",
+      "caption": "لام خون محیطی در فقر آهن شدید؛ میکروسیتوز و هیپوکرومی برجسته در نمونه‌ای با MCV گزارش‌شده ۵۵ فمتولیتر.",
+      "note": "منبع کیفیت تهیه لام را ضعیف توصیف کرده است؛ برای آموزش مورفولوژی شدید استفاده شود. میکروسیتوز و هیپوکرومی به‌تنهایی اختصاصی فقر آهن نیستند و باید با مطالعات آهن تفسیر شوند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-iron-deficiency-uthman.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Iron-deficiency_Anemia,_Peripheral_Blood_Smear_(4422704616).jpg",
+      "creator": "Ed Uthman",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "credit": "Ed Uthman",
+      "licenseLabel": "CC BY 2.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Iron-deficiency_Anemia,_Peripheral_Blood_Smear_(4422704616).jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Ed Uthman — CC BY 2.0 — https://commons.wikimedia.org/wiki/File:Iron-deficiency_Anemia,_Peripheral_Blood_Smear_(4422704616).jpg",
+      "reviewStatus": "draft",
+      "width": 1711,
+      "height": 1139,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-iron-deficiency-uthman-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-hypersegmented-erhabor",
+      "caption": "نوتروفیل هیپرسگمانته؛ نمونه آموزشی برای مقایسه مورفولوژی لکوسیت‌ها در بررسی کم‌خونی.",
+      "note": "علت بالینی این نمونه در منبع مشخص نشده است. هیپرسگمانتاسیون به‌تنهایی اثبات‌کننده کمبود B12 یا فولات نیست و نشانه اختصاصی فقر آهن محسوب نمی‌شود. در فصل کم‌خونی‌های هیپوپرولیفراتیو برای مقایسه مورفولوژی و افتراق علل کم‌خونی قرار گرفته است. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-hypersegmented-erhabor.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hypersegmented_Neutrophils.jpg",
+      "creator": "Prof. Osaro Erhabor",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Prof. Osaro Erhabor",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Hypersegmented_Neutrophils.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Prof. Osaro Erhabor — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Hypersegmented_Neutrophils.jpg",
+      "reviewStatus": "draft",
+      "width": 1280,
+      "height": 1024,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-hypersegmented-erhabor-source"
+        }
+      ]
     }
   ],
   "tables": [
@@ -719,6 +769,28 @@
       "type": "telegram-review",
       "sourceClass": "authored",
       "note": "Intmwd"
+    },
+    {
+      "id": "pbs-iron-deficiency-uthman-source",
+      "title": "Iron-deficiency_Anemia,_Peripheral_Blood_Smear_(4422704616).jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Ed Uthman",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Iron-deficiency_Anemia,_Peripheral_Blood_Smear_(4422704616).jpg",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-hypersegmented-erhabor-source",
+      "title": "Hypersegmented_Neutrophils.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Prof. Osaro Erhabor",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hypersegmented_Neutrophils.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
     }
   ]
 }

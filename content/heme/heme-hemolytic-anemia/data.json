@@ -575,6 +575,81 @@
           "sourceId": "review-source-6e34994b-426"
         }
       ]
+    },
+    {
+      "id": "pbs-spherocytes-uthman",
+      "caption": "اسفروسیت‌ها در لام خون محیطی؛ گلبول‌های قرمز متراکم با کاهش یا فقدان ناحیه روشن مرکزی.",
+      "note": "منبع این نمونه را مربوط به خانمی جوان با آنمی متوسط و Coombs مستقیم منفی می‌داند. ظاهر اسفروسیت به‌تنهایی افتراق همولیز ایمنی از اسفروسیتوز ارثی را ممکن نمی‌کند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-spherocytes-uthman.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Spherocytes_(4670166434).jpg",
+      "creator": "Ed Uthman",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "credit": "Ed Uthman",
+      "licenseLabel": "CC BY 2.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Spherocytes_(4670166434).jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Ed Uthman — CC BY 2.0 — https://commons.wikimedia.org/wiki/File:Spherocytes_(4670166434).jpg",
+      "reviewStatus": "draft",
+      "width": 1593,
+      "height": 1060,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-spherocytes-uthman-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-schistocytes-erhabor",
+      "caption": "شیستوسیت‌ها؛ قطعات گلبول قرمز در لام خون محیطی، از یافته‌های مهم در بررسی همولیز ناشی از قطعه‌قطعه‌شدن سلول‌ها.",
+      "note": "شیستوسیت اختصاصی TTP نیست؛ تفسیر آن نیازمند شمارش استاندارد، سایر شاخص‌های همولیز و زمینه بالینی است. برچسب مقیاس موجود در تصویر منبع کالیبراسیون مستقلی ندارد و نباید برای اندازه‌گیری ابعاد سلول استفاده شود. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-schistocytes-erhabor.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Schistocytes.jpg",
+      "creator": "Prof. Osaro Erhabor",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Prof. Osaro Erhabor",
+      "licenseLabel": "CC0 1.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Schistocytes.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Prof. Osaro Erhabor — CC0 1.0 — https://commons.wikimedia.org/wiki/File:Schistocytes.jpg",
+      "reviewStatus": "draft",
+      "width": 2560,
+      "height": 2048,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-schistocytes-erhabor-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-sickle-spicymilkboy",
+      "caption": "لام خون محیطی بیمار مبتلا به آنمی داسی‌شکل؛ سلول‌های داسی‌شکل، سلول‌های هدف و پلی‌کرومازی.",
+      "note": "این تصویر مورفولوژی گزارش‌شده در منبع را نمایش می‌دهد؛ تعیین ژنوتیپ و نوع هموگلوبینوپاتی به بررسی تأییدی مانند HPLC یا الکتروفورز هموگلوبین نیاز دارد. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-sickle-spicymilkboy.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sickle_cell_anemia_smear.jpg",
+      "creator": "SpicyMilkBoy",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "SpicyMilkBoy",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Sickle_cell_anemia_smear.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "SpicyMilkBoy — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Sickle_cell_anemia_smear.jpg",
+      "reviewStatus": "draft",
+      "width": 1650,
+      "height": 1797,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-sickle-spicymilkboy-source"
+        }
+      ]
     }
   ],
   "tables": [
@@ -744,6 +819,39 @@
       "type": "telegram-review",
       "sourceClass": "authored",
       "note": "intmed"
+    },
+    {
+      "id": "pbs-spherocytes-uthman-source",
+      "title": "Spherocytes_(4670166434).jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Ed Uthman",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Spherocytes_(4670166434).jpg",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-schistocytes-erhabor-source",
+      "title": "Schistocytes.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Prof. Osaro Erhabor",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Schistocytes.jpg",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-sickle-spicymilkboy-source",
+      "title": "Sickle_cell_anemia_smear.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "SpicyMilkBoy",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sickle_cell_anemia_smear.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
     }
   ]
 }

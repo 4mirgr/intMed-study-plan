@@ -672,6 +672,31 @@
           "sourceId": "review-source-3c09a6be-ee6"
         }
       ]
+    },
+    {
+      "id": "pbs-cml-mourao",
+      "caption": "لام خون محیطی در CML با رنگ‌آمیزی May–Grünwald–Giemsa؛ لکوسیتوز و شیفت به چپ در رده گرانولوسیتی.",
+      "note": "مورفولوژی لام به‌تنهایی برای تشخیص CML کافی نیست؛ تأیید BCR::ABL1 و تطبیق با سایر یافته‌های آزمایشگاهی ضروری است. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-cml-mourao.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chronic_Myeloid_Leukemia_smear_2009-04-09.JPG",
+      "creator": "Paulo Henrique Orlandi Mourao",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "credit": "Paulo Henrique Orlandi Mourao",
+      "licenseLabel": "CC BY-SA 3.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Chronic_Myeloid_Leukemia_smear_2009-04-09.JPG",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Paulo Henrique Orlandi Mourao — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:Chronic_Myeloid_Leukemia_smear_2009-04-09.JPG",
+      "reviewStatus": "draft",
+      "width": 1638,
+      "height": 1228,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-cml-mourao-source"
+        }
+      ]
     }
   ],
   "tables": [
@@ -853,6 +878,17 @@
       "type": "telegram-review",
       "sourceClass": "authored",
       "note": "Intmed"
+    },
+    {
+      "id": "pbs-cml-mourao-source",
+      "title": "Chronic_Myeloid_Leukemia_smear_2009-04-09.JPG",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Paulo Henrique Orlandi Mourao",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chronic_Myeloid_Leukemia_smear_2009-04-09.JPG",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
     }
   ]
 }
