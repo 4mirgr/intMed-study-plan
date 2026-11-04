@@ -80,6 +80,18 @@ Deno.serve(async req=>{
   async function findTopic(id:string){const data=await taxonomy(),categories=Array.isArray(data.categories)?data.categories:[];for(const category of categories){if(!object(category))continue;const found=(Array.isArray(category.topics)?category.topics:[]).find((entry:unknown)=>object(entry)&&entry.id===id);if(found&&object(found))return {id, label:clean(found.label,160),categoryId:clean(category.id,40),categoryLabel:clean(category.label,160)};}return null;}
   async function findCategory(id:string){const data=await taxonomy(),categories=Array.isArray(data.categories)?data.categories:[];const found=categories.find((entry:unknown)=>object(entry)&&entry.id===id);return found&&object(found)?{id,label:clean(found.label,160)}:null;}
   async function generatedTopicId(category:string,label:string){const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(category+'\n'+label.normalize('NFKC')));return category+'-custom-'+Array.from(new Uint8Array(digest)).slice(0,6).map(value=>value.toString(16).padStart(2,'0')).join('');}
+  async function figureRows(ingestId:string){
+    if(!uuid.test(ingestId))return [];
+    return await db('intmed_content_figures?ingest_id=eq.'+ingestId+'&stored=eq.true&select=id,ingest_id,page,xref,width,height,sha256,storage_path,mime_type,byte_size&order=page.asc,xref.asc&limit=80') as Array<Record<string,unknown>>;
+  }
+  async function signPreview(path:string){
+    const signed=await fetch(base+'/storage/v1/object/sign/intmed-content-inbox/'+path.split('/').map(encodeURIComponent).join('/'),{method:'POST',headers:server,body:JSON.stringify({expiresIn:900})});
+    if(!signed.ok)return null;
+    const value=await signed.json(),relative=String(value.signedURL||value.signedUrl||'');
+    if(!relative)return null;
+    if(relative.startsWith('http'))return relative.startsWith(base+'/')?relative:null;
+    return base+'/storage/v1'+(relative.startsWith('/')?'':'/')+relative;
+  }
   try{
     if(action==='list'){
       const requested=clean(input.status||'open',30);
@@ -100,13 +112,39 @@ Deno.serve(async req=>{
         if(signed.ok){const value=await signed.json(),relative=String(value.signedURL||value.signedUrl||'');sourceUrl=relative.startsWith('http')?relative:base+'/storage/v1'+(relative.startsWith('/')?'':'/')+relative;}
       }
       const jobs=await db('intmed_content_jobs?draft_id=eq.'+draftId+'&select=id,kind,status,outputs,progress,error,created_at,updated_at&order=created_at.desc&limit=1') as Array<Record<string,unknown>>;
-      return reply(200,{draft,sourceUrl,job:jobs[0]||null});
+      const ingestId=String(draft.ingest_id||ingest.id||''),isPdf=ingest.kind==='pdf'||ingest.mime_type==='application/pdf';
+      const storedFigures=isPdf?await figureRows(ingestId):[];
+      const json=object(draft.draft_json)?draft.draft_json:{},extraction=object(json.documentExtraction)?json.documentExtraction:{},inventory=Array.isArray(extraction.figures)?extraction.figures:[];
+      const figures=await Promise.all(storedFigures.filter(figure=>uuid.test(String(figure.id||''))&&figure.ingest_id===ingestId&&/^[a-f0-9]{64}$/.test(String(figure.sha256||''))&&['image/png','image/jpeg'].includes(String(figure.mime_type))&&String(figure.storage_path)==='figures/'+ingestId+'/'+figure.sha256+(figure.mime_type==='image/png'?'.png':'.jpg')).map(async figure=>{
+        const metadata=inventory.find(item=>object(item)&&item.storedFigureId===figure.id);
+        return {id:figure.id,page:Number(figure.page),width:Number(figure.width),height:Number(figure.height),sha256:figure.sha256,mimeType:figure.mime_type,byteSize:Number(figure.byte_size),caption:object(metadata)?clean(metadata.caption||metadata.description,1000):'',previewUrl:await signPreview(String(figure.storage_path))};
+      }));
+      return reply(200,{draft,sourceUrl,figures,job:jobs[0]||null});
     }
-    if(['save_artifacts','resolve_finding','save','approve','publish','reject','reopen'].includes(action)){
+    if(['extract_figures','materialize_figure','save_artifacts','resolve_finding','save','approve','publish','reject','reopen'].includes(action)){
       const active=await db('intmed_content_jobs?draft_id=eq.'+draftId+'&status=in.(queued,running)&select=id&limit=1') as Array<Record<string,unknown>>;
       if(active.length)return reply(409,{message:'پردازش این منبع هنوز ادامه دارد؛ پس از پایان آن محتوا را ویرایش یا منتشر کنید.'});
     }
     const draftJson=object(draft.draft_json)?draft.draft_json:{};
+    if(action==='extract_figures'){
+      const revision=Number(input.revision),source=object(draft.intmed_content_ingest)?draft.intmed_content_ingest:{};
+      if(typeof input.revision!=='number'||!Number.isInteger(revision)||revision!==Number(draft.review_revision||0)||['publishing','publish_requested','rejected','processing'].includes(String(draft.status)))return reply(409,{message:'پیش‌نویس تغییر کرده یا در وضعیت مناسب استخراج تصاویر نیست؛ دوباره باز کنید.'});
+      if((source.kind!=='pdf'&&source.mime_type!=='application/pdf')||!uuid.test(String(source.id||draft.ingest_id||'')))return reply(400,{message:'استخراج تصاویر فقط برای منبع PDF معتبر است.'});
+      const queued=await fetch(base+'/functions/v1/intmed-content-jobs',{method:'POST',headers:server,body:JSON.stringify({action:'dispatch',kind:'extract',figuresOnly:true,draftId,ingestId:source.id||draft.ingest_id,revision})});
+      const result=await queued.json().catch(()=>({}));
+      return reply(queued.status,{...result,message:clean(result.message||(queued.ok?'استخراج تصاویر اصلی در صف ثبت شد؛ متن، پیش‌نویس و تأیید قبلی حفظ می‌شوند.':'شروع استخراج تصاویر انجام نشد.'),240)});
+    }
+    if(action==='materialize_figure'){
+      const revision=Number(input.revision),figureId=clean(input.figureId,40),ingest=object(draft.intmed_content_ingest)?draft.intmed_content_ingest:{};
+      if(typeof input.revision!=='number'||!Number.isInteger(revision)||revision!==Number(draft.review_revision||0))return reply(409,{message:'پیش‌نویس تغییر کرده؛ دوباره باز کنید.'});
+      if(!uuid.test(figureId)||(ingest.kind!=='pdf'&&ingest.mime_type!=='application/pdf'))return reply(400,{message:'تصویر و منبع PDF معتبر را انتخاب کنید.'});
+      const figures=await figureRows(String(draft.ingest_id||ingest.id||''));
+      if(!figures.some(figure=>figure.id===figureId))return reply(404,{message:'تصویر در این منبع پیدا نشد.'});
+      try{
+        const child=await db('rpc/intmed_materialize_figure','POST',{p_figure_id:figureId,p_reviewer_id:user.id,p_expected_revision:revision});
+        return reply(200,{ok:true,...child,message:'پیش‌نویس مستقل تصویر آماده شد؛ مقصد، توضیح فارسی و حق استفاده را بازبینی کنید.'});
+      }catch(error){if(/stale|revision|active|busy|processing/i.test(String(error)))return reply(409,{message:'منبع تغییر کرده یا هنوز در حال پردازش است؛ دوباره باز کنید.'});throw error;}
+    }
     const findings=Array.isArray(draftJson.reviewFindings)?draftJson.reviewFindings:[];
     if(['approve','publish'].includes(action)&&findings.some(item=>object(item)&&item.severity==='blocking'&&item.status!=='resolved'))return reply(409,{message:'موارد علمیِ نیازمند اصلاح هنوز باز هستند؛ ابتدا آن‌ها را بررسی و نتیجهٔ اصلاح را ثبت کنید.',code:'unresolved_scientific_findings'});
     if(action==='resolve_finding'){
@@ -158,7 +196,7 @@ Deno.serve(async req=>{
       const claimed=await db('intmed_content_drafts?id=eq.'+draftId+'&review_revision=eq.'+revision+'&status=eq.'+encodeURIComponent(String(draft.status)),'PATCH',{status:'processing',review_revision:revision+1,reviewed_by:null,reviewed_at:null,error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=representation'}) as Array<Record<string,unknown>>;
       if(!claimed.length)return reply(409,{message:'پیش‌نویس تغییر کرده؛ دوباره باز کنید.'});
       try{
-        const released=await db('intmed_content_ingest?id=eq.'+source.id+'&status=in.(accepted,pending_review,error)','PATCH',{status:'pending_review',error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=representation'}) as Array<Record<string,unknown>>;
+        const released=await db('intmed_content_ingest?id=eq.'+source.id+'&status=in.(accepted,pending_review,error,rejected)','PATCH',{status:'pending_review',error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=representation'}) as Array<Record<string,unknown>>;
         if(!released.length)throw Error('source_busy');
         const work=fetch(base+'/functions/v1/intmed-content-worker',{method:'POST',headers:server,body:JSON.stringify({ingestId:source.id})}).then(async response=>{
           if(!response.ok)throw Error('worker_'+response.status);
@@ -186,10 +224,16 @@ Deno.serve(async req=>{
     const note=clean(input.note,4000),now=new Date().toISOString();
     const patch:Record<string,unknown>={reviewed_by:user.id,reviewed_at:now,review_revision:revision+1,updated_at:now};
     if(action==='save'||action==='approve'||action==='publish'){
-      const title=clean(input.title,240),summary=clean(input.sourceSummary,4000),createTopic=input.createTopic===true,targetKind=clean(input.targetKind||'lesson',30),sourceClass=clean(input.sourceClass,40),rightsNote=clean(input.rightsNote,600);
+      const title=clean(input.title,240),createTopic=input.createTopic===true,targetKind=clean(input.targetKind||'lesson',30),sourceClass=clean(input.sourceClass,40),rightsNote=clean(input.rightsNote,600);
+      let summary=clean(input.sourceSummary,4000);
+      if(summary.length<60)return reply(400,{message:'خلاصهٔ نکات طلایی باید یک پاراگراف مرتبط و دست‌کم ۶۰ نویسه باشد.'});
+      if(object(draftJson.figureOrigin)){
+        if(!visualKinds.has(targetKind))return reply(400,{message:'برای تصویر استخراج‌شده یک نوع تصویری انتخاب کنید.'});
+        const origin=draftJson.figureOrigin,credit='[PDF: '+clean(origin.ingestId,40)+' · page '+clean(origin.page,8)+' · SHA-256 '+clean(origin.sha256,64)+']';
+        if(!summary.includes(credit))summary=summary.slice(0,3800)+'\n'+credit;
+      }
       let topicId=clean(input.topicId,80),targetCategory='',targetLabel='',targetIsNew=false;
       if(!title)return reply(400,{message:'عنوان پیش‌نویس الزامی است.'});
-      if(summary.length<60)return reply(400,{message:'خلاصهٔ نکات طلایی باید یک پاراگراف مرتبط و دست‌کم ۶۰ نویسه باشد.'});
       if(!targetKinds.has(targetKind))return reply(400,{message:'نوع مقصد محتوا معتبر نیست.'});
       if(visualKinds.has(targetKind)&&(!sourceClasses.has(sourceClass)||rightsNote.length<5))return reply(400,{message:'حق استفاده و توضیح منبع/مجوز محتوای بصری را مشخص کنید.'});
       const embedded=object(draft.intmed_content_ingest)?draft.intmed_content_ingest:{};

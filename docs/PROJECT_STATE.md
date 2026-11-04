@@ -121,11 +121,16 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   12,000 characters. Every completed chunk is persisted. Retry resumes the same run and avoids
   redoing completed chunks; lesson completion precedes its assessments. The admin panel resumes
   progress polling on reopening and prevents concurrent edits/publication while a job is active.
-- Figures are inventoried from embedded streams with page, dimensions and hash. Figure binaries,
-  per-figure rights review and publication routing are NOT yet integrated. A figure inventory
-  is not a published gallery entry.
-- Still open: multi-topic splitting/routing within one file; private figure selection and asset
-  publication; independent scientific/assessment review; representative model comparison with
+- Embedded original figure binaries now have private bounded storage, parser-runner inventory
+  binding, integrity checks and source-scoped admin previews. Selecting one creates an independent
+  unapproved image draft; caption/type/topic/rights use the existing teacher-controlled publisher
+  and therefore reach both topic and library. Unknown rights never silently become authored.
+- Old PDF drafts support image-only backfill without OCR/models or changing existing lesson,
+  assessments, status or revision. Limits: 80 images, 5 MiB each, 30 MiB per PDF. Original embedded
+  JPEG/PNG are preserved; masks/unsupported formats are composed/converted losslessly. Vector-only
+  drawings and whole scanned-page crop selection remain separate work.
+- Still open: multi-topic splitting/routing within one file; independent scientific/assessment
+  review; representative model comparison with
   teacher-approved reference output. OCR correctness and scientific quality require separate
   acceptance; parser-verified page counts alone prove neither.
 - Live extraction smoke passed on the existing osteoporosis PDF: 15 actual pages, 68,060 native

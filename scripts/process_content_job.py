@@ -18,6 +18,9 @@ ENDPOINT = "https://upwbktvnybsjugdegjji.supabase.co/functions/v1/intmed-content
 SOURCE_HOST = "upwbktvnybsjugdegjji.supabase.co"
 MAX_SOURCE_BYTES = 20 * 1024 * 1024
 MAX_RESULT_BYTES = 8 * 1024 * 1024
+MAX_FIGURES = 80
+MAX_FIGURE_BYTES = 5 * 1024 * 1024
+MAX_FIGURE_TOTAL = 30 * 1024 * 1024
 
 
 class ProcessingError(RuntimeError):
@@ -185,6 +188,83 @@ def apply_selective_ocr(raw: bytes, extraction: dict[str, Any], job: dict[str, A
     return extraction
 
 
+def upload_figures(raw: bytes, extraction: dict[str, Any], job_id: str, capability: str) -> None:
+    """Private original objects only; masks are composed losslessly, never by AI."""
+    import pymupdf
+
+    total = count = skipped = 0
+    prepared = []
+    failures = []
+
+    def record_failure(figure: dict[str, Any], error: ProcessingError) -> None:
+        code = str(error)
+        if code in ("job_api_http_401", "job_api_http_403", "job_api_http_409", "stale_revision"):
+            raise error
+        # Retain only fixed public codes, never exception bodies or private URLs.
+        if not re.fullmatch(r"job_api_http_[0-9]{3}|job_request_failed|job_response_invalid|figure_response_invalid", code):
+            code = "figure_upload_failed"
+        failures.append({"page": figure["page"], "xref": figure["xref"], "code": code})
+        extraction["warnings"].append(f"ذخیرهٔ تصویر صفحه {figure['page']} انجام نشد ({code})؛ متن منبع حفظ شد.")
+    with pymupdf.open(stream=raw, filetype="pdf") as document:
+        for figure in extraction["figures"]:
+            if (min(figure["width"], figure["height"]) < 128 or
+                    figure["width"] * figure["height"] > 100_000_000):
+                skipped += 1
+                continue
+            if len(prepared) >= MAX_FIGURES:
+                skipped += 1
+                continue
+            image = document.extract_image(figure["xref"])
+            if not image:
+                skipped += 1
+                continue
+            data, extension = image["image"], image.get("ext", "")
+            # Soft masks are separate PDF objects: extracting only the base image
+            # loses transparency and can hide meaningful labels/backgrounds.
+            mask = next((entry[1] for entry in document[figure["page"] - 1].get_images(full=True)
+                         if entry[0] == figure["xref"]), 0)
+            if mask:
+                data = pymupdf.Pixmap(pymupdf.Pixmap(document, figure["xref"]),
+                                      pymupdf.Pixmap(document, mask)).tobytes("png")
+                extension = "png"
+            elif extension not in ("png", "jpeg", "jpg"):
+                pixmap = pymupdf.Pixmap(document, figure["xref"])
+                if pixmap.n - pixmap.alpha > 3:
+                    pixmap = pymupdf.Pixmap(pymupdf.csRGB, pixmap)
+                data, extension = pixmap.tobytes("png"), "png"
+            if len(data) > MAX_FIGURE_BYTES or total + len(data) > MAX_FIGURE_TOTAL:
+                skipped += 1
+                continue
+            sha = hashlib.sha256(data).hexdigest()
+            prepared.append((figure, data, extension, sha))
+            total += len(data)
+    if prepared:
+        try:
+            api(job_id, capability, "figure_manifest", pageCount=extraction["pageCount"],
+                figures=[{key: figure[key] for key in ("page", "xref", "width", "height")} | {"sha256": sha}
+                         for figure, _data, _extension, sha in prepared])
+        except ProcessingError as error:
+            for figure, _data, _extension, _sha in prepared:
+                record_failure(figure, error)
+            prepared = []
+        for figure, data, extension, sha in prepared:
+            try:
+                result = api(job_id, capability, "figure_result", page=figure["page"],
+                             xref=figure["xref"], width=figure["width"], height=figure["height"],
+                             sha256=sha, imageBase64=base64.b64encode(data).decode("ascii"))
+                if not isinstance(result.get("figureId"), str):
+                    raise ProcessingError("figure_response_invalid")
+            except ProcessingError as error:
+                record_failure(figure, error)
+                continue
+            figure.update(storedFigureId=result["figureId"], sha256=sha, extension=extension)
+            count += 1
+    extraction["storedFigureCount"] = count
+    extraction["figureUploadFailures"] = failures[:MAX_FIGURES]
+    if skipped:
+        extraction["warnings"].append(f"{skipped} تصویر کوچک یا خارج از محدودیت نگهداری نشد؛ فهرست منبع برای بازبینی حفظ شد.")
+
+
 def api(job_id: str, capability: str, action: str, **extra: Any) -> dict[str, Any]:
     payload = {"jobId": job_id, "capability": capability, "action": action, **extra}
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -209,6 +289,9 @@ def api(job_id: str, capability: str, action: str, **extra: Any) -> dict[str, An
                 continue
             raise ProcessingError("job_api_http_" + str(error.code)) from None
         except (OSError, ValueError):
+            if action in ("figure_result", "figure_manifest") and attempt < 2:
+                time.sleep(attempt + 1)
+                continue
             raise ProcessingError("job_request_failed") from None
     raise ProcessingError("job_retry_limit")
 
@@ -223,7 +306,11 @@ def process_job(job_id: str, capability: str) -> None:
         if not isinstance(source, dict):
             raise ProcessingError("job_source_missing")
         raw = download_source(source)
-        extraction = apply_selective_ocr(raw, extract_pdf(raw), job, job_id, capability)
+        extraction = extract_pdf(raw)
+        if not job.get("progress", {}).get("validationOnly"):
+            upload_figures(raw, extraction, job_id, capability)
+        if not job.get("progress", {}).get("figuresOnly"):
+            extraction = apply_selective_ocr(raw, extraction, job, job_id, capability)
         api(job_id, capability, "extract_result", extraction=extraction)
     elif job.get("kind") == "generate":
         outputs = job.get("outputs")

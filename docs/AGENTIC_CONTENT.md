@@ -53,8 +53,18 @@ expiring single-job capability; service/model keys remain in Supabase. This capa
 returned by the admin status endpoint. A diagnostic job may read an existing PDF and record
 extraction metrics without changing that source's draft or published content.
 
-This does not yet implement multi-topic publication or image-binary routing. Embedded figure
-metadata is an inventory only. Model comparison and independent clinical review remain open.
+Private embedded figure binaries now use the same job capability: a frozen runner inventory binds
+page count, page/xref, dimensions and hash before uploads. The trusted workflow runner supplies PDF
+provenance; this is not independent server-side PDF attestation. The Edge Function structurally
+checks PNG/JPEG, reserves bounded storage atomically, and never exposes a public source bucket.
+The admin sees source-scoped 15-minute previews and can create a separate image draft with explicit
+rights, caption, kind and topic. The parent lesson/assessments are not replaced. `figuresOnly`
+backfill extracts existing PDF originals without OCR/model calls or changing the parent revision.
+Limits are 80 figures, 5 MiB each, 30 MiB per source; tiny/oversized/unembedded figures are reported
+or remain future work, not silently presented as extracted. Derived images start with unknown
+rights; private Harrison assets still cannot be published publicly.
+
+Multi-topic publication, model comparison and independent clinical review remain open.
 
 Sources may arrive as a local upload or as an authorized Telegram inbox item. Telegram records are
 inputs only: copy/download the private object into a hashed extraction cache, retain its ingest ID

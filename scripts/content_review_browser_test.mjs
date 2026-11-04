@@ -5,21 +5,27 @@ import {fileURLToPath} from 'node:url';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {stripTypeScriptTypes} from 'node:module';
-const {chromium}=createRequire(import.meta.url)('playwright');
+let playwright;try{playwright=createRequire(import.meta.url)('playwright');}catch{playwright=createRequire('/opt/codex/runtimes/codex-primary-runtime/dependencies/node/package.json')('playwright');}
+const {chromium}=playwright;
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 // Exercise the real service handler: editing must preserve provenance, reject
 // malformed answer keys and reject a concurrent update instead of overwriting it.
-let handler,concurrent=false,patches=[],workerResult={processed:1},jobDispatches=[],jobsActive=false,serviceAdmin=true,serviceAuth=true;
+let handler,concurrent=false,patches=[],workerResult={processed:1},jobDispatches=[],jobsActive=false,serviceAdmin=true,serviceAuth=true,figureRows=[],figureCalls=[],signedCalls=[],reviewCalls=[],releasedURLs=[];
 const draftId='11111111-1111-4111-8111-111111111111',adminId='22222222-2222-4222-8222-222222222222';
 const stored={id:draftId,status:'approved',review_revision:7,intmed_content_ingest:{id:adminId,status:'accepted'},draft_json:{sourceEvidence:['page 4'],generation:{phase:'generated'},mcqDrafts:[{stem:'old',options:['a','b','c','d'],correctIndex:0,explanation:'old',sourcePages:[4],sourceRefs:[{sourceId:'original',page:4}]}]}};
 const serviceFetch=async(url,options={})=>{
   if(url.endsWith('/auth/v1/user'))return serviceAuth?Response.json({id:adminId}):Response.json({},{status:401});
   if(url.includes('/rest/v1/profiles?'))return Response.json([{role:serviceAdmin?'admin':'user',approved:true,rejected:false}]);
+  if(url.includes('/content/taxonomy.json'))return Response.json({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns',label:'عفونت عصبی'}]}]});
+  if(url.endsWith('/rest/v1/rpc/apply_intmed_content_review')){const value=JSON.parse(options.body);reviewCalls.push(value);return Response.json({...stored,status:value.new_status,source_summary:value.new_summary});}
+  if(url.includes('/rest/v1/intmed_content_figures?'))return Response.json(figureRows);
+  if(url.endsWith('/rest/v1/rpc/intmed_materialize_figure')){figureCalls.push(JSON.parse(options.body));return concurrent?Response.json({message:'stale review revision'},{status:409}):Response.json({draftId:adminId,ingestId:adminId,reused:false});}
+  if(url.includes('/storage/v1/object/sign/')){signedCalls.push({url,body:JSON.parse(options.body)});return Response.json({signedURL:'/object/sign/intmed-content-inbox/preview?token=test'});}
   if(url.includes('/rest/v1/intmed_content_drafts?')){
     if(options.method==='PATCH'){patches.push({url,value:JSON.parse(options.body)});return Response.json(concurrent?[]:[{...stored,...JSON.parse(options.body)}]);}
     return Response.json([stored]);
   }
-  if(url.includes('/rest/v1/intmed_content_ingest?'))return Response.json([{id:adminId,status:'pending_review'}]);
+  if(url.includes('/rest/v1/intmed_content_ingest?')){releasedURLs.push(url);return Response.json([{id:adminId,status:'pending_review'}]);}
   if(url.includes('/rest/v1/intmed_content_jobs?'))return Response.json(jobsActive?[{id:adminId,status:'running'}]:[]);
   if(url.endsWith('/functions/v1/intmed-content-jobs')){jobDispatches.push(JSON.parse(options.body));return Response.json({jobId:adminId,status:'queued'},{status:202});}
   if(url.endsWith('/functions/v1/intmed-content-worker'))return Response.json(workerResult);
@@ -48,6 +54,10 @@ const revised=await request({...edit,artifacts:{lessonDrafts:[{index:0,value:{he
 assert.equal(revised.status,200);const revisedDraft=(await revised.json()).draft;assert.deepEqual(revisedDraft.draft_json.mcqDrafts,[]);assert.deepEqual(revisedDraft.draft_json.flashcardDrafts,[]);assert.deepEqual(revisedDraft.draft_json.lessonDrafts[0].sourcePages,[4]);
 assert.equal((await request({action:'reanalyze',draftId,revision:7})).status,400);
 assert.equal((await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true})).status,202);
+stored.intmed_content_ingest.status='rejected';
+assert.equal((await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true})).status,202);
+assert.match(releasedURLs.at(-1),/status=in\.\(accepted,pending_review,error,rejected\)/,'explicit admin reanalysis permits reopened rejected sources');
+stored.intmed_content_ingest.status='accepted';
 workerResult={processed:0,reason:'empty_or_busy'};
 assert.equal((await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true})).status,202);
 assert.equal(patches.at(-1).value.status,'error');assert.equal(patches.at(-1).value.error_code,'reanalysis_dispatch_failed');assert.match(patches.at(-1).url,/review_revision=eq.8/);
@@ -81,7 +91,43 @@ assert.equal((await request({action:'approve',draftId,revision:7})).status,400,'
 stored.draft_json.reviewFindings[0].status='open';
 const editedWithFinding=await request(edit);assert.equal((await editedWithFinding.json()).draft.draft_json.reviewFindings[0].status,'open','editing alone must not resolve a scientific finding');
 Object.assign(stored,beforeFindings);
-const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH||undefined});
+stored.ingest_id=adminId;stored.intmed_content_ingest.kind='pdf';stored.intmed_content_ingest.mime_type='application/pdf';
+const figureId='33333333-3333-4333-8333-333333333333';
+figureRows=[{id:figureId,ingest_id:adminId,page:4,xref:22,width:640,height:480,sha256:'a'.repeat(64),storage_path:'figures/'+adminId+'/'+ 'a'.repeat(64)+'.png',mime_type:'image/png',byte_size:1000,job_id:'private'}];
+response=await request({action:'detail',draftId});assert.equal(response.status,200);const figureDetail=await response.json();
+assert.equal(figureDetail.figures.length,1);assert.equal(figureDetail.figures[0].page,4);assert.match(figureDetail.figures[0].previewUrl,/token=test/);assert.equal(figureDetail.figures[0].storage_path,undefined);assert.equal(figureDetail.figures[0].job_id,undefined);assert.equal(signedCalls.at(-1).body.expiresIn,900);
+const materialize={action:'materialize_figure',draftId,figureId,revision:7};
+const extractFigures={action:'extract_figures',draftId,revision:7};
+const beforeFigureBackfill=structuredClone(stored);
+response=await request(extractFigures);assert.equal(response.status,202);
+assert.deepEqual(jobDispatches.at(-1),{action:'dispatch',kind:'extract',figuresOnly:true,draftId,ingestId:adminId,revision:7});assert.deepEqual(stored,beforeFigureBackfill,'figure-only backfill does not modify parent draft or teacher approval');
+assert.equal((await request({...extractFigures,revision:6})).status,409);
+assert.equal((await request({...extractFigures,revision:null})).status,409);
+jobsActive=true;assert.equal((await request(extractFigures)).status,409);jobsActive=false;
+stored.status='published';assert.equal((await request(extractFigures)).status,202,'published PDF backfill needs no reopen or renewed scientific approval');
+stored.status='publishing';assert.equal((await request(extractFigures)).status,409);
+stored.status='rejected';assert.equal((await request(extractFigures)).status,409);stored.status=beforeFigureBackfill.status;
+serviceAdmin=false;assert.equal((await request(extractFigures)).status,403);serviceAdmin=true;
+serviceAuth=false;assert.equal((await request(extractFigures)).status,401);serviceAuth=true;
+serviceAdmin=false;assert.equal((await request(materialize)).status,403);serviceAdmin=true;
+serviceAuth=false;assert.equal((await request(materialize)).status,401);serviceAuth=true;
+assert.equal((await request({...materialize,revision:6})).status,409);
+jobsActive=true;assert.equal((await request(materialize)).status,409);jobsActive=false;
+assert.equal((await request({...materialize,figureId:'44444444-4444-4444-8444-444444444444'})).status,404);
+concurrent=true;assert.equal((await request(materialize)).status,409);concurrent=false;
+const parentBefore=structuredClone(stored);response=await request(materialize);assert.equal(response.status,200);assert.equal((await response.json()).draftId,adminId);assert.deepEqual(stored,parentBefore);
+assert.deepEqual(figureCalls.at(-1),{p_figure_id:figureId,p_reviewer_id:adminId,p_expected_revision:7});
+figureRows.push({...figureRows[0],id:adminId,storage_path:'other-private-object'});
+assert.equal((await (await request({action:'detail',draftId})).json()).figures.length,1,'unexpected private paths are neither returned nor signed');
+stored.draft_json.figureOrigin={figureId,ingestId:adminId,page:4,sha256:'a'.repeat(64)};stored.intmed_content_ingest.mime_type='image/png';stored.intmed_content_ingest.kind='photo';
+assert.equal((await request(extractFigures)).status,400,'figure-only extraction rejects image children');
+const figureReview={action:'approve',draftId,revision:7,title:'شرح فارسی تصویر',topicId:'id-cns',sourceSummary:'شرح فارسی علمی و نکات اصلی این تصویر برای بازبینی و استفاده آموزشی در مبحث انتخاب‌شده ثبت شده است.',targetKind:'image',rightsNote:'مجوز دقیق به همراه منبع',confirmMedicalReview:true};
+assert.equal((await request(figureReview)).status,400,'derived rights cannot default to authored');
+assert.equal((await request({...figureReview,sourceClass:'authored',confirmMedicalReview:false})).status,400,'figure still needs scientific approval');
+response=await request({...figureReview,sourceClass:'open-license'});assert.equal(response.status,200);assert.match(reviewCalls.at(-1).new_summary,/page 4/);assert.match(reviewCalls.at(-1).new_summary,new RegExp('a'.repeat(64)));assert.deepEqual(stored.draft_json.figureOrigin,{figureId,ingestId:adminId,page:4,sha256:'a'.repeat(64)});
+assert.equal((await request({...figureReview,action:'publish',confirmPublish:true,sourceClass:'harrison-private'})).status,400);
+assert.equal((await request({...figureReview,targetKind:'lesson',sourceClass:'authored'})).status,400);
+const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH||'/usr/bin/chromium'});
 const page=await browser.newPage();
 await page.setContent(`<!doctype html><html lang="fa" dir="rtl"><body>
 <button id="tabBtnManagement">مدیریت</button><span id="managementBadge" hidden></span>
@@ -179,5 +225,77 @@ assert.match(approve.rightsNote,/مدیر IntMed/);
 const publish=(await page.evaluate(()=>window.__calls)).find(call=>call.action==='publish');
 assert.equal(publish.confirmPublish,true);
 assert.equal(publish.targetKind,'pbs');
+// Exercise selection through the real browser UI with a PDF parent and a separate
+// child response. No parent save/approval is allowed as a side effect of selection.
+await page.evaluate(()=>{
+  const previous=window.fetch;
+  window.__figureSelections=[];
+  window.fetch=async(url,options)=>{
+    if(String(url).includes('taxonomy.json'))return previous(url,options);
+    const payload=JSON.parse(options.body);
+    if(payload.action==='extract_figures'){window.__calls.push(payload);if(window.__figureDispatchError)return {ok:false,status:409,text:async()=>JSON.stringify({message:'منبع هم‌زمان تغییر کرده است.'})};window.__figureJob={id:'figures-job',kind:'extract',status:'queued',progress:{figuresOnly:true}};return {ok:true,status:202,text:async()=>JSON.stringify({jobId:'figures-job',status:'queued'})};}
+    if(payload.action==='materialize_figure'){window.__calls.push(payload);window.__figureSelections.push(payload);return {ok:true,status:200,text:async()=>JSON.stringify({draftId:'33333333-3333-4333-8333-333333333333'})};}
+    if(payload.action==='detail'){
+      const child=payload.draftId==='33333333-3333-4333-8333-333333333333';
+      const response=await previous(url,options),value=JSON.parse(await response.text());
+      value.draft={...value.draft,id:payload.draftId,status:'draft_ready',target_source_class:null,target_rights_note:null,target_content_kind:child?'image':'lesson',target_topic_is_new:false,topic_id:'id-cns-meningoencephalitis',title:child?'شرح اولیه تصویر':'PDF مادر',source_summary:'این یک خلاصه فارسی علمی برای بررسی نکات تصویر و انتخاب مبحث و محل انتشار مناسب توسط مدیر است.',draft_json:{...value.draft.draft_json,reviewFindings:[],...(child?{figureOrigin:{figureId:'44444444-4444-4444-8444-444444444444',ingestId:'22222222-2222-4222-8222-222222222222',page:4,sha256:'a'.repeat(64)}}:{})},intmed_content_ingest:{kind:child?'photo':'pdf',mime_type:child?'image/png':'application/pdf'}};
+      value.job=!child&&window.__figureJob?{...window.__figureJob,status:window.__backfillFinished?'completed':'queued'}:null;
+      value.figures=child||(window.__backfillMode&&!window.__backfillFinished)?[]:[{id:'44444444-4444-4444-8444-444444444444',page:4,width:640,height:480,caption:'کپشن <img src=x onerror=alert(1)>',previewUrl:'https://example.test/private?token=preview'}];
+      if(!child&&window.__backfillMode)value.draft.status='published';
+      return {ok:true,status:200,text:async()=>JSON.stringify(value)};
+    }
+    return previous(url,options);
+  };
+  document.getElementById('contentReviewDialog').close();
+});
+await page.click('#contentReviewRefresh');await page.click('[data-review-id]');
+await page.locator('.review-original-figures summary').click();
+assert.match(await page.textContent('.review-original-figures'),/صفحهٔ 4/);
+assert.match(await page.textContent('.review-original-figures'),/640 × 480/);
+assert.equal(await page.locator('.review-original-figures img').count(),1,'caption markup must remain escaped');
+await page.fill('#contentReviewSummary','اصلاح ذخیره‌نشده');await page.click('[data-prepare-figure]');
+assert.equal(await page.evaluate(()=>window.__figureSelections.length),0);assert.match(await page.textContent('#contentReviewActionStatus'),/ابتدا اصلاحات/);
+await page.evaluate(()=>document.getElementById('contentReviewDialog').close());await page.click('[data-review-id]');await page.locator('.review-original-figures summary').click();
+const beforeSelectionCalls=await page.evaluate(()=>window.__calls.length);
+await page.click('[data-prepare-figure]');await page.waitForSelector('#contentReviewFigureRights');
+assert.equal(await page.inputValue('#contentReviewTargetKind'),'image','never infer PBS');
+assert.equal(await page.inputValue('#contentReviewSourceClass'),'','derived figure stays UNKNOWN');assert.equal(await page.inputValue('#contentReviewFigureSourceClass'),'');assert.equal(await page.inputValue('#contentReviewRightsNote'),'');
+assert.equal(await page.isChecked('#contentReviewConfirm'),false);
+const selectionCalls=(await page.evaluate(()=>window.__calls)).slice(beforeSelectionCalls);
+assert.equal(selectionCalls.filter(call=>['save','save_artifacts','approve','publish'].includes(call.action)).length,0,'selection must not save or approve the parent');
+await page.fill('#contentReviewFigureCaption','شرح فارسی ویرایش‌شده');assert.equal(await page.inputValue('#contentReviewTitle'),'شرح فارسی ویرایش‌شده');
+const publicationCount=await page.evaluate(()=>window.__calls.filter(call=>['approve','publish'].includes(call.action)).length);
+await page.click('#contentReviewPublish');assert.match(await page.textContent('#contentReviewActionStatus'),/حق استفاده/);
+await page.selectOption('#contentReviewFigureSourceClass','harrison-private');await page.fill('#contentReviewFigureRightsNote','تصویر خصوصی کتاب هاریسون برای بازبینی');await page.click('#contentReviewPublish');
+assert.match(await page.textContent('#contentReviewActionStatus'),/قابل انتشار عمومی نیست/);
+assert.equal(await page.evaluate(()=>window.__calls.filter(call=>['approve','publish'].includes(call.action)).length),publicationCount);
+assert.equal(await page.locator('#contentReviewExtractFigures').count(),0,'only PDF sources offer figure extraction');
+await page.evaluate(()=>{window.__backfillMode=true;document.getElementById('contentReviewDialog').close();});
+await page.click('[data-review-id]');await page.waitForSelector('#contentReviewExtractFigures');
+assert.equal(await page.locator('.review-original-figures').count(),0,'old PDFs may have no stored originals');
+await page.fill('#contentReviewSummary','ویرایش ذخیره‌نشده');await page.click('#contentReviewExtractFigures');
+assert.equal(await page.evaluate(()=>window.__calls.filter(call=>call.action==='extract_figures').length),0,'backfill must preserve unsaved edits');
+await page.evaluate(()=>document.getElementById('contentReviewDialog').close());await page.click('[data-review-id]');
+const originalTitle=await page.inputValue('#contentReviewTitle'),originalSummary=await page.inputValue('#contentReviewSummary');
+await page.evaluate(()=>{window.__figureDispatchError=true;});await page.click('#contentReviewExtractFigures');
+await page.waitForFunction(()=>document.getElementById('contentReviewActionStatus').textContent.includes('هم‌زمان'));
+assert.equal(await page.isDisabled('#contentReviewTitle'),false);assert.equal(await page.inputValue('#contentReviewTitle'),originalTitle);
+await page.evaluate(()=>{window.__figureDispatchError=false;});
+const beforeBackfillCalls=await page.evaluate(()=>window.__calls.length);
+await page.click('#contentReviewExtractFigures');
+assert.equal(await page.isDisabled('#contentReviewTitle'),true);assert.equal(await page.isDisabled('#contentReviewSummary'),true);assert.equal(await page.isDisabled('#contentReviewTopicSelect'),true);
+assert.match(await page.textContent('#contentReviewGenerationStatus'),/استخراج تصاویر بدون بازسازی متن/);
+await page.evaluate(()=>{window.__backfillFinished=true;});
+await page.waitForSelector('.review-original-figures',{timeout:12000});
+assert.equal(await page.isDisabled('#contentReviewTitle'),false);assert.equal(await page.isDisabled('#contentReviewSummary'),false);
+assert.equal(await page.inputValue('#contentReviewTitle'),originalTitle);assert.equal(await page.inputValue('#contentReviewSummary'),originalSummary);
+assert.match(await page.textContent('#contentReviewActionStatus'),/استخراج تصاویر کامل شد/);
+const backfillCalls=(await page.evaluate(()=>window.__calls)).slice(beforeBackfillCalls);
+assert.equal(backfillCalls.filter(call=>call.action==='extract_figures').length,1);
+assert.equal(backfillCalls.filter(call=>['reanalyze','save','save_artifacts','approve','publish','reopen'].includes(call.action)).length,0,'published PDF backfill does not change approval, text, or source publication');
+await page.evaluate(()=>{window.__backfillFinished=false;});await page.click('#contentReviewExtractFigures');
+await page.evaluate(()=>{document.getElementById('contentReviewTitle').value='ویرایش هم‌زمان محفوظ';window.__backfillFinished=true;});
+await page.waitForFunction(()=>document.getElementById('contentReviewActionStatus').textContent.includes('ویرایش‌های شما محفوظ‌اند'),{timeout:12000});
+assert.equal(await page.inputValue('#contentReviewTitle'),'ویرایش هم‌زمان محفوظ','completion never replaces unsaved form values');
 await browser.close();
 console.log('Content review browser test passed.');

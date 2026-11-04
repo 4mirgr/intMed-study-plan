@@ -15,6 +15,86 @@ import process_content_job as subject
 
 
 class NativeContentProcessorTest(unittest.TestCase):
+    def test_one_figure_failure_preserves_native_text_and_next_figure(self):
+        with pymupdf.open() as document:
+            page = document.new_page()
+            page.insert_text((30, 30), "Native diagnostic evidence must survive an image storage failure.")
+            for index in range(2):
+                pixmap = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 150, 150), False)
+                pixmap.clear_with(80 + index)
+                page.insert_image(pymupdf.Rect(30 + index * 170, 50, 180 + index * 170, 200), stream=pixmap.tobytes("png"))
+            raw = document.tobytes()
+        for failure in ("job_api_http_400", "job_api_http_503", "job_request_failed"):
+            with self.subTest(failure=failure), mock.patch.object(subject, "download_source", return_value=raw), \
+                 mock.patch.object(subject, "api", side_effect=[{"job": {"kind": "extract", "source": {}}},
+                     {"ok": True}, subject.ProcessingError(failure), {"figureId": "second"}, {"ok": True}]) as api:
+                subject.process_job("job", "cap")
+                self.assertEqual(api.call_args.args[2], "extract_result")
+                extraction = api.call_args.kwargs["extraction"]
+                self.assertIn("must survive", extraction["pages"][0]["text"])
+                self.assertEqual(extraction["storedFigureCount"], 1)
+                self.assertEqual(extraction["figureUploadFailures"], [{"page": 1, "xref": extraction["figures"][0]["xref"], "code": failure}])
+        for failure in ("job_api_http_403", "job_api_http_409"):
+            with self.subTest(failure=failure), mock.patch.object(subject, "api", side_effect=[{"ok": True}, subject.ProcessingError(failure)]):
+                with self.assertRaisesRegex(subject.ProcessingError, failure):
+                    subject.upload_figures(raw, subject.extract_pdf(raw), "job", "cap")
+
+    def test_private_figure_upload_preserves_original_and_skips_icons(self):
+        with pymupdf.open() as document:
+            page = document.new_page()
+            pixmap = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 180, 140), False)
+            pixmap.clear_with(110)
+            original = pixmap.tobytes("png")
+            page.insert_image(pymupdf.Rect(20, 20, 200, 160), stream=original)
+            raw = document.tobytes()
+        extraction = subject.extract_pdf(raw)
+        with mock.patch.object(subject, "api", return_value={"figureId": "private-id"}) as api:
+            subject.upload_figures(raw, extraction, "job", "cap")
+        self.assertEqual(api.call_args.args[2], "figure_result")
+        self.assertEqual(api.call_args_list[0].args[2], "figure_manifest")
+        self.assertEqual(api.call_args_list[0].kwargs["figures"][0]["sha256"], hashlib.sha256(original).hexdigest())
+        self.assertEqual(base64.b64decode(api.call_args.kwargs["imageBase64"]), original)
+        self.assertEqual(extraction["figures"][0]["storedFigureId"], "private-id")
+        self.assertNotIn("imageBase64", json.dumps(extraction))
+        with mock.patch.object(subject, "api") as api:
+            subject.upload_figures(self.make_pdf(), subject.extract_pdf(self.make_pdf()), "job", "cap")
+        api.assert_not_called()
+
+    def test_soft_mask_is_composed_and_upload_limits_report_skips(self):
+        with pymupdf.open() as document:
+            page = document.new_page()
+            rgb = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 180, 140), False)
+            rgb.clear_with(110)
+            rgba = pymupdf.Pixmap(rgb, 1)
+            rgba.set_alpha(bytes([120]) * (180 * 140))
+            page.insert_image(pymupdf.Rect(20, 20, 200, 160), stream=rgba.tobytes("png"))
+            raw = document.tobytes()
+        extraction = subject.extract_pdf(raw)
+        with mock.patch.object(subject, "api", return_value={"figureId": "private-id"}) as api:
+            subject.upload_figures(raw, extraction, "job", "cap")
+        composed = pymupdf.Pixmap(base64.b64decode(api.call_args.kwargs["imageBase64"]))
+        self.assertEqual(composed.alpha, 1)
+        self.assertEqual(composed.pixel(0, 0)[-1], 120)
+        self.assertEqual(extraction["storedFigureCount"], 1)
+        extraction = subject.extract_pdf(raw)
+        with mock.patch.object(subject, "MAX_FIGURE_TOTAL", 1), mock.patch.object(subject, "api") as api:
+            subject.upload_figures(raw, extraction, "job", "cap")
+        api.assert_not_called()
+        self.assertEqual(extraction["storedFigureCount"], 0)
+        self.assertTrue(any("محدودیت" in warning for warning in extraction["warnings"]))
+
+    def test_figure_network_retries_are_safe_and_bounded(self):
+        result = mock.MagicMock()
+        result.__enter__.return_value.read.return_value = b'{"figureId":"private-id"}'
+        with mock.patch.object(subject.urllib.request, "urlopen", side_effect=[OSError("private URL"), result]) as opened, \
+             mock.patch.object(subject.time, "sleep"):
+            self.assertEqual(subject.api("id", "cap", "figure_result")["figureId"], "private-id")
+        self.assertEqual(opened.call_count, 2)
+        with mock.patch.object(subject.urllib.request, "urlopen", side_effect=OSError("private URL")), \
+             mock.patch.object(subject.time, "sleep"):
+            with self.assertRaisesRegex(subject.ProcessingError, "job_request_failed"):
+                subject.api("id", "cap", "figure_result")
+
     def make_pdf(self):
         with pymupdf.open() as document:
             page = document.new_page()
@@ -133,6 +213,15 @@ class NativeContentProcessorTest(unittest.TestCase):
             subject.process_job("id", "cap")
         self.assertEqual(api.call_args.args[2], "extract_result")
         self.assertEqual(api.call_args.kwargs["extraction"]["pageCount"], 3)
+
+    def test_figures_only_backfill_never_calls_ocr(self):
+        job = {"kind": "extract", "source": {}, "progress": {"figuresOnly": True}}
+        with mock.patch.object(subject, "api", side_effect=[{"job": job}, {"ok": True}]) as api, \
+             mock.patch.object(subject, "download_source", return_value=self.make_pdf()), \
+             mock.patch.object(subject, "apply_selective_ocr") as ocr:
+            subject.process_job("id", "cap")
+        ocr.assert_not_called()
+        self.assertEqual([call.args[2] for call in api.call_args_list], ["claim", "extract_result"])
 
     def test_selective_ocr_only_sends_image_page_and_reuses_cached_pages(self):
         raw = self.make_pdf()
