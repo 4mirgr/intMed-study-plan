@@ -102,9 +102,26 @@ Deno.serve(async req=>{
       const jobs=await db('intmed_content_jobs?draft_id=eq.'+draftId+'&select=id,kind,status,outputs,progress,error,created_at,updated_at&order=created_at.desc&limit=1') as Array<Record<string,unknown>>;
       return reply(200,{draft,sourceUrl,job:jobs[0]||null});
     }
-    if(['save_artifacts','save','approve','publish','reject','reopen'].includes(action)){
+    if(['save_artifacts','resolve_finding','save','approve','publish','reject','reopen'].includes(action)){
       const active=await db('intmed_content_jobs?draft_id=eq.'+draftId+'&status=in.(queued,running)&select=id&limit=1') as Array<Record<string,unknown>>;
       if(active.length)return reply(409,{message:'پردازش این منبع هنوز ادامه دارد؛ پس از پایان آن محتوا را ویرایش یا منتشر کنید.'});
+    }
+    const draftJson=object(draft.draft_json)?draft.draft_json:{};
+    const findings=Array.isArray(draftJson.reviewFindings)?draftJson.reviewFindings:[];
+    if(['approve','publish'].includes(action)&&findings.some(item=>object(item)&&item.severity==='blocking'&&item.status!=='resolved'))return reply(409,{message:'موارد علمیِ نیازمند اصلاح هنوز باز هستند؛ ابتدا آن‌ها را بررسی و نتیجهٔ اصلاح را ثبت کنید.',code:'unresolved_scientific_findings'});
+    if(action==='resolve_finding'){
+      const revision=Number(input.revision),index=Number(input.findingIndex),resolution=clean(input.resolution,4000);
+      if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0))return reply(409,{message:'پیش‌نویس تغییر کرده؛ دوباره باز کنید.'});
+      if(!['draft_ready','approved','publish_error'].includes(String(draft.status)))return reply(409,{message:'برای ثبت بازبینی، ابتدا پیش‌نویس را بازگشایی کنید.'});
+      if(!Number.isInteger(index)||index<0||index>=findings.length||!object(findings[index])||findings[index].status==='resolved'||resolution.length<12)return reply(400,{message:'مورد علمی و توضیح روشنِ اصلاح یا نتیجهٔ بررسی را وارد کنید.'});
+      const now=new Date().toISOString(),updated=findings.map((item,position)=>position===index?{...item,status:'resolved',resolution:{note:resolution,reviewedBy:user.id,reviewedAt:now}}:item);
+      const history=Array.isArray(draftJson.scientificReviewHistory)?draftJson.scientificReviewHistory:[];
+      const saved=await db('intmed_content_drafts?id=eq.'+draftId+'&review_revision=eq.'+revision+'&status=in.(draft_ready,approved,publish_error)','PATCH',{
+        draft_json:{...draftJson,reviewFindings:updated,scientificReviewHistory:[...history,{findingIndex:index,action:'resolved',note:resolution,reviewedBy:user.id,reviewedAt:now}].slice(-200)},
+        status:'draft_ready',review_revision:revision+1,reviewed_by:null,reviewed_at:null,updated_at:now,
+      },{Prefer:'return=representation'}) as Array<Record<string,unknown>>;
+      if(!saved.length)return reply(409,{message:'پیش‌نویس هم‌زمان تغییر کرده؛ دوباره باز کنید.'});
+      return reply(200,{ok:true,draft:saved[0],message:'نتیجهٔ بررسی این مورد ثبت شد؛ تأیید نهایی کل محتوا همچنان لازم است.'});
     }
     if(action==='save_artifacts'){
       const revision=Number(input.revision);

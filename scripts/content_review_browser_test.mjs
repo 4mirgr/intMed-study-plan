@@ -9,12 +9,12 @@ const {chromium}=createRequire(import.meta.url)('playwright');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 // Exercise the real service handler: editing must preserve provenance, reject
 // malformed answer keys and reject a concurrent update instead of overwriting it.
-let handler,concurrent=false,patches=[],workerResult={processed:1},jobDispatches=[],jobsActive=false;
+let handler,concurrent=false,patches=[],workerResult={processed:1},jobDispatches=[],jobsActive=false,serviceAdmin=true,serviceAuth=true;
 const draftId='11111111-1111-4111-8111-111111111111',adminId='22222222-2222-4222-8222-222222222222';
 const stored={id:draftId,status:'approved',review_revision:7,intmed_content_ingest:{id:adminId,status:'accepted'},draft_json:{sourceEvidence:['page 4'],generation:{phase:'generated'},mcqDrafts:[{stem:'old',options:['a','b','c','d'],correctIndex:0,explanation:'old',sourcePages:[4],sourceRefs:[{sourceId:'original',page:4}]}]}};
 const serviceFetch=async(url,options={})=>{
-  if(url.endsWith('/auth/v1/user'))return Response.json({id:adminId});
-  if(url.includes('/rest/v1/profiles?'))return Response.json([{role:'admin',approved:true,rejected:false}]);
+  if(url.endsWith('/auth/v1/user'))return serviceAuth?Response.json({id:adminId}):Response.json({},{status:401});
+  if(url.includes('/rest/v1/profiles?'))return Response.json([{role:serviceAdmin?'admin':'user',approved:true,rejected:false}]);
   if(url.includes('/rest/v1/intmed_content_drafts?')){
     if(options.method==='PATCH'){patches.push({url,value:JSON.parse(options.body)});return Response.json(concurrent?[]:[{...stored,...JSON.parse(options.body)}]);}
     return Response.json([stored]);
@@ -58,6 +58,29 @@ stored.intmed_content_ingest.kind='pdf';stored.intmed_content_ingest.mime_type='
 response=await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true});
 assert.equal(response.status,202);assert.equal(jobDispatches.at(-1).kind,'extract');
 stored.intmed_content_ingest.kind='text';
+const beforeFindings=structuredClone(stored);
+stored.draft_json.reviewFindings=[{severity:'blocking',status:'open',scope:'دوز دارو',finding:'توضیح نیازمند اصلاح',evidenceUrl:'https://example.test/reference'}];
+response=await request({action:'approve',draftId,revision:7});assert.equal(response.status,409);assert.equal((await response.json()).code,'unresolved_scientific_findings');
+assert.equal((await request({action:'publish',draftId,revision:7})).status,409);
+const resolution={action:'resolve_finding',draftId,revision:7,findingIndex:0,resolution:'زمان‌بندی دارو با مرجع تطبیق و توضیح اصلاح شد.'};
+assert.equal((await request({...resolution,resolution:'ok'})).status,400);
+assert.equal((await request({...resolution,findingIndex:10})).status,400);
+assert.equal((await request({...resolution,revision:6})).status,409);
+serviceAdmin=false;assert.equal((await request(resolution)).status,403);serviceAdmin=true;
+serviceAuth=false;assert.equal((await request(resolution)).status,401);serviceAuth=true;
+jobsActive=true;assert.equal((await request(resolution)).status,409);jobsActive=false;
+concurrent=true;assert.equal((await request(resolution)).status,409);concurrent=false;
+response=await request(resolution);assert.equal(response.status,200);const resolved=(await response.json()).draft;
+assert.equal(resolved.status,'draft_ready');assert.equal(resolved.review_revision,8);assert.equal(resolved.reviewed_at,null);
+assert.equal(resolved.draft_json.reviewFindings[0].status,'resolved');assert.equal(resolved.draft_json.reviewFindings[0].resolution.reviewedBy,adminId);
+assert.equal(resolved.draft_json.reviewFindings[0].resolution.note,resolution.resolution);
+assert.equal(resolved.draft_json.scientificReviewHistory[0].findingIndex,0);assert.deepEqual(resolved.draft_json.sourceEvidence,stored.draft_json.sourceEvidence);
+assert.equal(resolved.draft_json.generation.phase,stored.draft_json.generation.phase,'resolving one finding must not approve all clinical content');
+stored.draft_json.reviewFindings=resolved.draft_json.reviewFindings;
+assert.equal((await request({action:'approve',draftId,revision:7})).status,400,'resolved findings pass the scientific gate and still require final approval fields');
+stored.draft_json.reviewFindings[0].status='open';
+const editedWithFinding=await request(edit);assert.equal((await editedWithFinding.json()).draft.draft_json.reviewFindings[0].status,'open','editing alone must not resolve a scientific finding');
+Object.assign(stored,beforeFindings);
 const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH||undefined});
 const page=await browser.newPage();
 await page.setContent(`<!doctype html><html lang="fa" dir="rtl"><body>
@@ -69,7 +92,9 @@ await page.evaluate(()=>{
   window.__calls=[];
   window.INTMED_CONFIG={supabaseUrl:'https://example.supabase.co',supabaseAnonKey:'public-test-key'};
   let job=null,pendingOutputs=[];let draft={id:'11111111-1111-4111-8111-111111111111',ingest_id:'22222222-2222-4222-8222-222222222222',status:'draft_ready',topic_id:'id-cns-meningoencephalitis',topic_confidence:.9,title:'انسفالیت',source_summary:'خلاصه',review_revision:0,updated_at:'2026-10-27T10:00:00Z',model:'gemma',draft_json:{lessonOutline:['تعریف و رویکرد تشخیصی انسفالیت ویروسی'],lessonDrafts:[{heading:'رویکرد',paragraphs:['متن کامل درسنامه'],keyPoints:['MRI و CSF']}],documentExtraction:{pageCount:2,pages:[{page:1,heading:'تعریف',text:'تب و تغییر سطح هوشیاری',unreadable:false},{page:2,heading:'تشخیص',text:'MRI و CSF',unreadable:false}],warnings:[]},sourceEvidence:[{claim:'تب و تغییر سطح هوشیاری از تظاهرات مهم هستند'},{claim:'MRI و بررسی CSF در ارزیابی تشخیصی نقش دارند'}],medicalWarnings:['نیازمند بازبینی'],insufficientEvidence:[],mcqDrafts:[],kfDrafts:[],imageCandidates:[]},intmed_content_ingest:{kind:'photo',mime_type:'image/png',content_text:'متن منبع'}};
-  window.fetch=async (url,options)=>{if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]})};const payload=JSON.parse(options.body);window.__calls.push(payload);if(payload.action==='list')return {ok:true,status:200,text:async()=>JSON.stringify({items:[draft],counts:{[draft.status]:1}})};if(payload.action==='detail'){if(job&&job.status==='queued'&&window.__finishJob){job={...job,status:'completed',progress:{completedOutputs:pendingOutputs}};draft={...draft,review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,mcqDrafts:[{stem:'نمونه',options:['الف','ب','ج','د'],correctIndex:0,explanation:'شرح'}],generation:{phase:'generated',generated:pendingOutputs}}};}return {ok:true,status:200,text:async()=>JSON.stringify({draft,sourceUrl:null,job})};}if(payload.action==='save_artifacts'){if(window.__rejectEdit)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};const json={...draft.draft_json};Object.keys(payload.artifacts).forEach(kind=>{json[kind]=payload.artifacts[kind].map(change=>({...draft.draft_json[kind][change.index],...change.value}));});draft={...draft,status:'draft_ready',draft_json:json,review_revision:draft.review_revision+1};return {ok:true,status:200,text:async()=>JSON.stringify({message:'اصلاحات ذخیره شد',draft})};}if(payload.action==='generate'){pendingOutputs=payload.outputs;job={id:'job-1',kind:'generate',status:'queued',progress:{}};return {ok:true,status:202,text:async()=>JSON.stringify({jobId:job.id,status:job.status,progress:job.progress,draft})};}draft={...draft,status:payload.action==='approve'?'approved':payload.action==='publish'?'publish_requested':'draft_ready',review_revision:draft.review_revision+1,target_topic_is_new:payload.createTopic,target_topic_label:payload.newTopicLabel,target_category_id:payload.newTopicCategoryId,target_content_kind:payload.targetKind,target_source_class:payload.sourceClass,target_rights_note:payload.rightsNote,source_summary:payload.sourceSummary};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};};
+  draft.reviewer_note='توضیح خطای شناخته‌شده <img src=x onerror=alert(1)>';
+  draft.draft_json.reviewFindings=[{severity:'blocking',status:'open',scope:'زمان‌بندی دارو',finding:'زمان‌بندی باید با مرجع تطبیق داده شود.',evidenceUrl:'https://example.test/reference'},{severity:'info',status:'open',scope:'یادداشت',finding:'اطلاعات تکمیلی',evidenceUrl:'javascript:alert(1)'}];
+  window.fetch=async (url,options)=>{if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]})};const payload=JSON.parse(options.body);window.__calls.push(payload);if(payload.action==='list')return {ok:true,status:200,text:async()=>JSON.stringify({items:[draft],counts:{[draft.status]:1}})};if(payload.action==='detail'){if(job&&job.status==='queued'&&window.__finishJob){job={...job,status:'completed',progress:{completedOutputs:pendingOutputs}};draft={...draft,review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,mcqDrafts:[{stem:'نمونه',options:['الف','ب','ج','د'],correctIndex:0,explanation:'شرح'}],generation:{phase:'generated',generated:pendingOutputs}}};}return {ok:true,status:200,text:async()=>JSON.stringify({draft,sourceUrl:null,job})};}if(payload.action==='save_artifacts'){if(window.__rejectEdit)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};const json={...draft.draft_json};Object.keys(payload.artifacts).forEach(kind=>{json[kind]=payload.artifacts[kind].map(change=>({...draft.draft_json[kind][change.index],...change.value}));});draft={...draft,status:'draft_ready',draft_json:json,review_revision:draft.review_revision+1};return {ok:true,status:200,text:async()=>JSON.stringify({message:'اصلاحات ذخیره شد',draft})};}if(payload.action==='resolve_finding'){if(window.__rejectResolution)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};draft={...draft,status:'draft_ready',review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,reviewFindings:draft.draft_json.reviewFindings.map((item,index)=>index===payload.findingIndex?{...item,status:'resolved',resolution:{note:payload.resolution}}:item)}};return {ok:true,status:200,text:async()=>JSON.stringify({message:'نتیجهٔ بررسی ثبت شد',draft})};}if(payload.action==='generate'){pendingOutputs=payload.outputs;job={id:'job-1',kind:'generate',status:'queued',progress:{}};return {ok:true,status:202,text:async()=>JSON.stringify({jobId:job.id,status:job.status,progress:job.progress,draft})};}draft={...draft,status:payload.action==='approve'?'approved':payload.action==='publish'?'publish_requested':'draft_ready',review_revision:draft.review_revision+1,target_topic_is_new:payload.createTopic,target_topic_label:payload.newTopicLabel,target_category_id:payload.newTopicCategoryId,target_content_kind:payload.targetKind,target_source_class:payload.sourceClass,target_rights_note:payload.rightsNote,source_summary:payload.sourceSummary};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};};
   window.IntMedBackend={session:()=>({access_token:'test-token'}),refreshSession:async()=>({access_token:'test-token'})};
 });
 await page.addScriptTag({path:path.join(root,'docs/js/intmed-content-review.js')});
@@ -84,6 +109,22 @@ assert.equal(await page.inputValue('#contentReviewTopicSelect'),'id-cns-meningoe
 assert.ok((await page.inputValue('#contentReviewSummary')).length>=60);
 assert.match(await page.textContent('#contentReviewDraftBody'),/2 از 2 صفحه/);
 assert.match(await page.textContent('#contentReviewDraftBody'),/متن کامل درسنامه/);
+assert.match(await page.textContent('.review-findings'),/زمان‌بندی باید با مرجع/);
+assert.match(await page.textContent('.review-findings'),/توضیح خطای شناخته‌شده/);
+assert.equal(await page.locator('.review-findings img').count(),0,'reviewer notes must remain escaped text');
+assert.equal(await page.locator('.review-findings a').count(),1,'unsafe evidence URLs must not become links');
+await page.click('#contentReviewPublish');
+assert.match(await page.textContent('#contentReviewActionStatus'),/موارد بازبینی علمی/);
+assert.equal((await page.evaluate(()=>window.__calls)).filter(call=>call.action==='approve').length,0);
+await page.fill('[data-finding-index="0"] .review-finding-note','زمان‌بندی با مرجع تطبیق داده شد و پاسخ اصلاح شد.');
+await page.evaluate(()=>{window.__rejectResolution=true;});
+await page.click('[data-finding-index="0"] .review-finding-resolve');
+await page.waitForFunction(()=>document.getElementById('contentReviewFindingsStatus').textContent.includes('تغییر کرده'));
+assert.match(await page.inputValue('[data-finding-index="0"] .review-finding-note'),/پاسخ اصلاح شد/);
+await page.evaluate(()=>{window.__rejectResolution=false;});
+await page.click('[data-finding-index="0"] .review-finding-resolve');
+await page.waitForSelector('[data-finding-index="0"].is-resolved',{state:'attached'});
+assert.match(await page.textContent('[data-finding-index="0"]'),/پاسخ اصلاح شد/);
 await page.fill('[data-artifact-field="paragraphs"]','متن اصلاح‌شدهٔ درسنامه\n\nپاراگراف دوم');
 await page.check('[name="contentReviewOutput"][value="mcq"]');
 await page.click('#contentReviewGenerate');

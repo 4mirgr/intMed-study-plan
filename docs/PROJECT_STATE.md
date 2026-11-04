@@ -104,14 +104,12 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   extraction/lesson/assessment model configuration preserving existing defaults; readable editable
   artifact review with optimistic revision checks; publication waits for matching live manifest
   and topic bytes. Authored content still requires the teacher's final approval.
-- Remaining acceptance work: parser-verified PDF pages; native text/figure extraction with OCR only
-  where needed; durable asynchronous generation jobs with resumable chunks and quota-aware retry;
-  multi-topic routing; embedded figure routing; independent evidence/clinical checking; comparison
-  of a typed PDF, scanned/handwritten input and a visual/table-heavy file against teacher references.
-- Current extraction coverage is explicitly model-reported, NOT proof that all actual PDF pages
-  were read. Current generation requests remain synchronous; the persisted lesson checkpoint
-  protects completed work but is not a durable task queue. No unbenchmarked model is advertised
-  as more accurate. Existing historical drafts need explicit reanalysis where no page map exists.
+- Parser-verified pages, native extraction/selective OCR and durable resumable jobs were completed
+  in the next checkpoint below; this historical list must not reopen those shipped tasks.
+- Still requiring acceptance: multi-topic routing; embedded figure publication; independent clinical
+  checking; comparison of typed, scanned/handwritten and visual/table-heavy files against teacher
+  references. Old drafts without a parser-verified page map need explicit reanalysis. A verified
+  page count proves neither accurate OCR nor clinical correctness.
 
 ### Durable content processing (2026-11-03)
 
@@ -149,6 +147,13 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ### P0 — release correctness
 
+- Scientific findings now have a readable review panel, safe evidence links and explicit
+  administrator resolution notes/history. Both approval and publication reject unresolved blocking
+  findings server-side. Editing artifacts does not silently resolve findings; resolving a finding
+  does not approve the entire draft. The osteoporosis pilot still needs teacher review.
+- The global library viewer now displays creator, license, source links and modification notes,
+  as well as a draft-caption warning. Source metadata must remain visible outside topic pages too.
+
 - Keep GitHub validation/deployment green; investigate any failing SQL/browser test before calling
   a release complete.
 - Configure and end-to-end test Resend sender, calendar email, newsletter test/send/unsubscribe.
@@ -163,8 +168,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   and every earlier draft with teacher clinical review.
 - Re-extract low-quality PDF figures from original embedded streams or render the figure region at
   high DPI; record page, source, copyright and visual QA. Never upscale a bad thumbnail as a fix.
-- Validate normalized message backfill in production, then move the UI from legacy ticket polling
-  to conversation RPCs/Realtime; add native push later. Dual-write keeps the cutover reversible.
+- Validate normalized message backfill in production and retire the legacy fallback only after
+  acceptance; conversation RPCs are already the primary UI (see baseline). Realtime/native push
+  remain later work, not prerequisites for the current adaptive foreground polling.
 - The twelve preserved Telegram inputs were processed locally into review drafts. Triage
   these in the admin inbox, clinically review approved candidates, and integrate only source-backed
   material through the canonical content pipeline. Keep port 1234 loopback-only.

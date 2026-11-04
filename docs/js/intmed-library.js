@@ -42,9 +42,19 @@
     var lines=String(value||'').split(/\r?\n/).filter(function(line){return line.trim().startsWith('|');});if(lines.length<2)return el('pre','library-structured',value||'');
     var table=el('table','library-structured-table'),head=true;lines.forEach(function(line,index){if(index===1&&/^\|?[\s:|-]+\|?$/.test(line))return;var tr=el('tr');line.replace(/^\||\|$/g,'').split('|').forEach(function(cell){var node=el(head?'th':'td',null,cell.trim());tr.appendChild(node);});table.appendChild(tr);head=false;});var wrap=el('div','library-table-scroll');wrap.appendChild(table);return wrap;
   }
+  function imageAttribution(body,item){
+    var text=[item.credit,item.licenseLabel].filter(Boolean).join(' · ')||item.copyright;
+    if(text)body.appendChild(el('p','library-viewer-source',text));
+    [[item.originUrl,'صفحهٔ منبع تصویر'],[item.licenseUrl,'شرایط مجوز']].forEach(function(pair){
+      if(!/^https?:\/\//i.test(String(pair[0]||'')))return;
+      var p=el('p','library-viewer-source'),link=el('a',null,pair[1]);link.href=pair[0];link.target='_blank';link.rel='noopener noreferrer';p.appendChild(link);body.appendChild(p);
+    });
+    if(item.changesNote)body.appendChild(el('p','library-viewer-source',item.changesNote));
+    if(item.reviewStatus==='draft')body.appendChild(el('p','library-viewer-source','شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.'));
+  }
   function renderViewer(entry,payload){
     var body=document.getElementById('libraryViewerBody');body.replaceChildren();var item=(payload[entry.field]||[]).find(function(candidate){return candidate.id===entry.itemId;});if(!item){body.textContent='این مورد در نسخهٔ فعلی مبحث پیدا نشد.';return;}
-    if(entry.field==='images'){var img=el('img','library-viewer-image');img.src=item.sourceUrl||entry.thumbnail;img.alt=item.caption||entry.title;body.appendChild(img);if(item.note)body.appendChild(el('p','library-viewer-note',item.note));}
+    if(entry.field==='images'){var img=el('img','library-viewer-image');img.src=item.sourceUrl||entry.thumbnail;img.alt=item.caption||entry.title;body.appendChild(img);if(item.note)body.appendChild(el('p','library-viewer-note',item.note));imageAttribution(body,item);}
     else if(entry.field==='tables')body.appendChild(markdownTable(item.markdown));
     else {if(item.vignette)body.appendChild(el('p','library-viewer-note',item.vignette));var list=el('ol','library-algorithm-steps');(item.steps||[]).forEach(function(step){var li=el('li');li.append(el('strong',null,step.prompt),el('p',null,step.expectedAnswer));list.appendChild(li);});body.appendChild(list);}
     if(entry.sourceTitle||entry.sourcePages){body.appendChild(el('p','library-viewer-source','منبع: '+(entry.sourceTitle||'ثبت‌شده در مبحث')+(entry.sourcePages?' · صفحه '+entry.sourcePages:'')));}
