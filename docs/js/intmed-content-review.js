@@ -149,7 +149,6 @@
   document.getElementById("contentReviewCategory").addEventListener("change",function(){renderTopicPicker("",this.value);});
   document.getElementById("contentReviewTopicSelect").addEventListener("change",validateTopic);
   document.getElementById("contentReviewNewTopicToggle").addEventListener("click",function(){setNewTopicMode(!newTopicMode,current&&current.draft);});
-  document.getElementById("contentReviewTitle").addEventListener("input",function(){var caption=document.getElementById("contentReviewFigureCaption");if(caption)caption.value=this.value;});
   document.getElementById("contentReviewSummarySuggest").addEventListener("click",function(){if(current)document.getElementById("contentReviewSummary").value=goldenSummary(current.draft);});
   document.getElementById("contentReviewGenerate").addEventListener("click",generateSelected);
   dialog.addEventListener("close",function(){if(jobTimer)clearTimeout(jobTimer);jobTimer=null;});

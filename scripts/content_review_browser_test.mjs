@@ -8,6 +8,8 @@ import {stripTypeScriptTypes} from 'node:module';
 let playwright;try{playwright=createRequire(import.meta.url)('playwright');}catch{playwright=createRequire('/opt/codex/runtimes/codex-primary-runtime/dependencies/node/package.json')('playwright');}
 const {chromium}=playwright;
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const reviewMarkup=fs.readFileSync(path.join(root,'docs/index.html'),'utf8');
+assert.doesNotMatch(reviewMarkup,/contentReviewSourceClass|contentReviewRightsNote|اجازهٔ استفاده از فایل/,'no hidden or visible rights declaration remains');
 // Exercise the real service handler: editing must preserve provenance, reject
 // malformed answer keys and reject a concurrent update instead of overwriting it.
 let handler,concurrent=false,patches=[],workerResult={processed:1},jobDispatches=[],jobsActive=false,serviceAdmin=true,serviceAuth=true,figureRows=[],figureCalls=[],signedCalls=[],reviewCalls=[],releasedURLs=[];
