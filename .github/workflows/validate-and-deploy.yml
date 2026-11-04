@@ -56,6 +56,8 @@ jobs:
       - run: node scripts/extraction_quality_test.mjs
       - run: node scripts/content_generator_test.mjs
       - run: node scripts/content_jobs_test.mjs
+      - run: node scripts/content_queue_sweep_test.mjs
+      - run: node scripts/content_queue_sweep_sql_test.mjs
       - run: node scripts/content_handoff_sql_test.mjs
       - run: node scripts/content_ocr_test.mjs
       - run: python3 -m unittest scripts/process_content_job_test.py

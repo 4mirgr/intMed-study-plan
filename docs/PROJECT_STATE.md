@@ -155,9 +155,12 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   source. The winning serialized worker batches/self-chains. Exact PDF duplicates can reuse an
   unapproved parser-verified draft before extraction dispatch when routing hints also match, without
   repeating model calls or inheriting clinical approval. Rejected inputs are never auto-reopened.
-- Still needed for full queue durability: a secure periodic sweeper to recover terminated workers.
-  No cron is installed yet; a new intake or the bot's «پردازش دوباره» currently wakes pending work.
-  Historical rejected/error records are preserved for explicit human decisions, not silently retried.
+- Queue recovery now has a disabled-by-default service-only state machine and a dedicated Edge
+  endpoint accepting two-minute single-use sweep capabilities. The private Cron requester stores
+  no permanent API credential, coalesces ticks, protects teacher decisions/active jobs and backs off
+  scheduled quota failures by 15/30/60 minutes. Production enablement/observed drain is the acceptance
+  gate, not merely installing the schema. Rejected sources are reconciled out of the active count;
+  content and human review records are retained.
 
 - Scientific findings now have a readable review panel, safe evidence links and explicit
   administrator resolution notes/history. Both approval and publication reject unresolved blocking
