@@ -117,7 +117,7 @@ def import_entries(root, entries, fetch=None, max_bytes=MAX_BYTES):
             }
             changes_note = 'اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.'
             image = {
-                'id': entry['id'], 'caption': entry['caption'], 'note': entry['note'] + ' ' + changes_note,
+                'id': entry['id'], 'caption': entry['caption'], 'note': entry['note'] + ' ' + changes_note + ' شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.',
                 'assetPath': 'assets/' + entry['id'] + '.jpg', 'kind': 'pbs',
                 'sourceClass': 'open-license', 'sourceUrl': entry['sourcePage'],
                 'creator': entry['creator'], 'license': entry['license'], 'licenseUrl': entry['licenseUrl'],

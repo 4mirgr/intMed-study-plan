@@ -168,6 +168,22 @@ original IntMed visual, or `open-license` for a web image whose exact license an
 recorded. Citation alone does not make a copyrighted figure reusable. Missing legacy values remain
 explicitly «unknown» in the library filter and must never be guessed from a title or filename.
 
+### Curated open-license PBS imports
+
+`content/_imports/pbs-open-license.json` is a reviewed allow-list, not a crawler. Check the exact
+file's license and creator on its source page; mentioning a source is not permission. ASH Image
+Bank's free-use terms prohibit public network reposting, so its images are not imported under
+that permission. Keep Commons images under their individual CC0/CC BY/CC BY-SA terms.
+
+`import-pbs.yml` stages original JPEGs in topic `assets/`. The coordinator inspects the staged
+originals before setting `visualApproved=true`; that flag approves visual suitability only.
+Captions remain `reviewStatus: draft` until teacher review. The importer preserves original
+bytes, supplies creator/license/source/modification metadata, rejects conflicting stable IDs,
+and runs validate/build/check. The build puts the same PBS item in both its topic and the global
+library; do not maintain a second catalog. Its GitHub-token checkpoint does not trigger other
+push workflows: the coordinator must trigger/verify the normal release with a follow-up commit
+or explicit deployment run before reporting public completion.
+
 The future dashboard library reads that generated index and offers subject/topic/kind/source filters,
 Persian search, favorites, recent items, full-resolution viewing and a “go to lesson” deep link.
 Algorithms should also have a structured text/table representation so they remain searchable,

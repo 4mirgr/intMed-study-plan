@@ -1,6 +1,7 @@
 {
   "version": 1,
   "purpose": "Curated authentic peripheral-blood microscopy; staged originals require visual and clinical review before public insertion.",
+  "visualQaNote": "Original staged JPEGs visually inspected by the coordinator on 2026-11-04 for readability and caption correspondence. Images are unchanged. Visual approval is not independent clinical approval; teaching captions remain drafts.",
   "images": [
     {
       "id": "pbs-iron-deficiency-uthman",
@@ -16,7 +17,7 @@
       "height": 1139,
       "caption": "لام خون محیطی در فقر آهن شدید؛ میکروسیتوز و هیپوکرومی برجسته در نمونه‌ای با MCV گزارش‌شده ۵۵ فمتولیتر.",
       "note": "منبع کیفیت تهیه لام را ضعیف توصیف کرده است؛ برای آموزش مورفولوژی شدید استفاده شود. میکروسیتوز و هیپوکرومی به‌تنهایی اختصاصی فقر آهن نیستند و باید با مطالعات آهن تفسیر شوند.",
-      "visualApproved": false,
+      "visualApproved": true,
       "reviewStatus": "draft"
     },
     {
@@ -33,7 +34,7 @@
       "height": 1060,
       "caption": "اسفروسیت‌ها در لام خون محیطی؛ گلبول‌های قرمز متراکم با کاهش یا فقدان ناحیه روشن مرکزی.",
       "note": "منبع این نمونه را مربوط به خانمی جوان با آنمی متوسط و Coombs مستقیم منفی می‌داند. ظاهر اسفروسیت به‌تنهایی افتراق همولیز ایمنی از اسفروسیتوز ارثی را ممکن نمی‌کند.",
-      "visualApproved": false,
+      "visualApproved": true,
       "reviewStatus": "draft"
     },
     {
@@ -49,8 +50,8 @@
       "width": 2560,
       "height": 2048,
       "caption": "شیستوسیت‌ها؛ قطعات گلبول قرمز در لام خون محیطی، از یافته‌های مهم در بررسی همولیز ناشی از قطعه‌قطعه‌شدن سلول‌ها.",
-      "note": "شیستوسیت اختصاصی TTP نیست؛ تفسیر آن نیازمند شمارش استاندارد، سایر شاخص‌های همولیز و زمینه بالینی است.",
-      "visualApproved": false,
+      "note": "شیستوسیت اختصاصی TTP نیست؛ تفسیر آن نیازمند شمارش استاندارد، سایر شاخص‌های همولیز و زمینه بالینی است. برچسب مقیاس موجود در تصویر منبع کالیبراسیون مستقلی ندارد و نباید برای اندازه‌گیری ابعاد سلول استفاده شود.",
+      "visualApproved": true,
       "reviewStatus": "draft"
     },
     {
@@ -66,8 +67,8 @@
       "width": 1280,
       "height": 1024,
       "caption": "نوتروفیل هیپرسگمانته؛ نمونه آموزشی برای مقایسه مورفولوژی لکوسیت‌ها در بررسی کم‌خونی.",
-      "note": "علت بالینی این نمونه در منبع مشخص نشده است. هیپرسگمانتاسیون به‌تنهایی اثبات‌کننده کمبود B12 یا فولات نیست و نشانه اختصاصی فقر آهن محسوب نمی‌شود؛ جایگاه نهایی تصویر هنگام بازبینی تعیین شود.",
-      "visualApproved": false,
+      "note": "علت بالینی این نمونه در منبع مشخص نشده است. هیپرسگمانتاسیون به‌تنهایی اثبات‌کننده کمبود B12 یا فولات نیست و نشانه اختصاصی فقر آهن محسوب نمی‌شود. در فصل کم‌خونی‌های هیپوپرولیفراتیو برای مقایسه مورفولوژی و افتراق علل کم‌خونی قرار گرفته است.",
+      "visualApproved": true,
       "reviewStatus": "draft"
     },
     {
@@ -84,7 +85,7 @@
       "height": 1797,
       "caption": "لام خون محیطی بیمار مبتلا به آنمی داسی‌شکل؛ سلول‌های داسی‌شکل، سلول‌های هدف و پلی‌کرومازی.",
       "note": "این تصویر مورفولوژی گزارش‌شده در منبع را نمایش می‌دهد؛ تعیین ژنوتیپ و نوع هموگلوبینوپاتی به بررسی تأییدی مانند HPLC یا الکتروفورز هموگلوبین نیاز دارد.",
-      "visualApproved": false,
+      "visualApproved": true,
       "reviewStatus": "draft"
     },
     {
@@ -101,7 +102,7 @@
       "height": 1228,
       "caption": "لام خون محیطی در CML با رنگ‌آمیزی May–Grünwald–Giemsa؛ لکوسیتوز و شیفت به چپ در رده گرانولوسیتی.",
       "note": "مورفولوژی لام به‌تنهایی برای تشخیص CML کافی نیست؛ تأیید BCR::ABL1 و تطبیق با سایر یافته‌های آزمایشگاهی ضروری است.",
-      "visualApproved": false,
+      "visualApproved": true,
       "reviewStatus": "draft"
     }
   ]
