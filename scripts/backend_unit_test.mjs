@@ -122,3 +122,48 @@ const readonlyContext=vm.createContext({window:readonlyWindow,fetch:()=>Promise.
 vm.runInContext(fs.readFileSync(new URL("../docs/js/intmed-backend.js",import.meta.url),"utf8"),readonlyContext);
 await assert.rejects(readonlyWindow.IntMedBackend.signUp("doctor@example.com","password123",{}),error=>error.message.includes("مسیرهای امن ثبت‌نام")&&!error.message.includes("only a getter"));
 console.log("Registration regression passed: read-only browser network errors are translated safely.");
+
+// Headers alone are not a completed response: a stalled response body must
+// exhaust the same deadline and permit the secure fallback to run.
+function deadlineBackend(fetchImpl, savedSession){
+  function storage(initial){const values=new Map(initial||[]);return {getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,value),removeItem:key=>values.delete(key)};}
+  const deadlineWindow={INTMED_CONFIG:{supabaseUrl:"https://primary.test",supabaseFallbackUrl:"https://fallback.test",supabaseAnonKey:"public",authPrimaryTimeoutMs:20,authFallbackTimeoutMs:30}};
+  vm.runInNewContext(fs.readFileSync(new URL("../docs/js/intmed-backend.js",import.meta.url),"utf8"),{window:deadlineWindow,fetch:fetchImpl,localStorage:storage(),sessionStorage:storage(savedSession?[["intmed_supabase_session",JSON.stringify(savedSession)]]:[]),JSON,Promise,URLSearchParams,encodeURIComponent,setTimeout,clearTimeout,AbortController,console});
+  return deadlineWindow.IntMedBackend;
+}
+async function bounded(promise){
+  let timer;
+  try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error("test guard expired: backend response never settled")),300);})]);}
+  finally{clearTimeout(timer);}
+}
+const stalledBody={ok:true,status:200,text:()=>new Promise(()=>{})};
+const bodyCalls=[];
+const bodyBackend=deadlineBackend((url,options)=>{
+  bodyCalls.push({url,signal:options.signal});
+  return url.startsWith("https://primary.test")?Promise.resolve(stalledBody):reply({version:"healthy"});
+});
+assert.equal((await bounded(bodyBackend.checkAuthConnection())).version,"healthy");
+assert.equal(bodyCalls[0].signal.aborted,true,"body timeout must abort the incomplete response");
+await bounded(bodyBackend.checkAuthConnection());
+assert.equal(bodyCalls.at(-1).url,"https://fallback.test/auth/v1/health","only a completed healthy route becomes preferred");
+const allBodiesStalled=deadlineBackend(()=>Promise.resolve(stalledBody));
+await assert.rejects(bounded(allBodiesStalled.checkAuthConnection()),error=>error.code==="network_timeout");
+
+let refreshRequests=0;
+const staleBodyBackend=deadlineBackend(url=>{
+  if(url.includes("grant_type=refresh_token")){refreshRequests++;return reply({access_token:"renewed",refresh_token:"renewed-refresh",user:{id:userId}});}
+  if(url.startsWith("https://primary.test"))return Promise.resolve({ok:false,status:401,text:()=>new Promise(()=>{})});
+  return reply({id:userId,approved:true,role:"user"});
+},{access_token:"existing",refresh_token:"existing-refresh",user:{id:userId}});
+assert.equal((await bounded(staleBodyBackend.profile())).id,userId);
+assert.equal(refreshRequests,0,"a partial 401 must time out, not deadlock token refresh");
+
+let rejectedLoginRequests=0;
+const badPasswordBackend=deadlineBackend(()=>{rejectedLoginRequests++;return reply({message:"Invalid login credentials"},400);});
+await assert.rejects(bounded(badPasswordBackend.signIn("doctor@example.test","bad-password")),error=>error.status===400);
+assert.equal(rejectedLoginRequests,1,"completed credential rejection must not replay login against another origin");
+const emptyBackend=deadlineBackend(()=>Promise.resolve({ok:true,status:204,text:()=>{throw Error("204 body must not be consumed");}}));
+assert.equal(await bounded(emptyBackend.checkAuthConnection()),null);
+const portalBackend=deadlineBackend(url=>url.startsWith("https://primary.test")?Promise.resolve({ok:true,status:200,text:async()=>"<html>Network sign-in required</html>"}):reply({version:"json-service"}));
+assert.equal(((await bounded(portalBackend.checkAuthConnection()))||{}).version,"json-service","an HTML 200 is not a usable backend response");
+console.log("Body deadline regression passed: stalled success/401 bodies fall back, all routes terminate, definitive errors and 204 semantics are retained.");

@@ -42,7 +42,14 @@
         reject(error);
       }, timeoutMs);
     });
-    return Promise.race([fetch(url, optionsWithSignal), timeout]).finally(function(){ clearTimeout(timer); });
+    // fetch resolves when headers arrive, not when the response body finishes.
+    // Keep the same timer alive while reading the body so a half-open stream
+    // cannot prevent origin fallback or leave a token refresh pending forever.
+    var completed = fetch(url, optionsWithSignal).then(function(response){
+      if(response.status === 204) return {response:response, text:""};
+      return response.text().then(function(text){ return {response:response, text:text}; });
+    });
+    return Promise.race([completed, timeout]).finally(function(){ clearTimeout(timer); });
   }
   function canTryNextOrigin(error){
     // A CDN/WAF can answer with 403 or Cloudflare-specific 52x/53x statuses
@@ -84,23 +91,28 @@
         // known-good fallback is never attempted.
         var configuredDeadline = index === 0 && candidates.length > 1 ? config.authPrimaryTimeoutMs : config.authFallbackTimeoutMs;
         var deadline = Math.max(1, Number(configuredDeadline) || (index === 0 && candidates.length > 1 ? 4500 : 8000));
-        return fetchWithDeadline(origin.replace(/\/$/, "") + path, requestOptions, deadline).then(function(response){
-        activeOrigin=origin;
+        return fetchWithDeadline(origin.replace(/\/$/, "") + path, requestOptions, deadline).then(function(result){
+        var response=result.response;
         if(response.status === 401 && authenticated && !retried){
-          return response.text().then(function(){ return refreshSession(); }).then(function(){ return perform(true); });
+          return refreshSession().then(function(){ return perform(true); });
         }
-        if(response.status === 204) return null;
-        return response.text().then(function(text){
-          var body = null;
-          if(text){try{body=JSON.parse(text);}catch(parseError){body=null;}}
+        if(response.status === 204){ activeOrigin=origin; return null; }
+        var text=result.text;
+          var body = null, invalidBody = false;
+          if(text){try{body=JSON.parse(text);}catch(parseError){invalidBody=true;}}
           if(!response.ok){
             var error = new Error((body && (body.msg || body.message || body.error_description)) || ("HTTP " + response.status));
             error.status = response.status;
             error.code = body && (body.error_code || body.code);
             throw error;
           }
+          if(invalidBody){
+            var invalidResponse = new Error("پاسخ سرویس حساب معتبر نبود؛ مسیر دیگری بررسی می‌شود.");
+            invalidResponse.code = "invalid_response";
+            throw invalidResponse;
+          }
+          activeOrigin=origin;
           return body;
-        });
         }).catch(function(error){
           if(canTryNextOrigin(error) && index+1<candidates.length)return send(index+1,firstNetworkError||error);
           if(!error.status&&firstNetworkError)throw firstNetworkError;
@@ -127,12 +139,32 @@
       throw error;
     }).then(function(value){
       saveSession(value);
-      return profile().then(function(p){
-        if(!p || !p.approved || p.rejected){ saveSession(null); throw new Error("حساب فعال نیست یا دسترسی آن معلق شده است."); }
-        telegramEvent("login").catch(function(){});
-        return {session:value, profile:p};
-      });
+      return resumeSignIn().then(function(result){telegramEvent("login").catch(function(){});return result;});
     });
+  }
+  function resumeSignIn(){
+    // A saved token is not approval. Verify the profile before revealing the app,
+    // but retry transient reads without exchanging the user's password again.
+    if(!session() || !session().user)return Promise.reject(new Error("auth"));
+    function verify(attempt){
+      return profile().then(function(p){
+        if(!p || !p.approved || p.rejected){
+          saveSession(null);
+          var denied=new Error("ورود حساب تأیید نشد؛ حساب فعال نیست یا دسترسی آن معلق شده است.");
+          denied.code="account_inactive";throw denied;
+        }
+        return {session:session(),profile:p};
+      }).catch(function(error){
+        var temporary=error.code!=="account_inactive" && error.message!=="auth" && (!error.status || error.status===403 || error.status===408 || error.status===425 || error.status===429 || error.status>=500);
+        if(temporary && session()){
+          if(attempt===0)return new Promise(function(resolve){setTimeout(resolve,800);}).then(function(){return verify(1);});
+          var pending=withMessage(error,"ارتباط برای تکمیل ورود برقرار نشد؛ تلاش مجدد را بزنید. نیازی به وارد کردن دوبارهٔ رمز نیست.");
+          pending.code="profile_unavailable";throw pending;
+        }
+        throw error;
+      });
+    }
+    return verify(0);
   }
   var refreshPromise = null;
   function refreshSession(){
@@ -468,6 +500,7 @@
     setSessionPersistence:setSessionPersistence,
     isSessionPersistent:isSessionPersistent,
     signIn:signIn,
+    resumeSignIn:resumeSignIn,
     checkAuthConnection:function(){return request("/auth/v1/health",{authenticated:false});},
     signUp:signUp,
     resetPassword:resetPassword,

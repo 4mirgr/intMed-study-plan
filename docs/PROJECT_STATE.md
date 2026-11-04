@@ -18,6 +18,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - The review form has no manual usage-rights selector/explanation step. Keep existing source/license
   metadata server-side; leave unknown provenance unset rather than inventing authorship. Retain
   explicit publication confirmation and the existing block on known private Harrison assets.
+- Login/network recovery must bound the entire response body, not only headers. A transient profile
+  read failure retains the tab-scoped session and offers verification retry without another password
+  exchange; inactive/rejected accounts stay gated. Public navigation loading retries independently
+  of private synchronization and must show an actionable error rather than an empty endless spinner.
 
 ## Shipped baseline (2026-10-26)
 

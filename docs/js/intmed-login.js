@@ -98,25 +98,49 @@
     if((values.get("type")==="recovery" || values.get("type")==="invite") && values.get("access_token")) location.reload();
   });
   var recovering = !!(window.IntMedBackend && window.IntMedBackend.isConfigured() && window.IntMedBackend.captureRecoverySession());
+  var loginForm = document.getElementById("loginForm");
+  var loginErr = document.getElementById("loginErr");
+  var resumePending=false,resumeNeedsReload=false;
+  function loginBusy(busy){
+    loginForm.querySelector("button[type=submit]").disabled=busy;
+    document.getElementById("loginUser").disabled=busy;
+    document.getElementById("loginPass").disabled=busy;
+    if(busy)loginForm.querySelector("button[type=submit]").textContent="در حال تکمیل ورود…";
+  }
+  function loginFailure(error){
+    loginBusy(false);
+    resumePending=error.code==="profile_unavailable" && !!window.IntMedBackend.session();
+    var button=loginForm.querySelector("button[type=submit]");
+    button.formNoValidate=resumePending;
+    button.textContent=resumePending?"تلاش مجدد برای تکمیل ورود":"ورود";
+    loginErr.textContent=error.message==="auth"?"نشست پایان یافته؛ دوباره وارد شوید.":(error.message||"ورود حساب تأیید نشد؛ اتصال و وضعیت حساب را بررسی کنید.");
+    loginErr.classList.add("show");
+  }
+  function revealVerifiedSession(result){
+    var store=sessionStore();store.setItem("bp_authed","1");store.setItem("bp_user_id",result.session.user.id);
+    if(!store.getItem('intmed_session_started'))store.setItem('intmed_session_started',String(Date.now()));
+    markSessionActivity(true);loginBusy(false);revealApp();
+  }
+  function resumeExistingLogin(){
+    loginBusy(true);loginErr.classList.remove("show");
+    return window.IntMedBackend.resumeSignIn().then(function(result){
+      resumePending=false;
+      if(resumeNeedsReload)doLogin(result.session.user.id);else revealVerifiedSession(result);
+    }).catch(loginFailure);
+  }
+  ["loginUser","loginPass"].forEach(function(id){document.getElementById(id).addEventListener("input",function(){
+    resumePending=false;var button=loginForm.querySelector("button[type=submit]");button.formNoValidate=false;button.textContent="ورود";
+  });});
   try{
     var backendSession = window.IntMedBackend && window.IntMedBackend.isConfigured() && window.IntMedBackend.session();
     if(!recovering && backendSession && backendSession.user){
-      window.IntMedBackend.profile().then(function(profile){
-        if(!profile || !profile.approved || profile.rejected) throw new Error("حساب فعال نیست.");
-        var store=sessionStore();store.setItem("bp_authed", "1");store.setItem("bp_user_id", backendSession.user.id);if(!store.getItem('intmed_session_started'))store.setItem('intmed_session_started',String(Date.now()));markSessionActivity(true);
-        revealApp();
-      }).catch(function(){
-        appEl.style.display="none"; gateEl.style.display="";
-        var error=document.getElementById("loginErr");error.textContent="ورود حساب تأیید نشد؛ تأیید ایمیل، وضعیت حساب و اتصال را بررسی کنید.";error.classList.add("show");
-      });
+      resumeExistingLogin();
     } else if(legacyDemoAllowed() && localStorage.getItem("bp_authed") === "1"){
       // Backfill for sessions authenticated before multi-user support existed.
       if(!localStorage.getItem("bp_user_id")){ localStorage.setItem("bp_user_id", "amir"); }
       revealApp();
     }
   }catch(e){}
-  var loginForm = document.getElementById("loginForm");
-  var loginErr = document.getElementById("loginErr");
   var recoveryForm = document.getElementById("recoveryForm");
   if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
     document.getElementById("loginUser").placeholder = "نام کاربری";
@@ -180,19 +204,16 @@
     var u = normalizeDigits(document.getElementById("loginUser").value).toLowerCase();
     var p = window.IntMedBackend && window.IntMedBackend.isConfigured() ? document.getElementById("loginPass").value : normalizeDigits(document.getElementById("loginPass").value);
     if(window.IntMedBackend && window.IntMedBackend.isConfigured()){
+      if(resumePending){resumeExistingLogin();return;}
       loginErr.classList.remove("show");
       var secureLoginBtn = loginForm.querySelector("button[type=submit]");
-      secureLoginBtn.disabled = true; secureLoginBtn.textContent = "در حال بررسی...";
+      loginBusy(true);secureLoginBtn.textContent = "در حال بررسی...";resumeNeedsReload=true;
       // The login screen intentionally defaults to a tab-scoped session so
       // accounts are not left accessible on shared hospital computers.
       window.IntMedBackend.setSessionPersistence(false);
       window.IntMedBackend.signIn(u, p).then(function(result){
         doLogin(result.session.user.id);
-      }).catch(function(error){
-        secureLoginBtn.disabled = false; secureLoginBtn.textContent = "ورود";
-        loginErr.textContent = error.message || "نام کاربری یا رمز عبور اشتباه است.";
-        loginErr.classList.add("show");
-      });
+      }).catch(loginFailure);
       return;
     }
     if(!legacyDemoAllowed()){

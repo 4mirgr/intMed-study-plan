@@ -39,6 +39,8 @@ jobs:
       - run: python3 scripts/content_pipeline.py check
       - run: node scripts/check_inline_js.mjs
       - run: node scripts/backend_unit_test.mjs
+      - run: node scripts/login_resume_test.mjs
+      - run: node scripts/pwa_test.mjs
       - run: node scripts/backend_state_test.mjs
       - run: node scripts/exams_unit_test.mjs
       - run: node scripts/security_hardening_test.mjs
@@ -78,6 +80,7 @@ jobs:
           trap 'kill "$server_pid"' EXIT
           node scripts/browser_smoke.mjs
           node scripts/auth_browser_test.mjs
+          node scripts/login_resume_browser_test.mjs
           node scripts/registration_browser_test.mjs
           node scripts/delete_user_browser_test.mjs
           node scripts/favorites_browser_test.mjs

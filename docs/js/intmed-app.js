@@ -1831,11 +1831,31 @@
     });
   }
 
-  (function init(){
-    Promise.all([
-      fetch("content/taxonomy.json").then(function(r){ if(!r.ok) throw new Error("taxonomy " + r.status); return r.json(); }),
-      fetch("content/manifest.json").then(function(r){ if(!r.ok) throw new Error("manifest " + r.status); return r.json(); })
-    ]).then(function(results){
+  function publicContentJson(path){
+    var controller=typeof AbortController === "function" ? new AbortController() : null,timer;
+    var timeoutMs=Math.max(1,Number((window.INTMED_CONFIG||{}).contentTimeoutMs)||9000);
+    var expired=new Promise(function(resolve,reject){timer=setTimeout(function(){if(controller)controller.abort();reject(new Error("public content timeout"));},timeoutMs);});
+    // Keep the deadline alive until JSON is fully read. Headers alone do not
+    // establish that a filtered/half-open mobile route can deliver its body.
+    var response=fetch(path,{cache:"no-cache",...(controller?{signal:controller.signal}:{})}).then(function(r){if(!r.ok)throw new Error("content "+r.status);return r.json();});
+    return Promise.race([response,expired]).finally(function(){clearTimeout(timer);});
+  }
+  var educationLoadPromise=null,educationReady=false;
+  function loadEducation(){
+    if(educationReady)return Promise.resolve();
+    if(educationLoadPromise)return educationLoadPromise;
+    var root=document.getElementById("topicsRoot");
+    root.innerHTML='<div class="learn-empty" role="status">در حال دریافت فهرست مباحث…</div>';
+    function attempt(number){
+      return Promise.all([publicContentJson("content/taxonomy.json"),publicContentJson("content/manifest.json")]).then(function(results){
+        if(!results[0]||!Array.isArray(results[0].categories)||!results[0].categories.length||!results[1]||!results[1].topics||typeof results[1].topics!=="object")throw new Error("invalid content index");
+        return results;
+      }).catch(function(error){
+        if(number>=1)throw error;
+        return new Promise(function(resolve){setTimeout(resolve,Math.max(1,Number((window.INTMED_CONFIG||{}).contentRetryDelayMs)||500));}).then(function(){return attempt(number+1);});
+      });
+    }
+    educationLoadPromise=attempt(0).then(function(results){
       TOPICS = (results[0].categories || []).map(function(category){
         return {id:category.id, color:category.color, label:category.label, subs:category.topics || []};
       });
@@ -1849,12 +1869,19 @@
       TOPICS.forEach(updateCatContentBadge);
       updateGhBtn();
       renderUserPanel();
-      if(hasPersistenceCredentials()){ connectGithub(); } else { setConn("nopat"); }
-      refreshAll();
+      educationReady=true;
+      if(stateLoaded)applyLoadedState();else refreshAll();
     }).catch(function(){
-      document.getElementById("topicsRoot").innerHTML = '<div class="learn-empty">بارگذاری فهرست مباحث ناموفق بود. صفحه را دوباره بارگذاری کنید.</div>';
-      setConn("error");
-    });
+      root.innerHTML='<div class="learn-empty" role="alert"><p>دریافت فهرست مباحث کامل نشد. نیازی به ورود دوباره نیست؛ اتصال اینترنت را بررسی و دوباره تلاش کنید.</p><button type="button" id="educationRetry" class="secondary-action">تلاش مجدد برای دریافت مباحث</button></div>';
+      document.getElementById("educationRetry").addEventListener("click",loadEducation);
+    }).finally(function(){educationLoadPromise=null;});
+    return educationLoadPromise;
+  }
+  (function init(){
+    // Private sync and public navigation have independent failures. Do not
+    // leave the account indicator on "connecting" while a public file stalls.
+    if(hasPersistenceCredentials()){connectGithub();}else{setConn("nopat");}
+    loadEducation();
   })();
 
   // ---------------------------------------------------------------

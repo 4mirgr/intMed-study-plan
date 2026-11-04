@@ -29,16 +29,21 @@ async function staleWhileRevalidate(request){
   return cached||(await fresh)||Response.error();
 }
 async function networkFirst(request){
+  const controller=new AbortController();let timer;
   try{
-    const response=await fetch(request,{cache:'no-cache'});
-    if(response.ok&&response.type==='basic'&&!response.headers.has('set-cookie')){
-      const cache=await caches.open(PUBLIC);
-      await cache.put(request,response.clone());
+    const expired=new Promise((resolve,reject)=>{timer=setTimeout(()=>{controller.abort();reject(new Error('public content timeout'));},6000);});
+    // Bound the whole body, not only the arrival of its HTTP headers. A cached
+    // public lesson/index must remain usable when a mobile route is half-open.
+    const received=await Promise.race([fetch(request,{cache:'no-cache',signal:controller.signal}).then(async response=>({response,body:await response.arrayBuffer()})),expired]);
+    const original=received.response;
+    const response=new Response(received.body,{status:original.status,statusText:original.statusText,headers:original.headers});
+    if(original.ok&&original.type==='basic'&&!original.headers.has('set-cookie')){
+      try{const cache=await caches.open(PUBLIC);await cache.put(request,response.clone());}catch{}
     }
     return response;
   }catch{
     return (await caches.match(request))||Response.error();
-  }
+  }finally{clearTimeout(timer);}
 }
 self.addEventListener('fetch',event=>{
   const request=event.request,url=new URL(request.url);
