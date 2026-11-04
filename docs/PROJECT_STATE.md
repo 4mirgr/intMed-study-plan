@@ -23,6 +23,17 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   exchange; inactive/rejected accounts stay gated. Public navigation loading retries independently
   of private synchronization and must show an actionable error rather than an empty endless spinner.
 
+## Hematology intake checkpoint (2026-11-04)
+
+- Nine supplied PDFs (62 pages; 213 source questions) integrated into eight hematology topics.
+  CML/CLL were revised without duplicating their existing banks; AML/ALL, aplastic/MDS and lymphoma
+  were expanded, and a separate PV/ET/PMF topic was added. New content remains teacher-review draft.
+- Net additions: 50 lesson sections, 71 flashcards, 125 MCQs, 10 KF/PMP cases and eight original
+  teaching algorithms. Full-page scans/private originals are not included in the public repository.
+- Source mappings, key contradictions/exclusions, supplemental citations and remaining human-review
+  scope are in [the compact intake handoff](content-intake-heme-2026-11-04.md). Do not silently restore
+  ambiguous historical keys or claim these question banks are authenticated complete 2025 chapters.
+
 ## Shipped baseline (2026-10-26)
 
 - Persian/Tehran dashboard and planning dates, Saturday-first week, Google Calendar and ICS.

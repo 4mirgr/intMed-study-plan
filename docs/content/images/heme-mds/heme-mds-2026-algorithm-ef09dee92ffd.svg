@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="800" viewBox="0 0 1100 800" role="img" aria-labelledby="title desc">
+  <title id="title">Marrow failure: interpret the pattern</title>
+  <desc id="desc">Original teaching algorithm: interpret cytopenias and reticulocytes with marrow morphology and cytogenetics. Distinguish patterns favoring aplastic anemia, MDS, or isolated erythroid suppression. Confirm diagnoses and individualize management.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4e6c87"/></marker>
+    <style>text{font-family:Arial,sans-serif;fill:#18334b;text-anchor:middle}.heading{font-size:30px;font-weight:700}.main{font-size:24px;font-weight:700}.label{font-size:21px;font-weight:700}.body{font-size:19px}.small{font-size:17px}.link{fill:none;stroke:#4e6c87;stroke-width:3;marker-end:url(#arrow)}</style>
+  </defs>
+  <rect width="1100" height="800" rx="28" fill="#f1f6fb"/>
+  <text class="heading" x="550" y="52">Marrow failure: interpret the pattern</text>
+  <text class="small" x="550" y="82">IntMed original teaching diagram · draft for teacher review</text>
+  <rect x="255" y="115" width="590" height="85" rx="18" fill="#d5f2ed" stroke="#2c8b82" stroke-width="2"/>
+  <text class="main" x="550" y="150">CBC + reticulocytes + blood film</text>
+  <text class="body" x="550" y="180">Stabilize bleeding, severe anemia or infection</text>
+  <path class="link" d="M550 200V240"/>
+  <rect x="255" y="245" width="590" height="85" rx="18" fill="#e1eafa" stroke="#507cba" stroke-width="2"/>
+  <text class="main" x="550" y="280">Marrow morphology + cytogenetics</text>
+  <text class="body" x="550" y="310">Exclude reversible mimics; assess clinical context</text>
+  <path class="link" d="M550 330V360H185V400"/>
+  <path class="link" d="M550 330V400"/>
+  <path class="link" d="M550 330V360H915V400"/>
+  <rect x="30" y="405" width="310" height="135" rx="18" fill="#d8f1ee" stroke="#2c8b82" stroke-width="2"/>
+  <text class="label" x="185" y="441">Hypocellular, fatty marrow</text>
+  <text class="body" x="185" y="472">No clear dysplasia / infiltration</text>
+  <text class="label" style="font-size:19px" x="185" y="513">Pattern favors aplastic anemia</text>
+  <rect x="395" y="405" width="310" height="135" rx="18" fill="#e5e3f5" stroke="#7d6bab" stroke-width="2"/>
+  <text class="label" x="550" y="441">Persistent cytopenia</text>
+  <text class="body" x="550" y="472">Dysplasia + clonal evidence</text>
+  <text class="label" x="550" y="513">Pattern favors MDS</text>
+  <rect x="760" y="405" width="310" height="135" rx="18" fill="#fff0d5" stroke="#b58732" stroke-width="2"/>
+  <text class="label" x="915" y="441">Mainly erythroid suppression</text>
+  <text class="body" x="915" y="472">Very low reticulocyte response</text>
+  <text class="label" x="915" y="513">Consider PRCA / B19</text>
+  <path class="link" d="M185 540V575"/><path class="link" d="M550 540V575"/><path class="link" d="M915 540V575"/>
+  <rect x="30" y="580" width="310" height="113" rx="18" fill="#ffffff" stroke="#91b9b4" stroke-width="2"/>
+  <text class="body" x="185" y="614">PNH / inherited-failure workup</text>
+  <text class="body" x="185" y="645">Assess severity and donor options</text>
+  <text class="body" x="185" y="676">Selected IST or allogeneic HCT</text>
+  <rect x="395" y="580" width="310" height="113" rx="18" fill="#ffffff" stroke="#aaa0c3" stroke-width="2"/>
+  <text class="body" x="550" y="614">Blast count + cytogenetic risk</text>
+  <text class="body" x="550" y="645">Match treatment to disease risk</text>
+  <text class="body" x="550" y="676">Assess allogeneic HCT eligibility</text>
+  <rect x="760" y="580" width="310" height="113" rx="18" fill="#ffffff" stroke="#c9b286" stroke-width="2"/>
+  <text class="body" x="915" y="614">Test B19 when appropriate</text>
+  <text class="body" x="915" y="645">Assess immune status</text>
+  <text class="body" x="915" y="676">Supportive care as indicated</text>
+  <text class="small" x="550" y="739">Patterns guide investigation; they are not stand-alone diagnostic criteria.</text>
+  <text class="small" x="550" y="769">IST: immunosuppressive therapy · HCT: hematopoietic cell transplantation</text>
+</svg>

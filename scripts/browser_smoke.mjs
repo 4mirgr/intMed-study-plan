@@ -1,9 +1,13 @@
 import { createRequire } from "node:module";
+import fs from "node:fs";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 
 const base = process.env.INTMED_BASE_URL || "http://127.0.0.1:8765";
+const taxonomy=JSON.parse(fs.readFileSync(new URL('../content/taxonomy.json',import.meta.url),'utf8'));
+const expectedCategories=taxonomy.categories.length;
+const expectedTopics=taxonomy.categories.reduce((sum,category)=>sum+(category.topics||[]).length,0);
 const systemChromium = process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 const browser = await chromium.launch({
   headless: true,
@@ -22,13 +26,14 @@ page.on("console", message => { if (message.type() === "error") errors.push(mess
 try {
   await page.goto(base, {waitUntil: "domcontentloaded"});
   await page.waitForLoadState("networkidle");
-  await page.waitForFunction(() =>
-    document.querySelectorAll(".topic-cat").length === 12 &&
-    document.querySelectorAll(".topic-item").length === 144
+  await page.waitForFunction(({categories,topics}) =>
+    document.querySelectorAll(".topic-cat").length === categories &&
+    document.querySelectorAll(".topic-item").length === topics,
+    {categories:expectedCategories,topics:expectedTopics}
   );
   const categories = await page.locator(".topic-cat").count();
   const topics = await page.locator(".topic-item").count();
-  if (categories !== 12 || topics !== 144) throw new Error(`unexpected taxonomy DOM: ${categories}/${topics}`);
+  if (categories !== expectedCategories || topics !== expectedTopics) throw new Error(`unexpected taxonomy DOM: ${categories}/${topics}`);
   if (requested.some(url => url.includes("content-bundle.json"))) throw new Error("legacy bundle was requested");
   if (requested.some(url => /content\/topics\/.+\.json/.test(url))) throw new Error("topic payload fetched eagerly");
 

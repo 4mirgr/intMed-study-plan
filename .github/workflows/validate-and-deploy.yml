@@ -79,6 +79,7 @@ jobs:
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
           node scripts/browser_smoke.mjs
+          node scripts/heme_content_browser_test.mjs
           node scripts/auth_browser_test.mjs
           node scripts/login_resume_browser_test.mjs
           node scripts/registration_browser_test.mjs

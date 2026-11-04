@@ -1,6 +1,7 @@
 import {createRequire} from 'node:module';import fs from 'node:fs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const executable=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
+const expectedTopicCount=JSON.parse(fs.readFileSync(new URL('../content/taxonomy.json',import.meta.url),'utf8')).categories.reduce((sum,category)=>sum+(category.topics||[]).length,0);
 const browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{})});
 // A stalled public response must not block private synchronization, and a
 // completed retry must build the education navigation once without a new login.
@@ -31,7 +32,7 @@ async function exercisePublicStartupRecovery(){
   if(await startup.locator('#loginGate').isVisible())throw Error('Public content failure reopened login');
   await startup.evaluate(()=>{window.__publicStall=false;});
   await startup.locator('#educationRetry').click();
-  await startup.waitForFunction(()=>document.querySelectorAll('.topic-item').length===144,null,{timeout:3000});
+  await startup.waitForFunction(count=>document.querySelectorAll('.topic-item').length===count,expectedTopicCount,{timeout:3000});
   if(await startup.locator('#educationRetry').count())throw Error('Successful retry must remove the error UI');
   if(await startup.locator('.topic-cat').count()!==12)throw Error('Retry duplicated topic navigation');
   if(await startup.locator('#loginGate').isVisible())throw Error('Content recovery required another login');
@@ -39,7 +40,7 @@ async function exercisePublicStartupRecovery(){
   await startup.locator('#educationRetry').waitFor({state:'visible',timeout:3000});
   await startup.waitForFunction(()=>document.getElementById('connStatus').textContent.includes('خطا'),null,{timeout:3000});
   await startup.evaluate(()=>{window.__publicStall=false;});await startup.locator('#educationRetry').click();
-  await startup.waitForFunction(()=>document.querySelectorAll('.topic-item').length===144,null,{timeout:3000});
+  await startup.waitForFunction(count=>document.querySelectorAll('.topic-item').length===count,expectedTopicCount,{timeout:3000});
   if(!(await startup.textContent('#connStatus')).includes('خطا'))throw Error('Public recovery falsely marked failed private sync online');
  }finally{await context.close();}
 }

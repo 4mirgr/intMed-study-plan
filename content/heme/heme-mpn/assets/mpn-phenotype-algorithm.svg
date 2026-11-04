@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">MPN phenotype and management framework</title>
+  <desc id="desc">Persistent abnormal blood counts branch into erythrocytosis, thrombocytosis, or a myelofibrosis pattern. Clinical, molecular and marrow findings are integrated before individual treatment planning.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0c263e"/><stop offset="1" stop-color="#123b48"/></linearGradient><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10" fill="#78e4d1"/></marker></defs>
+  <rect width="1200" height="760" rx="28" fill="url(#bg)"/>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="56" fill="#f2fffc" font-size="31" font-weight="700">MPN: phenotype first, diagnosis by integration</text>
+    <text x="600" y="87" fill="#afcdd3" font-size="18">Original educational framework · IntMed · teacher review pending</text>
+    <rect x="345" y="114" width="510" height="66" rx="18" fill="#174e5b" stroke="#78e4d1" stroke-width="2"/>
+    <text x="600" y="154" fill="#fff" font-size="23">Persistent abnormal CBC + clinical context</text>
+    <g stroke="#78e4d1" stroke-width="3" fill="none" marker-end="url(#arrow)"><path d="M600 180V209H220V234"/><path d="M600 180V234"/><path d="M600 180V209H980V234"/></g>
+    <g fill="#e9fcfa" stroke="#78e4d1" stroke-width="2"><rect x="40" y="242" width="360" height="112" rx="18"/><rect x="420" y="242" width="360" height="112" rx="18"/><rect x="800" y="242" width="360" height="112" rx="18"/></g>
+    <g fill="#133849" font-size="22" font-weight="700"><text x="220" y="280">RBC-predominant</text><text x="600" y="280">Platelet-predominant</text><text x="980" y="280">Anemia + tear drops / NRBC</text></g>
+    <g fill="#27566a" font-size="18"><text x="220" y="316">Evaluate erythrocytosis</text><text x="600" y="316">Exclude reactive causes</text><text x="980" y="316">Leukoerythroblastic pattern</text></g>
+    <g stroke="#78e4d1" stroke-width="3" marker-end="url(#arrow)"><path d="M220 354V390"/><path d="M600 354V390"/><path d="M980 354V390"/></g>
+    <g fill="#1a4358" stroke="#8bb7cc" stroke-width="2"><rect x="40" y="400" width="360" height="112" rx="18"/><rect x="420" y="400" width="360" height="112" rx="18"/><rect x="800" y="400" width="360" height="112" rx="18"/></g>
+    <g fill="#fff" font-size="21" font-weight="700"><text x="220" y="438">EPO + JAK2 + marrow context</text><text x="600" y="438">Molecular + marrow context</text><text x="980" y="438">Core biopsy + molecular context</text></g>
+    <g fill="#bceee5" font-size="20"><text x="220" y="478">PV workup</text><text x="600" y="478">ET workup</text><text x="980" y="478">PMF workup</text></g>
+    <g stroke="#78e4d1" stroke-width="3" fill="none" marker-end="url(#arrow)"><path d="M220 512V545H600V570"/><path d="M600 512V570"/><path d="M980 512V545H600V570"/></g>
+    <rect x="180" y="581" width="840" height="90" rx="20" fill="#e7c8f0"/>
+    <text x="600" y="617" fill="#442752" font-size="24" font-weight="700">Assess thrombosis, bleeding, symptoms and disease risk</text>
+    <text x="600" y="650" fill="#442752" font-size="20">Individual plan: count control · symptom care · anemia care · transplant review</text>
+    <text x="600" y="716" fill="#b7d4d8" font-size="18">No single count or mutation establishes the complete diagnosis.</text>
+  </g>
+</svg>

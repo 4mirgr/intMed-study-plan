@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+ <title id="title">Acute leukemia: recognition and urgent decision points</title>
+ <desc id="desc">An original educational flowchart. Suspected acute leukemia requires smear, marrow, flow cytometry and genetics. Suspected APL takes an urgent ATRA and coagulation-support path. Other cases require lineage and risk assessment; ALL also needs a dedicated CNS plan. Differentiation syndrome requires prompt steroids and severity assessment.</desc>
+ <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#081c31"/><stop offset="1" stop-color="#123d51"/></linearGradient><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8ce4e2"/></marker></defs>
+ <rect width="1200" height="900" rx="32" fill="url(#bg)"/>
+ <g font-family="Arial, sans-serif" text-anchor="middle">
+  <text x="600" y="62" fill="#c9fffa" font-size="30" font-weight="700">ACUTE LEUKEMIA • URGENT DECISIONS</text>
+  <text x="600" y="97" fill="#a7c8d7" font-size="19">Original IntMed teaching algorithm • teacher review pending</text>
+  <rect x="345" y="132" width="510" height="79" rx="18" fill="#17485e" stroke="#74e2df" stroke-width="2"/>
+  <text x="600" y="166" fill="white" font-size="24">Cytopenia, bleeding, fever or blasts</text>
+  <text x="600" y="194" fill="#cae9ef" font-size="19">Do not rely on the WBC count alone</text>
+  <path d="M600 215V245" fill="none" stroke="#8ce4e2" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="255" y="257" width="690" height="88" rx="18" fill="#17485e" stroke="#74e2df" stroke-width="2"/>
+  <text x="600" y="284" fill="white" font-size="23">Smear + marrow + flow cytometry + genetics</text>
+  <text x="600" y="307" fill="#ffe5a6" font-size="18">In parallel - never delay ATRA if APL is suspected</text>
+  <text x="600" y="330" fill="#cae9ef" font-size="17">Assess bleeding, infection, leukostasis and organ function</text>
+  <path d="M600 349V372H297V402" fill="none" stroke="#8ce4e2" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M600 372H903V402" fill="none" stroke="#8ce4e2" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="60" y="416" width="474" height="100" rx="18" fill="#285150" stroke="#81f1c8" stroke-width="2"/>
+  <text x="297" y="450" fill="#d9fff0" font-size="24" font-weight="700">APL suspected?</text>
+  <text x="297" y="479" fill="white" font-size="20">Abnormal promyelocytes + coagulopathy</text>
+  <text x="297" y="503" fill="#cae9ef" font-size="18">Send PML::RARA / t(15;17)</text>
+  <rect x="666" y="416" width="474" height="100" rx="18" fill="#21455e" stroke="#7cc8ff" stroke-width="2"/>
+  <text x="903" y="452" fill="#dcefff" font-size="24" font-weight="700">Other acute leukemia</text>
+  <text x="903" y="482" fill="white" font-size="21">Establish AML vs ALL lineage</text>
+  <text x="903" y="505" fill="#cae9ef" font-size="18">Genetics and response guide the next plan</text>
+  <path d="M297 520V553" fill="none" stroke="#8ce4e2" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M903 520V553" fill="none" stroke="#8ce4e2" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="60" y="567" width="474" height="110" rx="18" fill="#1b5b50" stroke="#81f1c8" stroke-width="2"/>
+  <text x="297" y="603" fill="white" font-size="24" font-weight="700">Urgent ATRA + coagulation support</text>
+  <text x="297" y="635" fill="#dcfff2" font-size="19">Do not delay for every final report</text>
+  <text x="297" y="660" fill="#dcfff2" font-size="19">Regimen selection is risk / protocol based</text>
+  <rect x="666" y="567" width="474" height="110" rx="18" fill="#214f69" stroke="#7cc8ff" stroke-width="2"/>
+  <text x="903" y="602" fill="white" font-size="23" font-weight="700">Risk-adapted systemic treatment</text>
+  <text x="903" y="635" fill="#dcf1ff" font-size="19">ALL: a dedicated CNS plan is also needed</text>
+  <text x="903" y="660" fill="#dcf1ff" font-size="19">A TKI alone does not replace CNS prophylaxis</text>
+  <rect x="60" y="724" width="1080" height="120" rx="18" fill="#504127" stroke="#f6cd75" stroke-width="2"/>
+  <text x="600" y="761" fill="#ffe5a6" font-size="25" font-weight="700">During ATRA / arsenic: watch for differentiation syndrome</text>
+  <text x="600" y="794" fill="white" font-size="20">Fever + weight gain / edema + dyspnea / hypoxemia → prompt steroid + assess severity</text>
+  <text x="600" y="823" fill="#ffeccc" font-size="19">Severe cases may need a temporary drug hold and organ support • no routine leukapheresis in APL</text>
+  <text x="600" y="879" fill="#98bdca" font-size="16">Educational summary, not a stand-alone treatment prescription • source page references are retained in the topic</text>
+ </g>
+</svg>
