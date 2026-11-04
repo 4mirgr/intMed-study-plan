@@ -748,7 +748,7 @@ def add_source(payload: dict[str, Any], source_id: str, title: str,
     sources = payload.setdefault("sources", [])
     if not any(isinstance(row, dict) and row.get("id") == source_id for row in sources):
         sources.append({"id": source_id, "title": title or "ورودی بازبینی‌شدهٔ تلگرام",
-                        "type": "telegram-review", "sourceClass": source_class,
+                        "type": "telegram-review", **({"sourceClass": source_class} if source_class else {}),
                         "note": note[:1000]})
 
 
@@ -802,7 +802,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                                   if isinstance(page, int) and not isinstance(page, bool) and page > 0))
         return [{"sourceId": source_id, **({"pages": pages} if pages else {})}]
     source_title = str(source.get("filename") or source.get("sourceName") or job.get("title") or "منبع تلگرام")
-    add_source(payload, source_id, source_title, source_class or "authored", rights or "بازبینی مدیر")
+    add_source(payload, source_id, source_title, source_class, rights)
     # A retry updates the same stable item rather than duplicating it.
     payload["images"] = [row for row in payload.get("images", [])
                          if not isinstance(row, dict) or row.get("id") != item_id]
@@ -820,8 +820,8 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
     if visual:
         if source_class == "harrison-private":
             raise RunnerError("دارایی خصوصی هاریسون قابل انتشار در bundle عمومی نیست.")
-        if source_class not in {"authored", "open-license"} or len(rights) < 5:
-            raise RunnerError("مجوز/منبع تصویر برای انتشار عمومی کامل نیست.")
+        if source_class not in {"", "authored", "open-license"}:
+            raise RunnerError("اطلاعات منبع تصویر معتبر نیست.")
         if not str(source.get("mimeType") or "").startswith("image/") or not source.get("downloadUrl"):
             raise RunnerError("برای مقصد تصویری باید یک فایل تصویر اصلی بازبینی‌شده وجود داشته باشد.")
         suffix = Path(str(source.get("filename") or "image.jpg")).suffix.lower()
@@ -834,8 +834,8 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
         download_source(config, {"downloadUrl": source.get("downloadUrl"), "sha256": source.get("sha256")}, asset)
         payload.setdefault("images", []).append({"id": item_id, "caption": str(job.get("title") or label),
             "assetPath": asset_rel.as_posix(), "note": str(job.get("sourceSummary") or ""),
-            "kind": kind, "sourceClass": source_class,
-            "copyright": rights, "reviewStatus": "reviewed", "sourceRefs": [{"sourceId": source_id}]})
+            "kind": kind, **({"sourceClass": source_class} if source_class else {}),
+            **({"copyright": rights} if rights else {}), "reviewStatus": "reviewed", "sourceRefs": [{"sourceId": source_id}]})
     else:
         summary = publish_text(job.get("sourceSummary"))
         lesson_count = 0

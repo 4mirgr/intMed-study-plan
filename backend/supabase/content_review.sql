@@ -75,7 +75,7 @@ begin
     raise exception 'invalid review action';
   end if;
   if new_content_kind not in ('lesson','image','pbs','algorithm','table','tracing','radiology','pathology','clinical','chart')
-     or (new_content_kind <> 'lesson' and new_source_class not in ('harrison-private','authored','open-license')) then
+     or coalesce(new_source_class,'') not in ('','harrison-private','authored','open-license') then
     raise exception 'invalid content routing';
   end if;
   if new_topic_is_new and (nullif(new_category,'') is null or char_length(new_topic_label) < 2) then

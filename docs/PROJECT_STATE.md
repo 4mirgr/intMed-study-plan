@@ -15,6 +15,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Public educational samples may live in the static site. Paid lessons and entitlements must
   move behind an authenticated API before subscriptions launch.
 - Medical content is AI-assisted, source-traceable, and always marked draft until teacher review.
+- The review form has no manual usage-rights selector/explanation step. Keep existing source/license
+  metadata server-side; leave unknown provenance unset rather than inventing authorship. Retain
+  explicit publication confirmation and the existing block on known private Harrison assets.
 
 ## Shipped baseline (2026-10-26)
 
@@ -123,7 +126,7 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   progress polling on reopening and prevents concurrent edits/publication while a job is active.
 - Embedded original figure binaries now have private bounded storage, parser-runner inventory
   binding, integrity checks and source-scoped admin previews. Selecting one creates an independent
-  unapproved image draft; caption/type/topic/rights use the existing teacher-controlled publisher
+  unapproved image draft; caption/type/topic use the existing teacher-controlled publisher
   and therefore reach both topic and library. Unknown rights never silently become authored.
 - Old PDF drafts support image-only backfill without OCR/models or changing existing lesson,
   assessments, status or revision. Limits: 80 images, 5 MiB each, 30 MiB per PDF. Original embedded

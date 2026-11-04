@@ -224,7 +224,9 @@ Deno.serve(async req=>{
     const note=clean(input.note,4000),now=new Date().toISOString();
     const patch:Record<string,unknown>={reviewed_by:user.id,reviewed_at:now,review_revision:revision+1,updated_at:now};
     if(action==='save'||action==='approve'||action==='publish'){
-      const title=clean(input.title,240),createTopic=input.createTopic===true,targetKind=clean(input.targetKind||'lesson',30),sourceClass=clean(input.sourceClass,40),rightsNote=clean(input.rightsNote,600);
+      const title=clean(input.title,240),createTopic=input.createTopic===true,targetKind=clean(input.targetKind||'lesson',30);
+      // Provenance is retained from storage, not declared or invented by the routing form.
+      const sourceClass=clean(draft.target_source_class,40),rightsNote=clean(draft.target_rights_note,600);
       let summary=clean(input.sourceSummary,4000);
       if(summary.length<60)return reply(400,{message:'خلاصهٔ نکات طلایی باید یک پاراگراف مرتبط و دست‌کم ۶۰ نویسه باشد.'});
       if(object(draftJson.figureOrigin)){
@@ -235,11 +237,11 @@ Deno.serve(async req=>{
       let topicId=clean(input.topicId,80),targetCategory='',targetLabel='',targetIsNew=false;
       if(!title)return reply(400,{message:'عنوان پیش‌نویس الزامی است.'});
       if(!targetKinds.has(targetKind))return reply(400,{message:'نوع مقصد محتوا معتبر نیست.'});
-      if(visualKinds.has(targetKind)&&(!sourceClasses.has(sourceClass)||rightsNote.length<5))return reply(400,{message:'حق استفاده و توضیح منبع/مجوز محتوای بصری را مشخص کنید.'});
+      if(sourceClass&&!sourceClasses.has(sourceClass))return reply(400,{message:'اطلاعات منبع ثبت‌شده معتبر نیست.'});
       const embedded=object(draft.intmed_content_ingest)?draft.intmed_content_ingest:{};
       if(targetKind==='pbs'&&!/^image\//.test(String(embedded.mime_type||'')))return reply(400,{message:'PBS فقط برای فایل تصویری لام خون محیطی قابل انتخاب است.'});
       if(createTopic){targetCategory=clean(input.newTopicCategoryId,40);targetLabel=clean(input.newTopicLabel,160);if(!categoryId.test(targetCategory)||targetLabel.length<2)return reply(400,{message:'بخش و نام مبحث جدید معتبر نیست.'});if(!await findCategory(targetCategory))return reply(400,{message:'بخش انتخاب‌شده در taxonomy وجود ندارد.'});topicId=await generatedTopicId(targetCategory,targetLabel);targetIsNew=true;}else{if(!topicId||!topic.test(topicId))return reply(400,{message:'مبحث مقصد را از پیشنهادهای جست‌وجو انتخاب کنید.'});const existing=await findTopic(topicId);if(!existing)return reply(400,{message:'مبحث انتخاب‌شده در ساختار فعلی سایت وجود ندارد.'});targetCategory=existing.categoryId;targetLabel=existing.label;}
-      patch.title=title;patch.topic_id=topicId;patch.source_summary=summary;patch.reviewer_note=note||null;patch.target_category_id=targetCategory;patch.target_topic_label=targetLabel;patch.target_topic_is_new=targetIsNew;patch.target_content_kind=targetKind;patch.target_source_class=visualKinds.has(targetKind)?sourceClass:null;patch.target_rights_note=visualKinds.has(targetKind)?rightsNote:null;
+      patch.title=title;patch.topic_id=topicId;patch.source_summary=summary;patch.reviewer_note=note||null;patch.target_category_id=targetCategory;patch.target_topic_label=targetLabel;patch.target_topic_is_new=targetIsNew;patch.target_content_kind=targetKind;patch.target_source_class=sourceClass||null;patch.target_rights_note=rightsNote||null;
       if(action==='save')patch.status='draft_ready';
       if(action==='approve'){
         if(!topicId)return reply(400,{message:'پیش از تأیید، مبحث مقصد را انتخاب کنید.'});

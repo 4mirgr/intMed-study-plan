@@ -188,6 +188,26 @@ class LocalRunnerTest(unittest.TestCase):
             self.assertEqual(saved["images"][0]["note"], job["sourceSummary"])
             self.assertTrue((topic.parent / saved["images"][0]["assetPath"]).is_file())
 
+    def test_image_without_rights_form_preserves_unknown_provenance(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            topic = root / "content/heme/heme-iron-anemia/data.json"
+            topic.parent.mkdir(parents=True)
+            topic.write_text(json.dumps({"topicId": "heme-iron-anemia", "category": "heme", "sources": [], "images": []}), "utf-8")
+            job = {"draftId": "11111111-1111-4111-8111-111111111111", "title": "تصویر بازبینی‌شده",
+                   "sourceSummary": "شرح تصویر و نکات علمی مرتبط با مبحث انتخاب‌شده.", "draft": {},
+                   "target": {"categoryId": "heme", "topicId": "heme-iron-anemia", "kind": "image"},
+                   "source": {"mimeType": "image/png", "filename": "image.png", "downloadUrl": "https://example.invalid"}}
+            with mock.patch.object(subject, "ROOT", root), \
+                 mock.patch.object(subject, "download_source", side_effect=lambda _config, _job, destination: destination.write_bytes(b"png")), \
+                 mock.patch.object(subject.subprocess, "run", return_value=mock.MagicMock(returncode=0, stdout="ok")):
+                subject.integrate_publish_job({}, job)
+            saved = json.loads(topic.read_text("utf-8"))
+            self.assertNotIn("sourceClass", saved["images"][0])
+            self.assertNotIn("sourceClass", saved["sources"][0])
+            self.assertEqual(saved["images"][0]["caption"], job["title"])
+            self.assertEqual(saved["images"][0]["note"], job["sourceSummary"])
+
     def test_educational_image_kind_is_preserved_for_topic_and_library(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

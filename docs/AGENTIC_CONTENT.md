@@ -57,8 +57,10 @@ Private embedded figure binaries now use the same job capability: a frozen runne
 page count, page/xref, dimensions and hash before uploads. The trusted workflow runner supplies PDF
 provenance; this is not independent server-side PDF attestation. The Edge Function structurally
 checks PNG/JPEG, reserves bounded storage atomically, and never exposes a public source bucket.
-The admin sees source-scoped 15-minute previews and can create a separate image draft with explicit
-rights, caption, kind and topic. The parent lesson/assessments are not replaced. `figuresOnly`
+The admin sees source-scoped 15-minute previews and can create a separate image draft with
+caption, kind and topic, without a separate usage-rights form. Stored source/license metadata is
+preserved server-side and unknown provenance stays unset, never assumed authored. The parent
+lesson/assessments are not replaced. `figuresOnly`
 backfill extracts existing PDF originals without OCR/model calls or changing the parent revision.
 Limits are 80 figures, 5 MiB each, 30 MiB per source; tiny/oversized/unembedded figures are reported
 or remain future work, not silently presented as extracted. Derived images start with unknown
@@ -178,7 +180,7 @@ an explicit copyright/use note, a medically useful Persian caption/alt, and draf
 Do not infer PBS from a filename or publish a book screenshot: extract the original embedded image
 when possible, otherwise crop only the figure at 300–450 DPI from a user-supplied authorized PDF.
 
-Every new image also declares one rights/provenance lane with `sourceClass`: `harrison-private`
+Known image provenance uses `sourceClass`: `harrison-private`
 for a user-supplied Harrison extraction that must remain private, `authored` for a newly drawn
 original IntMed visual, or `open-license` for a web image whose exact license and source URL are
 recorded. Citation alone does not make a copyrighted figure reusable. Missing legacy values remain

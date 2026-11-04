@@ -122,17 +122,22 @@ assert.equal((await (await request({action:'detail',draftId})).json()).figures.l
 stored.draft_json.figureOrigin={figureId,ingestId:adminId,page:4,sha256:'a'.repeat(64)};stored.intmed_content_ingest.mime_type='image/png';stored.intmed_content_ingest.kind='photo';
 assert.equal((await request(extractFigures)).status,400,'figure-only extraction rejects image children');
 const figureReview={action:'approve',draftId,revision:7,title:'شرح فارسی تصویر',topicId:'id-cns',sourceSummary:'شرح فارسی علمی و نکات اصلی این تصویر برای بازبینی و استفاده آموزشی در مبحث انتخاب‌شده ثبت شده است.',targetKind:'image',rightsNote:'مجوز دقیق به همراه منبع',confirmMedicalReview:true};
-assert.equal((await request(figureReview)).status,400,'derived rights cannot default to authored');
+assert.equal((await request(figureReview)).status,200,'rights declaration is not an extra review step');
+assert.equal(reviewCalls.at(-1).new_source_class,null,'unknown source rights must not become authored');
 assert.equal((await request({...figureReview,sourceClass:'authored',confirmMedicalReview:false})).status,400,'figure still needs scientific approval');
 response=await request({...figureReview,sourceClass:'open-license'});assert.equal(response.status,200);assert.match(reviewCalls.at(-1).new_summary,/page 4/);assert.match(reviewCalls.at(-1).new_summary,new RegExp('a'.repeat(64)));assert.deepEqual(stored.draft_json.figureOrigin,{figureId,ingestId:adminId,page:4,sha256:'a'.repeat(64)});
-assert.equal((await request({...figureReview,action:'publish',confirmPublish:true,sourceClass:'harrison-private'})).status,400);
+stored.target_source_class='open-license';stored.target_rights_note='Existing source and license metadata';
+await request(figureReview);assert.equal(reviewCalls.at(-1).new_source_class,'open-license');assert.equal(reviewCalls.at(-1).new_rights_note,'Existing source and license metadata');
+stored.target_source_class='harrison-private';stored.target_rights_note='Previously recorded private source';
+assert.equal((await request({...figureReview,action:'publish',confirmPublish:true,sourceClass:'authored'})).status,400,'hidden form cannot erase stored private provenance');
+delete stored.target_source_class;delete stored.target_rights_note;
 assert.equal((await request({...figureReview,targetKind:'lesson',sourceClass:'authored'})).status,400);
 const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH||'/usr/bin/chromium'});
 const page=await browser.newPage();
 await page.setContent(`<!doctype html><html lang="fa" dir="rtl"><body>
 <button id="tabBtnManagement">مدیریت</button><span id="managementBadge" hidden></span>
 <details id="contentReviewPanel" open><span id="contentReviewBadge" hidden></span><select id="contentReviewFilter"><option value="open">open</option></select><button id="contentReviewRefresh">refresh</button><p id="contentReviewStatus"></p><div id="contentReviewList"></div></details>
-<dialog id="contentReviewDialog"><form method="dialog"><button>×</button></form><h2 id="contentReviewDialogTitle"></h2><p id="contentReviewDialogMeta"></p><div id="contentReviewSource"></div><input id="contentReviewTitle"><input id="contentReviewTopicSearch"><select id="contentReviewCategory"></select><select id="contentReviewTopicSelect"></select><input id="contentReviewTopic" type="hidden"><small id="contentReviewTopicHint"></small><button id="contentReviewNewTopicToggle">new</button><div id="contentReviewNewTopicFields" hidden><select id="contentReviewNewTopicCategory"></select><input id="contentReviewNewTopicLabel"></div><select id="contentReviewTargetKind"><option value="lesson">lesson</option><option value="image">image</option><option value="pbs">pbs</option></select><input id="contentReviewSourceClass" type="hidden"><input id="contentReviewRightsNote" type="hidden"><textarea id="contentReviewSummary"></textarea><button id="contentReviewSummarySuggest">summary</button><input id="contentReviewNote" type="hidden"><fieldset id="contentReviewGeneration"><label><input type="checkbox" name="contentReviewOutput" value="lesson"></label><label><input type="checkbox" name="contentReviewOutput" value="mcq"></label><button id="contentReviewGenerate">generate</button><small id="contentReviewGenerationStatus"></small></fieldset><div id="contentReviewDraftBody"></div><input type="checkbox" id="contentReviewConfirm"><p id="contentReviewActionStatus"></p><button data-review-action="save">save</button><button data-review-action="publish" id="contentReviewPublish">publish</button><button data-review-action="reject">reject</button></dialog>
+<dialog id="contentReviewDialog"><form method="dialog"><button>×</button></form><h2 id="contentReviewDialogTitle"></h2><p id="contentReviewDialogMeta"></p><div id="contentReviewSource"></div><input id="contentReviewTitle"><input id="contentReviewTopicSearch"><select id="contentReviewCategory"></select><select id="contentReviewTopicSelect"></select><input id="contentReviewTopic" type="hidden"><small id="contentReviewTopicHint"></small><button id="contentReviewNewTopicToggle">new</button><div id="contentReviewNewTopicFields" hidden><select id="contentReviewNewTopicCategory"></select><input id="contentReviewNewTopicLabel"></div><select id="contentReviewTargetKind"><option value="lesson">lesson</option><option value="image">image</option><option value="pbs">pbs</option></select><textarea id="contentReviewSummary"></textarea><button id="contentReviewSummarySuggest">summary</button><input id="contentReviewNote" type="hidden"><fieldset id="contentReviewGeneration"><label><input type="checkbox" name="contentReviewOutput" value="lesson"></label><label><input type="checkbox" name="contentReviewOutput" value="mcq"></label><button id="contentReviewGenerate">generate</button><small id="contentReviewGenerationStatus"></small></fieldset><div id="contentReviewDraftBody"></div><input type="checkbox" id="contentReviewConfirm"><p id="contentReviewActionStatus"></p><button data-review-action="save">save</button><button data-review-action="publish" id="contentReviewPublish">publish</button><button data-review-action="reject">reject</button></dialog>
 </body></html>`);
 await page.evaluate(()=>{
   window.__calls=[];
@@ -220,8 +225,8 @@ assert.equal(approve.createTopic,true);
 assert.equal(approve.newTopicCategoryId,'id');
 assert.equal(approve.newTopicLabel,'انسفالیت‌های نوپدید');
 assert.equal(approve.targetKind,'pbs');
-assert.equal(approve.sourceClass,'authored');
-assert.match(approve.rightsNote,/مدیر IntMed/);
+assert.equal(approve.sourceClass,undefined,'removed form must not invent authorship');
+assert.equal(approve.rightsNote,undefined);
 const publish=(await page.evaluate(()=>window.__calls)).find(call=>call.action==='publish');
 assert.equal(publish.confirmPublish,true);
 assert.equal(publish.targetKind,'pbs');
@@ -257,18 +262,22 @@ await page.fill('#contentReviewSummary','اصلاح ذخیره‌نشده');awai
 assert.equal(await page.evaluate(()=>window.__figureSelections.length),0);assert.match(await page.textContent('#contentReviewActionStatus'),/ابتدا اصلاحات/);
 await page.evaluate(()=>document.getElementById('contentReviewDialog').close());await page.click('[data-review-id]');await page.locator('.review-original-figures summary').click();
 const beforeSelectionCalls=await page.evaluate(()=>window.__calls.length);
-await page.click('[data-prepare-figure]');await page.waitForSelector('#contentReviewFigureRights');
+await page.click('[data-prepare-figure]');await page.waitForFunction(()=>document.getElementById('contentReviewTitle').value==='شرح اولیه تصویر');
 assert.equal(await page.inputValue('#contentReviewTargetKind'),'image','never infer PBS');
-assert.equal(await page.inputValue('#contentReviewSourceClass'),'','derived figure stays UNKNOWN');assert.equal(await page.inputValue('#contentReviewFigureSourceClass'),'');assert.equal(await page.inputValue('#contentReviewRightsNote'),'');
+assert.equal(await page.locator('#contentReviewFigureRights,#contentReviewFigureSourceClass,#contentReviewFigureRightsNote').count(),0,'rights section is removed');
 assert.equal(await page.isChecked('#contentReviewConfirm'),false);
 const selectionCalls=(await page.evaluate(()=>window.__calls)).slice(beforeSelectionCalls);
 assert.equal(selectionCalls.filter(call=>['save','save_artifacts','approve','publish'].includes(call.action)).length,0,'selection must not save or approve the parent');
-await page.fill('#contentReviewFigureCaption','شرح فارسی ویرایش‌شده');assert.equal(await page.inputValue('#contentReviewTitle'),'شرح فارسی ویرایش‌شده');
+await page.fill('#contentReviewTitle','شرح فارسی ویرایش‌شده');
 const publicationCount=await page.evaluate(()=>window.__calls.filter(call=>['approve','publish'].includes(call.action)).length);
-await page.click('#contentReviewPublish');assert.match(await page.textContent('#contentReviewActionStatus'),/حق استفاده/);
-await page.selectOption('#contentReviewFigureSourceClass','harrison-private');await page.fill('#contentReviewFigureRightsNote','تصویر خصوصی کتاب هاریسون برای بازبینی');await page.click('#contentReviewPublish');
-assert.match(await page.textContent('#contentReviewActionStatus'),/قابل انتشار عمومی نیست/);
+await page.click('#contentReviewPublish');assert.match(await page.textContent('#contentReviewActionStatus'),/تأیید نهایی/);
 assert.equal(await page.evaluate(()=>window.__calls.filter(call=>['approve','publish'].includes(call.action)).length),publicationCount);
+const beforeChildPublications=await page.evaluate(()=>window.__calls.filter(call=>call.action==='publish').length);
+page.once('dialog',dialog=>dialog.accept());
+await page.check('#contentReviewConfirm');await page.click('#contentReviewPublish');
+await page.waitForFunction(count=>window.__calls.filter(call=>call.action==='publish').length>count,beforeChildPublications);
+const childApproval=(await page.evaluate(()=>window.__calls)).filter(call=>call.action==='approve').at(-1);
+assert.equal(childApproval.title,'شرح فارسی ویرایش‌شده');assert.equal(childApproval.sourceClass,undefined);assert.equal(childApproval.rightsNote,undefined);
 assert.equal(await page.locator('#contentReviewExtractFigures').count(),0,'only PDF sources offer figure extraction');
 await page.evaluate(()=>{window.__backfillMode=true;document.getElementById('contentReviewDialog').close();});
 await page.click('[data-review-id]');await page.waitForSelector('#contentReviewExtractFigures');

@@ -76,8 +76,8 @@ begin
   returning id into child_id;
  end if;
  insert into public.intmed_content_drafts(ingest_id,status,title,source_summary,target_content_kind,target_source_class,review_revision,draft_json)
- values(child_id,'draft_ready','تصویر صفحه '||figure.page,'تصویر اصلی استخراج‌شده از PDF خصوصی؛ تفسیر علمی، عنوان و حقوق استفاده باید توسط مدرس بررسی شود. Parent ingest: '||figure.ingest_id||'; page: '||figure.page||'; SHA-256: '||figure.sha256,'image',null,0,
-  jsonb_build_object('figureOrigin',jsonb_build_object('figureId',figure.id,'ingestId',figure.ingest_id,'page',figure.page,'xref',figure.xref,'sha256',figure.sha256),'warnings',jsonb_build_array('حقوق استفاده و تفسیر تصویر نیازمند بررسی مدرس است.')))
+ values(child_id,'draft_ready','تصویر صفحه '||figure.page,'تصویر اصلی استخراج‌شده از PDF خصوصی؛ شرح و نکات علمی مرتبط با تصویر را بررسی و تکمیل کنید. Parent ingest: '||figure.ingest_id||'; page: '||figure.page||'; SHA-256: '||figure.sha256,'image',null,0,
+  jsonb_build_object('figureOrigin',jsonb_build_object('figureId',figure.id,'ingestId',figure.ingest_id,'page',figure.page,'xref',figure.xref,'sha256',figure.sha256),'warnings',jsonb_build_array('تفسیر علمی تصویر نیازمند بازبینی مدرس است.')))
  on conflict(ingest_id) do nothing;
  select id into child_draft from public.intmed_content_drafts where ingest_id=child_id;
  return jsonb_build_object('ingestId',child_id,'draftId',child_draft,'reused',reused);
