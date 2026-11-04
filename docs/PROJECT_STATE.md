@@ -25,6 +25,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ## Hematology intake checkpoint (2026-11-04)
 
+- Current public hosting is the personal-site Cloudflare Pages assembly at `/intmed/`, not the
+  domain root. Its `gerami-website/deploy/projects.json` pins an exact IntMed commit; a GitHub Pages
+  release alone does not update that assembly. Review/test upstream and bump only the IntMed pin
+  when publishing; never change DNS or the unrelated AUS pin as part of content delivery.
 - Nine supplied PDFs (62 pages; 213 source questions) integrated into eight hematology topics.
   CML/CLL were revised without duplicating their existing banks; AML/ALL, aplastic/MDS and lymphoma
   were expanded, and a separate PV/ET/PMF topic was added. New content remains teacher-review draft.

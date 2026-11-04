@@ -30,11 +30,13 @@ jobs:
 
           probe 'https://drgerami-md.ir/' '200'
           probe 'https://www.drgerami-md.ir/' '200'
+          probe 'https://drgerami-md.ir/intmed/' '200'
+          probe 'https://drgerami-md.ir/intmed/content/manifest.json' '200'
           probe 'https://api.drgerami-md.ir/auth/v1/health' '200,401'
           probe 'https://intmed-api-proxy.dr-gerami-md.workers.dev/auth/v1/health' '200,401'
 
           config_js=$(curl --fail --silent --show-error --location --max-time 20 \
-            'https://drgerami-md.ir/config.js')
+            'https://drgerami-md.ir/intmed/config.js')
           anon_key=$(printf '%s' "$config_js" | sed -n 's/.*"supabaseAnonKey":"\([^"]*\)".*/\1/p')
           test -n "$anon_key"
           for origin in \
