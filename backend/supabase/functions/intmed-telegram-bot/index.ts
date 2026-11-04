@@ -117,12 +117,10 @@ Deno.serve(async req=>{
       const drafts=await db('intmed_content_drafts?status=in.(error,waiting_provider)&error_code=in.(provider_404,provider_model_unavailable,provider_rate_limited,provider_quota,provider_unavailable,provider_not_configured)&select=ingest_id&limit=30');
       for(const draft of drafts){await db('intmed_content_drafts?ingest_id=eq.'+draft.ingest_id,'PATCH',{status:'waiting_provider',error_code:'provider_rate_limited',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});await db('intmed_content_ingest?id=eq.'+draft.ingest_id,'PATCH',{status:'pending_review',error_code:'provider_rate_limited',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});}
       const pending=await db('intmed_content_ingest?status=eq.pending_review&select=id,kind&order=created_at.desc&limit=30');
-      // Always wake the worker: fresh Telegram items may not have a draft row yet.
-      // Previously /retry did nothing for exactly that state and left PDFs pending forever.
-      // Prefer the newest requested item so an old backlog cannot hide the file the
-      // administrator has just asked to retry. The worker continues the rest serially.
-      const priority=pending.find(item=>item.kind==='pdf')||pending.find(item=>item.kind==='image')||pending[0];
-      const started=kickWorker(priority?.id||null);
+      // Wake a project-wide sweep rather than pinning one item. During a Telegram burst,
+      // losing callers may find the global lease busy; the winning unpinned worker can
+      // batch and self-chain until the remaining eligible queue is drained.
+      const started=kickWorker();
       await say(chat,started
         ?'🔄 پردازش صف دوباره آغاز شد. '+drafts.length+' مورد متوقف‌شده و '+pending.length+' ورودی در انتظار بررسی شد.'
         :'🧾 پردازش خودکار خاموش است؛ ورودی‌ها محفوظ مانده‌اند.');
@@ -143,7 +141,7 @@ Deno.serve(async req=>{
       const id=crypto.randomUUID(),hint=topicHint(content);
       await db('intmed_content_ingest','POST',{id,telegram_update_id:updateId,telegram_chat_id:chat,telegram_message_id:Number(message.message_id),telegram_file_id:null,telegram_file_unique_id:null,kind:'text',original_filename:null,mime_type:'text/plain',byte_size:bytes.length,storage_path:null,sha256:hex(await crypto.subtle.digest('SHA-256',bytes)),content_text:content,caption:null,suggested_topic_id:hint,status:'pending_review',...originFields},{Prefer:'return=minimal'});
       const freeHint=await attachHint(id,chat);
-      kickWorker(id);
+      kickWorker();
       await say(chat,'✅ متن'+(origin?' فورواردشده':'')+' در صف بازبینی ثبت شد.\nشناسه: '+id.slice(0,8)+(freeHint?'\nراهنمای فارسی: '+freeHint:hint?'\nمبحث پیشنهادی: '+hint:'')+'\nانتشار فقط پس از بازبینی انجام می‌شود.');
       return reply(200,{ok:true,queued:true,id,kind:'text'});
     }else{await say(chat,'فقط متن، PDF یا تصویر JPEG/PNG/WebP پذیرفته می‌شود.');return reply(200,{ok:true,ignored:true});}
@@ -163,7 +161,7 @@ Deno.serve(async req=>{
       const stored=await fetch(url+'/storage/v1/object/intmed-content-inbox/'+path,{method:'POST',headers:{apikey:service,Authorization:'Bearer '+service,'Content-Type':mime,'x-upsert':'false'},body:bytes});if(!stored.ok)throw Error('storage');
       await db('intmed_content_ingest?id=eq.'+id,'PATCH',{sha256:digest,status:'pending_review',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});
       const freeHint=await attachHint(id,chat);
-      kickWorker(id);
+      kickWorker();
       await say(chat,'✅ فایل'+(origin?' فورواردشده':'')+' دریافت و قرنطینه شد.\nشناسه: '+id.slice(0,8)+(freeHint?'\nراهنمای فارسی: '+freeHint:hint?'\nمبحث پیشنهادی: '+hint:'\nبرای تعیین مسیر فارسی، دکمه «تعیین مبحث» را پیش از ارسال فایل بزنید.')+'\nانتشار فقط پس از بازبینی انجام می‌شود.');
       return reply(200,{ok:true,queued:true,id,kind});
     }catch{

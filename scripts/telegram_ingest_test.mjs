@@ -1,5 +1,5 @@
 import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';import {webcrypto,randomUUID} from 'node:crypto';
-let handler,rows=[],messages=[],stored=0,getFiles=0,workerCalls=0,downloadBytes=new TextEncoder().encode('%PDF-1.7 synthetic');
+let handler,rows=[],messages=[],stored=0,getFiles=0,workerCalls=0,workerBodies=[],downloadBytes=new TextEncoder().encode('%PDF-1.7 synthetic');
 const sessions=new Map(),hints=[],alerts=[],drafts=[];
 const env={SUPABASE_URL:'https://test.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-only',SUPABASE_ANON_KEY:'public-only',TELEGRAM_BOT_TOKEN:'bot-secret',TELEGRAM_WEBHOOK_SECRET:'webhook-secret'};
 const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:k=>env[k]}},Response,Request,URL,TextEncoder,crypto:{subtle:webcrypto.subtle,randomUUID},Date,fetch:async(url,options={})=>{
@@ -38,7 +38,7 @@ const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:k=>env[k]}},
  if(url.includes('/answerCallbackQuery'))return Response.json({ok:true,result:true});
  if(url.includes('/file/bot'))return new Response(downloadBytes,{headers:{'content-length':String(downloadBytes.length)}});
  if(url.includes('/storage/v1/object/')){stored++;assert.equal(options.headers['x-upsert'],'false');return Response.json({Key:'private'});}
- if(url.includes('/functions/v1/intmed-content-worker')){workerCalls++;return Response.json({processed:0});}
+ if(url.includes('/functions/v1/intmed-content-worker')){workerCalls++;workerBodies.push(JSON.parse(options.body||'{}'));return Response.json({processed:0});}
  throw Error('unexpected '+url);
 }});
 vm.runInContext(fs.readFileSync('backend/supabase/functions/intmed-telegram-bot/index.ts','utf8'),context);
@@ -73,6 +73,12 @@ downloadBytes=new TextEncoder().encode('not a png');
 r=await post(update(9,'123',{document:{...doc,file_id:'spoof',file_name:'spoof.png',mime_type:'image/png',file_size:downloadBytes.length}}));assert.equal((await r.json()).queued,false);assert.equal(rows.at(-1).status,'error');assert.equal(stored,1,'Spoofed MIME reached storage');
 downloadBytes=new TextEncoder().encode('%PDF-1.7 synthetic');
 
+const burstStart=workerBodies.length;
+const burst=await Promise.all(Array.from({length:8},(_,index)=>post(update(50+index,'123',{text:'ورودی هم‌زمان '+index}))));
+const burstResults=await Promise.all(burst.map(response=>response.json()));assert.ok(burstResults.every(result=>result.ok&&result.queued&&result.kind==='text'),'burst responses must stay accepted');
+assert.equal(workerBodies.length-burstStart,8,'Every accepted burst item must wake the project queue');
+assert.deepEqual(workerBodies.slice(burstStart),Array.from({length:8},()=>({})),'Burst wake-ups must be queue sweeps, not single-item calls that can lose work behind the global lease');
+
 r=await post({update_id:34,callback_query:{id:'callback-2',data:'menu:status',message:{message_id:34,chat:{id:'123',type:'private'}}}});assert.ok(messages.at(-1).text.includes('در صف تحلیل یا بازبینی'));
 assert.match(messages.at(-1).text,/حالت پردازش: خودکار/);
 while(rows.filter(row=>['quarantined','pending_review','processing'].includes(row.status)).length<30)rows.push({...rows[0],id:randomUUID(),telegram_update_id:100+rows.length,status:'pending_review'});
@@ -82,6 +88,7 @@ assert.ok(rows.every(row=>row.status!=='accepted'),'ingest auto-published conten
 const retryId=randomUUID();drafts.push({ingest_id:retryId,status:'error',error_code:'provider_429'});rows.push({...rows[0],id:retryId,status:'error',error_code:'worker_failed'});
 const beforeRetryWorkerCalls=workerCalls;
 r=await post({update_id:35,callback_query:{id:'callback-3',data:'queue:retry',message:{message_id:35,chat:{id:'123',type:'private'}}}});assert.deepEqual(await r.json(),{ok:true,command:'retry',queued:1});assert.equal(drafts.at(-1).status,'waiting_provider');assert.equal(rows.at(-1).status,'pending_review');assert.equal(workerCalls,beforeRetryWorkerCalls+1);
+assert.deepEqual(workerBodies.at(-1),{},'Retry must sweep the whole eligible queue instead of pinning one ingest id');
 
 const userEvent=body=>handler(new Request('https://test/functions/v1/intmed-telegram-bot',{method:'POST',headers:{Authorization:'Bearer valid-user-jwt'},body:JSON.stringify(body)}));
 r=await userEvent({event:'login'});assert.equal((await r.json()).sent,true);assert.match(messages.at(-1).text,/ورود کاربر/);assert.ok(!messages.at(-1).text.includes('private@example.com'),'Email leaked into login notification');

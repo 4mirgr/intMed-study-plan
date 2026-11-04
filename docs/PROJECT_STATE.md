@@ -147,6 +147,18 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ### P0 — release correctness
 
+- Added six visually inspected, openly licensed Commons PBS originals to the matching anemia/CML
+  topics and generated PBS library filter. Persian captions retain diagnostic limitations and draft
+  review status; creator/source/license/change notices are visible. No ASH public-reposting permission
+  is assumed. The curated import manifest records visual QA; originals stay byte-for-byte unchanged.
+- Fixed Telegram burst lost-wakeup: normal intake and retry wake the queue, not only one requested
+  source. The winning serialized worker batches/self-chains. Exact PDF duplicates can reuse an
+  unapproved parser-verified draft before extraction dispatch when routing hints also match, without
+  repeating model calls or inheriting clinical approval. Rejected inputs are never auto-reopened.
+- Still needed for full queue durability: a secure periodic sweeper to recover terminated workers.
+  No cron is installed yet; a new intake or the bot's «پردازش دوباره» currently wakes pending work.
+  Historical rejected/error records are preserved for explicit human decisions, not silently retried.
+
 - Scientific findings now have a readable review panel, safe evidence links and explicit
   administrator resolution notes/history. Both approval and publication reject unresolved blocking
   findings server-side. Editing artifacts does not silently resolve findings; resolving a finding

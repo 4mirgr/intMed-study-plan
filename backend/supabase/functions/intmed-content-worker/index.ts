@@ -28,6 +28,14 @@ function extractionQuality(extraction){
   return {status:canReuseText?'model_reported_complete':'needs_review',countBasis:'model_reported',actualPageCountVerified:false,reportedPageCount:validCount?count:null,uniquePageCount:seen.size,missingPages,duplicatePages,invalidPages,unreadablePages,emptyPages,warnings,canReuseText};
 }
 
+function reusableParsedPdf(extraction){
+  if(extraction?.quality?.actualPageCountVerified!==true||extraction?.quality?.countBasis!=='pdf_parser'||extraction?.quality?.canReuseText!==true)return false;
+  const count=extraction.pageCount,pages=extraction.pages;
+  if(!Number.isInteger(count)||count<1||count>2000||!Array.isArray(pages)||pages.length!==count)return false;
+  const seen=new Set();
+  return pages.every(page=>{const number=page?.page;if(!Number.isInteger(number)||number<1||number>count||seen.has(number)||page.unreadable!==false||(!String(page.text||'').trim()&&page.method!=='blank_page'))return false;seen.add(number);return true;});
+}
+
 Deno.serve(async req=>{
   const reply=(status,body)=>new Response(JSON.stringify(body),{status,headers});
   if(req.method!=='POST')return reply(405,{message:'Method not allowed'});
@@ -66,6 +74,28 @@ Deno.serve(async req=>{
       const items=await db('intmed_content_ingest?id=eq.'+encodeURIComponent(itemId)+'&status=eq.processing&select=id,kind,mime_type,original_filename,storage_path,content_text,caption,suggested_topic_id,sha256,byte_size&limit=1'),item=items[0];
       if(!item){await release();break;}
       const hintRows=await db('intmed_bot_topic_hints?ingest_id=eq.'+item.id+'&select=hint_text&limit=1'),persianHint=safeText(hintRows[0]?.hint_text,300);
+      // Cache lookup must precede native PDF dispatch. Only an unapproved machine
+      // draft of identical bytes and identical routing hints can be cloned.
+      if(item.sha256){
+        const duplicates=await db('intmed_content_ingest?sha256=eq.'+encodeURIComponent(item.sha256)+'&id=neq.'+encodeURIComponent(item.id)+'&status=eq.accepted&select=id,caption,suggested_topic_id&order=updated_at.desc&limit=1');
+        if(duplicates[0]){
+          const source=duplicates[0],cached=await db('intmed_content_drafts?ingest_id=eq.'+encodeURIComponent(source.id)+'&status=eq.draft_ready&select=status,topic_id,topic_confidence,title,source_summary,extracted_text,draft_json,reviewer_note&limit=1');
+          const candidate=cached[0],extraction=candidate?.draft_json?.documentExtraction;
+          const reusable=candidate?.status==='draft_ready'&&(item.kind==='text'||(item.kind==='pdf'?reusableParsedPdf(extraction):extraction?.quality?.canReuseText===true&&extractionQuality(extraction).canReuseText));
+          if(reusable){
+            const sourceHints=await db('intmed_bot_topic_hints?ingest_id=eq.'+source.id+'&select=hint_text&limit=1');
+            const sameRouting=safeText(source.caption,1500)===safeText(item.caption,1500)&&safeText(source.suggested_topic_id,80)===safeText(item.suggested_topic_id,80)&&safeText(sourceHints[0]?.hint_text,300)===persianHint;
+            if(sameRouting){
+              const reused={...candidate,draft_json:{...candidate.draft_json,generation:{...(candidate.draft_json?.generation||{}),clinicalReview:'pending_teacher'}}};
+              // Parser verification and provenance must survive reuse unchanged.
+              if(item.kind!=='text'&&item.kind!=='pdf')reused.draft_json.documentExtraction={...extraction,quality:extractionQuality(extraction)};
+              await save(item.id,{...reused,status:'draft_ready',reviewed_by:null,reviewed_at:null,error_code:null,provider:'cache',model:'sha256'});
+              await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'accepted',error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=minimal'});
+              await notify('♻️ فایل تکراری بدون مصرف دوبارهٔ مدل از پیش‌نویس قبلی بازیابی شد.\nشناسه: '+item.id.slice(0,8));processed++;await release();continue;
+            }
+          }
+        }
+      }
       let nativeExtraction=null;
       if(item.kind==='pdf'){
         const drafts=await db('intmed_content_drafts?ingest_id=eq.'+encodeURIComponent(item.id)+'&select=id,review_revision,draft_json&limit=1');
@@ -76,19 +106,6 @@ Deno.serve(async req=>{
           if(!dispatched.ok){await save(item.id,{status:'error',error_code:'native_extraction_dispatch_failed'});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'error',error_code:'native_extraction_dispatch_failed',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});failed++;await release();continue;}
           await save(item.id,{status:'processing',error_code:null});
           processed++;await release();continue;
-        }
-      }
-      // Exact duplicates are common when Telegram delivery is retried. Reuse the reviewed
-      // machine draft instead of paying the provider to analyze identical bytes again.
-      if(item.sha256&&!nativeExtraction){
-        const duplicates=await db('intmed_content_ingest?sha256=eq.'+encodeURIComponent(item.sha256)+'&id=neq.'+encodeURIComponent(item.id)+'&status=eq.accepted&select=id&order=updated_at.desc&limit=1');
-        if(duplicates[0]){
-          const cached=await db('intmed_content_drafts?ingest_id=eq.'+encodeURIComponent(duplicates[0].id)+'&status=eq.draft_ready&select=topic_id,topic_confidence,title,source_summary,extracted_text,draft_json&limit=1');
-          if(cached[0]&&(item.kind==='text'||(cached[0].draft_json?.documentExtraction?.quality?.canReuseText===true&&extractionQuality(cached[0].draft_json?.documentExtraction).canReuseText))){
-            const reused={...cached[0],draft_json:{...cached[0].draft_json}};
-            if(item.kind!=='text')reused.draft_json.documentExtraction={...reused.draft_json.documentExtraction,quality:extractionQuality(reused.draft_json.documentExtraction)};
-            await save(item.id,{...reused,status:'draft_ready',error_code:null,provider:'cache',model:'sha256'});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'accepted',error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=minimal'});await notify('♻️ فایل تکراری بدون مصرف دوبارهٔ مدل از پیش‌نویس قبلی بازیابی شد.\nشناسه: '+item.id.slice(0,8));processed++;await release();continue;
-          }
         }
       }
       if(!provider){await save(item.id,{status:'waiting_provider',error_code:'provider_not_configured',provider:'online',model:null});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'pending_review',error_code:'provider_not_configured',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});waiting++;await release();break;}
