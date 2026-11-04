@@ -66,6 +66,12 @@ rights; private Harrison assets still cannot be published publicly.
 
 Multi-topic publication, model comparison and independent clinical review remain open.
 
+The five-minute private Supabase Cron sweeper recovers abandoned machine processing without
+reopening reviewed/rejected drafts. One-use two-minute tokens only wake intake, not publication.
+Shared provider backoff is checked before any worker claim/model call, including event-triggered
+and chained runs. Normal text is stored exactly once locally; the model routes/summarizes it
+without retranscription. Its `plain_text` record is not a PDF page-count verification.
+
 Sources may arrive as a local upload or as an authorized Telegram inbox item. Telegram records are
 inputs only: copy/download the private object into a hashed extraction cache, retain its ingest ID
 and provenance, and leave the record unaccepted until the same reviews below pass. A forwarded

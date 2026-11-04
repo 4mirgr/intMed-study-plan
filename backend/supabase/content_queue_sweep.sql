@@ -14,11 +14,13 @@ create table if not exists public.intmed_queue_sweep_state(
   last_requested_at timestamptz,
   last_finished_at timestamptz,
   next_attempt_at timestamptz not null default now(),
+  provider_retry_at timestamptz,
   consecutive_waits integer not null default 0 check(consecutive_waits between 0 and 4),
   last_result jsonb not null default '{}'::jsonb,
   last_error text
 );
 insert into public.intmed_queue_sweep_state(singleton) values(true) on conflict do nothing;
+alter table public.intmed_queue_sweep_state add column if not exists provider_retry_at timestamptz;
 alter table public.intmed_queue_sweep_state enable row level security;
 revoke all on public.intmed_queue_sweep_state from public,anon,authenticated;
 grant select,update on public.intmed_queue_sweep_state to service_role;
@@ -38,17 +40,21 @@ end $$;
 
 create or replace function public.complete_intmed_queue_sweep(p_run_id uuid,p_result jsonb,p_error text)
 returns boolean language plpgsql security invoker set search_path='' as $$
-declare current_wait integer; cooldown interval; result_reason text; waiting integer; safe_error text;
+declare current_wait integer; retry_at timestamptz; cooldown interval; result_reason text; waiting integer; safe_error text;
 begin
   if p_run_id is null or p_result is null or jsonb_typeof(p_result)<>'object' then return false; end if;
-  select consecutive_waits into current_wait from public.intmed_queue_sweep_state
+  select consecutive_waits,provider_retry_at into current_wait,retry_at from public.intmed_queue_sweep_state
   where singleton and enabled and run_id=p_run_id and claimed_at is not null
     and completed_run_id is distinct from p_run_id for update;
   if not found then return false; end if;
   waiting=case when p_result->>'waitingProvider' ~ '^[0-3]$' then (p_result->>'waitingProvider')::integer else 0 end;
   result_reason=case when p_result->>'reason' in ('manual_mode','empty_or_busy') then p_result->>'reason' else null end;
   safe_error=case when p_error ~ '^worker_http_[0-9]{3}$' or p_error='worker_network_failed' then p_error else null end;
-  if waiting>0 then
+  if retry_at>now() then
+    -- A chained/event-triggered worker already deferred the shared provider.
+    -- Do not clear that delay or increment it again in the scheduler callback.
+    cooldown=retry_at-now();
+  elsif waiting>0 then
     cooldown=interval '15 minutes'*power(2,least(current_wait,2));
     current_wait=least(4,current_wait+1);
   elsif result_reason='manual_mode' then cooldown=interval '1 hour';
@@ -59,7 +65,7 @@ begin
   end if;
   update public.intmed_queue_sweep_state set last_finished_at=now(),completed_run_id=p_run_id,
     token_hash=null,expires_at=null,next_attempt_at=now()+cooldown,
-    consecutive_waits=current_wait,last_error=safe_error,
+    consecutive_waits=current_wait,last_error=case when retry_at>now() then coalesce(safe_error,last_error) else safe_error end,
     last_result=jsonb_build_object(
       'processed',case when p_result->>'processed' ~ '^[0-3]$' then (p_result->>'processed')::integer else 0 end,
       'waitingProvider',waiting,
@@ -67,6 +73,27 @@ begin
       'reason',result_reason)
   where singleton and run_id=p_run_id;
   return true;
+end $$;
+
+create or replace function public.intmed_content_queue_retry_after()
+returns integer language sql stable security invoker set search_path='' as $$
+ select coalesce((select least(3600,greatest(0,ceil(extract(epoch from provider_retry_at-now()))::integer))
+ from public.intmed_queue_sweep_state where singleton and enabled),0);
+$$;
+
+create or replace function public.defer_intmed_content_queue(p_reason text)
+returns boolean language plpgsql security invoker set search_path='' as $$
+declare waits integer; retry_at timestamptz;
+begin
+ if p_reason is null or p_reason not in ('provider_rate_limited','provider_quota','provider_unavailable','provider_not_configured','provider_model_unavailable') then return false; end if;
+ select consecutive_waits into waits from public.intmed_queue_sweep_state where singleton and enabled for update;
+ if not found then return false; end if;
+ retry_at=now()+interval '15 minutes'*power(2,least(waits,2));
+ update public.intmed_queue_sweep_state set
+  provider_retry_at=greatest(coalesce(provider_retry_at,'-infinity'::timestamptz),retry_at),
+  next_attempt_at=greatest(next_attempt_at,retry_at),consecutive_waits=least(4,waits+1),
+  last_error=p_reason where singleton;
+ return true;
 end $$;
 
 -- Cron runs as postgres. This SECURITY INVOKER function is not an exposed RPC and
@@ -138,6 +165,10 @@ end $$;
 revoke all on function public.claim_intmed_queue_sweep(text),public.complete_intmed_queue_sweep(uuid,jsonb,text)
   from public,anon,authenticated;
 grant execute on function public.claim_intmed_queue_sweep(text),public.complete_intmed_queue_sweep(uuid,jsonb,text)
+  to service_role;
+revoke all on function public.intmed_content_queue_retry_after(),public.defer_intmed_content_queue(text)
+  from public,anon,authenticated;
+grant execute on function public.intmed_content_queue_retry_after(),public.defer_intmed_content_queue(text)
   to service_role;
 revoke all on function intmed_queue_private.request_sweep() from public,anon,authenticated,service_role;
 commit;

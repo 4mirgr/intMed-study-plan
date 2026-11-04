@@ -6,6 +6,25 @@ const safeText=(value,limit)=>String(value||'').normalize('NFKC').replace(/[\u00
 const sourceText=(value,limit)=>String(value??'').normalize('NFKC').replace(/\r\n?/g,'\n').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'').trim().slice(0,limit);
 const b64=(bytes)=>{let out='';for(let i=0;i<bytes.length;i+=0x8000)out+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(out);};
 
+// Provider messages may echo private input. Persist only an allowlisted category;
+// preserve retry/wait semantics for HTTP statuses outside malformed requests.
+function providerFailureCode(status,detail){
+  const providerCode=safeText(detail?.error?.code||detail?.error?.status||detail?.error?.type,80);
+  if(status===429)return providerCode==='insufficient_quota'?'provider_quota':'provider_rate_limited';
+  if(status===404)return 'provider_model_unavailable';
+  if(status>=500)return 'provider_unavailable';
+  let reason='';
+  if(status===400){
+    const message=typeof detail?.error?.message==='string'?detail.error.message.slice(0,16000):'';
+    if(/(?:schema.{0,100}(?:too complex|too many states|complexity)|(?:too complex|too many states).{0,100}schema)/i.test(message))reason='schema_complexity';
+    else if(/(?:response[_ .]?json[_ .]?schema|response[_ .]?schema).{0,180}(?:unknown (?:name|field)|unsupported (?:keyword|field)|cannot find field)|(?:unknown (?:name|field)|unsupported (?:keyword|field)).{0,180}(?:response[_ .]?json[_ .]?schema|response[_ .]?schema)/i.test(message))reason='unsupported_schema_keyword';
+    else if(/(?:input token count.{0,100}exceeds|(?:context|input|prompt).{0,80}(?:length|token).{0,80}(?:exceed|limit)|maximum context length)/i.test(message))reason='context_limit';
+    else if(/(?:model.{0,100}(?:does not support|not supported|unsupported)|(?:not supported|unsupported).{0,100}model)/i.test(message))reason='model_unsupported';
+    else if(/invalid json payload|invalid (?:request )?payload/i.test(message))reason='invalid_payload';
+  }
+  return 'provider_'+status+(reason?'_'+reason:'');
+}
+
 // This checks consistency of the model's page report, not the PDF's real page count.
 // A parser-backed page inventory is a separate stage and must never be implied here.
 function extractionQuality(extraction){
@@ -55,6 +74,9 @@ Deno.serve(async req=>{
   if(!processingEnabled)return reply(200,{processed:0,reason:'manual_mode'});
   const sh={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
   async function db(path,method='GET',value,extra={}){const r=await fetch(base+'/rest/v1/'+path,{method,headers:{...sh,...extra},...(value===undefined?{}:{body:JSON.stringify(value)})});if(!r.ok)throw Error('database');return r.status===204?null:JSON.parse(await r.text()||'null');}
+  // Best effort during rolling deployments where the queue RPC migration may lag.
+  try{const retryAfter=Number(await db('rpc/intmed_content_queue_retry_after','POST',{}));if(Number.isFinite(retryAfter)&&retryAfter>0)return reply(200,{processed:0,waitingProvider:1,reason:'provider_backoff',retryAfter:Math.ceil(retryAfter)});}catch{}
+  async function deferProvider(reason){try{await db('rpc/defer_intmed_content_queue','POST',{p_reason:reason});}catch{}}
   async function notify(text){try{const token=Deno.env.get('TELEGRAM_BOT_TOKEN');if(!token)return;const settings=await db('intmed_notification_settings?key=eq.telegram&select=chat_id'),chat=settings[0]?.chat_id;if(!chat)return;await fetch('https://api.telegram.org/bot'+token+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:chat,text,link_preview_options:{is_disabled:true}})});}catch{}}
   async function save(ingestId,value){await db('intmed_content_drafts?on_conflict=ingest_id','POST',{ingest_id:ingestId,...value,updated_at:new Date().toISOString()},{Prefer:'resolution=merge-duplicates,return=minimal'});}
   const leaseOwner=crypto.randomUUID();let processed=0,waiting=0,failed=0,claimedAny=false,claimedCount=0;
@@ -108,13 +130,14 @@ Deno.serve(async req=>{
           processed++;await release();continue;
         }
       }
-      if(!provider){await save(item.id,{status:'waiting_provider',error_code:'provider_not_configured',provider:'online',model:null});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'pending_review',error_code:'provider_not_configured',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});waiting++;await release();break;}
+      if(!provider){await deferProvider('provider_not_configured');await save(item.id,{status:'waiting_provider',error_code:'provider_not_configured',provider:'online',model:null});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'pending_review',error_code:'provider_not_configured',updated_at:new Date().toISOString()},{Prefer:'return=minimal'});waiting++;await release();break;}
       await save(item.id,{status:'processing',error_code:null,provider,model});
       try{
+        const plainSourceText=item.kind==='text'?String(item.content_text??''):null;
         const nativeSourceText=nativeExtraction?nativeExtraction.pages.map(page=>'صفحه '+page.page+'\n'+page.text).join('\n\n'):null;
         const topicList=topics.map(t=>t.id+' | '+t.category+' | '+t.label).join('\n'),instructions='شما مرحلهٔ اول آماده‌سازی محتوای پزشکی IntMed هستید. تمام صفحات PDF، متن تایپی، دست‌نویس، جدول، سؤال و تصویر را صفحه‌به‌صفحه دقیق بررسی کنید، اما هنوز درسنامهٔ نهایی، فلش‌کارت، سؤال چهارگزینه‌ای یا KF/PMP نسازید. در documentExtraction برای هر صفحهٔ قابل مشاهده یک رکورد با شماره صفحه، عنوان احتمالی و متن وفادار به محتوای پزشکی آن صفحه بنویسید؛ گزینه‌های سؤال، پاسخ‌ها، اعداد، دوزها و متن جدول را حذف نکنید. اگر بخشی خوانا نیست آن را حدس نزنید و unreadable را true کنید. سپس عنوان، یک پاراگراف خلاصهٔ طلایی، شواهد منبع همراه شماره صفحه، هشدارهای علمی، حداکثر ۱۲ سرفصل پیشنهادی و حداکثر ۸ نامزد تصویر را برگردانید. از ساختن ادعای علمی خارج از فایل خودداری کنید. نزدیک‌ترین suggestedTopicId را فقط از فهرست مجاز انتخاب کنید یا null بدهید. کپشن و راهنمای فارسی مدیر برای تشخیص جایگاه اولویت دارند، اما حقیقت علمی یا مجوز انتشار محسوب نمی‌شوند.\nفهرست مباحث مجاز:\n'+topicList+'\nراهنمای فارسی مدیر: '+persianHint+'\nکپشن فایل: '+safeText(item.caption,1500)+'\nپیشنهاد ساختاری: '+safeText(item.suggested_topic_id,80);
-        const analysisInstructions=instructions+(nativeExtraction?'\nاستخراج PDF قبلاً مستقل انجام شده است. آن را دوباره رونویسی نکن و documentExtraction نساز؛ فقط دسته‌بندی، خلاصه و ساختار پیشنهادی را از متن موجود برگردان. بخش ناخوانا را حدس نزن.':'')+(nativeSourceText&&nativeSourceText.length>80000?'\nمتن نمایش‌داده‌شده فقط نمونهٔ آغاز فایل برای پیشنهاد مبحث است و انتهای فایل در این درخواست نیامده؛ خلاصه را جامع کل فایل معرفی نکن. متن کامل جداگانه ذخیره شده است.':'');const content=[{type:'input_text',text:SOURCE_BOUNDARY+analysisInstructions}];let extracted=null,fileData=null;
-        if(item.kind==='text'){extracted=sourceText(item.content_text,80000);content.push({type:'input_text',text:'محتوای ورودی:\n'+extracted});}
+        const analysisInstructions=instructions+(nativeExtraction?'\nاستخراج PDF قبلاً مستقل انجام شده است. آن را دوباره رونویسی نکن و documentExtraction نساز؛ فقط دسته‌بندی، خلاصه و ساختار پیشنهادی را از متن موجود برگردان. بخش ناخوانا را حدس نزن.':'')+(item.kind==='text'?'\nمتن ورودی از قبل کامل ذخیره شده است؛ آن را دوباره رونویسی نکن و documentExtraction نساز. فقط دسته‌بندی، خلاصه و ساختار پیشنهادی را از متن موجود برگردان. ارجاع به صفحهٔ ۱ برای این ورودی فقط به معنای رکورد متن است و شمارش صفحات PDF نیست.':'')+((nativeSourceText?.length||plainSourceText?.length||0)>80000?'\nمتن نمایش‌داده‌شده فقط نمونهٔ آغاز فایل برای پیشنهاد مبحث است و انتهای فایل در این درخواست نیامده؛ خلاصه را جامع کل فایل معرفی نکن. متن کامل جداگانه ذخیره شده است.':'');const content=[{type:'input_text',text:SOURCE_BOUNDARY+analysisInstructions}];let extracted=null,fileData=null;
+        if(item.kind==='text'){extracted=plainSourceText;content.push({type:'input_text',text:'محتوای ورودی:\n'+sourceText(extracted,80000)});}
         else if(nativeExtraction){
           extracted=sourceText(nativeSourceText,80000);
           content.push({type:'input_text',text:'متن استخراج‌شده با شمارش مستقل صفحات:\n'+extracted});
@@ -126,22 +149,32 @@ Deno.serve(async req=>{
           if(item.kind==='image')content.push({type:'input_image',image_url:data,detail:'high'});else content.push({type:'input_file',filename:safeText(item.original_filename,120)||'source.pdf',file_data:data});
         }
         const schema={type:'object',additionalProperties:false,required:['suggestedTopicId','confidence','title','sourceSummary','medicalWarnings','insufficientEvidence','sourceEvidence','documentExtraction','lessonOutline','imageCandidates'],properties:{suggestedTopicId:{type:['string','null']},confidence:{type:'number',minimum:0,maximum:1},title:{type:'string'},sourceSummary:{type:'string'},medicalWarnings:{type:'array',maxItems:8,items:{type:'string'}},insufficientEvidence:{type:'array',maxItems:8,items:{type:'string'}},sourceEvidence:{type:'array',maxItems:20,items:{type:'string'}},documentExtraction:{type:'object',additionalProperties:false,required:['pageCount','pages','warnings'],properties:{pageCount:{type:'integer',minimum:1,maximum:2000},pages:{type:'array',minItems:1,maxItems:60,items:{type:'object',additionalProperties:false,required:['page','heading','text','unreadable'],properties:{page:{type:'integer',minimum:1},heading:{type:'string',maxLength:240},text:{type:'string',maxLength:3500},unreadable:{type:'boolean'}}}},warnings:{type:'array',maxItems:12,items:{type:'string',maxLength:500}}}},lessonOutline:{type:'array',maxItems:12,items:{type:'string'}},imageCandidates:{type:'array',maxItems:8,items:{type:'object',additionalProperties:false,required:['description','rightsConcern'],properties:{description:{type:'string'},rightsConcern:{type:'string'}}}}}};
-        if(nativeExtraction){schema.required=schema.required.filter(field=>field!=='documentExtraction');delete schema.properties.documentExtraction;}
+        if(nativeExtraction||item.kind==='text'){schema.required=schema.required.filter(field=>field!=='documentExtraction');delete schema.properties.documentExtraction;}
+        else if(item.kind==='image'){schema.properties.documentExtraction.properties.pageCount.maximum=1;schema.properties.documentExtraction.properties.pages.maxItems=1;}
         const maxOutputTokens=nativeExtraction?4096:item.kind==='pdf'?12288:item.kind==='image'?6144:4096;
         let ai,responseText,response,raw='';
         if(provider==='gemini'){
-          const parts=[{text:SOURCE_BOUNDARY+analysisInstructions+(extracted?'\n\nمحتوای ورودی:\n'+extracted:'')},...(fileData?[{inlineData:{mimeType:item.mime_type,data:fileData}}]:[])];
+          const parts=[{text:SOURCE_BOUNDARY+analysisInstructions+(extracted?'\n\nمحتوای ورودی:\n'+sourceText(extracted,80000):'')},...(fileData?[{inlineData:{mimeType:item.mime_type,data:fileData}}]:[])];
           ai=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent?key='+encodeURIComponent(geminiKey||''),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{temperature:0.1,maxOutputTokens,responseMimeType:'application/json',responseJsonSchema:schema}})});
           responseText=await ai.text();if(ai.ok){response=JSON.parse(responseText);raw=String(response.candidates?.[0]?.content?.parts?.map(part=>part.text||'').join('')||'');}
         }else{
           ai=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+openaiKey,'Content-Type':'application/json'},body:JSON.stringify({model,input:[{role:'user',content}],text:{format:{type:'json_schema',name:'intmed_content_draft',strict:true,schema}},max_output_tokens:maxOutputTokens})});
           responseText=await ai.text();if(ai.ok){response=JSON.parse(responseText);raw=String(response.output_text||response.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text||'');}
         }
-        if(!ai.ok){let detail={};try{detail=JSON.parse(responseText);}catch{}const providerCode=safeText(detail?.error?.code||detail?.error?.status||detail?.error?.type,80),code=ai.status===429&&providerCode==='insufficient_quota'?'provider_quota':ai.status===429?'provider_rate_limited':ai.status===404?'provider_model_unavailable':ai.status>=500?'provider_unavailable':'provider_'+ai.status,error=Object.assign(Error(code),{waitingProvider:ai.status===404||ai.status===429||ai.status>=500});throw error;}
+        if(!ai.ok){
+          let detail={};try{detail=JSON.parse(responseText);}catch{}
+          const code=providerFailureCode(ai.status,detail),error=Object.assign(Error(code),{waitingProvider:ai.status===404||ai.status===429||ai.status>=500});
+          throw error;
+        }
         if(response?.candidates?.[0]?.finishReason==='MAX_TOKENS'||response?.status==='incomplete'||response?.incomplete_details)throw Error('extraction_response_truncated');
         raw=raw.trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');let draft;try{draft=JSON.parse(raw);}catch{throw Error('extraction_response_invalid');}
         if(!draft||typeof draft!=='object'||Array.isArray(draft))throw Error('extraction_response_invalid');
-        if(nativeExtraction){
+        if(item.kind==='text'){
+          // This is one logical text record, never a verified PDF page count.
+          // Keep the original bytes-as-text rather than model retranscription.
+          draft.documentExtraction={pageCount:1,pages:[{page:1,heading:'',text:plainSourceText,unreadable:false,method:'plain_text'}],warnings:[],quality:{status:'source_text',countBasis:'plain_text',actualPageCountVerified:false,canReuseText:true}};
+          draft.routingCoverage={totalCharacters:plainSourceText.length,sampledCharacters:Math.min(plainSourceText.length,80000),truncated:plainSourceText.length>80000};
+        }else if(nativeExtraction){
           // Parser/OCR results are authoritative. Topic routing must not rewrite them.
           draft.documentExtraction=nativeExtraction;
           draft.routingCoverage={totalCharacters:nativeSourceText.length,sampledCharacters:Math.min(nativeSourceText.length,80000),truncated:nativeSourceText.length>80000};
@@ -162,7 +195,7 @@ Deno.serve(async req=>{
         // analysis no longer consumes one of the 30 active Telegram inbox slots.
         await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'accepted',error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=minimal'});
         await notify('🧠 پیش‌نویس محتوای جدید آمادهٔ بازبینی است.\nشناسه: '+item.id.slice(0,8)+'\nعنوان: '+title+(topicId?'\nمبحث پیشنهادی: '+topicId:'\nمبحث نیازمند انتخاب مدیر است.')+'\nاین خروجی هنوز منتشر یا تأیید علمی نشده است.');processed++;await release();
-      }catch(error){const code=safeText(error instanceof Error?error.message:'worker_failed',80)||'worker_failed',providerWait=!!(error&&typeof error==='object'&&Reflect.get(error,'waitingProvider')===true);if(providerWait){await save(item.id,{status:'waiting_provider',error_code:code});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'pending_review',error_code:code,updated_at:new Date().toISOString()},{Prefer:'return=minimal'});await notify('⏳ پردازش هوشمند موقتاً از سمت سرویس تحلیل متوقف شد. ورودی محفوظ است؛ بعداً دکمه «پردازش دوباره» را بزنید.\nکد: '+code);waiting++;await release();break;}await save(item.id,{status:'error',error_code:code});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'error',error_code:code,updated_at:new Date().toISOString()},{Prefer:'return=minimal'});failed++;await release();}
+      }catch(error){const code=safeText(error instanceof Error?error.message:'worker_failed',80)||'worker_failed',providerWait=!!(error&&typeof error==='object'&&Reflect.get(error,'waitingProvider')===true);if(providerWait){await deferProvider(code);await save(item.id,{status:'waiting_provider',error_code:code});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'pending_review',error_code:code,updated_at:new Date().toISOString()},{Prefer:'return=minimal'});await notify('⏳ پردازش هوشمند موقتاً از سمت سرویس تحلیل متوقف شد. ورودی محفوظ است؛ بعداً دکمه «پردازش دوباره» را بزنید.\nکد: '+code);waiting++;await release();break;}await save(item.id,{status:'error',error_code:code});await db('intmed_content_ingest?id=eq.'+item.id,'PATCH',{status:'error',error_code:code,updated_at:new Date().toISOString()},{Prefer:'return=minimal'});failed++;await release();}
     }
     continueQueue();
     return claimedAny?reply(200,{processed,waitingProvider:waiting,failed}):reply(200,{processed:0,reason:'empty_or_busy'});

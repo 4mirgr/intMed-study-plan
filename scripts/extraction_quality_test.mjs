@@ -4,24 +4,26 @@ import vm from 'node:vm';
 
 const source=fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8');
 const ingestId='11111111-1111-4111-8111-111111111111';
-async function run({extraction,finishReason='STOP',raw,kind='image',native,dispatchOk=true}){
+async function run({extraction,finishReason='STOP',raw,kind='image',native,dispatchOk=true,providerStatus=200,providerError,retryAfter=0,text='متن\nمنبع'}){
   const saves=[],updates=[],calls=[];let handler,claimed=false;
   const env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service',SUPABASE_ANON_KEY:'anon',GEMINI_API_KEY:'model-key',INTMED_EXTRACTION_MODEL:'test-extractor'};
   const fetch=async(url,options={})=>{
     calls.push({url,options});
     if(url.endsWith('/content/taxonomy.json'))return Response.json({categories:[{label:'عفونی',topics:[{id:'id-cns',label:'انسفالیت'}]}]});
+    if(url.includes('/rpc/intmed_content_queue_retry_after'))return Response.json(retryAfter);
+    if(url.includes('/rpc/defer_intmed_content_queue'))return Response.json(true);
     if(url.includes('/rpc/claim_intmed_content_ingest')){if(claimed)return Response.json(null);claimed=true;return Response.json(ingestId);}
     if(url.includes('/rpc/release_intmed_content_lease'))return new Response(null,{status:204});
     if(url.includes('/intmed_content_ingest?')){
       if(options.method==='PATCH'){updates.push(JSON.parse(options.body));return new Response(null,{status:204});}
-      return Response.json([{id:ingestId,kind,mime_type:kind==='pdf'?'application/pdf':'text/plain',content_text:'متن\nمنبع',storage_path:'source.pdf',byte_size:123}]);
+      return Response.json([{id:ingestId,kind,mime_type:kind==='pdf'?'application/pdf':'text/plain',content_text:text,storage_path:'source.pdf',byte_size:123}]);
     }
     if(url.includes('/intmed_bot_topic_hints?'))return Response.json([]);
     if(url.includes('/intmed_content_drafts?on_conflict=')){saves.push(JSON.parse(options.body));return new Response(null,{status:204});}
     if(url.includes('/intmed_content_drafts?ingest_id='))return Response.json(native?[{id:ingestId,review_revision:0,draft_json:{documentExtraction:native}}]:[]);
     if(url.endsWith('/functions/v1/intmed-content-jobs'))return Response.json({jobId:ingestId,status:'queued'},{status:dispatchOk?202:503});
     if(url.includes('/storage/v1/object/'))return new Response('%PDF-1.7 source');
-    if(url.includes('generativelanguage.googleapis.com'))return Response.json({candidates:[{finishReason,content:{parts:[{text:raw??JSON.stringify({title:'عنوان',sourceSummary:'خلاصه',suggestedTopicId:'id-cns',confidence:.8,documentExtraction:extraction})}]}}]});
+    if(url.includes('generativelanguage.googleapis.com'))return providerStatus===200?Response.json({candidates:[{finishReason,content:{parts:[{text:raw??JSON.stringify({title:'عنوان',sourceSummary:'خلاصه',suggestedTopicId:'id-cns',confidence:.8,documentExtraction:extraction})}]}}]}):Response.json({error:providerError},{status:providerStatus});
     throw Error('Unexpected mock URL: '+url);
   };
   const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:key=>env[key]}},fetch,Response,Request,crypto,btoa,console});
@@ -32,7 +34,46 @@ async function run({extraction,finishReason='STOP',raw,kind='image',native,dispa
 
 const page=(number,text='خط اول\nخط دوم')=>({page:number,heading:'بخش',text,unreadable:false});
 const complete={pageCount:2,pages:[page(1),page(2)],warnings:[]};
+const deferred=await run({kind:'text',retryAfter:900});
+assert.deepEqual(deferred.response,{processed:0,waitingProvider:1,reason:'provider_backoff',retryAfter:900});
+assert.ok(!deferred.calls.some(call=>/claim_intmed_content_ingest|generativelanguage/.test(call.url)),'backoff must stop direct worker calls before claims and model requests');
+// Store only an allowlisted reason; provider messages may echo private input.
+for(const [status,error,code,waiting] of [
+  [400,{message:'The input schema is too complex for serving. PRIVATE SOURCE'},'provider_400_schema_complexity',false],
+  [400,{message:'Unknown name "unsupportedThing" at generation_config.response_json_schema: Cannot find field.'},'provider_400_unsupported_schema_keyword',false],
+  [400,{message:'Invalid JSON payload received. Unknown name "bad".'},'provider_400_invalid_payload',false],
+  [400,{message:'The input token count exceeds the maximum number of tokens allowed.'},'provider_400_context_limit',false],
+  [400,{message:'Model does not support responseJsonSchema.'},'provider_400_model_unsupported',false],
+  [400,{message:'PRIVATE SOURCE arbitrary failure'},'provider_400',false],
+  [404,{message:'Model is not supported'},'provider_model_unavailable',true],
+  [429,{code:'insufficient_quota',message:'PRIVATE SOURCE'},'provider_quota',true],
+  [429,{message:'PRIVATE SOURCE'},'provider_rate_limited',true],
+  [503,{message:'PRIVATE SOURCE'},'provider_unavailable',true],
+]){
+  const failure=await run({kind:'text',providerStatus:status,providerError:error});
+  assert.equal(failure.saves.at(-1).error_code,code);
+  assert.equal(failure.saves.at(-1).status,waiting?'waiting_provider':'error');
+  assert.equal(failure.updates.at(-1).error_code,code);
+  assert.equal(failure.calls.some(call=>call.url.includes('/rpc/defer_intmed_content_queue')),waiting,'provider waiting must defer the shared queue');
+  assert.ok(!JSON.stringify([...failure.saves,...failure.updates,failure.response]).includes('PRIVATE SOURCE'),'provider detail must not be persisted or exposed');
+}
+const originalText='  دوز ۱۲٫۵ mg\n②\n'+('متن کامل\n'.repeat(12000));
+const plain=await run({kind:'text',text:originalText,raw:JSON.stringify({title:'عنوان',sourceSummary:'خلاصه',suggestedTopicId:'id-cns',confidence:.8})});
+const plainSchema=JSON.parse(plain.calls.find(call=>call.url.includes('generativelanguage')).options.body).generationConfig.responseJsonSchema;
+assert.ok(!plainSchema.required.includes('documentExtraction'));
+assert.ok(!Object.hasOwn(plainSchema.properties,'documentExtraction'),'known plaintext must not be retranscribed by the model');
+assert.equal(plain.response.processed,1);
+const plainDraft=plain.saves.find(save=>save.status==='draft_ready');
+assert.equal(plainDraft.extracted_text,originalText,'retain entire exact plaintext, including lines, numbers and content beyond the routing sample');
+assert.equal(plainDraft.draft_json.documentExtraction.pages[0].text,originalText);
+assert.equal(plainDraft.draft_json.documentExtraction.pageCount,1);
+assert.equal(plainDraft.draft_json.documentExtraction.quality.countBasis,'plain_text');
+assert.equal(plainDraft.draft_json.documentExtraction.quality.actualPageCountVerified,false);
+assert.equal(plainDraft.draft_json.documentExtraction.quality.canReuseText,true);
 const good=await run({extraction:complete});
+const imageSchema=JSON.parse(good.calls.find(call=>call.url.includes('generativelanguage')).options.body).generationConfig.responseJsonSchema.properties.documentExtraction;
+assert.equal(imageSchema.properties.pageCount.maximum,1,'one input image cannot require a PDF page inventory');
+assert.equal(imageSchema.properties.pages.maxItems,1);
 assert.equal(good.response.processed,1);
 const draft=good.saves.find(save=>save.status==='draft_ready');
 assert.ok(draft);

@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-let handler,saved=[],claimed=false,released=0;const ingestId='11111111-1111-4111-8111-111111111111',env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-secret',SUPABASE_ANON_KEY:'anon',INTMED_CONTENT_PROCESSING_ENABLED:'false'};
+let handler,saved=[],claimed=false,released=0,deferred=[];const ingestId='11111111-1111-4111-8111-111111111111',env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-secret',SUPABASE_ANON_KEY:'anon',INTMED_CONTENT_PROCESSING_ENABLED:'false'};
 const fetchMock=async(url,options={})=>{
  if(url==='https://drgerami-md.ir/content/taxonomy.json')return Response.json({categories:[{label:'هماتولوژی',topics:[{id:'heme-iron-anemia',label:'آنمی فقر آهن'}]}]});
+ if(url.includes('/rpc/intmed_content_queue_retry_after'))return Response.json(0);
+ if(url.includes('/rpc/defer_intmed_content_queue')){deferred.push(JSON.parse(options.body));return Response.json(true);}
  if(url.includes('/rest/v1/rpc/claim_intmed_content_ingest')){if(claimed)return Response.json(null);claimed=true;return Response.json(ingestId);}
  if(url.includes('/rest/v1/rpc/release_intmed_content_lease')){released++;return new Response(null,{status:204});}
  if(url.includes('/rest/v1/intmed_content_ingest?')){if(options.method==='PATCH')return new Response(null,{status:204});return Response.json([{id:ingestId,kind:'text',mime_type:'text/plain',content_text:'نمونه متن پزشکی',caption:'',suggested_topic_id:'heme-iron-anemia',byte_size:30}]);}
@@ -17,6 +19,7 @@ env.INTMED_CONTENT_PROCESSING_ENABLED='true';
 const response=await handler(new Request('https://project.supabase.co/functions/v1/intmed-content-worker',{method:'POST',headers:{authorization:'Bearer service-secret','content-type':'application/json'},body:'{}'}));
 assert.equal(response.status,200);assert.deepEqual(await response.json(),{processed:0,waitingProvider:1,failed:0});assert.equal(saved.length,1);assert.equal(saved[0].status,'waiting_provider');assert.equal(saved[0].error_code,'provider_not_configured');
 assert.equal(released,1,'Worker lease was not released');
+assert.deepEqual(deferred,[{p_reason:'provider_not_configured'}],'missing provider must defer the queue too');
 const sql=fs.readFileSync('backend/supabase/telegram_ingest.sql','utf8'),bot=fs.readFileSync('backend/supabase/functions/intmed-telegram-bot/index.ts','utf8'),config=fs.readFileSync('backend/supabase/config.toml','utf8');
 assert.match(sql,/intmed_content_drafts/);assert.match(sql,/enable row level security/);assert.match(bot,/intmed-content-worker/);assert.match(config,/\[functions\.intmed-content-worker\][\s\S]*verify_jwt = true/);assert.ok(!fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8').includes('auto-publish'));
 assert.match(sql,/claim_intmed_content_ingest/);assert.match(sql,/skip locked/i);const worker=fs.readFileSync('backend/supabase/functions/intmed-content-worker/index.ts','utf8');assert.match(worker,/provider_rate_limited/);assert.match(worker,/status:'accepted'/);

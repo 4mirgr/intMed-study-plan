@@ -297,5 +297,22 @@ await page.evaluate(()=>{window.__backfillFinished=false;});await page.click('#c
 await page.evaluate(()=>{document.getElementById('contentReviewTitle').value='ویرایش هم‌زمان محفوظ';window.__backfillFinished=true;});
 await page.waitForFunction(()=>document.getElementById('contentReviewActionStatus').textContent.includes('ویرایش‌های شما محفوظ‌اند'),{timeout:12000});
 assert.equal(await page.inputValue('#contentReviewTitle'),'ویرایش هم‌زمان محفوظ','completion never replaces unsaved form values');
+await page.evaluate(()=>{
+  const previous=window.fetch;
+  window.fetch=async(url,options)=>{
+    const response=await previous(url,options);
+    if(!String(url).includes('taxonomy.json')&&JSON.parse(options.body).action==='detail'){
+      const value=JSON.parse(await response.text());value.job=null;value.figures=[];
+      value.draft.intmed_content_ingest={kind:'text',mime_type:'text/plain',content_text:'متن اصلی پیام'};
+      value.draft.draft_json.documentExtraction={pageCount:1,pages:[{page:1,text:'متن اصلی پیام'}],quality:{countBasis:'plain_text',actualPageCountVerified:false}};
+      return {ok:true,status:200,text:async()=>JSON.stringify(value)};
+    }
+    return response;
+  };
+  document.getElementById('contentReviewDialog').close();
+});
+await page.click('[data-review-id]');await page.waitForSelector('.content-review-extraction');
+assert.equal(await page.textContent('.content-review-extraction'),'متن اصلی پیام بدون بازنویسی ذخیره شده است؛ شمارش صفحات PDF مطرح نیست.');
+assert.doesNotMatch(await page.textContent('#contentReviewDraftBody'),/پوشش گزارش‌شده توسط مدل|استخراج صفحه‌به‌صفحه/);
 await browser.close();
 console.log('Content review browser test passed.');

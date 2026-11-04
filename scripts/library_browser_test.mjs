@@ -23,7 +23,8 @@ await context.route('**/content/library.json',async route=>{
  if(!payload.entries.some(entry=>entry.kind==='pbs'))payload.entries.push({...payload.entries.find(entry=>entry.field==='images'),id:'qa-pbs-entry',kind:'pbs'});
  return route.fulfill({json:payload});
 });
-await context.route('**/content/topics/*.json',async route=>{
+await context.route(/\/content\/topics\/[^/]+\.json(?:\?.*)?$/,async route=>{
+ if(new URL(route.request().url()).search)await new Promise(resolve=>setTimeout(resolve,250));
  const response=await route.fetch(),payload=await response.json();
  for(const image of payload.images||[])Object.assign(image,{credit:'PBS photographer QA',licenseLabel:'CC BY-SA 4.0',licenseUrl:'https://creativecommons.org/licenses/by-sa/4.0/',originUrl:'https://commons.wikimedia.org/wiki/File:QA.jpg',changesNote:'اصل تصویر بدون تغییر؛ شرح فارسی تألیفی.'});
  return route.fulfill({json:payload});
@@ -42,7 +43,7 @@ try{
  assert.equal(await page.locator('#libraryViewerBody a[href="https://commons.wikimedia.org/wiki/File:QA.jpg"]').count(),1);
  assert.equal(await page.locator('#libraryViewerBody a[href="https://creativecommons.org/licenses/by-sa/4.0/"]').count(),1);
  assert.match(await page.locator('#libraryViewerBody').textContent(),/اصل تصویر بدون تغییر/);
- await page.waitForTimeout(700);assert.ok(Object.keys(state.itemState).includes('library:recent'));await page.locator('#libraryViewerTopic').click();await page.locator('#tabPanelEducation.active').waitFor();assert.equal(await page.locator('.topic-item.open .learn-panel.open').count(),1);
+ await page.waitForTimeout(700);assert.ok(Object.keys(state.itemState).includes('library:recent'));await page.locator('#libraryViewerTopic').click();await page.locator('#tabPanelEducation.active').waitFor();await page.locator('.topic-item.open .learn-panel.open').waitFor();assert.equal(await page.locator('.topic-item.open .learn-panel.open').count(),1);
  await page.locator('#tabBtnLibrary').click();await page.locator('#librarySearch').fill('ECG');assert.ok(await page.locator('.library-card').count()>0);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Library creates mobile overflow');
  await page.screenshot({path:'/tmp/intmed-library-mobile.png',fullPage:true});await page.setViewportSize({width:1365,height:900});await page.screenshot({path:'/tmp/intmed-library-desktop.png',fullPage:true});assert.deepEqual(errors,[]);
  console.log('Library browser passed: generated discovery index, Persian search/filter, image viewer, private favorite/recent state, topic deep-link and mobile layout.');

@@ -106,7 +106,7 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   and topic bytes. Authored content still requires the teacher's final approval.
 - Parser-verified pages, native extraction/selective OCR and durable resumable jobs were completed
   in the next checkpoint below; this historical list must not reopen those shipped tasks.
-- Still requiring acceptance: multi-topic routing; embedded figure publication; independent clinical
+- Still requiring acceptance: multi-topic routing; independent clinical
   checking; comparison of typed, scanned/handwritten and visual/table-heavy files against teacher
   references. Old drafts without a parser-verified page map need explicit reanalysis. A verified
   page count proves neither accurate OCR nor clinical correctness.
@@ -163,9 +163,24 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Queue recovery now has a disabled-by-default service-only state machine and a dedicated Edge
   endpoint accepting two-minute single-use sweep capabilities. The private Cron requester stores
   no permanent API credential, coalesces ticks, protects teacher decisions/active jobs and backs off
-  scheduled quota failures by 15/30/60 minutes. Production enablement/observed drain is the acceptance
-  gate, not merely installing the schema. Rejected sources are reconciled out of the active count;
-  content and human review records are retained.
+  provider failures by 15/30/60 minutes, shared with event-triggered and chained workers. It is now
+  enabled in production every five minutes; initial dispatch and callback were observed. Empty
+  queues make no model call. Rejected sources are reconciled out of the active count; content and
+  human review records are retained. Invalid-token probes are denied and ordinary users cannot
+  read sweep state or consume/defer its capabilities.
+- Live image-only backfill passed on the existing osteoporosis PDF: 15 pages, 19 private originals,
+  zero OCR/model calls, zero failed uploads. Parent draft status, revision (35) and content hash
+  stayed unchanged. This prepares teacher previews, not public rights or scientific approval.
+- Live queue recovery exposed a separate malformed structured-output request for plain Telegram
+  text. The same failed source became draft-ready after removing redundant model transcription;
+  original text is retained byte-for-byte as `plain_text`, never labeled parser-verified PDF pages.
+  Image inputs have a one-page report bound; native parsed PDFs are unchanged. Old unreviewed
+  text failures were explicitly requeued after that successful same-source comparison. Safe
+  diagnostic categories remain; temporary raw-provider-message persistence was removed.
+- Recovery acceptance snapshot: all 11 previously stranded eligible sources reached draft-ready
+  review (10 plain-text sources plus one reusable PDF). Machine intake has no pending/processing/
+  error rows; 69 accepted and two explicitly rejected sources remain. The 16 published drafts and
+  nine previously approved drafts were unchanged; nothing was automatically published.
 
 - Scientific findings now have a readable review panel, safe evidence links and explicit
   administrator resolution notes/history. Both approval and publication reject unresolved blocking
