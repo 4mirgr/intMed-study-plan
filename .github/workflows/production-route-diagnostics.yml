@@ -12,6 +12,12 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify public publication bytes from the publisher runtime
+        run: python3 scripts/publish_reviewed_content.py --verify-topic cardio-pulm-htn
       - name: Probe public routes
         shell: bash
         run: |

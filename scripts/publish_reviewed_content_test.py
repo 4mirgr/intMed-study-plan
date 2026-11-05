@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from unittest import mock
+import urllib.error
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 os.environ.setdefault("INTMED_PUBLISH_ENDPOINT", "https://example.test/functions/v1/publisher")
@@ -75,6 +76,17 @@ class LivePublicationTest(unittest.TestCase):
                  mock.patch.object(subject.urllib.request, "urlopen", side_effect=OSError("offline")):
                 with self.assertRaisesRegex(subject.RunnerError, "GitHub"):
                     subject.verify_live_topic("test", timeout=0)
+
+    def test_public_http_error_is_diagnosed_without_leaking_body(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "docs/content/manifest.json"
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps({"topics": {"test": {"sha256": "new"}}}), encoding="utf-8")
+            blocked = urllib.error.HTTPError("https://public.example/manifest.json", 403, "Forbidden", {}, io.BytesIO(b"private error body must not be logged"))
+            with mock.patch.object(subject, "ROOT", folder), mock.patch.object(subject.urllib.request, "urlopen", side_effect=blocked):
+                with self.assertRaisesRegex(subject.RunnerError, "manifest_http_403") as error:
+                    subject.verify_live_topic("test", timeout=0)
+            self.assertNotIn("private error body", str(error.exception))
 
 
 if __name__ == "__main__":

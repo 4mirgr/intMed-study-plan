@@ -26,7 +26,9 @@ def verify_live_topic(topic_id: str, *, timeout: int = 480) -> None:
     with open(os.path.join(ROOT, "docs/content/manifest.json"), encoding="utf-8") as handle:
         expected = json.load(handle)["topics"][topic_id]
     deadline = time.monotonic() + timeout
+    last_issue, reported = "verification_not_started", None
     while True:
+        phase = "manifest"
         try:
             suffix = "?publication=" + str(time.time_ns())
             request = urllib.request.Request(PUBLIC_APP_BASE + "content/manifest.json" + suffix,
@@ -34,6 +36,7 @@ def verify_live_topic(topic_id: str, *, timeout: int = 480) -> None:
             with urllib.request.urlopen(request, timeout=20) as response:
                 manifest = json.load(response)
             if manifest.get("topics", {}).get(topic_id, {}).get("sha256") == expected["sha256"]:
+                phase = "payload"
                 # Use the locally generated path, never a URL supplied by a remote response.
                 request = urllib.request.Request(PUBLIC_APP_BASE + expected["path"] + suffix,
                                                  headers={"Cache-Control": "no-cache"})
@@ -41,10 +44,18 @@ def verify_live_topic(topic_id: str, *, timeout: int = 480) -> None:
                     digest = hashlib.sha256(response.read()).hexdigest()
                 if digest == expected["sha256"]:
                     return
+                last_issue = "payload_hash_mismatch"
+            else:
+                last_issue = "manifest_hash_mismatch"
+        except urllib.error.HTTPError as error:
+            last_issue = phase + "_http_" + str(error.code)
         except (OSError, ValueError, KeyError):
-            pass
+            last_issue = phase + "_network_or_invalid_json"
+        if last_issue != reported:
+            print("Public verification:", last_issue, flush=True)
+            reported = last_issue
         if time.monotonic() >= deadline:
-            raise RunnerError("تغییرات در GitHub ثبت شد اما تأیید نمایش نسخهٔ جدید روی سایت به پایان نرسید؛ انتشار را دوباره بررسی کنید.")
+            raise RunnerError("تغییرات در GitHub ثبت شد اما تأیید نمایش نسخهٔ جدید روی سایت به پایان نرسید؛ انتشار را دوباره بررسی کنید. (" + last_issue + ")")
         time.sleep(5)
 
 
@@ -110,4 +121,12 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) == 3 and sys.argv[1] == "--verify-topic":
+        # Read-only production diagnostic: no claim, token, queue or Git write.
+        try:
+            verify_live_topic(sys.argv[2], timeout=0)
+        except (RunnerError, KeyError) as error:
+            print(str(error), file=sys.stderr)
+            raise SystemExit(1)
+        raise SystemExit(0)
     raise SystemExit(main())
