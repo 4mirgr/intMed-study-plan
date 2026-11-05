@@ -21,6 +21,9 @@ await context.route('**/rest/v1/intmed_recovery_tickets?*',route=>route.fulfill(
 await context.route('**/content/library.json',async route=>{
  const response=await route.fetch(),payload=await response.json();
  if(!payload.entries.some(entry=>entry.kind==='pbs'))payload.entries.push({...payload.entries.find(entry=>entry.field==='images'),id:'qa-pbs-entry',kind:'pbs'});
+ // Keep a deliberately short PBS fixture even as the real collection grows;
+ // the separate unfiltered case exercises multi-page expansion.
+ let pbsSeen=0;payload.entries=payload.entries.filter(entry=>entry.kind!=='pbs'||pbsSeen++<3);
  return route.fulfill({json:payload});
 });
 await context.route(/\/content\/topics\/[^/]+\.json(?:\?.*)?$/,async route=>{
