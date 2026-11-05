@@ -18,7 +18,7 @@ const stored={id:draftId,status:'approved',review_revision:7,intmed_content_inge
 const serviceFetch=async(url,options={})=>{
   if(url.endsWith('/auth/v1/user'))return serviceAuth?Response.json({id:adminId}):Response.json({},{status:401});
   if(url.includes('/rest/v1/profiles?'))return Response.json([{role:serviceAdmin?'admin':'user',approved:true,rejected:false}]);
-  if(url.includes('/content/taxonomy.json'))return Response.json({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns',label:'عفونت عصبی'}]}]});
+  if(url==='https://drgerami-md.ir/intmed/content/taxonomy.json')return Response.json({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns',label:'عفونت عصبی'}]}]});
   if(url.endsWith('/rest/v1/rpc/apply_intmed_content_review')){const value=JSON.parse(options.body);reviewCalls.push(value);return Response.json({...stored,status:value.new_status,source_summary:value.new_summary});}
   if(url.includes('/rest/v1/intmed_content_figures?'))return Response.json(figureRows);
   if(url.endsWith('/rest/v1/rpc/intmed_materialize_figure')){figureCalls.push(JSON.parse(options.body));return concurrent?Response.json({message:'stale review revision'},{status:409}):Response.json({draftId:adminId,ingestId:adminId,reused:false});}
@@ -136,10 +136,12 @@ delete stored.target_source_class;delete stored.target_rights_note;
 assert.equal((await request({...figureReview,targetKind:'lesson',sourceClass:'authored'})).status,400);
 const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH||'/usr/bin/chromium'});
 const page=await browser.newPage();
+await page.setContent(reviewMarkup.slice(reviewMarkup.indexOf('<dialog id="contentReviewDialog"'),reviewMarkup.indexOf('</dialog>',reviewMarkup.indexOf('<dialog id="contentReviewDialog"'))+9));
+assert.equal(await page.locator('#contentReviewNewTopicFields,#contentReviewNewTopicToggle,#contentReviewNewTopicLabel,#contentReviewNewTopicCategory').count(),0,'destination selection must not expose a second new-topic form');
 await page.setContent(`<!doctype html><html lang="fa" dir="rtl"><body>
 <button id="tabBtnManagement">مدیریت</button><span id="managementBadge" hidden></span>
 <details id="contentReviewPanel" open><span id="contentReviewBadge" hidden></span><select id="contentReviewFilter"><option value="open">open</option></select><button id="contentReviewRefresh">refresh</button><p id="contentReviewStatus"></p><div id="contentReviewList"></div></details>
-<dialog id="contentReviewDialog"><form method="dialog"><button>×</button></form><h2 id="contentReviewDialogTitle"></h2><p id="contentReviewDialogMeta"></p><div id="contentReviewSource"></div><input id="contentReviewTitle"><input id="contentReviewTopicSearch"><select id="contentReviewCategory"></select><select id="contentReviewTopicSelect"></select><input id="contentReviewTopic" type="hidden"><small id="contentReviewTopicHint"></small><button id="contentReviewNewTopicToggle">new</button><div id="contentReviewNewTopicFields" hidden><select id="contentReviewNewTopicCategory"></select><input id="contentReviewNewTopicLabel"></div><select id="contentReviewTargetKind"><option value="lesson">lesson</option><option value="image">image</option><option value="pbs">pbs</option></select><textarea id="contentReviewSummary"></textarea><button id="contentReviewSummarySuggest">summary</button><input id="contentReviewNote" type="hidden"><fieldset id="contentReviewGeneration"><label><input type="checkbox" name="contentReviewOutput" value="lesson"></label><label><input type="checkbox" name="contentReviewOutput" value="mcq"></label><button id="contentReviewGenerate">generate</button><small id="contentReviewGenerationStatus"></small></fieldset><div id="contentReviewDraftBody"></div><input type="checkbox" id="contentReviewConfirm"><p id="contentReviewActionStatus"></p><button data-review-action="save">save</button><button data-review-action="publish" id="contentReviewPublish">publish</button><button data-review-action="reject">reject</button></dialog>
+${reviewMarkup.slice(reviewMarkup.indexOf('<dialog id="contentReviewDialog"'),reviewMarkup.indexOf('</dialog>',reviewMarkup.indexOf('<dialog id="contentReviewDialog"'))+9)}
 </body></html>`);
 await page.evaluate(()=>{
   window.__calls=[];
@@ -154,8 +156,31 @@ await page.addScriptTag({path:path.join(root,'docs/js/intmed-content-review.js')
 await page.click('#contentReviewRefresh');
 await page.waitForSelector('[data-review-id]');
 assert.match(await page.textContent('#contentReviewList'),/انسفالیت/);
+await page.evaluate(()=>{
+  const previous=window.fetch;
+  window.__legacyDestination=true;
+  window.fetch=async(url,options)=>{
+    const response=await previous(url,options);
+    if(options&&options.body&&JSON.parse(options.body).action==='detail'&&window.__legacyDestination){
+      const value=JSON.parse(await response.text());
+      value.draft={...value.draft,target_topic_is_new:true,target_topic_label:'مقصد قدیمی',target_category_id:'id'};
+      return {ok:true,status:200,text:async()=>JSON.stringify(value)};
+    }
+    return response;
+  };
+});
 await page.click('[data-review-id]');
 await page.waitForSelector('#contentReviewDialog[open]');
+assert.equal(await page.inputValue('#contentReviewTopic'),'','legacy new-topic destinations must not silently select an existing topic');
+assert.equal(await page.locator('#contentReviewTopicSearch').isEnabled(),true);
+assert.match(await page.textContent('#contentReviewTopicHint'),/مبحث موجود/);
+await page.click('[data-review-action="save"]');
+assert.match(await page.textContent('#contentReviewActionStatus'),/مباحث موجود/);
+assert.equal((await page.evaluate(()=>window.__calls)).some(call=>call.action==='save'),false);
+await page.evaluate(()=>{window.__legacyDestination=false;document.getElementById('contentReviewDialog').close();});
+await page.click('[data-review-id]');
+await page.waitForSelector('#contentReviewDialog[open]');
+await page.waitForFunction(()=>document.getElementById('contentReviewTopic').value==='id-cns-meningoencephalitis');
 assert.equal(await page.inputValue('#contentReviewTopic'),'id-cns-meningoencephalitis');
 assert.equal(await page.inputValue('#contentReviewCategory'),'id');
 assert.equal(await page.inputValue('#contentReviewTopicSelect'),'id-cns-meningoencephalitis');
@@ -207,12 +232,12 @@ await page.click('[data-artifact-kind="mcqDrafts"] .review-artifact-delete');
 await page.click('#contentReviewSaveArtifacts');
 await page.waitForFunction(()=>window.__calls.filter(call=>call.action==='save_artifacts').length===3);
 assert.equal((await page.evaluate(()=>window.__calls)).filter(call=>call.action==='save_artifacts').at(-1).artifacts.mcqDrafts.length,0);
-assert.equal(await page.locator('#contentReviewNewTopicToggle').isVisible(),false);
 await page.fill('#contentReviewTopicSearch','انسفالیت‌های نوپدید');
-assert.equal(await page.locator('#contentReviewNewTopicToggle').isVisible(),true);
-await page.click('#contentReviewNewTopicToggle');
-await page.selectOption('#contentReviewNewTopicCategory','id');
-await page.fill('#contentReviewNewTopicLabel','انسفالیت‌های نوپدید');
+await page.check('#contentReviewConfirm');
+await page.click('#contentReviewPublish');
+assert.match(await page.textContent('#contentReviewActionStatus'),/مبحث.*موجود/);
+assert.equal((await page.evaluate(()=>window.__calls)).some(call=>call.action==='approve'),false,'unmatched destinations must not create a topic or approve');
+await page.fill('#contentReviewTopicSearch','مننژیت');
 await page.selectOption('#contentReviewTargetKind','pbs');
 await page.check('#contentReviewConfirm');
 assert.equal(await page.locator('#contentReviewPublish').isVisible(),true);
@@ -223,9 +248,10 @@ await page.waitForFunction(()=>window.__calls.some(call=>call.action==='approve'
 await page.waitForFunction(()=>window.__calls.some(call=>call.action==='publish'));
 const approve=(await page.evaluate(()=>window.__calls)).find(call=>call.action==='approve');
 assert.equal(approve.confirmMedicalReview,true);
-assert.equal(approve.createTopic,true);
-assert.equal(approve.newTopicCategoryId,'id');
-assert.equal(approve.newTopicLabel,'انسفالیت‌های نوپدید');
+assert.equal(approve.createTopic,false);
+assert.equal(approve.topicId,'id-cns-meningoencephalitis');
+assert.equal(approve.newTopicCategoryId,undefined);
+assert.equal(approve.newTopicLabel,undefined);
 assert.equal(approve.targetKind,'pbs');
 assert.equal(approve.sourceClass,undefined,'removed form must not invent authorship');
 assert.equal(approve.rightsNote,undefined);

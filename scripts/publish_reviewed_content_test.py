@@ -53,10 +53,14 @@ class LivePublicationTest(unittest.TestCase):
             path.write_text(json.dumps(manifest), encoding="utf-8")
             results = [response(json.dumps(manifest).encode()), response(b'old'),
                        response(json.dumps(manifest).encode()), response(payload)]
+            def fetch_mounted(request, **kwargs):
+                if not request.full_url.startswith("https://drgerami-md.ir/intmed/content/"):
+                    raise OSError("HTTP 404: application moved to /intmed/")
+                return results.pop(0)
             with mock.patch.object(subject, "ROOT", folder), \
-                 mock.patch.object(subject.urllib.request, "urlopen", side_effect=results) as opened, \
+                 mock.patch.object(subject.urllib.request, "urlopen", side_effect=fetch_mounted) as opened, \
                  mock.patch.object(subject.time, "sleep") as waited:
-                subject.verify_live_topic("test")
+                subject.verify_live_topic("test", timeout=1)
             self.assertEqual(opened.call_count, 4)
             waited.assert_called_once_with(5)
 

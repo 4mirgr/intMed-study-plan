@@ -9,7 +9,7 @@ const targetKinds=new Set(['lesson',...visualKinds]);
 const sourceClasses=new Set(['harrison-private','authored','open-license']);
 const object=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
 const clean=(value:unknown,limit:number)=>String(value??'').normalize('NFKC').replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,limit);
-const SITE='https://drgerami-md.ir';
+const SITE='https://drgerami-md.ir/intmed';
 
 // Only teaching fields are editable. Provenance, source evidence and pipeline metadata
 // are copied from the stored original, never accepted from the browser.

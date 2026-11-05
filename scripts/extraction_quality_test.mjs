@@ -9,7 +9,8 @@ async function run({extraction,finishReason='STOP',raw,kind='image',native,dispa
   const env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service',SUPABASE_ANON_KEY:'anon',GEMINI_API_KEY:'model-key',INTMED_EXTRACTION_MODEL:'test-extractor'};
   const fetch=async(url,options={})=>{
     calls.push({url,options});
-    if(url.endsWith('/content/taxonomy.json'))return Response.json({categories:[{label:'عفونی',topics:[{id:'id-cns',label:'انسفالیت'}]}]});
+    if(url==='https://drgerami-md.ir/content/taxonomy.json')return new Response(null,{status:404});
+    if(url==='https://drgerami-md.ir/intmed/content/taxonomy.json')return Response.json({categories:[{label:'عفونی',topics:[{id:'id-cns',label:'انسفالیت'}]}]});
     if(url.includes('/rpc/intmed_content_queue_retry_after'))return Response.json(retryAfter);
     if(url.includes('/rpc/defer_intmed_content_queue'))return Response.json(true);
     if(url.includes('/rpc/claim_intmed_content_ingest')){if(claimed)return Response.json(null);claimed=true;return Response.json(ingestId);}

@@ -233,7 +233,7 @@ def drafting_model(config: dict[str, Any]) -> str:
 
 
 def load_taxonomy() -> list[dict[str, str]]:
-    value = request_json("https://drgerami-md.ir/content/taxonomy.json", timeout=30)
+    value = request_json("https://drgerami-md.ir/intmed/content/taxonomy.json", timeout=30)
     topics: list[dict[str, str]] = []
     for category in value.get("categories", []) if isinstance(value, dict) else []:
         if not isinstance(category, dict):

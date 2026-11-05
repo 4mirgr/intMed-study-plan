@@ -375,13 +375,7 @@
         </div>
         <input id="contentReviewTopic" type="hidden">
         <small id="contentReviewTopicHint">ابتدا دسته و سپس مبحث را انتخاب کنید؛ یا از جست‌وجوی بالا کمک بگیرید.</small>
-        <button type="button" id="contentReviewNewTopicToggle" class="content-review-inline-action" hidden>مبحث موردنظر پیدا نشد؟ افزودن در شاخهٔ دلخواه</button>
       </fieldset>
-      <div id="contentReviewNewTopicFields" class="content-review-new-topic content-review-wide" hidden>
-        <label>بخش مبحث جدید<select id="contentReviewNewTopicCategory"></select></label>
-        <label>نام مبحث جدید<input id="contentReviewNewTopicLabel" maxlength="160" placeholder="مثلاً اختلالات پلاکتی"></label>
-        <p>مبحث پس از تأیید، هنگام ادغام فنی در taxonomy و ساختار canonical ساخته می‌شود؛ صرف ذخیره یا تأیید، آن را عمومی نمی‌کند.</p>
-      </div>
       <label>نوع مقصد<select id="contentReviewTargetKind"><option value="lesson">درس / متن</option><option value="image">تصویر آموزشی</option><option value="pbs">PBS · لام خون محیطی</option><option value="algorithm">الگوریتم</option><option value="table">جدول</option><option value="tracing">نوار و tracing</option><option value="radiology">رادیولوژی</option><option value="pathology">پاتولوژی</option><option value="clinical">تصویر بالینی</option><option value="chart">نمودار</option></select></label>
       <label class="content-review-wide">خلاصهٔ نکات طلایی<textarea id="contentReviewSummary" maxlength="4000" rows="4" placeholder="یک پاراگراف دقیق و مرتبط با مهم‌ترین نکات این محتوا"></textarea><button type="button" id="contentReviewSummarySuggest" class="content-review-inline-action">بازسازی از شواهد پیش‌نویس</button></label>
       <input id="contentReviewNote" type="hidden">
@@ -397,6 +391,7 @@
       <button type="button" id="contentReviewGenerate" class="content-review-inline-action">ساخت خروجی‌های انتخاب‌شده</button>
       <small id="contentReviewGenerationStatus"></small>
     </fieldset>
+    <p class="section-caption">متن استخراج‌شدهٔ منبع ممکن است خام و نامرتب باشد؛ خروجی‌های آماده را در بخش‌های ویرایش درسنامه و آزمون بررسی و اصلاح کنید. انتشار، نگارش محتوا را خودکار بازنویسی نمی‌کند.</p>
     <div id="contentReviewDraftBody" class="content-review-draft-body"></div>
     <label class="content-review-confirm"><input type="checkbox" id="contentReviewConfirm"> محتوای آماده و محل انتشار را بررسی و تأیید کرده‌ام.</label>
     <p id="contentReviewActionStatus" class="section-caption" role="status" aria-live="polite"></p>
@@ -449,7 +444,7 @@
 
 <script src="config.js?v=066d4f9726ed485f"></script>
 <script src="js/intmed-backend.js?v=902b3cff30204ee7"></script>
-<script src="js/intmed-content-review.js?v=a8d8c9c3fe8cf13a"></script>
+<script src="js/intmed-content-review.js?v=f7db0b78407b3de1"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
 <script src="js/intmed-registration.js?v=5115d87c275f66f1"></script>
 <script src="js/intmed-login.js?v=a253083de768cbde"></script>

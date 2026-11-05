@@ -57,7 +57,11 @@ class LocalRunnerTest(unittest.TestCase):
 
     def test_taxonomy_is_flattened(self):
         payload = {"categories": [{"label": "عفونی", "topics": [{"id": "id-cns", "label": "انسفالیت"}]}]}
-        with mock.patch.object(subject, "request_json", return_value=payload):
+        def fetch_taxonomy(url, **kwargs):
+            if url != "https://drgerami-md.ir/intmed/content/taxonomy.json":
+                raise subject.RunnerError("HTTP 404: application moved to /intmed/")
+            return payload
+        with mock.patch.object(subject, "request_json", side_effect=fetch_taxonomy):
             self.assertEqual(subject.load_taxonomy(), [{"id": "id-cns", "label": "انسفالیت", "category": "عفونی"}])
 
     def test_known_local_models_are_recommended(self):

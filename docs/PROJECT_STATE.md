@@ -259,6 +259,13 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ## Completion rule
 
+### Review destination and mounted publication — 2026-11-05 (Tehran)
+
+- Public taxonomy, manifest and topic payload consumers must use `/intmed/content/`, not root `/content/`. Review, worker, Telegram and local runner were corrected; API origins/CORS remain unchanged.
+- The review dialog now selects an existing destination only; the redundant new-topic form is removed. Legacy new-topic drafts require an explicit existing selection, never silent topic creation.
+- Raw extraction is source evidence, not polished teaching output. Publishing does not rewrite lesson/question prose; inspect and edit generated artifacts first. The legacy summary/outline fallback remains and must not be mistaken for a generated lesson.
+- **Unresolved publication bridge:** the cloud publisher pushes the study repository, but the actual Cloudflare host uses the pinned IntMed commit in `4mirgr/gerami-website/deploy/projects.json`. Future button-driven publication needs a reviewed, least-privilege cross-repository pin-update mechanism. Mounted freshness URLs alone do not complete that bridge. Do not mark a draft published until its public payload matches.
+
 “Done” means source changed, focused tests passed, generated files are current, a coherent commit is
 on the remote branch, GitHub Actions/deployment completed, and remaining external blockers are
 written above. Local-only edits or a green Pages job with a failed validation job are not done.

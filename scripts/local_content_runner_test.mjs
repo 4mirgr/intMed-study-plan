@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 
 let handler,admin=true,claimed=true,completed=false,failed=false,heartbeat=false,publishCompleted=false,publishFailed=false;
 const user='11111111-1111-4111-8111-111111111111',ingest='22222222-2222-4222-8222-222222222222',publishDraft='44444444-4444-4444-8444-444444444444',env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'server-secret',SUPABASE_ANON_KEY:'public-key'};
 const fetchMock=async(url,options={})=>{
- if(url==='https://drgerami-md.ir/content/taxonomy.json')return Response.json({categories:[{label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]});
+ if(url==='https://drgerami-md.ir/content/taxonomy.json')return new Response(null,{status:404});
+ if(url==='https://drgerami-md.ir/intmed/content/taxonomy.json')return Response.json({categories:[{label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]});
  if(url.endsWith('/auth/v1/user'))return options.headers.Authorization==='Bearer good-token'?Response.json({id:user}):new Response('{}',{status:401});
  if(url.includes('/rest/v1/profiles?'))return Response.json([{role:admin?'admin':'user',approved:true,rejected:false}]);
  if(url.includes('/rpc/claim_intmed_local_content'))return Response.json(claimed?ingest:null);

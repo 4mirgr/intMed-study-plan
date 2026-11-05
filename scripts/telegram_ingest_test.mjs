@@ -3,6 +3,8 @@ let handler,rows=[],messages=[],stored=0,getFiles=0,workerCalls=0,workerBodies=[
 const sessions=new Map(),hints=[],alerts=[],drafts=[];
 const env={SUPABASE_URL:'https://test.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-only',SUPABASE_ANON_KEY:'public-only',TELEGRAM_BOT_TOKEN:'bot-secret',TELEGRAM_WEBHOOK_SECRET:'webhook-secret'};
 const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:k=>env[k]}},Response,Request,URL,TextEncoder,crypto:{subtle:webcrypto.subtle,randomUUID},Date,fetch:async(url,options={})=>{
+ if(url==='https://drgerami-md.ir/content/taxonomy.json')return new Response(null,{status:404});
+ if(url==='https://drgerami-md.ir/intmed/content/taxonomy.json')return Response.json({categories:[{topics:[{id:'infectious-encephalitis',label:'انسفالیت'}]}]});
  if(url.endsWith('/auth/v1/user'))return options.headers.Authorization==='Bearer valid-user-jwt'?Response.json({id:'user-1',email:'private@example.com'}):new Response(null,{status:401});
  if(url.includes('/intmed_notification_settings'))return Response.json([{chat_id:'123'}]);
  if(url.includes('/profiles?id=eq.user-1'))return Response.json([{id:'user-1',username:'learner',full_name:'کاربر آزمایشی',approved:true,rejected:false}]);
@@ -92,7 +94,7 @@ assert.deepEqual(workerBodies.at(-1),{},'Retry must sweep the whole eligible que
 
 const userEvent=body=>handler(new Request('https://test/functions/v1/intmed-telegram-bot',{method:'POST',headers:{Authorization:'Bearer valid-user-jwt'},body:JSON.stringify(body)}));
 r=await userEvent({event:'login'});assert.equal((await r.json()).sent,true);assert.match(messages.at(-1).text,/ورود کاربر/);assert.ok(!messages.at(-1).text.includes('private@example.com'),'Email leaked into login notification');
-r=await userEvent({event:'activity'});assert.equal((await r.json()).sent,true);assert.match(messages.at(-1).text,/۳۰ دقیقه/);assert.match(messages.at(-1).text,/infectious-encephalitis/);assert.ok(!messages.at(-1).text.includes('99999'),'Unrelated client state leaked into activity summary');
+r=await userEvent({event:'activity'});assert.equal((await r.json()).sent,true);assert.match(messages.at(-1).text,/۳۰ دقیقه/);assert.match(messages.at(-1).text,/انسفالیت/);assert.ok(!messages.at(-1).text.includes('99999'),'Unrelated client state leaked into activity summary');
 r=await userEvent({event:'message'});assert.equal((await r.json()).sent,true);const messageNotice=messages.at(-1);assert.match(messageNotice.text,/پیام تازه/);assert.equal(messageNotice.reply_markup.inline_keyboard[0][0].text,'مشاهده پیام‌ها');assert.equal(messageNotice.reply_markup.inline_keyboard[0][1].callback_data,'menu:status');
 assert.ok(!JSON.stringify(messages).includes(env.SUPABASE_SERVICE_ROLE_KEY));assert.ok(!JSON.stringify(messages).includes(env.TELEGRAM_BOT_TOKEN));
 console.log('Telegram passed: authorized ingest/forwarding, inline menu, Persian topic-hint state, privacy-safe activity/login/message alerts, quarantine, rate limit and idempotency.');

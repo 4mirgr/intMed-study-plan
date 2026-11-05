@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 let handler,saved=[],claimed=false,released=0,deferred=[];const ingestId='11111111-1111-4111-8111-111111111111',env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-secret',SUPABASE_ANON_KEY:'anon',INTMED_CONTENT_PROCESSING_ENABLED:'false'};
 const fetchMock=async(url,options={})=>{
- if(url==='https://drgerami-md.ir/content/taxonomy.json')return Response.json({categories:[{label:'هماتولوژی',topics:[{id:'heme-iron-anemia',label:'آنمی فقر آهن'}]}]});
+ if(url==='https://drgerami-md.ir/content/taxonomy.json')return new Response(null,{status:404});
+ if(url==='https://drgerami-md.ir/intmed/content/taxonomy.json')return Response.json({categories:[{label:'هماتولوژی',topics:[{id:'heme-iron-anemia',label:'آنمی فقر آهن'}]}]});
  if(url.includes('/rpc/intmed_content_queue_retry_after'))return Response.json(0);
  if(url.includes('/rpc/defer_intmed_content_queue')){deferred.push(JSON.parse(options.body));return Response.json(true);}
  if(url.includes('/rest/v1/rpc/claim_intmed_content_ingest')){if(claimed)return Response.json(null);claimed=true;return Response.json(ingestId);}
@@ -36,7 +37,8 @@ async function duplicateRun({kind='pdf',sourceStatus='draft_ready',extraction=pa
  const candidate={status:sourceStatus,title:'عنوان قبلی',topic_id:'heme-iron-anemia',topic_confidence:.8,source_summary:'خلاصه',extracted_text:'متن منبع',reviewer_note:'خطای شناخته‌شده باید بررسی شود',draft_json:{documentExtraction:extraction,sourceEvidence:[{page:1,sourceId:duplicateId}],reviewFindings:[{severity:'blocking',status:'open',finding:'دوز باید بررسی شود'}],generation:{phase:'generated',generated:['lesson'],clinicalReview:'approved'}}};
  const requestFetch=async(url,options={})=>{
   calls.push({url,options});
-  if(url.endsWith('/content/taxonomy.json'))return Response.json({categories:[{topics:[{id:'heme-iron-anemia',label:'آنمی'}]}]});
+  if(url==='https://drgerami-md.ir/content/taxonomy.json')return new Response(null,{status:404});
+  if(url==='https://drgerami-md.ir/intmed/content/taxonomy.json')return Response.json({categories:[{topics:[{id:'heme-iron-anemia',label:'آنمی'}]}]});
   if(url.includes('/rpc/claim_intmed_content_ingest')){if(wasClaimed)return Response.json(null);wasClaimed=true;return Response.json(ingestId);}
   if(url.includes('/rpc/release_intmed_content_lease'))return new Response(null,{status:204});
   if(url.includes('/intmed_content_ingest?sha256='))return Response.json([{id:duplicateId,caption:'',suggested_topic_id:'heme-iron-anemia'}]);

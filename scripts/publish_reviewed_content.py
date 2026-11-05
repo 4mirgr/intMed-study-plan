@@ -18,6 +18,7 @@ ENDPOINT = os.environ.get("INTMED_PUBLISH_ENDPOINT", "").rstrip("/")
 DRAFT_ID = os.environ.get("INTMED_DRAFT_ID", "")
 CAPABILITY = os.environ.get("INTMED_PUBLISH_CAPABILITY", "")
 BRANCH = "claude/quirky-ride-mavb6b"
+PUBLIC_APP_BASE = "https://drgerami-md.ir/intmed/"
 
 
 def verify_live_topic(topic_id: str, *, timeout: int = 480) -> None:
@@ -28,13 +29,13 @@ def verify_live_topic(topic_id: str, *, timeout: int = 480) -> None:
     while True:
         try:
             suffix = "?publication=" + str(time.time_ns())
-            request = urllib.request.Request("https://drgerami-md.ir/content/manifest.json" + suffix,
+            request = urllib.request.Request(PUBLIC_APP_BASE + "content/manifest.json" + suffix,
                                              headers={"Cache-Control": "no-cache"})
             with urllib.request.urlopen(request, timeout=20) as response:
                 manifest = json.load(response)
             if manifest.get("topics", {}).get(topic_id, {}).get("sha256") == expected["sha256"]:
                 # Use the locally generated path, never a URL supplied by a remote response.
-                request = urllib.request.Request("https://drgerami-md.ir/" + expected["path"] + suffix,
+                request = urllib.request.Request(PUBLIC_APP_BASE + expected["path"] + suffix,
                                                  headers={"Cache-Control": "no-cache"})
                 with urllib.request.urlopen(request, timeout=20) as response:
                     digest = hashlib.sha256(response.read()).hexdigest()

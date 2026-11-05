@@ -1,6 +1,6 @@
 // Narrow admin-authenticated bridge for a localhost LM Studio runner and controlled publisher.
 const headers={'Content-Type':'application/json','Cache-Control':'no-store'};
-const SITE='https://drgerami-md.ir';
+const SITE='https://drgerami-md.ir/intmed';
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const runner=/^[A-Za-z0-9._-]{1,80}$/;
 const topic=/^[a-z0-9][a-z0-9-]{1,79}$/;
