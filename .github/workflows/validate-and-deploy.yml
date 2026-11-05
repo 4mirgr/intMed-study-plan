@@ -60,6 +60,8 @@ jobs:
       - run: node scripts/question_source_test.mjs
       - run: node scripts/notification_poll_test.mjs
       - run: node scripts/content_jobs_test.mjs
+      - run: node scripts/content_publisher_test.mjs
+      - run: node scripts/content_publication_queue_test.mjs
       - run: node scripts/content_queue_sweep_test.mjs
       - run: node scripts/content_queue_sweep_sql_test.mjs
       - run: node scripts/content_figures_sql_test.mjs

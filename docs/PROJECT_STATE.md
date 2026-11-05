@@ -259,6 +259,14 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ## Completion rule
 
+### Background publication checkpoint — 2026-11-05 (Tehran)
+
+- Root cause verified in real workflow logs: study content committed successfully, but the actual host IntMed pin did not advance. The dialog's separate 180-second polling timeout incorrectly suggested refreshing/staying open.
+- Accepted publication now closes the review dialog. Server-derived publication statuses refresh separately every eight seconds and cannot overwrite another open draft's edits. Browser closure does not own or cancel the publisher.
+- A service-only database FIFO selects one active cloud publisher, completion starts the next, and the existing five-minute private sweep recovers queued work independently of provider backoff. Per-draft GitHub concurrency avoids losing earlier pending runs.
+- Capability-scoped host deployment updates only the IntMed pin in gerami-website, preserving AUS and all unrelated fields with file-SHA concurrency checks. Actual public manifest/payload verification still gates published status. Host write permission of the server-held PAT must be verified; public GET access is not sufficient.
+- Dispatch/stale failures remain visible and retryable, not deleted or silently marked published. Runbook: docs/BACKGROUND_PUBLICATION.md. Content-analysis/provider behavior is deliberately unchanged in this publication fix.
+
 ### Question-first checkpoint — 2026-11-05 (Tehran)
 
 - Owner approved structured question-bank preparation, original MCQ preservation, answer-based lessons/cards and withholding uncertain keys. A cached, revision-safe internal source_questions stage now precedes durable generation. Review UI offers auto/question-bank/prose modes, original-question evidence, readable previews and editable generated artifacts; close/Escape/navigation protect unsaved edits.

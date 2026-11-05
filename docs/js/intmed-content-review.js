@@ -2,7 +2,7 @@
   "use strict";
   var panel=document.getElementById("contentReviewPanel"),list=document.getElementById("contentReviewList"),status=document.getElementById("contentReviewStatus"),filter=document.getElementById("contentReviewFilter"),refresh=document.getElementById("contentReviewRefresh"),badge=document.getElementById("contentReviewBadge"),dialog=document.getElementById("contentReviewDialog");
   if(!panel||!global.IntMedBackend||!dialog)return;
-  var current=null,topics=[],categories=[],loaded=false,busy=false,artifactsDirty=false,jobTimer=null,formSnapshot="";
+  var current=null,topics=[],categories=[],loaded=false,busy=false,artifactsDirty=false,jobTimer=null,formSnapshot="",listBusy=false,publicationTimer=null,publicationPending=false,publicationTracked={},publicationNotice="";
   function esc(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
   function fa(value){try{return new Intl.DateTimeFormat("fa-IR-u-ca-persian",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Tehran"}).format(new Date(value));}catch(e){return "—";}}
   function label(value){return {draft_ready:"آمادهٔ بازبینی",approved:"تأیید برای ادغام",publish_requested:"در صف انتشار",publishing:"در حال انتشار",published:"منتشرشده",publish_error:"خطای انتشار",rejected:"ردشده",waiting_provider:"منتظر پردازش",processing:"در حال پردازش",error:"خطا"}[value]||value||"نامشخص";}
@@ -61,7 +61,36 @@
     list.innerHTML=items.map(function(item){var ingest=ingestOf(item),name=ingest.original_filename||ingest.kind||"متن تلگرام",confidence=Math.round(Number(item.topic_confidence||0)*100);return '<button type="button" class="content-review-card" data-review-id="'+esc(item.id)+'"><span class="content-review-card-main"><strong>'+esc(item.title||"پیش‌نویس بدون عنوان")+'</strong><small>'+esc(name)+' · '+esc(item.target_topic_label||item.topic_id||"مبحث انتخاب نشده")+(item.target_content_kind?" · "+esc(item.target_content_kind):"")+'</small></span><span class="content-review-card-side"><b class="review-status '+esc(item.status)+'">'+esc(label(item.status))+'</b><small>'+confidence+'٪ · '+esc(fa(item.updated_at))+'</small></span></button>';}).join("");
     list.querySelectorAll("[data-review-id]").forEach(function(button){button.addEventListener("click",function(){openDraft(button.dataset.reviewId);});});
   }
-  function load(){if(busy)return Promise.resolve();busy=true;refresh.disabled=true;status.textContent="در حال دریافت پیش‌نویس‌ها…";return api({action:"list",status:filter.value}).then(function(value){loaded=true;renderCounts(value.counts||{});render(value.items||[]);status.textContent=(value.items||[]).length+" پیش‌نویس نمایش داده می‌شود.";}).catch(function(error){status.textContent=error.message||"دریافت صندوق انجام نشد.";}).finally(function(){busy=false;refresh.disabled=false;});}
+  function publicationVisible(){return document.visibilityState!=="hidden"&&panel.open&&panel.getClientRects().length>0;}
+  function schedulePublications(){if(publicationTimer)clearTimeout(publicationTimer);publicationTimer=null;if(publicationPending&&publicationVisible())publicationTimer=setTimeout(function(){publicationTimer=null;load(true);},8000);}
+  function renderPublicationQueue(items){
+    var queue=document.getElementById("contentReviewPublicationQueue");
+    if(!queue){queue=document.createElement("section");queue.id="contentReviewPublicationQueue";queue.className="content-review-block";queue.setAttribute("aria-label","وضعیت انتشار محتوا");list.parentNode.insertBefore(queue,list);}
+    var rows=items.filter(function(item){return ["publish_requested","publishing","publish_error"].includes(item.status)||(item.status==="published"&&publicationTracked[item.id]);});
+    queue.hidden=!rows.length&&!publicationNotice;
+    queue.innerHTML='<h3>وضعیت انتشار</h3>'+(publicationNotice?'<p role="status">'+esc(publicationNotice)+'</p>':"")+rows.map(function(item){return '<button type="button" class="content-review-card" data-review-id="'+esc(item.id)+'"><span class="content-review-card-main"><strong>'+esc(item.title||"محتوای بازبینی‌شده")+'</strong>'+(item.publish_error?'<small>'+esc(item.publish_error)+'</small>':"")+'</span><span class="review-status '+esc(item.status)+'">'+esc(label(item.status))+'</span></button>';}).join("");
+    queue.querySelectorAll("[data-review-id]").forEach(function(button){button.addEventListener("click",function(){openDraft(button.dataset.reviewId);});});
+  }
+  function load(silent){
+    if(listBusy)return Promise.resolve();listBusy=true;refresh.disabled=true;
+    if(silent!==true)status.textContent="در حال دریافت پیش‌نویس‌ها…";
+    return api({action:"list",status:filter.value}).then(function(value){
+      var counts=value.counts||{},items=value.items||[],missing=["publish_requested","publishing"].filter(function(state){return Number(counts[state]||0)>items.filter(function(item){return item.status===state;}).length;});
+      return Promise.all(missing.map(function(state){return api({action:"list",status:state});})).then(function(extra){
+        var byId={};items.forEach(function(item){byId[item.id]=item;});extra.forEach(function(result){(result.items||[]).forEach(function(item){byId[item.id]=item;});});
+        var needsTerminal=Object.keys(publicationTracked).some(function(id){return ["publish_requested","publishing"].includes(publicationTracked[id])&&!byId[id];});
+        var terminalStates=needsTerminal?["published","publish_error"].filter(function(state){return Number(counts[state]||0)>0;}):[];
+        return Promise.all(terminalStates.map(function(state){return api({action:"list",status:state});})).then(function(recent){recent.forEach(function(result){(result.items||[]).forEach(function(item){if(publicationTracked[item.id])byId[item.id]=item;});});return {items:Object.keys(byId).map(function(id){return byId[id];}),visibleItems:items,counts:counts};});
+      });
+    }).then(function(value){
+      loaded=true;var items=value.items,counts=value.counts;
+      items.forEach(function(item){if(publicationTracked[item.id]||["publish_requested","publishing"].includes(item.status))publicationTracked[item.id]=item.status;});
+      publicationPending=Number(counts.publish_requested||0)+Number(counts.publishing||0)>0;
+      var visible=value.visibleItems;
+      renderCounts(counts);render(visible);renderPublicationQueue(items);
+      status.textContent=visible.length+" پیش‌نویس نمایش داده می‌شود."+(publicationPending?" وضعیت انتشارها خودکار به‌روز می‌شود.":"");
+    }).catch(function(error){status.textContent=(error.message||"دریافت صندوق انجام نشد.")+(publicationPending?" درخواست‌های انتشار محفوظ‌اند؛ دریافت وضعیت دوباره انجام می‌شود.":"");}).finally(function(){listBusy=false;refresh.disabled=false;schedulePublications();});
+  }
   function renderArray(title,value){if(!Array.isArray(value)||!value.length)return "";return '<details class="content-review-block"><summary>'+esc(title)+' <span>'+value.length+'</span></summary><pre>'+esc(JSON.stringify(value,null,2))+'</pre></details>';}
   function scientificFindings(draft){return Array.isArray((draft.draft_json||{}).reviewFindings)?draft.draft_json.reviewFindings:[];}
   function unresolvedFindings(draft){return scientificFindings(draft).some(function(item){return item&&item.severity==="blocking"&&item.status!=="resolved";});}
@@ -138,8 +167,33 @@
   }
   function syncPublishButton(){if(!current)return;var button=document.getElementById("contentReviewPublish"),draft=current.draft||{},allowed=["draft_ready","approved","publish_error"].includes(draft.status);button.hidden=!allowed;button.textContent=draft.status==="draft_ready"?"تأیید و انتشار روی سایت":"انتشار روی سایت";syncJobControls();}
   function publishPayload(draft,name){var match=validateTopic(),kind=document.getElementById("contentReviewTargetKind").value;return {action:name,draftId:draft.id,revision:Number(draft.review_revision||0),title:document.getElementById("contentReviewTitle").value,topicId:match?match.id:"",createTopic:false,targetKind:kind,sourceSummary:document.getElementById("contentReviewSummary").value,note:document.getElementById("contentReviewNote").value,confirmMedicalReview:true,confirmPublish:name==="publish"};}
-  function followPublication(id,attempt){var actionStatus=document.getElementById("contentReviewActionStatus");setTimeout(function(){api({action:"detail",draftId:id}).then(function(result){var draft=result.draft||{};current.draft=draft;syncPublishButton();document.getElementById("contentReviewDialogMeta").textContent=label(draft.status)+" · "+(draft.model||draft.provider||"مدل نامشخص")+" · "+fa(draft.updated_at);if(draft.status==="published"){actionStatus.textContent="با موفقیت روی سایت منتشر شد. شناسهٔ انتشار: "+(draft.published_commit||"ثبت شد");load();return;}if(draft.status==="publish_error"){actionStatus.textContent="انتشار متوقف شد: "+(draft.publish_error||"خطای نامشخص")+" — پس از رفع خطا همین دکمه را دوباره بزنید.";return;}if(attempt<45){actionStatus.textContent=draft.status==="publishing"?"در حال ادغام، آزمون و انتشار روی سایت…":"در صف امن انتشار؛ ناشر در حال دریافت درخواست است…";followPublication(id,attempt+1);}else actionStatus.textContent="درخواست محفوظ است اما ناشر هنوز آن را تکمیل نکرده؛ وضعیت «در صف انتشار» را تازه کنید.";}).catch(function(){if(attempt<45)followPublication(id,attempt+1);});},4000);}
-  function publishFromPanel(event){event.preventDefault();event.stopImmediatePropagation();if(!current||busy||activeJob())return;if(unresolvedFindings(current.draft)){document.getElementById("contentReviewActionStatus").textContent="ابتدا موارد بازبینی علمی را اصلاح و نتیجهٔ بررسی را ثبت کنید.";return;}if(artifactsDirty){document.getElementById("contentReviewActionStatus").textContent="ابتدا اصلاحات محتوا را ذخیره کنید.";return;}var actionStatus=document.getElementById("contentReviewActionStatus"),draft=current.draft||{},payload=publishPayload(draft,"publish");if(!["draft_ready","approved","publish_error"].includes(draft.status)){actionStatus.textContent="این مورد اکنون "+label(draft.status)+" است.";return;}if(!payload.topicId){actionStatus.textContent="دسته و مبحث مقصد را از مباحث موجود انتخاب کنید.";return;}if(!document.getElementById("contentReviewConfirm").checked){actionStatus.textContent="تأیید نهایی بازبینی و اجازهٔ انتشار را علامت بزنید.";return;}if(!global.confirm("محتوای آماده در مبحث انتخاب‌شده منتشر شود؟"))return;busy=true;dialog.querySelectorAll("button").forEach(function(button){button.disabled=true;});var request=Promise.resolve({draft:draft});if(draft.status==="draft_ready"){actionStatus.textContent="در حال تأیید و آماده‌سازی انتشار…";var approval=Object.assign({},payload,{action:"approve",confirmPublish:false});request=api(approval);}request.then(function(result){var approved=result.draft||draft;current.draft=approved;actionStatus.textContent="در حال ارسال برای انتشار…";var publication=Object.assign({},payload,{action:"publish",revision:Number(approved.review_revision||0),confirmPublish:true});return api(publication);}).then(function(result){current.draft=result.draft||current.draft;syncPublishButton();actionStatus.textContent=result.message||"درخواست انتشار ثبت شد.";followPublication(current.draft.id,0);load();}).catch(function(error){actionStatus.textContent=error.message||"ثبت انتشار انجام نشد.";}).finally(function(){busy=false;dialog.querySelectorAll("button").forEach(function(button){button.disabled=false;});syncJobControls();});}
+  function publishFromPanel(event){
+    event.preventDefault();event.stopImmediatePropagation();if(!current||busy||activeJob())return;
+    var actionStatus=document.getElementById("contentReviewActionStatus"),draft=current.draft||{},payload=publishPayload(draft,"publish"),accepted=false;
+    if(unresolvedFindings(draft)){actionStatus.textContent="ابتدا موارد بازبینی علمی را اصلاح و نتیجهٔ بررسی را ثبت کنید.";return;}
+    if(artifactsDirty){actionStatus.textContent="ابتدا اصلاحات محتوا را ذخیره کنید.";return;}
+    if(!["draft_ready","approved","publish_error"].includes(draft.status)){actionStatus.textContent="این مورد اکنون "+label(draft.status)+" است.";return;}
+    if(!payload.topicId){actionStatus.textContent="دسته و مبحث مقصد را از مباحث موجود انتخاب کنید.";return;}
+    if(!document.getElementById("contentReviewConfirm").checked){actionStatus.textContent="تأیید نهایی بازبینی و اجازهٔ انتشار را علامت بزنید.";return;}
+    if(!global.confirm("محتوای آماده در مبحث انتخاب‌شده منتشر شود؟"))return;
+    busy=true;dialog.querySelectorAll("button").forEach(function(button){button.disabled=true;});
+    var request=Promise.resolve({draft:draft});
+    if(draft.status==="draft_ready"){actionStatus.textContent="در حال تأیید و آماده‌سازی انتشار…";request=api(Object.assign({},payload,{action:"approve",confirmPublish:false}));}
+    request.then(function(result){
+      var approved=result.draft||draft;if(current&&current.draft.id===draft.id)current.draft=approved;
+      if(current&&current.draft.id===draft.id)actionStatus.textContent="در حال ارسال برای انتشار…";
+      return api(Object.assign({},payload,{action:"publish",revision:Number(approved.review_revision||0),confirmPublish:true}));
+    }).then(function(result){
+      var queued=result.draft;
+      if(!queued||!["publish_requested","publishing","published"].includes(queued.status))throw new Error("پذیرش درخواست انتشار تأیید نشد؛ وضعیت فهرست را تازه کنید.");
+      accepted=true;publicationTracked[draft.id]=queued.status;publicationPending=queued.status!=="published";
+      publicationNotice="درخواست انتشار «"+(queued.title||draft.title||"محتوا")+"» ثبت شد؛ نتیجه در فهرست وضعیت انتشار به‌روز می‌شود. می‌توانید مورد بعدی را بررسی کنید.";
+      if(current&&current.draft.id===draft.id){current.draft=queued;artifactsDirty=false;formSnapshot=formState();dialog.close();}
+      renderPublicationQueue([queued]);status.textContent=publicationNotice;
+    }).catch(function(error){if(current&&current.draft.id===draft.id)actionStatus.textContent=error.message||"ثبت انتشار انجام نشد.";else{publicationNotice=error.message||"ثبت انتشار انجام نشد.";status.textContent=publicationNotice;}}).finally(function(){
+      busy=false;dialog.querySelectorAll("button").forEach(function(button){button.disabled=false;});syncJobControls();if(accepted)load(true);
+    });
+  }
   function openDraft(id){
     status.textContent="در حال دریافت جزئیات…";
     return Promise.all([api({action:"detail",draftId:id}),loadTopics()]).then(function(values){
@@ -174,5 +228,6 @@
   dialog.addEventListener("submit",function(event){if(event.target instanceof HTMLFormElement&&event.target.method==="dialog"&&!allowReviewDiscard())event.preventDefault();});
   global.addEventListener("beforeunload",function(event){if(current&&dialog.open&&reviewDirty()){event.preventDefault();event.returnValue="";}});
   dialog.addEventListener("close",function(){if(jobTimer)clearTimeout(jobTimer);jobTimer=null;});
-  refresh.addEventListener("click",load);filter.addEventListener("change",load);panel.addEventListener("toggle",function(){if(panel.open&&!loaded)load();});var management=document.getElementById("tabBtnManagement");if(management)management.addEventListener("click",function(){if(!loaded)load();});
+  document.addEventListener("visibilitychange",function(){if(publicationVisible()&&publicationPending)load(true);else schedulePublications();});
+  refresh.addEventListener("click",load);filter.addEventListener("change",load);panel.addEventListener("toggle",function(){if(panel.open&&(!loaded||publicationPending))load(true);else schedulePublications();});var management=document.getElementById("tabBtnManagement");if(management)management.addEventListener("click",function(){if(!loaded||publicationPending)load(true);});
 })(window);

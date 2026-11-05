@@ -7,7 +7,7 @@ const db=new PGlite();
 await db.exec(`
 create role anon; create role authenticated; create role service_role bypassrls;
 create table public.intmed_content_ingest(id uuid primary key,status text,error_code text,updated_at timestamptz default now());
-create table public.intmed_content_drafts(ingest_id uuid primary key,status text,error_code text,attempts int default 0,draft_json jsonb default '{}',updated_at timestamptz default now());
+create table public.intmed_content_drafts(ingest_id uuid primary key,status text,error_code text,attempts int default 0,draft_json jsonb default '{}',updated_at timestamptz default now(),publishing_runner text,publishing_started_at timestamptz);
 create table public.intmed_content_jobs(id uuid primary key,ingest_id uuid,status text,error text,expires_at timestamptz,updated_at timestamptz default now());
 create table public.intmed_content_worker_lease(lease_key text primary key,lease_until timestamptz);
 create schema net;
@@ -60,5 +60,19 @@ assert.equal((await db.query("select has_table_privilege('anon','public.intmed_q
 assert.equal((await db.query("select has_function_privilege('authenticated','public.claim_intmed_queue_sweep(text)','EXECUTE') as execute")).rows[0].execute,false);
 await db.exec('update public.intmed_queue_sweep_state set enabled=false');
 assert.equal(await request(),null);
+// Already approved publications wake even when generation has no work or is deferred.
+await db.exec("update public.intmed_queue_sweep_state set enabled=true,token_hash=null,expires_at=null,next_attempt_at=now()+interval '1 hour'; update public.intmed_content_ingest set status='accepted'; update public.intmed_content_drafts set status='approved'");
+assert.equal(await request(),null,'Generation backoff must remain effective without publication work');
+await db.query("update public.intmed_content_drafts set status='publish_requested' where ingest_id=$1",[id(5)]);
+assert.equal(await request(),3,'Approved publication bypasses provider backoff and empty intake');
+assert.equal(await request(),null,'Publication wake still requires single-use capability coalescing');
+assert.equal((await db.query("select next_attempt_at>now()+interval '59 minutes' as preserved from public.intmed_queue_sweep_state")).rows[0].preserved,true,'Wake must preserve existing model backoff');
+await db.exec("update public.intmed_queue_sweep_state set token_hash=null; update public.intmed_content_drafts set status='publishing',publishing_runner='github-actions',publishing_started_at=now()-interval '36 minutes' where status='publish_requested'");
+await db.query("insert into public.intmed_content_worker_lease values('worker',now()+interval '1 hour') on conflict(lease_key) do update set lease_until=excluded.lease_until");
+assert.equal(await request(),4,'Stale cloud publication recovery bypasses active generation lease');
+await db.exec("update public.intmed_queue_sweep_state set token_hash=null; update public.intmed_content_drafts set publishing_started_at=now() where status='publishing'");
+assert.equal(await request(),null,'Fresh publication alone must not bypass generation backoff');
+await db.exec("update public.intmed_content_drafts set publishing_runner='local-runner',publishing_started_at=now()-interval '2 hours' where status='publishing'");
+assert.equal(await request(),null,'Publication recovery never expires another runner');
 await db.close();
 console.log('Queue sweep SQL passed: disabled rollout, coalescing, recovery/protected states, single-use expiry/replay/CAS and quota backoff.');

@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const path='backend/supabase/functions/intmed-content-sweep/index.ts';
 assert.ok(fs.existsSync(path),'Periodic queue recovery handler is missing');
 const source=fs.readFileSync(path,'utf8'),capability='a'.repeat(64),runId='11111111-1111-4111-8111-111111111111';
-async function invoke(input,{valid=true,workerStatus=200,workerBody={processed:3},workerFails=false,runtime=true}={}){
+async function invoke(input,{valid=true,workerStatus=200,workerBody={processed:3},workerFails=false,publisherFails=false,runtime=true}={}){
  let handler;const calls=[],tasks=[];
  const fetch=async(url,options={})=>{
   const body=options.body?JSON.parse(options.body):null;calls.push({url,options,body});
@@ -15,6 +15,13 @@ async function invoke(input,{valid=true,workerStatus=200,workerBody={processed:3
    assert.equal(options.headers.Authorization,'Bearer service-only');
    if(workerFails)throw Error('private signed URL / secret must not escape');
    return Response.json(workerBody,{status:workerStatus});
+  }
+  if(url.endsWith('/functions/v1/intmed-content-publisher')){
+   assert.deepEqual(body,{action:'drain'},'Recovery can only drain approved requests');
+   assert.equal(options.headers.Authorization,'Bearer service-only');
+   assert.equal(options.headers.apikey,'service-only');
+   if(publisherFails)throw Error('private publisher secret must not escape');
+   return Response.json({ok:true});
   }
   if(url.endsWith('/rpc/complete_intmed_queue_sweep'))return Response.json(true);
   throw Error('Unexpected endpoint '+url);
@@ -31,6 +38,8 @@ for(const input of [{},{token:'bad'},{token:capability,ingestId:runId},{token:ca
 }
 const denied=await invoke({token:capability},{valid:false});assert.equal(denied.response.status,403);assert.equal(denied.calls.length,1);
 const ok=await invoke({token:capability});assert.equal(ok.response.status,202);assert.ok(!JSON.stringify(ok.body).includes(capability));
+assert.equal(ok.calls.filter(call=>call.url.endsWith('/intmed-content-publisher')).length,1);
+assert.ok(ok.calls.every(call=>!/openai|anthropic|generativelanguage/.test(call.url)),'Recovery must never call a model directly');
 const completion=ok.calls.find(call=>call.url.endsWith('/complete_intmed_queue_sweep'));
 assert.equal(completion.body.p_run_id,runId);assert.equal(completion.body.p_result.processed,3);assert.equal(completion.body.p_error,null);
 const waiting=await invoke({token:capability},{workerBody:{processed:0,waitingProvider:1}});
@@ -38,6 +47,14 @@ assert.equal(waiting.calls.at(-1).body.p_result.waitingProvider,1);
 for(const options of [{workerStatus:503,workerBody:{message:'private error'}},{workerFails:true}]){
  const result=await invoke({token:capability},options),last=result.calls.at(-1).body;
  assert.match(last.p_error,/^(worker_http_503|worker_network_failed)$/);assert.ok(!JSON.stringify(last).includes('private'));
+ assert.ok(result.calls.some(call=>call.url.endsWith('/intmed-content-publisher')));
 }
-const noRuntime=await invoke({token:capability},{runtime:false});assert.equal(noRuntime.response.status,202);assert.equal(noRuntime.calls.length,3);
-console.log('Queue sweep handler passed: bounded one-use capability, no arbitrary source/publication, private failures and recorded completion.');
+for(const reason of ['manual_mode','empty_or_busy','provider_backoff']){
+ const result=await invoke({token:capability},{workerBody:{processed:0,reason}});
+ assert.ok(result.calls.some(call=>call.url.endsWith('/intmed-content-publisher')));
+}
+const failedPublisher=await invoke({token:capability},{publisherFails:true});
+assert.equal(failedPublisher.calls.at(-1).body.p_error,null,'Publication failure must not poison provider backoff');
+assert.ok(!JSON.stringify(failedPublisher.body).includes('private'));
+const noRuntime=await invoke({token:capability},{runtime:false});assert.equal(noRuntime.response.status,202);assert.equal(noRuntime.calls.length,4);
+console.log('Queue sweep handler passed: bounded one-use capability, approved publication drain independent of worker/backoff, private failures and recorded completion.');

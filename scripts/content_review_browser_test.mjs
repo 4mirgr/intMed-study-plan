@@ -438,5 +438,98 @@ assert.equal(await page.inputValue('#contentReviewTitle'),'عنوان اصلاح
 await page.click('[data-review-action="save"]');
 await page.waitForSelector('#contentReviewDialog:not([open])',{state:'attached'});
 assert.equal(await page.evaluate(()=>!window.dispatchEvent(new Event('beforeunload',{cancelable:true}))),false,'successful controlled save-and-close must clear navigation protection');
+// Publishing is a background queue action. Its accepted response must release
+// the dialog, and subsequent list refreshes must not replace another draft's edits.
+const queuePage=await browser.newPage();
+await queuePage.clock.install();
+const queueMarkup=`<!doctype html><html lang="fa" dir="rtl"><body><details id="contentReviewPanel" open><span id="contentReviewBadge"></span><select id="contentReviewFilter"><option value="open">open</option><option value="all">all</option></select><button id="contentReviewRefresh">refresh</button><p id="contentReviewStatus"></p><div id="contentReviewList"></div></details>${reviewMarkup.slice(reviewMarkup.indexOf('<dialog id="contentReviewDialog"'),reviewMarkup.indexOf('</dialog>',reviewMarkup.indexOf('<dialog id="contentReviewDialog"'))+9)}</body></html>`;
+await queuePage.setContent(queueMarkup);
+await queuePage.evaluate(()=>{
+  window.__queueCalls=[];window.__queueFetchCount=0;window.__enqueueFails=false;window.__queueListResolves=[];
+  window.INTMED_CONFIG={supabaseUrl:'https://example.supabase.co',supabaseAnonKey:'public'};
+  window.IntMedBackend={session:()=>({access_token:'admin'}),refreshSession:async()=>({access_token:'admin'})};
+  const source={kind:'text',mime_type:'text/plain',content_text:'متن اصلی'};
+  window.__queueDrafts=[['aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','اول','draft_ready'],['bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','بعدی','draft_ready'],['cccccccc-cccc-4ccc-8ccc-cccccccccccc','از قبل در صف','publishing']].map(([id,title,status])=>({id,title,status,review_revision:0,topic_id:'id-cns',topic_confidence:1,source_summary:'این خلاصهٔ فارسی برای بازبینی علمی محتوا و انتخاب مبحث درست و انتشار آن در مجموعهٔ آموزشی ثبت شده است.',draft_json:{lessonDrafts:[{heading:title,paragraphs:['متن '+title],keyPoints:[]}]},intmed_content_ingest:source}));
+  window.fetch=async(url,options)=>{
+    if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns',label:'مننژیت'}]}]})};
+    const body=JSON.parse(options.body);window.__queueCalls.push(body);
+    const respond=(value,status=200)=>({ok:status<400,status,text:async()=>JSON.stringify(value)});
+    if(body.action==='list'){
+      window.__queueFetchCount++;
+      if(window.__holdQueueList)await new Promise(resolve=>window.__queueListResolves.push(resolve));
+      const counts={};window.__queueDrafts.forEach(row=>{counts[row.status]=(counts[row.status]||0)+1;});
+      const items=window.__queueDrafts.filter(row=>body.status==='all'||body.status==='open'?body.status==='all'||['draft_ready','error','publish_error'].includes(row.status):row.status===body.status);
+      return respond({items:body.status==='all'?items.slice(0,1):items,counts});
+    }
+    const draft=window.__queueDrafts.find(row=>row.id===body.draftId);
+    if(body.action==='detail')return respond({draft,sourceUrl:null,job:null});
+    if(body.action==='approve'){draft.status='approved';draft.review_revision++;return respond({draft});}
+    if(body.action==='publish'){
+      if(window.__enqueueFails)return respond({message:'ناشر درخواست را نپذیرفت'},503);
+      draft.status='publish_requested';draft.review_revision++;return respond({draft,message:'درخواست در صف ثبت شد'},202);
+    }
+    throw new Error('Unexpected queue operation '+body.action);
+  };
+});
+await queuePage.addScriptTag({path:path.join(root,'docs/js/intmed-content-review.js')});
+await queuePage.click('#contentReviewRefresh');
+assert.equal(await queuePage.locator('[data-review-id="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"]').count(),1,'open drafts must not disappear behind the all-status list limit');
+await queuePage.click('[data-review-id="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"]');
+await queuePage.check('#contentReviewConfirm');queuePage.once('dialog',dialog=>dialog.accept());
+await queuePage.click('#contentReviewPublish');
+await queuePage.waitForFunction(()=>window.__queueCalls.some(call=>call.action==='publish'));
+assert.equal(await queuePage.locator('#contentReviewDialog').evaluate(node=>node.open),false,'accepted publication must close the modal immediately');
+assert.match(await queuePage.textContent('#contentReviewPublicationQueue'),/در صف انتشار/);
+await queuePage.click('[data-review-id="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"]');
+await queuePage.waitForFunction(()=>document.getElementById('contentReviewTitle').value==='بعدی');
+await queuePage.fill('#contentReviewTitle','ویرایش ذخیره‌نشدهٔ مبحث بعدی');
+await queuePage.evaluate(()=>{window.__queueDrafts[0].status='publish_error';window.__queueDrafts[0].publish_error='خطای واقعی ناشر';});
+await queuePage.clock.fastForward(8500);
+await queuePage.waitForFunction(()=>document.getElementById('contentReviewPublicationQueue').textContent.includes('خطای واقعی ناشر'));
+assert.equal(await queuePage.inputValue('#contentReviewTitle'),'ویرایش ذخیره‌نشدهٔ مبحث بعدی');
+assert.equal(await queuePage.locator('#contentReviewDialog').evaluate(node=>node.open),true);
+const firstDetailCount=await queuePage.evaluate(()=>window.__queueCalls.filter(call=>call.action==='detail'&&call.draftId==='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa').length);
+assert.equal(firstDetailCount,1,'background publication must not poll into the active draft dialog');
+await queuePage.evaluate(()=>{document.getElementById('contentReviewDialog').close();});
+await queuePage.click('[data-review-id="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"]');
+await queuePage.waitForFunction(()=>document.getElementById('contentReviewTitle').value==='بعدی');
+await queuePage.evaluate(()=>{window.__enqueueFails=true;});
+await queuePage.check('#contentReviewConfirm');queuePage.once('dialog',dialog=>dialog.accept());
+await queuePage.click('#contentReviewPublish');
+await queuePage.waitForFunction(()=>document.getElementById('contentReviewActionStatus').textContent.includes('ناشر درخواست را نپذیرفت'));
+assert.equal(await queuePage.locator('#contentReviewDialog').evaluate(node=>node.open),true,'failed enqueue must leave the review open with the server error');
+await queuePage.evaluate(()=>{document.getElementById('contentReviewDialog').close();});
+// Reload the document, retaining only the fake server data. No old listeners,
+// local queue map or publication timer may supply the recovered pending state.
+const queueServer=await queuePage.evaluate(()=>({drafts:window.__queueDrafts,fetch:window.fetch.toString()}));
+await queuePage.reload();await queuePage.setContent(queueMarkup);
+await queuePage.evaluate(server=>{
+  window.__queueDrafts=server.drafts;window.__queueCalls=[];window.__queueFetchCount=0;window.__queueListResolves=[];
+  window.INTMED_CONFIG={supabaseUrl:'https://example.supabase.co',supabaseAnonKey:'public'};window.IntMedBackend={session:()=>({access_token:'admin'}),refreshSession:async()=>({access_token:'admin'})};
+  window.fetch=(0,eval)('('+server.fetch+')');
+},queueServer);
+await queuePage.addScriptTag({path:path.join(root,'docs/js/intmed-content-review.js')});
+await queuePage.click('#contentReviewRefresh');
+await queuePage.waitForFunction(()=>document.getElementById('contentReviewPublicationQueue').textContent.includes('از قبل در صف'));
+assert.match(await queuePage.textContent('#contentReviewPublicationQueue'),/در حال انتشار/);
+await queuePage.evaluate(()=>{window.__holdQueueList=true;});
+await queuePage.clock.fastForward(8500);await queuePage.waitForFunction(()=>window.__queueListResolves.length===1);
+const queueCallsWhileWaiting=await queuePage.evaluate(()=>window.__queueFetchCount);
+await queuePage.clock.fastForward(32000);
+assert.equal(await queuePage.evaluate(()=>window.__queueFetchCount),queueCallsWhileWaiting,'a slow status refresh must not spawn overlapping requests');
+await queuePage.evaluate(()=>{window.__holdQueueList=false;window.__queueListResolves.splice(0).forEach(resolve=>resolve());});
+await queuePage.waitForFunction(()=>!document.getElementById('contentReviewRefresh').disabled);
+await queuePage.locator('#contentReviewPanel').evaluate(panel=>{panel.open=false;});
+const callsWhenCollapsed=await queuePage.evaluate(()=>window.__queueFetchCount);await queuePage.clock.fastForward(24000);
+assert.equal(await queuePage.evaluate(()=>window.__queueFetchCount),callsWhenCollapsed,'collapsed management must pause publication polling');
+await queuePage.locator('#contentReviewPanel').evaluate(panel=>{panel.open=true;});
+await queuePage.waitForFunction(count=>window.__queueFetchCount>count,callsWhenCollapsed);
+await queuePage.waitForFunction(()=>!document.getElementById('contentReviewRefresh').disabled);
+await queuePage.evaluate(()=>{window.__queueDrafts[2].status='published';});
+await queuePage.clock.fastForward(8500);
+await queuePage.waitForFunction(()=>document.querySelector('#contentReviewPublicationQueue [data-review-id="cccccccc-cccc-4ccc-8ccc-cccccccccccc"] .review-status').textContent==='منتشرشده');
+const callsWhenFinished=await queuePage.evaluate(()=>window.__queueFetchCount);await queuePage.clock.fastForward(24000);
+assert.equal(await queuePage.evaluate(()=>window.__queueFetchCount),callsWhenFinished,'terminal server statuses must stop publication polling');
+await queuePage.close();
 await browser.close();
 console.log('Content review browser test passed.');

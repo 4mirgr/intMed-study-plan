@@ -92,6 +92,7 @@ def main() -> int:
             git("commit", "-m", "Publish reviewed content: " + str(job.get("title") or DRAFT_ID)[:100])
         commit = git("rev-parse", "HEAD")
         git("push", "origin", "HEAD:" + BRANCH)
+        api({"action": "deploy", "draftId": DRAFT_ID, "capability": CAPABILITY, "commit": commit})
         verify_live_topic(str(job.get("target", {}).get("topicId") or ""))
         api({"action": "result", "draftId": DRAFT_ID, "capability": CAPABILITY,
              "ok": True, "commit": commit})

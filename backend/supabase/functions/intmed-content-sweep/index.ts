@@ -1,5 +1,5 @@
 // Only a short-lived, one-use database capability can wake the intake queue.
-// No source content, permanent secret or publication action is accepted here.
+// No source content, permanent secret or caller-selected publication is accepted here.
 const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'};
 const hex=/^[a-f0-9]{64}$/;
 Deno.serve(async req=>{
@@ -22,6 +22,13 @@ Deno.serve(async req=>{
   if(typeof runId!=='string'||!/^[a-f0-9-]{36}$/i.test(runId))return reply(403,{message:'Sweep capability expired or used'});
   const task=(async()=>{
     let result={},error=null;
+    // Publication recovery is independent of model-provider backoff and worker errors.
+    // The publisher only drains already approved requests under its database lock.
+    const publication=(async()=>{
+      try{await fetch(base+'/functions/v1/intmed-content-publisher',{method:'POST',headers:server,body:JSON.stringify({action:'drain'}),signal:AbortSignal.timeout(30000)});}catch{
+        // A later private tick retries; never expose internal responses or credentials.
+      }
+    })();
     try{
       const response=await fetch(base+'/functions/v1/intmed-content-worker',{method:'POST',headers:server,body:'{}',signal:AbortSignal.timeout(110000)});
       if(!response.ok)error='worker_http_'+response.status;
@@ -31,6 +38,7 @@ Deno.serve(async req=>{
         if(['manual_mode','empty_or_busy'].includes(value.reason))result.reason=value.reason;
       }
     }catch{error='worker_network_failed';}
+    await publication;
     try{await rpc('complete_intmed_queue_sweep',{p_run_id:runId,p_result:result,p_error:error});}catch{
       // The database expiry/cooldown makes a terminated callback recoverable on the next tick.
       // Never log a capability, source body, provider response or service credential.

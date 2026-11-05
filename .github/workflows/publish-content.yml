@@ -16,7 +16,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: intmed-content-publisher
+  # Database claim_intmed_publication serializes the real FIFO. A global GitHub
+  # concurrency group retains only one pending run and can cancel older drafts.
+  group: intmed-content-publisher-${{ inputs.draft_id }}
   cancel-in-progress: false
 
 jobs:

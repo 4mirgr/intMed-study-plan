@@ -100,10 +100,13 @@ end $$;
 -- only mints a two-minute one-use token, never a service key or permanent secret.
 create or replace function intmed_queue_private.request_sweep()
 returns bigint language plpgsql security invoker set search_path='' as $$
-declare state public.intmed_queue_sweep_state%rowtype; capability text; queued bigint;
+declare state public.intmed_queue_sweep_state%rowtype; capability text; queued bigint; publication_due boolean;
 begin
   select * into state from public.intmed_queue_sweep_state where singleton for update skip locked;
-  if not found or not state.enabled or state.next_attempt_at>now()
+  if not found or not state.enabled then return null; end if;
+  publication_due=exists(select 1 from public.intmed_content_drafts where status='publish_requested'
+    or (status='publishing' and publishing_runner='github-actions' and publishing_started_at<now()-interval '35 minutes'));
+  if (state.next_attempt_at>now() and not publication_due)
     or (state.token_hash is not null and state.expires_at>now()) then return null; end if;
 
   -- Keep rejected decisions out of the active inbox count; no source is deleted.
@@ -138,10 +141,10 @@ begin
       and d.error_code in ('routing_dispatch_failed','routing_http_503','routing_failed','routing_waiting_provider','routing_http_429')
       and d.draft_json->'documentExtraction'->'quality'->>'actualPageCountVerified'='true'
       and not exists(select 1 from public.intmed_content_jobs j where j.ingest_id=i.id and j.status in ('queued','running'));
-  else return null;
+  elsif not publication_due then return null;
   end if;
 
-  if not exists(
+  if not publication_due and not exists(
     select 1 from public.intmed_content_ingest i left join public.intmed_content_drafts d on d.ingest_id=i.id
     where i.status in ('pending_review','error') and coalesce(d.attempts,0)<20
       and (d.ingest_id is null or d.status='queued' or
@@ -152,7 +155,7 @@ begin
   update public.intmed_queue_sweep_state set
     run_id=gen_random_uuid(),token_hash=encode(sha256(convert_to(capability,'UTF8')),'hex'),
     expires_at=now()+interval '2 minutes',claimed_at=null,
-    last_requested_at=now(),next_attempt_at=now()+interval '5 minutes',last_error=null where singleton;
+    last_requested_at=now(),next_attempt_at=greatest(next_attempt_at,now()+interval '5 minutes'),last_error=null where singleton;
   select net.http_post(
     url:='https://upwbktvnybsjugdegjji.supabase.co/functions/v1/intmed-content-sweep',
     body:=jsonb_build_object('token',capability),

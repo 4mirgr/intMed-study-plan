@@ -23,7 +23,7 @@ class LivePublicationTest(unittest.TestCase):
     @mock.patch.object(subject, "api")
     def test_claims_integrates_pushes_verifies_and_completes(self, api, integrate, git, run, verify):
         job = {"draftId": subject.DRAFT_ID, "title": "عنوان", "target": {"topicId": "test"}}
-        api.side_effect = [{"job": job}, {"ok": True}]
+        api.side_effect = [{"job": job}, {"ok": True}, {"ok": True}]
         run.return_value.returncode = 1
         git.side_effect = ["", "", "", "", "abc123", ""]
         self.assertEqual(subject.main(), 0)
@@ -31,6 +31,8 @@ class LivePublicationTest(unittest.TestCase):
         verify.assert_called_once_with("test")
         self.assertEqual(api.call_args_list[-1].args[0]["commit"], "abc123")
         self.assertTrue(api.call_args_list[-1].args[0]["ok"])
+        self.assertEqual(api.call_args_list[1].args[0]["action"], "deploy")
+        self.assertEqual(api.call_args_list[1].args[0]["commit"], "abc123")
 
     @mock.patch.object(subject, "api")
     def test_reports_failure_to_same_draft(self, api):
