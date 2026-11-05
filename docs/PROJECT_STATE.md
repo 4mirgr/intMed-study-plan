@@ -259,6 +259,14 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ## Completion rule
 
+### Question-first checkpoint — 2026-11-05 (Tehran)
+
+- Owner approved structured question-bank preparation, original MCQ preservation, answer-based lessons/cards and withholding uncertain keys. A cached, revision-safe internal source_questions stage now precedes durable generation. Review UI offers auto/question-bank/prose modes, original-question evidence, readable previews and editable generated artifacts; close/Escape/navigation protect unsaved edits.
+- Explicit original keys, question/answer pages and sourceQuestionId/origin survive publication. A summary/outline is not a lesson for question-bank drafts. Source-only MCQ imports avoid an additional lesson-generation call. Prepared source evidence is not yet independently clinically verified; teacher approval remains required.
+- Message badges refresh every 8 seconds on visible online pages, without study-save starvation or replacing pending legacy edits. This is message notification polling, not automatic refresh of every admin signup/statistics counter.
+- Weekly deterministic image QA now checks canonical local assets, confinement (including symlinks), PNG/JPEG/GIF dimensions, byte/hash consistency and provenance. No new model loop or provider was activated. Existing content has a substantial warning/review backlog; findings are not automatic fixes.
+- **Still pending:** representative real-file benchmark and clinical verification, multi-topic mapping, correcting uncertain original keys from the panel, revision-bound Telegram approval/publication and Telegram audit-report delivery, budgeted source research, and the cross-repository public hosting-pin bridge below. No real draft was approved or published for testing.
+
 ### Review destination and mounted publication — 2026-11-05 (Tehran)
 
 - Public taxonomy, manifest and topic payload consumers must use `/intmed/content/`, not root `/content/`. Review, worker, Telegram and local runner were corrected; API origins/CORS remain unchanged.

@@ -1138,6 +1138,11 @@
   }
   function useMessageCenter(result,options){
     options=options||{};
+    // Normalized messages are read via their own API and are never study-state
+    // writes. Legacy tickets can contain pending local replies/read receipts.
+    // Check after the request too: a write may start while it is in flight.
+    if(options.passive&&(dirty||flushing||flushQueued||flushTimer)&&
+      (result.mode!=="normalized"||(STATE.tickets||[]).some(function(row){return !row._normalized;})))return result;
     (result.items||[]).forEach(function(row){var bucket=(STATE.users||{})[row.userId]||{},profile=bucket.profile||{};row.userName=profile.fullName||bucket.backendUsername||USER_NAMES[row.userId]||row.userId;});
     var nextFingerprint=messageFingerprint(result.items),changed=nextFingerprint!==messageCenterFingerprint;
     messageCenterFingerprint=nextFingerprint;
@@ -2749,16 +2754,22 @@
     markOwnMessagesRead();setTab('messages');renderTicketHistory();var history=document.getElementById('ticketHistoryList');if(history)history.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   });
   var messagePollTimer=null,messagePollBusy=false,messagePollDelay=8000;
-  function scheduleMessagePoll(delay){clearTimeout(messagePollTimer);messagePollTimer=setTimeout(refreshMessageNotifications,delay==null?messagePollDelay:delay);}
+  function scheduleMessagePoll(delay){
+    clearTimeout(messagePollTimer);messagePollTimer=null;
+    if(document.visibilityState==='hidden'||navigator.onLine===false)return;
+    messagePollTimer=setTimeout(refreshMessageNotifications,delay==null?messagePollDelay:delay);
+  }
   function refreshMessageNotifications(){
     if(messagePollBusy)return Promise.resolve();
-    if(!usesPrivateBackend()||!stateLoaded||dirty||flushing||document.visibilityState==='hidden'||!window.IntMedBackend.loadMessageCenter){scheduleMessagePoll(8000);return Promise.resolve();}
+    if(!usesPrivateBackend()||!stateLoaded||document.visibilityState==='hidden'||navigator.onLine===false||!window.IntMedBackend.loadMessageCenter){scheduleMessagePoll(8000);return Promise.resolve();}
     messagePollBusy=true;
-    return loadMessageCenter({passive:true}).then(function(){messagePollDelay=8000;}).catch(function(){messagePollDelay=Math.min(messagePollDelay*2,60000);}).finally(function(){messagePollBusy=false;scheduleMessagePoll(messagePollDelay);});
+    return loadMessageCenter({passive:true}).catch(function(){}).finally(function(){messagePollBusy=false;scheduleMessagePoll(messagePollDelay);});
   }
   scheduleMessagePoll(1200);
   window.addEventListener('focus',function(){scheduleMessagePoll(0);});
-  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')scheduleMessagePoll(0);});
+  window.addEventListener('online',function(){scheduleMessagePoll(0);});
+  window.addEventListener('offline',function(){scheduleMessagePoll(0);});
+  document.addEventListener('visibilitychange',function(){scheduleMessagePoll(0);});
 
   if(window.IntMedLibrary)window.IntMedLibrary.init({state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},ready:function(){return stateLoaded;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},open:function(id,type,itemId){
     goToTopic(id);return ensureTopicLoaded(id).then(function(){var topic=topicEls[id];if(!topic)return;topic.openType=type;Object.keys(topic.learnBtns).forEach(function(key){topic.learnBtns[key].classList.toggle('active',key===type);});topic.learnPanel.classList.add('open');renderLearnPanel(id,type);if(window.IntMedDashboard)window.IntMedDashboard.open(id,type);requestAnimationFrame(function(){var target=topic.learnPanel;if(type==='images'){var imageIndex=(contentMap[id].images||[]).findIndex(function(item){return item.id===itemId;});if(imageIndex>=0)target=topic.learnPanel.querySelectorAll('.img-row')[imageIndex]||target;}else if(type==='kfPmp'){var caseIndex=(contentMap[id].kfPmp||[]).findIndex(function(item){return item.id===itemId;});if(caseIndex>=0)target=topic.learnPanel.querySelectorAll('.kfp-block')[caseIndex]||target;}else if(type==='tables'){var tableIndex=(contentMap[id].tables||[]).findIndex(function(item){return item.id===itemId;});if(tableIndex>=0)target=topic.learnPanel.querySelectorAll('.tbl-title')[tableIndex]||target;}target.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});target.classList.add('annotation-destination');setTimeout(function(){target.classList.remove('annotation-destination');},3500);});});

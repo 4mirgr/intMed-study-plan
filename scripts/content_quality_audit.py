@@ -166,6 +166,8 @@ def audit_topic(path: Path) -> list[Finding]:
 
     if not data.get("sources"):
         add("warning", "SOURCE_CATALOG_EMPTY", "sources", "No source is declared for this topic.")
+    sources = {source.get("id"): source for source in data.get("sources", [])
+               if isinstance(source, dict) and source.get("id")}
 
     serialized = json.dumps(data, ensure_ascii=False)
     if "�" in serialized:
@@ -212,12 +214,56 @@ def audit_topic(path: Path) -> list[Finding]:
         if field == "images":
             if not str(item.get("caption", "")).strip():
                 add("error", "IMAGE_CAPTION_MISSING", location, "Image has no caption.")
+            refs = item.get("sourceRefs", [])
+            source = next((sources[ref.get("sourceId")] for ref in refs
+                           if isinstance(ref, dict) and ref.get("sourceId") in sources), {})
+            source_class = item.get("sourceClass") or source.get("sourceClass")
+            if source_class not in {"authored", "open-license", "harrison-private"}:
+                add("warning", "IMAGE_PROVENANCE_MISSING", location, "Image provenance is unknown; do not infer reuse rights.")
+            if not str(item.get("copyright") or source.get("copyright") or "").strip():
+                add("warning", "IMAGE_COPYRIGHT_MISSING", location, "Image has no explicit copyright/use note.")
+            if source_class == "open-license":
+                missing = [key for key in ("creator", "license", "licenseUrl", "sourceUrl")
+                           if not str(item.get(key) or source.get(key) or "").strip()]
+                if missing:
+                    add("warning", "IMAGE_LICENSE_METADATA_MISSING", location,
+                        "Open-license image is missing: " + ", ".join(missing) + ". Verify the exact file's terms.")
+            if item.get("reviewStatus") != "reviewed":
+                add("info", "CLINICAL_REVIEW_PENDING", location, "Teacher clinical review is still pending.")
             raw = decoded_data_uri(item.get("sourceUrl"))
+            asset = item.get("assetPath")
+            if source_class == "harrison-private" and (asset or raw is not None):
+                add("error", "IMAGE_PRIVATE_ASSET", location, "Private Harrison image bytes must not enter the public static build.")
+            label = "Embedded"
+            if asset:
+                # Match the canonical pipeline: assetPath is confined to this topic, including symlinks.
+                raw = None
+                label = "Local"
+                try:
+                    asset_path = Path(str(asset))
+                    resolved = (path.parent / asset_path).resolve()
+                    if asset_path.is_absolute() or not resolved.is_relative_to(path.parent.resolve()):
+                        add("error", "IMAGE_ASSET_PATH_UNSAFE", location, "Image assetPath must remain inside its topic directory.")
+                    elif not resolved.is_file():
+                        add("error", "IMAGE_ASSET_MISSING", location, "Image assetPath does not name an existing file.")
+                    else:
+                        raw = resolved.read_bytes()
+                except (OSError, ValueError, RuntimeError):
+                    add("error", "IMAGE_ASSET_UNREADABLE", location, "Image asset cannot be resolved or read.")
             dimensions = image_dimensions(raw) if raw else None
+            if dimensions and any(item.get(key) is not None and item[key] != dimensions[index]
+                                  for index, key in enumerate(("width", "height"))):
+                add("warning", "IMAGE_DIMENSIONS_MISMATCH", location,
+                    f"Declared image dimensions differ from actual {dimensions[0]}×{dimensions[1]} px.")
+            if raw is not None and item.get("sha256") and str(item["sha256"]).lower() != hashlib.sha256(raw).hexdigest():
+                add("error", "IMAGE_HASH_MISMATCH", location, "Declared image sha256 differs from its actual bytes.")
+            if raw is not None and item.get("byteSize") is not None and item["byteSize"] != len(raw):
+                add("warning", "IMAGE_BYTE_SIZE_MISMATCH", location,
+                    f"Declared image byteSize differs from actual {len(raw)} bytes.")
             if dimensions and max(dimensions) < 800:
-                add("warning", "IMAGE_LOW_RESOLUTION", location, f"Embedded image is only {dimensions[0]}×{dimensions[1]} px.")
+                add("warning", "IMAGE_LOW_RESOLUTION", location, f"{label} image is only {dimensions[0]}×{dimensions[1]} px.")
             if raw and len(raw) > 2_500_000:
-                add("warning", "IMAGE_WEB_WEIGHT", location, f"Embedded source is {len(raw) / 1_000_000:.1f} MB; publish an optimized derivative.")
+                add("warning", "IMAGE_WEB_WEIGHT", location, f"{label} source is {len(raw) / 1_000_000:.1f} MB; publish an optimized derivative.")
 
     return findings
 

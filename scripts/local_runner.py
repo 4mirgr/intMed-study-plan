@@ -858,7 +858,7 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
             })
             lesson_count += 1
         # Backward-compatible fallback for drafts made before rich lesson sections existed.
-        if not lesson_count:
+        if not lesson_count and not isinstance(draft.get("questionBank"), dict):
             outline = [publish_text(row) for row in (draft.get("lessonOutline") or [])]
             paragraphs = [value for value in [summary, *outline] if value]
             if paragraphs:
@@ -870,7 +870,18 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
         for index, row in enumerate(draft.get("mcqDrafts") or []):
             if not isinstance(row, dict) or len(row.get("options") or []) != 4:
                 continue
+            if row.get("sourceQuestionId") and isinstance(draft.get("questionBank"), dict):
+                bank = draft["questionBank"]
+                if bank.get("complete") is not True or not any(
+                    question.get("id") == row["sourceQuestionId"] and question.get("status") == "ready"
+                    for question in bank.get("questions", []) if isinstance(question, dict)
+                ):
+                    continue
             question = {key: row[key] for key in ("stem", "options", "correctIndex", "explanation", "optionExplanations") if key in row}
+            if row.get("origin") in ("source", "authored"):
+                question["origin"] = row["origin"]
+            if isinstance(row.get("sourceQuestionId"), str):
+                question["sourceQuestionId"] = row["sourceQuestionId"]
             question.update({"id": item_id + "-mcq-" + str(index + 1), "reviewStatus": "reviewed",
                              "sourceRefs": source_refs(row)})
             payload.setdefault("mcq", []).append(question)

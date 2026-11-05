@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="stylesheet" href="intmed.css?v=4360037f6eb06d74">
-<link rel="stylesheet" href="content-review.css?v=0b4e8e36b1035e6b">
+<link rel="stylesheet" href="content-review.css?v=71a4d7459c108de2">
 <link rel="stylesheet" href="pwa.css?v=fd05bfbc6b4b22fc">
 
 <div class="login-gate" id="loginGate" dir="rtl" lang="fa">
@@ -382,6 +382,8 @@
     </div>
     <fieldset class="content-review-generation" id="contentReviewGeneration"><legend>مرحلهٔ دوم · چه چیزی ساخته شود؟</legend>
       <p>فقط خروجی‌هایی که واقعاً لازم دارید انتخاب کنید؛ این کار مصرف اعتبار و زمان را کم می‌کند.</p>
+      <label>نوع محتوای ورودی<select id="contentReviewSourceMode"><option value="auto">تشخیص خودکار</option><option value="question_bank">بانک سؤال و پاسخنامه</option><option value="prose">متن آموزشی / درسنامه</option></select></label>
+      <p class="section-caption">در حالت بانک سؤال، سؤال‌ها و پاسخ‌های مستند حفظ می‌شوند و درسنامه و فلش‌کارت از نکات پاسخ ساخته می‌شوند. پاسخ‌های ناقص یا متناقض برای بررسی جدا می‌مانند.</p>
       <div class="content-review-generation-options">
         <label><input type="checkbox" name="contentReviewOutput" value="lesson"> درسنامهٔ کامل</label>
         <label><input type="checkbox" name="contentReviewOutput" value="flashcards"> فلش‌کارت</label>
@@ -444,7 +446,7 @@
 
 <script src="config.js?v=066d4f9726ed485f"></script>
 <script src="js/intmed-backend.js?v=902b3cff30204ee7"></script>
-<script src="js/intmed-content-review.js?v=f7db0b78407b3de1"></script>
+<script src="js/intmed-content-review.js?v=d8721db4eed741a9"></script>
 <script src="js/intmed-theme.js?v=f593546dd99ba332"></script>
 <script src="js/intmed-registration.js?v=5115d87c275f66f1"></script>
 <script src="js/intmed-login.js?v=a253083de768cbde"></script>
@@ -454,5 +456,5 @@
 <script src="js/intmed-dashboard.js?v=399f81cf9834a562"></script>
 <script src="js/intmed-support.js?v=00ff7ed16170eee9"></script>
 <script src="js/intmed-motion.js?v=5185491e3eeace42"></script>
-<script src="js/intmed-app.js?v=4e7f1f33090b9cdf"></script>
+<script src="js/intmed-app.js?v=6ddeda037468aaeb"></script>
 <script src="js/intmed-pwa.js?v=824f130f71f1e9ce"></script>

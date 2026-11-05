@@ -318,12 +318,17 @@ def process_job(job_id: str, capability: str) -> None:
             raise ProcessingError("job_outputs_invalid")
         progress = job.get("progress") if isinstance(job.get("progress"), dict) else {}
         completed = progress.get("completedOutputs") or []
-        ordered = [value for value in ("lesson", "flashcards", "mcq", "kf") if value in outputs]
+        # Preparation is internal to the capability-scoped job; it is never a
+        # user-requested publishable output and cannot complete the whole job.
+        ordered = ["source_questions", *[value for value in ("lesson", "flashcards", "mcq", "kf") if value in outputs]]
         for output in ordered:
             if output not in completed:
                 previous = (progress.get("nextChunkIndex") or {}).get(output, 0)
                 for _ in range(2000):
                     step = api(job_id, capability, "generate_step", output=output)
+                    if isinstance(step.get("progress"), dict):
+                        progress = step["progress"]
+                        completed = progress.get("completedOutputs") or []
                     if step.get("completed") is True:
                         return
                     if step.get("outputComplete") is True:

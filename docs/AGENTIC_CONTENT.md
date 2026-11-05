@@ -23,6 +23,45 @@ pushes, and checks production.
 
 ## PDF to published topic
 
+### Question-bank revision approved 2026-11-05 (Tehran)
+
+Question-bank sources are not prose lessons. The durable generator first performs the internal
+`source_questions` stage, caching `draft_json.questionBank` against the extracted-text SHA-256.
+The reviewer can select auto detection, question bank, or prose mode. Prose sources keep the
+lesson-first route below. Original MCQs retain their option ordering, source question number,
+question/answer pages, `sourceQuestionId` and `origin: source`; do not regenerate them from a
+paraphrased lesson. Source MCQ-only imports need no extra lesson model call.
+
+Missing/ambiguous/conflicting answers, unverifiable quotes/options, changed clinical numbers or
+negations, duplicate source numbers and visibly omitted questions stay `needs_review`, visible but
+excluded from teaching generation. Structural readiness is NOT clinical approval. Lessons and
+cards use only the supported question/answer evidence; do not turn distractors into facts or
+invent explanations when the source only gives a key. Source evidence stays read-only; generated
+text is editable with revision checks and readable previews. Publishing never auto-polishes prose,
+and a question bank's summary/outline is never published as a substitute for a real lesson.
+
+Chunked source preparation uses bounded overlap and an explicit full-file key index. Very large
+answer prose is stopped with `answer_context_too_large`, not silently truncated. Auto detection and
+evidence matching are conservative and are not a benchmarked guarantee of complete OCR or semantic
+equivalence. Multi-topic mapping, uncertain-source correction and independent clinical review are
+still separate work. No draft was approved or published to test these changes.
+
+The weekly no-model audit also inspects canonical local image existence, topic confinement,
+actual PNG/JPEG/GIF dimensions, size/hash consistency and provenance. SVG/WebP dimensions remain
+unverified by that dependency-free checker. Audits propose findings, not medical changes.
+
+Official source checks (2026-11-05): [McGraw Hill's Harrison 22e announcement](https://www.mheducation.com/about-us/news-insights/press-releases/mcgraw-hill-releases-new-edition-of-harrisons-principles-of-internal-medicine.html)
+and [AccessMedicine](https://accessmedicine.mhmedical.com/book.aspx?bookid=3541) establish the 2025
+edition, not access to its subscription chapters. [Commons Schistocytes](https://commons.wikimedia.org/wiki/File:Schistocytes.jpg)
+is CC0 and [Spherocytes](https://commons.wikimedia.org/wiki/File:Spherocytes_(4670166434).jpg) is CC BY 2.0;
+retain exact file licensing/creator metadata. [ASH permissions](https://imagebank.hematology.org/permissions)
+do not grant public-network reposting merely by citation. No automatic book-image import is enabled.
+
+Always-on model/web research needs an explicit budget; connected research tools may consume credits.
+The current weekly audit has no model calls. Telegram publish approval is NOT implemented: it must
+bind authorized private chat+sender, exact draft revision/hash and expiring one-use intent, and reuse
+the existing clinical/provenance gates. Model confidence alone cannot authorize publication.
+
 ### Approved revision, 2026-11-03
 
 Telegram remains intake. Extract/cache source material once, map it into topic-sized packages,

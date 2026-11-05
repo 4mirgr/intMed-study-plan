@@ -63,9 +63,10 @@ stored.intmed_content_ingest.status='accepted';
 workerResult={processed:0,reason:'empty_or_busy'};
 assert.equal((await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true})).status,202);
 assert.equal(patches.at(-1).value.status,'error');assert.equal(patches.at(-1).value.error_code,'reanalysis_dispatch_failed');assert.match(patches.at(-1).url,/review_revision=eq.8/);
-response=await request({action:'generate',draftId,revision:7,outputs:['mcq']});
+response=await request({action:'generate',draftId,revision:7,outputs:['mcq'],sourceMode:'question_bank'});
 assert.equal(response.status,202);assert.equal((await response.json()).jobId,adminId);
 assert.equal(jobDispatches.at(-1).kind,'generate');assert.equal(jobDispatches.at(-1).revision,7);
+assert.equal(jobDispatches.at(-1).sourceMode,'question_bank','the selected source interpretation must reach the durable generation job');
 stored.intmed_content_ingest.kind='pdf';stored.intmed_content_ingest.mime_type='application/pdf';
 response=await request({action:'reanalyze',draftId,revision:7,confirmReanalysis:true});
 assert.equal(response.status,202);assert.equal(jobDispatches.at(-1).kind,'extract');
@@ -149,9 +150,10 @@ await page.evaluate(()=>{
   let job=null,pendingOutputs=[];let draft={id:'11111111-1111-4111-8111-111111111111',ingest_id:'22222222-2222-4222-8222-222222222222',status:'draft_ready',topic_id:'id-cns-meningoencephalitis',topic_confidence:.9,title:'انسفالیت',source_summary:'خلاصه',review_revision:0,updated_at:'2026-10-27T10:00:00Z',model:'gemma',draft_json:{lessonOutline:['تعریف و رویکرد تشخیصی انسفالیت ویروسی'],lessonDrafts:[{heading:'رویکرد',paragraphs:['متن کامل درسنامه'],keyPoints:['MRI و CSF']}],documentExtraction:{pageCount:2,pages:[{page:1,heading:'تعریف',text:'تب و تغییر سطح هوشیاری',unreadable:false},{page:2,heading:'تشخیص',text:'MRI و CSF',unreadable:false}],warnings:[]},sourceEvidence:[{claim:'تب و تغییر سطح هوشیاری از تظاهرات مهم هستند'},{claim:'MRI و بررسی CSF در ارزیابی تشخیصی نقش دارند'}],medicalWarnings:['نیازمند بازبینی'],insufficientEvidence:[],mcqDrafts:[],kfDrafts:[],imageCandidates:[]},intmed_content_ingest:{kind:'photo',mime_type:'image/png',content_text:'متن منبع'}};
   draft.reviewer_note='توضیح خطای شناخته‌شده <img src=x onerror=alert(1)>';
   draft.draft_json.reviewFindings=[{severity:'blocking',status:'open',scope:'زمان‌بندی دارو',finding:'زمان‌بندی باید با مرجع تطبیق داده شود.',evidenceUrl:'https://example.test/reference'},{severity:'info',status:'open',scope:'یادداشت',finding:'اطلاعات تکمیلی',evidenceUrl:'javascript:alert(1)'}];
-  window.fetch=async (url,options)=>{if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]})};const payload=JSON.parse(options.body);window.__calls.push(payload);if(payload.action==='list')return {ok:true,status:200,text:async()=>JSON.stringify({items:[draft],counts:{[draft.status]:1}})};if(payload.action==='detail'){if(job&&job.status==='queued'&&window.__finishJob){job={...job,status:'completed',progress:{completedOutputs:pendingOutputs}};draft={...draft,review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,mcqDrafts:[{stem:'نمونه',options:['الف','ب','ج','د'],correctIndex:0,explanation:'شرح'}],generation:{phase:'generated',generated:pendingOutputs}}};}return {ok:true,status:200,text:async()=>JSON.stringify({draft,sourceUrl:null,job})};}if(payload.action==='save_artifacts'){if(window.__rejectEdit)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};const json={...draft.draft_json};Object.keys(payload.artifacts).forEach(kind=>{json[kind]=payload.artifacts[kind].map(change=>({...draft.draft_json[kind][change.index],...change.value}));});draft={...draft,status:'draft_ready',draft_json:json,review_revision:draft.review_revision+1};return {ok:true,status:200,text:async()=>JSON.stringify({message:'اصلاحات ذخیره شد',draft})};}if(payload.action==='resolve_finding'){if(window.__rejectResolution)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};draft={...draft,status:'draft_ready',review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,reviewFindings:draft.draft_json.reviewFindings.map((item,index)=>index===payload.findingIndex?{...item,status:'resolved',resolution:{note:payload.resolution}}:item)}};return {ok:true,status:200,text:async()=>JSON.stringify({message:'نتیجهٔ بررسی ثبت شد',draft})};}if(payload.action==='generate'){pendingOutputs=payload.outputs;job={id:'job-1',kind:'generate',status:'queued',progress:{}};return {ok:true,status:202,text:async()=>JSON.stringify({jobId:job.id,status:job.status,progress:job.progress,draft})};}draft={...draft,status:payload.action==='approve'?'approved':payload.action==='publish'?'publish_requested':'draft_ready',review_revision:draft.review_revision+1,target_topic_is_new:payload.createTopic,target_topic_label:payload.newTopicLabel,target_category_id:payload.newTopicCategoryId,target_content_kind:payload.targetKind,target_source_class:payload.sourceClass,target_rights_note:payload.rightsNote,source_summary:payload.sourceSummary};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};};
+  window.fetch=async (url,options)=>{if(String(url).includes('taxonomy.json'))return {ok:true,json:async()=>({categories:[{id:'id',label:'عفونی',topics:[{id:'id-cns-meningoencephalitis',label:'مننژیت و انسفالیت'}]}]})};const payload=JSON.parse(options.body);window.__calls.push(payload);if(payload.action==='list')return {ok:true,status:200,text:async()=>JSON.stringify({items:[draft],counts:{[draft.status]:1}})};if(payload.action==='detail'){if(job&&job.status==='queued'&&window.__finishJob){job={...job,status:'completed',progress:{completedOutputs:pendingOutputs}};draft={...draft,review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,mcqDrafts:[{stem:'نمونه',options:['الف','ب','ج','د'],correctIndex:0,explanation:'شرح'}],generation:{phase:'generated',generated:pendingOutputs}}};}return {ok:true,status:200,text:async()=>JSON.stringify({draft,sourceUrl:null,job})};}if(payload.action==='save_artifacts'){if(window.__rejectEdit)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};const json={...draft.draft_json};Object.keys(payload.artifacts).forEach(kind=>{json[kind]=payload.artifacts[kind].map(change=>({...draft.draft_json[kind][change.index],...change.value}));});draft={...draft,status:'draft_ready',draft_json:json,review_revision:draft.review_revision+1};return {ok:true,status:200,text:async()=>JSON.stringify({message:'اصلاحات ذخیره شد',draft})};}if(payload.action==='resolve_finding'){if(window.__rejectResolution)return {ok:false,status:409,text:async()=>JSON.stringify({message:'نسخهٔ محتوا تغییر کرده'})};draft={...draft,status:'draft_ready',review_revision:draft.review_revision+1,draft_json:{...draft.draft_json,reviewFindings:draft.draft_json.reviewFindings.map((item,index)=>index===payload.findingIndex?{...item,status:'resolved',resolution:{note:payload.resolution}}:item)}};return {ok:true,status:200,text:async()=>JSON.stringify({message:'نتیجهٔ بررسی ثبت شد',draft})};}if(payload.action==='generate'){pendingOutputs=payload.outputs;job={id:'job-1',kind:'generate',status:'queued',progress:{completedOutputs:['source_questions']}};return {ok:true,status:202,text:async()=>JSON.stringify({jobId:job.id,status:job.status,progress:job.progress,draft})};}draft={...draft,status:payload.action==='approve'?'approved':payload.action==='publish'?'publish_requested':'draft_ready',review_revision:draft.review_revision+1,target_topic_is_new:payload.createTopic,target_topic_label:payload.newTopicLabel,target_category_id:payload.newTopicCategoryId,target_content_kind:payload.targetKind,target_source_class:payload.sourceClass,target_rights_note:payload.rightsNote,source_summary:payload.sourceSummary};return {ok:true,status:200,text:async()=>JSON.stringify({message:'ok',draft})};};
   window.IntMedBackend={session:()=>({access_token:'test-token'}),refreshSession:async()=>({access_token:'test-token'})};
 });
+await page.addStyleTag({path:path.join(root,'docs/content-review.css')});
 await page.addScriptTag({path:path.join(root,'docs/js/intmed-content-review.js')});
 await page.click('#contentReviewRefresh');
 await page.waitForSelector('[data-review-id]');
@@ -187,6 +189,12 @@ assert.equal(await page.inputValue('#contentReviewTopicSelect'),'id-cns-meningoe
 assert.ok((await page.inputValue('#contentReviewSummary')).length>=60);
 assert.match(await page.textContent('#contentReviewDraftBody'),/2 از 2 صفحه/);
 assert.match(await page.textContent('#contentReviewDraftBody'),/متن کامل درسنامه/);
+// A readable preview must not require looking through input fields. Switching
+// modes must retain unsaved paragraphs and must not mutate extracted source text.
+assert.equal(await page.locator('[data-artifact-kind="lessonDrafts"] .review-artifact-preview').isVisible(),true);
+assert.equal(await page.locator('[data-artifact-kind="lessonDrafts"] fieldset').isVisible(),false);
+await page.click('[data-artifact-kind="lessonDrafts"] .review-artifact-mode');
+assert.equal(await page.locator('[data-artifact-kind="lessonDrafts"] fieldset').isVisible(),true);
 assert.match(await page.textContent('.review-findings'),/زمان‌بندی باید با مرجع/);
 assert.match(await page.textContent('.review-findings'),/توضیح خطای شناخته‌شده/);
 assert.equal(await page.locator('.review-findings img').count(),0,'reviewer notes must remain escaped text');
@@ -203,7 +211,20 @@ await page.evaluate(()=>{window.__rejectResolution=false;});
 await page.click('[data-finding-index="0"] .review-finding-resolve');
 await page.waitForSelector('[data-finding-index="0"].is-resolved',{state:'attached'});
 assert.match(await page.textContent('[data-finding-index="0"]'),/پاسخ اصلاح شد/);
+await page.click('[data-artifact-kind="lessonDrafts"] .review-artifact-mode');
 await page.fill('[data-artifact-field="paragraphs"]','متن اصلاح‌شدهٔ درسنامه\n\nپاراگراف دوم');
+await page.click('[data-artifact-kind="lessonDrafts"] .review-artifact-mode');
+assert.match(await page.textContent('[data-artifact-kind="lessonDrafts"] .review-artifact-preview'),/پاراگراف دوم/);
+await page.click('[data-artifact-kind="lessonDrafts"] .review-artifact-mode');
+assert.equal(await page.inputValue('[data-artifact-field="paragraphs"]'),'متن اصلاح‌شدهٔ درسنامه\n\nپاراگراف دوم');
+page.once('dialog',dialog=>dialog.dismiss());
+await page.locator('#contentReviewDialog form[method="dialog"] button').click();
+assert.equal(await page.locator('#contentReviewDialog').evaluate(node=>node.open),true,'canceling discard must keep the review open');
+assert.equal(await page.inputValue('[data-artifact-field="paragraphs"]'),'متن اصلاح‌شدهٔ درسنامه\n\nپاراگراف دوم');
+page.once('dialog',dialog=>dialog.dismiss());
+await page.keyboard.press('Escape');
+assert.equal(await page.locator('#contentReviewDialog').evaluate(node=>node.open),true,'Escape must preserve unsaved edits when discard is canceled');
+assert.equal(await page.evaluate(()=>!window.dispatchEvent(new Event('beforeunload',{cancelable:true}))),true,'navigation must warn while review edits are unsaved');
 await page.check('[name="contentReviewOutput"][value="mcq"]');
 await page.click('#contentReviewGenerate');
 assert.match(await page.textContent('#contentReviewActionStatus'),/ابتدا اصلاحات/);
@@ -217,14 +238,19 @@ await page.click('#contentReviewSaveArtifacts');
 await page.waitForFunction(()=>document.getElementById('contentReviewActionStatus').textContent.includes('اصلاحات ذخیره شد'));
 assert.equal(await page.inputValue('[data-artifact-field="paragraphs"]'),'متن اصلاح‌شدهٔ درسنامه\n\nپاراگراف دوم');
 await page.check('[name="contentReviewOutput"][value="mcq"]');
+await page.selectOption('#contentReviewSourceMode','question_bank');
 await page.click('#contentReviewGenerate');
 await page.waitForFunction(()=>window.__calls.some(call=>call.action==='generate'));
+assert.equal((await page.evaluate(()=>window.__calls)).find(call=>call.action==='generate').sourceMode,'question_bank');
 await page.waitForFunction(()=>document.getElementById('contentReviewGenerationStatus').textContent.includes('می‌توانید صفحه را ببندید'));
+assert.match(await page.textContent('#contentReviewGenerationStatus'),/تطبیق سؤال و پاسخنامه/);
+assert.doesNotMatch(await page.textContent('#contentReviewGenerationStatus'),/source_questions/);
 assert.equal(await page.locator('#contentReviewPublish').isDisabled(),true);
 await page.evaluate(()=>document.getElementById('contentReviewDialog').close());
 await page.click('[data-review-id]');
 await page.waitForSelector('#contentReviewDialog[open]');
 await page.waitForFunction(()=>document.getElementById('contentReviewGenerationStatus').textContent.includes('در صف پردازش'));
+assert.equal(await page.inputValue('#contentReviewSourceMode'),'auto','opening another review session must not reuse a prior source-mode override');
 await page.evaluate(()=>{window.__finishJob=true;});
 await page.waitForSelector('[data-artifact-kind="mcqDrafts"]',{timeout:12000});
 assert.match(await page.textContent('#contentReviewDraftBody'),/نمونه/);
@@ -351,5 +377,66 @@ await page.evaluate(()=>{
 await page.click('[data-review-id]');await page.waitForSelector('.content-review-extraction');
 assert.equal(await page.textContent('.content-review-extraction'),'متن اصلی پیام بدون بازنویسی ذخیره شده است؛ شمارش صفحات PDF مطرح نیست.');
 assert.doesNotMatch(await page.textContent('#contentReviewDraftBody'),/پوشش گزارش‌شده توسط مدل|استخراج صفحه‌به‌صفحه/);
+// Source questions remain separate, read-only evidence. An absent answer or an
+// incomplete option list must never silently select option one for publication.
+await page.evaluate(()=>{
+  const previous=window.fetch;
+  window.fetch=async(url,options)=>{
+    const response=await previous(url,options);
+    if(!String(url).includes('taxonomy.json')&&JSON.parse(options.body).action==='detail'){
+      const value=JSON.parse(await response.text());value.draft.status='draft_ready';
+      value.draft.draft_json.questionBank={version:1,mode:'question_bank',complete:!window.__incompleteBank,updatedAt:'2026-11-05T08:00:00Z',questions:[
+        {id:'source-1',sourceNumber:'۳',stem:'سؤال اصلی از PDF <img src=x onerror=alert(1)>',options:['الف','ب','ج','د'],correctIndex:2,explanation:'توضیح پاسخنامهٔ اصلی',sourcePages:[4],answerSourcePages:[9],answerEvidence:'گزینه ج در پاسخنامه',status:'ready',issues:[]},
+        {id:'source-2',sourceNumber:'۴',stem:'سؤال مبهم بدون کلید',options:['الف','ب'],correctIndex:null,explanation:'',sourcePages:[5],answerSourcePages:[],answerEvidence:'',status:'needs_review',issues:['دو گزینه ناخواناست <script>alert(1)</script>']},
+      ]};
+      if(window.__emptyBank)value.draft.draft_json.questionBank.questions=[];
+      value.draft.draft_json.mcqDrafts=[{stem:'آزمون از سؤال اصلی',options:['a','b','c','d'],correctIndex:2,explanation:'source answer',sourceQuestionId:'source-1',origin:'source'},
+        {stem:'آزمون تألیفی تازه',options:['a','b','c','d'],correctIndex:1,explanation:'authored answer',origin:'authored'}];
+      value.sourceUrl='https://example.test/source.pdf?token=private';
+      return {ok:true,status:200,text:async()=>JSON.stringify(value)};
+    }return response;
+  };document.getElementById('contentReviewDialog').close();
+});
+await page.click('[data-review-id]');await page.waitForSelector('.review-question-bank');
+assert.equal(await page.locator('.review-source-question').count(),2);
+assert.match(await page.textContent('[data-source-question-id="source-1"]'),/توضیح پاسخنامهٔ اصلی/);
+assert.match(await page.textContent('[data-source-question-id="source-1"]'),/صفحات پاسخنامه: 9/);
+assert.equal(await page.locator('[data-source-question-id="source-1"] .is-correct').count(),1);
+assert.match(await page.textContent('[data-source-question-id="source-1"] .is-correct'),/ج/);
+assert.equal(await page.locator('[data-source-question-id="source-2"] .is-correct').count(),0);
+assert.match(await page.textContent('[data-source-question-id="source-2"]'),/نیازمند بررسی/);
+assert.match(await page.textContent('[data-source-question-id="source-2"]'),/کلید.*مشخص نیست/);
+assert.equal(await page.locator('.review-question-bank img,.review-question-bank script,.review-question-bank textarea').count(),0);
+assert.equal(await page.locator('.review-question-bank [data-artifact-field]').count(),0);
+await page.selectOption('#contentReviewQuestionFilter','needs_review');
+assert.equal(await page.locator('[data-source-question-id="source-1"]').isVisible(),false);
+assert.equal(await page.locator('[data-source-question-id="source-2"]').isVisible(),true);
+assert.match(await page.textContent('[data-artifact-kind="mcqDrafts"][data-artifact-index="0"] header'),/از سؤال اصلی/);
+assert.match(await page.textContent('[data-artifact-kind="mcqDrafts"][data-artifact-index="1"] header'),/تألیفی/);
+await page.evaluate(()=>{window.__incompleteBank=true;document.getElementById('contentReviewDialog').close();});
+await page.click('[data-review-id]');await page.waitForSelector('.review-question-bank');
+assert.match(await page.textContent('.review-question-bank'),/استخراج.*هنوز کامل نشده/);
+assert.equal(await page.locator('.review-question-bank .is-correct').count(),0,'a staged source inventory must not claim its answer keys are ready');
+await page.evaluate(()=>{window.__emptyBank=true;document.getElementById('contentReviewDialog').close();});
+await page.click('[data-review-id]');
+await page.waitForFunction(()=>document.getElementById('contentReviewTitle').value.length>0);
+assert.equal(await page.locator('.review-question-bank').count(),1,'an empty staged bank still needs a visible processing state');
+await page.click('[data-artifact-kind="lessonDrafts"] .review-artifact-mode');
+await page.fill('[data-artifact-field="paragraphs"]','ویرایش موقت برای آزمون انصراف');
+page.once('dialog',dialog=>dialog.accept());
+await page.locator('#contentReviewDialog form[method="dialog"] button').click();
+assert.equal(await page.locator('#contentReviewDialog').evaluate(node=>node.open),false,'accepting discard must close the native dialog');
+assert.equal(await page.evaluate(()=>!window.dispatchEvent(new Event('beforeunload',{cancelable:true}))),false,'an explicitly discarded closed review must not warn on navigation');
+await page.click('[data-review-id]');await page.waitForSelector('#contentReviewDialog[open]');
+assert.doesNotMatch(await page.inputValue('[data-artifact-field="paragraphs"]'),/ویرایش موقت/,'discard must not send unsaved content to the backend');
+assert.equal(await page.evaluate(()=>!window.dispatchEvent(new Event('beforeunload',{cancelable:true}))),false,'clean review must not block navigation');
+await page.fill('#contentReviewTitle','عنوان اصلاح‌شده و ذخیره‌نشده');
+assert.equal(await page.evaluate(()=>!window.dispatchEvent(new Event('beforeunload',{cancelable:true}))),true,'unsaved routing/title edits must receive the same navigation protection');
+page.once('dialog',dialog=>dialog.dismiss());await page.keyboard.press('Escape');
+assert.equal(await page.locator('#contentReviewDialog').evaluate(node=>node.open),true);
+assert.equal(await page.inputValue('#contentReviewTitle'),'عنوان اصلاح‌شده و ذخیره‌نشده');
+await page.click('[data-review-action="save"]');
+await page.waitForSelector('#contentReviewDialog:not([open])',{state:'attached'});
+assert.equal(await page.evaluate(()=>!window.dispatchEvent(new Event('beforeunload',{cancelable:true}))),false,'successful controlled save-and-close must clear navigation protection');
 await browser.close();
 console.log('Content review browser test passed.');

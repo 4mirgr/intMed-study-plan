@@ -61,6 +61,8 @@ Deno.serve(async req=>{
     if(action==='dispatch'){
       if(!internal)return reply(403,{message:'Internal dispatch only'});
       const kind=clean(input.kind,20),draftId=clean(input.draftId,40),ingestId=clean(input.ingestId,40);
+      const sourceMode=input.sourceMode===undefined?'auto':input.sourceMode;
+      if(!['auto','question_bank','prose'].includes(sourceMode))return reply(400,{message:'نوع محتوای منبع معتبر نیست.',code:'invalid_source_mode'});
       if(!['extract','generate'].includes(kind)||(!uuid.test(draftId)&&!uuid.test(ingestId)))return reply(400,{message:'Invalid content job'});
       const github=Deno.env.get('INTMED_GITHUB_ACTIONS_TOKEN');if(!github)return reply(503,{message:'کلید اجرای GitHub تنظیم نشده است.',code:'github_token_missing'});
       let drafts=await db('intmed_content_drafts?'+(uuid.test(draftId)?'id=eq.'+draftId:'ingest_id=eq.'+ingestId)+'&select=*&limit=1'),draft=drafts[0];
@@ -78,18 +80,22 @@ Deno.serve(async req=>{
       if(input.revision!==undefined&&input.revision!==Number(draft.review_revision||0))return reply(409,{message:'پیش‌نویس تغییر کرده؛ آن را دوباره باز کنید.'});
       const requested=Array.isArray(input.outputs)?[...new Set(input.outputs.filter(output=>outputsAllowed.has(output)))]:[];
       if(kind==='generate'&&!requested.length)return reply(400,{message:'خروجی موردنظر را انتخاب کنید.'});
-      if(kind==='generate'&&!requested.includes('lesson')&&(!Array.isArray(draft.draft_json?.lessonDrafts)||!draft.draft_json.lessonDrafts.length||draft.draft_json?.generation?.chunkProgress?.lesson?.complete===false))requested.unshift('lesson');
+      const sourceMcqOnly=requested.length===1&&requested[0]==='mcq'&&(sourceMode==='question_bank'||(draft.draft_json?.questionBank?.complete===true&&draft.draft_json.questionBank.mode==='question_bank'));
+      if(kind==='generate'&&!sourceMcqOnly&&!requested.includes('lesson')&&(!Array.isArray(draft.draft_json?.lessonDrafts)||!draft.draft_json.lessonDrafts.length||draft.draft_json?.generation?.chunkProgress?.lesson?.complete===false))requested.unshift('lesson');
       requested.sort((a,b)=>a==='lesson'?-1:b==='lesson'?1:0);
       const active=await db('intmed_content_jobs?ingest_id=eq.'+sourceId+'&status=in.(queued,running)&order=created_at.desc&limit=1');
       if(active[0]){
         if(figuresOnly)return reply(409,{message:'Source already has an active job'});
-        if(Date.parse(active[0].updated_at)>Date.now()-25*60*1000)return reply(202,{ok:true,reused:true,...publicJob(active[0])});
+        if(Date.parse(active[0].updated_at)>Date.now()-25*60*1000){
+          if(kind==='generate'&&active[0].kind==='generate'&&(active[0].progress?.sourceMode||'auto')!==sourceMode)return reply(409,{message:'پردازش فعال با نوع منبع دیگری در حال اجراست؛ تا پایان آن صبر کنید.',code:'source_mode_conflict'});
+          return reply(202,{ok:true,reused:true,...publicJob(active[0])});
+        }
         await patchJob(active[0].id,{status:'error',error:'runner_lease_expired'},'&status=in.(queued,running)');
       }
       const previous=await db('intmed_content_jobs?draft_id=eq.'+draft.id+'&kind=eq.'+kind+'&status=eq.error&order=created_at.desc&limit=1');
-      const resume=previous[0]&&previous[0].expected_revision===Number(draft.review_revision||0)&&(previous[0].progress?.validationOnly===true)===validationOnly&&(previous[0].progress?.figuresOnly===true)===figuresOnly&&JSON.stringify(previous[0].outputs)===JSON.stringify(requested)?previous[0].progress:{};
+      const resume=previous[0]&&previous[0].expected_revision===Number(draft.review_revision||0)&&(previous[0].progress?.validationOnly===true)===validationOnly&&(previous[0].progress?.figuresOnly===true)===figuresOnly&&(kind!=='generate'||(previous[0].progress?.sourceMode||'auto')===sourceMode)&&JSON.stringify(previous[0].outputs)===JSON.stringify(requested)?previous[0].progress:{};
       const capability=token(),capabilityHash=await digest(capability),now=new Date().toISOString(),newId=crypto.randomUUID();
-      const rows=await db('intmed_content_jobs','POST',{id:newId,draft_id:draft.id,ingest_id:sourceId,kind,outputs:requested,expected_revision:Number(draft.review_revision||0),progress:{...(resume||{}),runId:resume?.runId||newId,...(validationOnly?{validationOnly:true}:{}),...(figuresOnly?{figuresOnly:true}:{})},capability_hash:capabilityHash,expires_at:new Date(Date.now()+2*3600*1000).toISOString(),created_at:now,updated_at:now},{Prefer:'return=representation'}),job=rows[0];
+      const rows=await db('intmed_content_jobs','POST',{id:newId,draft_id:draft.id,ingest_id:sourceId,kind,outputs:requested,expected_revision:Number(draft.review_revision||0),progress:{...(resume||{}),runId:resume?.runId||newId,...(kind==='generate'?{sourceMode}:{}),...(validationOnly?{validationOnly:true}:{}),...(figuresOnly?{figuresOnly:true}:{})},capability_hash:capabilityHash,expires_at:new Date(Date.now()+2*3600*1000).toISOString(),created_at:now,updated_at:now},{Prefer:'return=representation'}),job=rows[0];
       const dispatched=await fetch('https://api.github.com/repos/4mirgr/intMed-study-plan/actions/workflows/process-content.yml/dispatches',{method:'POST',headers:{Authorization:'Bearer '+github,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify({ref:'claude/quirky-ride-mavb6b',inputs:{job_id:job.id,capability}})});
       if(!dispatched.ok){await patchJob(job.id,{status:'error',error:'github_dispatch_'+dispatched.status});return reply(502,{message:'شروع پردازش ابری ناموفق بود.',code:'github_dispatch_'+dispatched.status});}
       return reply(202,{ok:true,...publicJob(job),message:'پردازش ابری ثبت شد؛ می‌توانید این پنجره را ببندید.'});
@@ -178,14 +184,17 @@ Deno.serve(async req=>{
     const figuresOnly=job.kind==='extract'&&action==='extract_result'&&job.progress?.figuresOnly===true;
     if(!validationOnly&&(!draft||Number(draft.review_revision||0)!==job.expected_revision||['publishing','publish_requested','rejected',...(figuresOnly?[]:['published'])].includes(draft.status)))return reply(409,{message:'پیش‌نویس هم‌زمان تغییر کرده است.',code:'stale_revision'});
     if(action==='generate_step'){
-      const output=clean(input.output,20);if(job.kind!=='generate'||!job.outputs.includes(output))return reply(400,{message:'Output not allowed'});
+      const output=clean(input.output,20);if(job.kind!=='generate'||(output!=='source_questions'&&!job.outputs.includes(output)))return reply(400,{message:'Output not allowed'});
       const completed=Array.isArray(job.progress?.completedOutputs)?job.progress.completedOutputs:[];
-      if(completed.includes(output))return reply(200,{ok:true,progress:job.progress,completed:false});
+      if(completed.includes(output))return reply(200,{ok:true,progress:job.progress,completed:false,outputComplete:true});
+      if(output!=='source_questions'&&!completed.includes('source_questions'))return reply(409,{message:'ابتدا بررسی سؤال‌های منبع باید کامل شود.',code:'source_questions_required'});
       const chunkIndex=Number(job.progress?.nextChunkIndex?.[output]||0);
-      const result=await fetch(base+'/functions/v1/intmed-content-generator',{method:'POST',headers:server,body:JSON.stringify({draftId:draft.id,revision:job.expected_revision,outputs:[output],chunkIndex,runId:job.progress?.runId||job.id})}),value=await result.json().catch(()=>({}));
+      const result=await fetch(base+'/functions/v1/intmed-content-generator',{method:'POST',headers:server,body:JSON.stringify({draftId:draft.id,revision:job.expected_revision,outputs:[output],chunkIndex,runId:job.progress?.runId||job.id,sourceMode:job.progress?.sourceMode||'auto'})}),value=await result.json().catch(()=>({}));
       if(!result.ok){await patchJob(job.id,{error:clean(value.code||value.message||'generation_failed',1000)},'&status=eq.running');return reply(result.status,{message:value.message||'تولید محتوا متوقف شد.',code:value.code||'generation_failed'});}
       const outputComplete=value.complete!==false;
-      const progress={...job.progress,completedOutputs:outputComplete?[...completed,output]:completed,nextChunkIndex:{...(job.progress?.nextChunkIndex||{}),[output]:Number(value.nextChunkIndex||chunkIndex+1)},totalChunks:{...(job.progress?.totalChunks||{}),[output]:Number(value.totalChunks||1)}},done=job.outputs.every(output=>progress.completedOutputs.includes(output));
+      const invalidated=output==='source_questions'&&value.sourceInvalidated===true&&!completed.includes('source_questions');
+      const priorCompleted=invalidated?[]:completed,priorNext=invalidated?{}:(job.progress?.nextChunkIndex||{}),priorTotal=invalidated?{}:(job.progress?.totalChunks||{});
+      const progress={...job.progress,completedOutputs:outputComplete?[...priorCompleted,output]:priorCompleted,nextChunkIndex:{...priorNext,[output]:Number(value.nextChunkIndex||chunkIndex+1)},totalChunks:{...priorTotal,[output]:Number(value.totalChunks||1)}},done=progress.completedOutputs.includes('source_questions')&&job.outputs.every(output=>progress.completedOutputs.includes(output));
       await patchJob(job.id,{progress,expected_revision:Number(value.draft.review_revision||0),status:done?'completed':'running',error:null},'&status=eq.running');
       return reply(200,{ok:true,progress,completed:done,outputComplete,nextChunkIndex:progress.nextChunkIndex[output],totalChunks:progress.totalChunks[output]});
     }
@@ -212,7 +221,7 @@ Deno.serve(async req=>{
         await patchJob(job.id,{status:'completed',progress:metrics,error:null},'&status=eq.running');
         return reply(200,{ok:true,completed:true,...(validationOnly?{validationOnly:true}:{figuresOnly:true}),metrics,quality});
       }
-      const sourceExtraction={jobId:job.id,pageCount:extraction.pageCount,pages,warnings,figures,storedFigureCount,figureUploadFailures,quality},old=object(draft.draft_json)?draft.draft_json:{};
+      const sourceExtraction={jobId:job.id,pageCount:extraction.pageCount,pages,warnings,figures,storedFigureCount,figureUploadFailures,quality},{questionBank:_oldQuestionBank,...old}=object(draft.draft_json)?draft.draft_json:{};
       const saved=await db('intmed_content_drafts?id=eq.'+draft.id+'&review_revision=eq.'+job.expected_revision+'&status=in.(draft_ready,approved,publish_error,error,processing,waiting_provider)','PATCH',{draft_json:{...old,documentExtraction:sourceExtraction,lessonDrafts:[],flashcardDrafts:[],mcqDrafts:[],kfDrafts:[],generation:{phase:'analysis',generated:[],available:['lesson','flashcards','mcq','kf'],extractionJobId:job.id}},extracted_text:pages.map(page=>'صفحه '+page.page+'\n'+page.text).join('\n\n'),review_revision:job.expected_revision+1,reviewed_by:null,reviewed_at:null,status:'processing',error_code:null,updated_at:new Date().toISOString()},{Prefer:'return=representation'});
       if(!saved.length)return reply(409,{message:'پیش‌نویس تغییر کرده است.',code:'stale_revision'});
       return reply(200,await finishRouting(job,quality,{pageCount:pages.length,unreadablePages,figureCount:figures.length,storedFigureCount,figureUploadFailureCount:figureUploadFailures.length}));

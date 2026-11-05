@@ -57,6 +57,8 @@ jobs:
       - run: node scripts/content_worker_test.mjs
       - run: node scripts/extraction_quality_test.mjs
       - run: node scripts/content_generator_test.mjs
+      - run: node scripts/question_source_test.mjs
+      - run: node scripts/notification_poll_test.mjs
       - run: node scripts/content_jobs_test.mjs
       - run: node scripts/content_queue_sweep_test.mjs
       - run: node scripts/content_queue_sweep_sql_test.mjs
@@ -68,6 +70,7 @@ jobs:
       - run: node scripts/local_content_runner_test.mjs
       - run: node scripts/local_content_runner_sql_test.mjs
       - run: python3 -m unittest scripts/local_runner_test.py
+      - run: python3 scripts/question_publish_test.py
       - run: python3 -m unittest scripts/publish_reviewed_content_test.py
       - run: python3 -m unittest scripts/local_runner_macos_test.py
       - run: node scripts/newsletter_test.mjs

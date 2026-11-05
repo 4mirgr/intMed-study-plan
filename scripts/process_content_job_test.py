@@ -200,11 +200,33 @@ class NativeContentProcessorTest(unittest.TestCase):
 
     def test_generation_resumes_only_unfinished_outputs_in_order(self):
         job = {"kind": "generate", "outputs": ["mcq", "lesson", "flashcards"],
-               "progress": {"completedOutputs": ["lesson"]}}
+               "progress": {"completedOutputs": ["source_questions", "lesson"]}}
         with mock.patch.object(subject, "api", side_effect=[{"job": job}, {"ok": True, "outputComplete": True}, {"ok": True, "completed": True}]) as api:
             subject.process_job("id", "cap")
         self.assertEqual([call.args[2] for call in api.call_args_list], ["claim", "generate_step", "generate_step"])
         self.assertEqual([call.kwargs["output"] for call in api.call_args_list[1:]], ["flashcards", "mcq"])
+
+    def test_source_question_preparation_precedes_requested_outputs(self):
+        job = {"kind": "generate", "outputs": ["lesson"], "progress": {}}
+        with mock.patch.object(subject, "api", side_effect=[{"job": job},
+                {"outputComplete": True, "completed": False},
+                {"outputComplete": True, "completed": True}]) as api:
+            subject.process_job("id", "cap")
+        self.assertEqual([call.kwargs["output"] for call in api.call_args_list[1:]],
+                         ["source_questions", "lesson"])
+
+    def test_new_source_evidence_rebuilds_previously_completed_lesson(self):
+        job = {"kind": "generate", "outputs": ["lesson", "mcq"],
+               "progress": {"completedOutputs": ["lesson"]}}
+        with mock.patch.object(subject, "api", side_effect=[{"job": job},
+                {"outputComplete": True, "completed": False,
+                 "progress": {"completedOutputs": ["source_questions"]}},
+                {"outputComplete": True, "completed": False,
+                 "progress": {"completedOutputs": ["source_questions", "lesson"]}},
+                {"outputComplete": True, "completed": True}]) as api:
+            subject.process_job("id", "cap")
+        self.assertEqual([call.kwargs["output"] for call in api.call_args_list[1:]],
+                         ["source_questions", "lesson", "mcq"])
 
     def test_extract_job_sends_extraction_only_to_private_bridge(self):
         job = {"kind": "extract", "source": {"downloadUrl": "private"}}
@@ -245,7 +267,7 @@ class NativeContentProcessorTest(unittest.TestCase):
         self.assertEqual(result["pages"][2]["text"], "Cached scan content")
 
     def test_generation_chunk_loop_resumes_until_output_complete(self):
-        job = {"kind": "generate", "outputs": ["lesson"], "progress": {"nextChunkIndex": {"lesson": 2}}}
+        job = {"kind": "generate", "outputs": ["lesson"], "progress": {"completedOutputs": ["source_questions"], "nextChunkIndex": {"lesson": 2}}}
         with mock.patch.object(subject, "api", side_effect=[{"job": job},
                 {"outputComplete": False, "nextChunkIndex": 3}, {"outputComplete": True, "completed": True}]) as api:
             subject.process_job("id", "cap")

@@ -215,7 +215,8 @@ Deno.serve(async req=>{
       const revision=Number(input.revision);if(!Number.isInteger(revision)||revision!==Number(draft.review_revision||0))return reply(409,{message:'این پیش‌نویس تغییر کرده؛ آن را دوباره باز کنید.'});
       const outputSet=new Set(['lesson','flashcards','mcq','kf']),outputs=Array.isArray(input.outputs)?[...new Set(input.outputs.map(value=>clean(value,20)).filter(value=>outputSet.has(value)))]:[];
       if(!outputs.length)return reply(400,{message:'حداقل یک خروجی را انتخاب کنید.'});
-      const generated=await fetch(base+'/functions/v1/intmed-content-jobs',{method:'POST',headers:server,body:JSON.stringify({action:'dispatch',kind:'generate',draftId,outputs,revision})}),result=await generated.json().catch(()=>({}));
+      const sourceMode=clean(input.sourceMode||'auto',30);if(!['auto','question_bank','prose'].includes(sourceMode))return reply(400,{message:'نوع ورودی معتبر نیست.'});
+      const generated=await fetch(base+'/functions/v1/intmed-content-jobs',{method:'POST',headers:server,body:JSON.stringify({action:'dispatch',kind:'generate',draftId,outputs,sourceMode,revision})}),result=await generated.json().catch(()=>({}));
       return reply(generated.status,{...result,draft,message:clean(result.message||(generated.ok?'تولید محتوا در صف ثبت شد؛ با بستن صفحه هم ادامه می‌یابد.':'ثبت درخواست تولید انجام نشد.'),240)});
     }
     if(!['save','approve','publish','reject','reopen'].includes(action))return reply(400,{message:'عملیات ناشناخته است.'});

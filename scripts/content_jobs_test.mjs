@@ -8,7 +8,7 @@ const code=fs.readFileSync('backend/supabase/functions/intmed-content-jobs/figur
 const draftId='11111111-1111-4111-8111-111111111111',ingestId='22222222-2222-4222-8222-222222222222',jobId='33333333-3333-4333-8333-333333333333';
 const sha=async text=>Buffer.from(await webcrypto.subtle.digest('SHA-256',new TextEncoder().encode(text))).toString('hex');
 
-async function harness({kind='generate',outputs=['lesson','mcq'],revision=4,progress={},chunks=1,failFirstStep=false,failFirstUpload=false,routingResult={processed:1}}={}){
+async function harness({kind='generate',outputs=['lesson','mcq'],revision=4,progress={},chunks=1,failFirstStep=false,failFirstUpload=false,routingResult={processed:1},sourceInvalidated=false}={}){
   let handler,dispatches=[],generator=[],wakes=0,ocrCalls=0,figures=[],uploads=[];
   const capability='a'.repeat(64),job={id:jobId,draft_id:draftId,ingest_id:ingestId,kind,outputs,status:'queued',expected_revision:revision,progress,capability_hash:await sha(capability),expires_at:'2099-01-01T00:00:00Z',created_at:new Date().toISOString(),updated_at:new Date().toISOString()};
   let draft={id:draftId,ingest_id:ingestId,status:'draft_ready',review_revision:revision,draft_json:{lessonDrafts:[{heading:'old',paragraphs:['prior lesson']}],sourceEvidence:['original evidence']}};
@@ -25,7 +25,7 @@ async function harness({kind='generate',outputs=['lesson','mcq'],revision=4,prog
       const input=JSON.parse(options.body);generator.push(input);assert.equal(input.revision,draft.review_revision);
       if(failFirstStep&&generator.length===1)return Response.json({message:'temporary',code:'provider_rate_limited'},{status:429});
       draft={...draft,review_revision:draft.review_revision+1};
-      return Response.json({ok:true,draft,nextChunkIndex:input.chunkIndex+1,totalChunks:chunks,complete:input.chunkIndex+1>=chunks});
+      return Response.json({ok:true,draft,nextChunkIndex:input.chunkIndex+1,totalChunks:chunks,complete:input.chunkIndex+1>=chunks,sourceInvalidated:input.outputs[0]==='source_questions'&&sourceInvalidated});
     }
     if(url.includes('/storage/v1/object/sign/'))return Response.json({signedURL:'/object/sign/intmed-content-inbox/private.pdf?token=signed'});
     if(url.includes('/storage/v1/object/intmed-content-inbox/')){assert.ok(figures.length,'quota reservation precedes storage upload');uploads.push({url,...options});return Response.json({},{status:failFirstUpload&&uploads.length===1?503:200});}
@@ -145,22 +145,28 @@ response=await app.call('kick');assert.equal(response.status,202);assert.equal(a
 response=await app.call('claim');assert.equal(response.status,200);assert.equal(response.body.job.revision,4);assert.ok(!JSON.stringify(response.body).includes('service'));
 assert.equal((await app.call('kick')).status,409);assert.equal(app.dispatches.length,1);
 assert.equal((await app.call('claim')).status,409,'same capability cannot claim duplicate concurrent runner');
-response=await app.call('generate_step',{output:'lesson'});assert.equal(response.body.completed,false);assert.deepEqual(response.body.progress.completedOutputs,['lesson']);assert.equal(app.job.expected_revision,5);
-response=await app.call('generate_step',{output:'mcq'});assert.equal(response.body.completed,true);assert.equal(app.job.status,'completed');assert.equal(app.generator.length,2);
+assert.equal((await app.call('generate_step',{output:'lesson'})).status,409,'lesson production must wait for extracted source questions');
+assert.equal(app.generator.length,0,'missing preparation cannot spend lesson tokens');
+response=await app.call('generate_step',{output:'source_questions'});
+assert.equal(response.status,200);assert.equal(response.body.outputComplete,true);assert.equal(response.body.completed,false,'preparation cannot finish a job with requested outputs remaining');
+assert.deepEqual(response.body.progress.completedOutputs,['source_questions']);
+assert.equal(app.generator[0].outputs[0],'source_questions');assert.equal(app.generator[0].sourceMode,'auto');
+response=await app.call('generate_step',{output:'lesson'});assert.equal(response.body.completed,false);assert.deepEqual(response.body.progress.completedOutputs,['source_questions','lesson']);assert.equal(app.job.expected_revision,6);
+response=await app.call('generate_step',{output:'mcq'});assert.equal(response.body.completed,true);assert.equal(app.job.status,'completed');assert.equal(app.generator.length,3);
 assert.equal((await app.call('kick')).status,409);assert.equal((await app.call('generate_step',{output:'mcq'})).body.cached,true);
 
-app=await harness({outputs:['lesson'],failFirstStep:true});await app.call('claim');
+app=await harness({outputs:['lesson'],failFirstStep:true,progress:{completedOutputs:['source_questions']}});await app.call('claim');
 assert.equal((await app.call('generate_step',{output:'lesson'})).status,429);assert.equal(app.job.status,'running');
 assert.equal((await app.call('generate_step',{output:'lesson'})).body.completed,true,'transient provider error remains retryable');
 
-app=await harness({outputs:['lesson'],chunks:2});await app.call('claim');
-response=await app.call('generate_step',{output:'lesson'});assert.equal(response.body.outputComplete,false);assert.deepEqual(response.body.progress.completedOutputs,[]);assert.equal(response.body.nextChunkIndex,1);assert.equal(app.job.status,'running');
+app=await harness({outputs:['lesson'],chunks:2,progress:{completedOutputs:['source_questions']}});await app.call('claim');
+response=await app.call('generate_step',{output:'lesson'});assert.equal(response.body.outputComplete,false);assert.deepEqual(response.body.progress.completedOutputs,['source_questions']);assert.equal(response.body.nextChunkIndex,1);assert.equal(app.job.status,'running');
 response=await app.call('generate_step',{output:'lesson'});assert.equal(response.body.completed,true);assert.equal(app.generator[1].chunkIndex,1);assert.equal(app.generator[1].runId,jobId);
 
 app=await harness();await app.call('claim');app.draft={...app.draft,review_revision:5};
 assert.equal((await app.call('generate_step',{output:'lesson'})).status,409);assert.equal(app.generator.length,0,'stale job never spends provider tokens');
 
-app=await harness({outputs:['lesson'],progress:{runId:jobId}});await app.call('claim');
+app=await harness({outputs:['lesson'],progress:{runId:jobId,completedOutputs:['source_questions']}});await app.call('claim');
 app.draft={...app.draft,review_revision:5,draft_json:{generation:{chunks:{runId:jobId},chunkProgress:{lesson:{runId:jobId,savedRevision:5}}}}};
 assert.equal((await app.call('generate_step',{output:'lesson'})).status,200);assert.equal(app.generator[0].revision,5,'exact saved-chunk revision recovers a lost HTTP response');
 
@@ -204,6 +210,51 @@ assert.equal(response.status,202);assert.deepEqual(app.job.outputs,['lesson','mc
 app=await harness({progress:{runId:'old-run',nextChunkIndex:{lesson:2},completedOutputs:[]}});app.job.status='error';app.draft={...app.draft,draft_json:{}};
 response=await app.request({action:'dispatch',kind:'generate',draftId,outputs:['mcq'],revision:4},true);
 assert.equal(response.status,202);assert.equal(app.job.progress.runId,'old-run','retry retains generator namespace');assert.equal(app.job.progress.nextChunkIndex.lesson,2);
+
+// Source mode is part of the durable generation intent, not a mutable step argument.
+app=await harness();app.job.status='completed';
+response=await app.request({action:'dispatch',kind:'generate',draftId,outputs:['lesson'],sourceMode:'question_bank'},true);
+assert.equal(response.status,202);assert.equal(app.job.progress.sourceMode,'question_bank');
+const modeCapability=app.dispatches[0].inputs.capability;
+await app.request({action:'claim',jobId,capability:modeCapability});
+await app.request({action:'generate_step',jobId,capability:modeCapability,output:'source_questions',sourceMode:'prose'});
+assert.equal(app.generator[0].sourceMode,'question_bank','runner cannot override the mode bound at dispatch');
+app=await harness();app.job.status='completed';
+assert.equal((await app.request({action:'dispatch',kind:'generate',draftId,outputs:['lesson'],sourceMode:'unknown'},true)).status,400);
+assert.equal(app.dispatches.length,0,'invalid modes cannot enqueue external work');
+
+app=await harness({outputs:['lesson'],progress:{runId:'question-run',sourceMode:'question_bank',nextChunkIndex:{source_questions:2}}});app.job.status='error';
+response=await app.request({action:'dispatch',kind:'generate',draftId,outputs:['lesson'],sourceMode:'prose'},true);
+assert.equal(response.status,202);assert.equal(app.job.progress.sourceMode,'prose');assert.notEqual(app.job.progress.runId,'question-run','retry in another mode must not reuse previous extraction decisions');
+assert.equal(app.job.progress.nextChunkIndex,undefined);
+app=await harness({outputs:['lesson'],progress:{runId:'question-run',sourceMode:'question_bank',nextChunkIndex:{source_questions:2}}});app.job.status='error';
+response=await app.request({action:'dispatch',kind:'generate',draftId,outputs:['lesson'],sourceMode:'question_bank'},true);
+assert.equal(app.job.progress.runId,'question-run');assert.equal(app.job.progress.nextChunkIndex.source_questions,2);
+
+app=await harness({progress:{completedOutputs:['lesson'],nextChunkIndex:{lesson:3},totalChunks:{lesson:3}},sourceInvalidated:true});await app.call('claim');
+response=await app.call('generate_step',{output:'source_questions'});
+assert.deepEqual(response.body.progress.completedOutputs,['source_questions'],'new question evidence invalidates completed legacy lesson work');
+assert.equal(response.body.progress.nextChunkIndex.lesson,undefined);assert.equal(response.body.progress.totalChunks.lesson,undefined);
+assert.equal(response.body.completed,false);
+response=await app.call('generate_step',{output:'lesson'});assert.equal(response.status,200);assert.equal(app.generator[1].chunkIndex,0,'invalidated lesson restarts from sourcebank');
+
+app=await harness();app.job.status='completed';app.draft={...app.draft,draft_json:{}};
+response=await app.request({action:'dispatch',kind:'generate',draftId,outputs:['mcq'],sourceMode:'question_bank'},true);
+assert.deepEqual(app.job.outputs,['mcq'],'a question-bank import does not require unrelated lesson generation');
+app=await harness();app.job.status='completed';app.draft={...app.draft,draft_json:{questionBank:{complete:true,mode:'question_bank'}}};
+response=await app.request({action:'dispatch',kind:'generate',draftId,outputs:['mcq']},true);
+assert.deepEqual(app.job.outputs,['mcq'],'complete extracted questions can feed MCQ without a lesson');
+app=await harness();app.job.status='completed';app.draft={...app.draft,draft_json:{questionBank:{complete:true,mode:'prose'}}};
+response=await app.request({action:'dispatch',kind:'generate',draftId,outputs:['mcq']},true);
+assert.deepEqual(app.job.outputs,['lesson','mcq'],'a non-question source must still get its lesson prerequisite');
+
+app=await harness({kind:'extract',outputs:[]});
+app.draft={...app.draft,draft_json:{questionBank:{questions:[{id:'old'}]},generation:{chunkProgress:{source_questions:{complete:true}}}}};
+await app.call('claim');
+assert.equal((await app.call('generate_step',{output:'source_questions'})).status,400,'extraction capability cannot invoke question generation');
+response=await app.call('extract_result',{extraction:{pageCount:1,pages:[{page:1,text:'new native source',unreadable:false,method:'native'}]}});
+assert.equal(response.status,200);assert.equal(app.draft.draft_json.questionBank,undefined,'new source must invalidate old question interpretations');
+assert.equal(app.draft.draft_json.generation.chunkProgress,undefined);
 
 const sql=fs.readFileSync('backend/supabase/content_jobs.sql','utf8');
 assert.match(sql,/enable row level security/);assert.match(sql,/revoke all.*from public,anon,authenticated/);assert.match(sql,/where kind='extract' and status in \('queued','running'\)/);
