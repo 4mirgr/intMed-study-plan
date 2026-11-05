@@ -1100,6 +1100,13 @@
 @media(max-width:600px){.library-hero{padding:18px}.library-hero-mark{width:52px;height:52px;flex-basis:52px;border-radius:16px}.library-filters{grid-template-columns:1fr 1fr;padding:10px}.library-search,.library-favorite-filter{grid-column:1/-1}.library-grid{grid-template-columns:1fr 1fr;gap:9px}.library-card-visual{height:116px}.library-card-copy{padding:11px}.library-card-copy strong{font-size:.73rem}.library-card-copy small{font-size:.63rem}.library-card-favorite{width:34px;height:34px}.library-viewer{padding:18px 14px}.library-viewer-actions{display:grid;grid-template-columns:1fr 1fr}.library-viewer-actions button{width:100%}}
 @media(max-width:390px){.library-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.library-card{transition:none}.library-card:hover{transform:none}}
+.library-more[hidden]{display:none}
+.library-viewer-navigation{display:flex;justify-content:center;align-items:center;gap:12px;margin-block:12px}.library-viewer-navigation button{min-height:44px}.library-viewer-navigation button:disabled{opacity:.4;cursor:default}.library-viewer-navigation span{min-width:70px;text-align:center;font-size:.78rem;color:var(--ink-dim)}
+.library-card-visual:not(.library-card-placeholder):not(.library-card-preview){object-fit:contain;box-sizing:border-box;padding:8px;background:#fff}
+.library-card-preview{position:relative;box-sizing:border-box;overflow:hidden;padding:9px;background:var(--surface-2);pointer-events:none;text-align:start}
+.library-card-preview:after{content:"";position:absolute;inset:auto 0 0;height:20px;background:linear-gradient(transparent,var(--surface-2))}
+.library-card-preview .library-structured-table{font-size:.54rem}.library-card-preview .library-structured-table th,.library-card-preview .library-structured-table td{padding:3px;line-height:1.5}.library-card-preview .library-structured{margin:0;font-size:.6rem;line-height:1.6}
+.library-preview-steps{display:grid;gap:5px;margin:0;padding-inline-start:17px;font-size:.58rem;line-height:1.5}.library-preview-steps li{padding:4px;border:1px solid var(--border);border-radius:6px}.library-preview-steps span{display:block;margin-top:2px;color:var(--ink-dim)}
 :root[data-theme="light"] .dashboard-grid>.neon-panel:nth-child(even){background:linear-gradient(145deg,rgba(255,255,255,.82),color-mix(in srgb,var(--edge,var(--primary)) 5%,#f8f4ec))}
 
 .theme-toggle-compact{display:none!important;margin-inline-start:0;width:38px;min-width:38px;height:38px;padding:7px!important}.theme-toggle-compact span{display:none}

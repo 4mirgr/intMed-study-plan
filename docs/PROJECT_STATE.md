@@ -259,6 +259,13 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ## Completion rule
 
+### Gallery browsing — 2026-11-06 (Tehran)
+
+- Fixed the real PBS pagination symptom: `.library-more` forced display even when the button had `hidden`, leaving the previous "48 more" label visible below a short filtered list. Tests cover hidden short lists and actual 48-to-96 expansion without duplicates.
+- Image cards show contained source images; structured algorithms/tables lazily show a small view of the actual source content rather than a generic icon. Topic requests share in-flight promises; no medical content or generated catalogs were rewritten.
+- Viewer previous/next controls and ArrowLeft/ArrowRight browse a stable snapshot of the complete active filtered list. Bounds stop navigation, recent/hash entries outside the current filter remain single-entry viewers, editing/modifier keys are not intercepted, and Escape clears the viewer hash.
+- Focused browser tests cover source-cell previews, filter isolation, native Escape, keyboard/button navigation and editable-field protection; original attribution, favorites and topic deep links remain intact.
+
 ### Background publication checkpoint — 2026-11-05 (Tehran)
 
 - Live integration found the server PAT lacks host Contents write (`hosting_permission_required`). Owner action: add only gerami-website to the existing selected-repository token. Do not claim unattended hosting is enabled until that permission is corrected.
