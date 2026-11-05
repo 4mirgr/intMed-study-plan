@@ -28,11 +28,20 @@ then changes only `intmed.commit` in `4mirgr/gerami-website/deploy/projects.json
 the current file SHA. AUS and every unrelated pin/field are preserved. Divergence/rollback is refused.
 The workflow reports `published` only after the mounted public manifest AND topic bytes match.
 
+Observed live on 2026-11-05: Cloudflare Browser Integrity Check blocked the default
+`Python-urllib/3.11` public verifier (firewall source/rule `bic`). Public read requests now identify
+the legitimate client as `IntMed-Publisher/1.0` and request JSON explicitly. No firewall/authentication
+rule was disabled. The read-only production diagnostic exercises the same Python verifier; errors
+report HTTP phase/status or hash mismatch without logging response bodies or capabilities.
+
 The existing `INTMED_GITHUB_ACTIONS_TOKEN` needs selected-repository access to both
 `4mirgr/intMed-study-plan` and `4mirgr/gerami-website`, with Contents read/write; Actions write is
 needed for dispatching the study workflow. Public repository read success does NOT establish write
 permission. Missing host permission is reported as `hosting_permission_required` without exposing
 the credential. Configure/replace credentials only in Supabase Secrets, never in public source/chat.
+The live key was verified to lack host Contents write on this date; the owner must add the selected
+`gerami-website` repository. Coordinator-driven code releases can still update the host through the
+connected GitHub integration, but that does not grant the unattended publisher the same permission.
 
 ## Deployment
 

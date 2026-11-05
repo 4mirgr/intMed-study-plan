@@ -261,6 +261,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ### Background publication checkpoint — 2026-11-05 (Tehran)
 
+- Live integration found the server PAT lacks host Contents write (`hosting_permission_required`). Owner action: add only gerami-website to the existing selected-repository token. Do not claim unattended hosting is enabled until that permission is corrected.
+- A second verified cause was Cloudflare BIC blocking the default Python verifier UA. Public verification uses explicit JSON Accept and an identified IntMed-Publisher client; BIC/auth rules remain enabled. Production diagnostics exercise exact public-byte verification and expose phase/status, not private bodies.
+
 - Root cause verified in real workflow logs: study content committed successfully, but the actual host IntMed pin did not advance. The dialog's separate 180-second polling timeout incorrectly suggested refreshing/staying open.
 - Accepted publication now closes the review dialog. Server-derived publication statuses refresh separately every eight seconds and cannot overwrite another open draft's edits. Browser closure does not own or cancel the publisher.
 - A service-only database FIFO selects one active cloud publisher, completion starts the next, and the existing five-minute private sweep recovers queued work independently of provider backoff. Per-draft GitHub concurrency avoids losing earlier pending runs.

@@ -66,6 +66,9 @@ class LivePublicationTest(unittest.TestCase):
                 subject.verify_live_topic("test", timeout=1)
             self.assertEqual(opened.call_count, 4)
             waited.assert_called_once_with(5)
+            for call in opened.call_args_list:
+                self.assertEqual(call.args[0].get_header("User-agent"), "IntMed-Publisher/1.0")
+                self.assertEqual(call.args[0].get_header("Accept"), "application/json")
 
     def test_timeout_is_not_reported_as_published(self):
         with tempfile.TemporaryDirectory() as folder:
