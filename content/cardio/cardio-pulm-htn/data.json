@@ -322,7 +322,21 @@
       ]
     }
   ],
-  "images": [],
+  "images": [
+    {
+      "id": "review-item-35c49353-2eb",
+      "caption": "Hemodynamic Classification and Clinical Profiling of Pulmonary Hypertension",
+      "assetPath": "assets/review-item-35c49353-2eb.jpg",
+      "note": "Pulmonary hypertension (PH) is defined by a mean pulmonary artery pressure (mPAP) >20 mmHg measured via right heart catheterization. Patients are categorized hemodynamically into pre-capillary, isolated post-capillary, or combined pre-/post-capillary PH based on pulmonary vascular resistance (PVR) and pulmonary artery wedge pressure (PAWP). This hemodynamic profile, integrated with clinical data, imaging, and genetic testing, is essential for assigning patients to specific clinical groups for management.",
+      "kind": "algorithm",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "review-source-35c49353-2eb"
+        }
+      ]
+    }
+  ],
   "tables": [
     {
       "title": "طبقه‌بندی همودینامیک پرفشاری خون ریوی",
@@ -445,6 +459,14 @@
           "legacyLoc": "lesson:4:1"
         }
       ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "review-source-35c49353-2eb",
+      "title": "telegram-620.jpg",
+      "type": "telegram-review",
+      "note": ""
     }
   ]
 }
