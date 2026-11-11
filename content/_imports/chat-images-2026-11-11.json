@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "date": "2026-11-11",
+  "source": "Direct owner uploads in chat; original authorship and license not supplied.",
+  "matching": {
+    "byteExact": 0,
+    "visualDuplicates": 3,
+    "method": "SHA-256 plus 64-bit dHash/grayscale similarity and visual confirmation; not a general semantic duplicate guarantee."
+  },
+  "added": [
+    {
+      "upload": 1,
+      "originalFilename": "1-Photo-1.jpg",
+      "topicId": "cardio-ecg",
+      "kind": "chart",
+      "id": "upload-potassium-ecg-20261111",
+      "assetPath": "content/cardio/cardio-ecg/assets/potassium-ecg-comparison.jpg",
+      "sha256": "99a3ceb89f70cfffceb7b59ee7ef2009d3b2c7b15b2a9556dc22e4a2d7aa94b1",
+      "width": 338,
+      "height": 591,
+      "byteSize": 44441,
+      "reviewStatus": "draft"
+    },
+    {
+      "upload": 3,
+      "originalFilename": "3-Photo-3.jpg",
+      "topicId": "heme-iron-anemia",
+      "kind": "chart",
+      "id": "upload-digital-pbs-workflow-20261111",
+      "assetPath": "content/heme/heme-iron-anemia/assets/digital-pbs-workflow.jpg",
+      "sha256": "d640e0de62069b6051c4b8a7bc589164e921fa50769e7d0c252ea0714f2af1f3",
+      "width": 393,
+      "height": 220,
+      "byteSize": 36936,
+      "reviewStatus": "draft"
+    },
+    {
+      "upload": 4,
+      "originalFilename": "4-Photo-4.jpg",
+      "topicId": "heme-mds",
+      "kind": "pbs",
+      "id": "upload-neutrophil-morphology-20261111",
+      "assetPath": "content/heme/heme-mds/assets/neutrophil-morphology-comparison.jpg",
+      "sha256": "b053b4fb4082da97a8b2f585b279ccfe4584b73b20a903151cf9a9ab7c421c5e",
+      "width": 393,
+      "height": 235,
+      "byteSize": 42659,
+      "reviewStatus": "draft"
+    },
+    {
+      "upload": 5,
+      "originalFilename": "5-Photo-5.jpg",
+      "topicId": "heme-aml",
+      "kind": "pbs",
+      "id": "upload-neutrophil-maturation-20261111",
+      "assetPath": "content/heme/heme-aml/assets/neutrophil-maturation-comparison.jpg",
+      "sha256": "c47411f00662078441524e4a13169c4a51fe5a5a4ed7c345f8bbf64f6010cdbb",
+      "width": 393,
+      "height": 151,
+      "byteSize": 21887,
+      "reviewStatus": "draft"
+    },
+    {
+      "upload": 8,
+      "originalFilename": "8-Photo-8.jpg",
+      "topicId": "heme-hemolytic-anemia",
+      "kind": "table",
+      "id": "upload-rbc-shapes-table-20261111",
+      "assetPath": "content/heme/heme-hemolytic-anemia/assets/rbc-shapes-associations-table.jpg",
+      "sha256": "c431a74bb70996ed42008839edbe830699733692c7c05ee6f736551a7f50555b",
+      "width": 393,
+      "height": 231,
+      "byteSize": 46340,
+      "reviewStatus": "draft"
+    },
+    {
+      "upload": 9,
+      "originalFilename": "9-Photo-9.jpg",
+      "topicId": "heme-hemolytic-anemia",
+      "kind": "pbs",
+      "id": "upload-rbc-morphology-20261111",
+      "assetPath": "content/heme/heme-hemolytic-anemia/assets/rbc-morphology-montage.jpg",
+      "sha256": "e09df9813056312113ff3107cd7f34c1bda190b25ee95dd3edc29fd66f6d8e99",
+      "width": 392,
+      "height": 221,
+      "byteSize": 51736,
+      "reviewStatus": "draft"
+    },
+    {
+      "upload": 10,
+      "originalFilename": "10-Photo-10.jpg",
+      "topicId": "heme-iron-anemia",
+      "kind": "chart",
+      "id": "upload-pbs-preparation-20261111",
+      "assetPath": "content/heme/heme-iron-anemia/assets/pbs-preparation-preanalytics.jpg",
+      "sha256": "82effd55d3ac321b8d940aa8035e1ff4c16f4d8bd70bb1ada35dc071d7145c94",
+      "width": 393,
+      "height": 267,
+      "byteSize": 42392,
+      "reviewStatus": "draft"
+    }
+  ],
+  "duplicates": [
+    {
+      "upload": 2,
+      "sha256": "ff1d4875a188d4c03e45cd8d023c6b8dc0129a1ed0a4ee2d4c7602e2cfd73a7b",
+      "existingTopicId": "heme-mds",
+      "existingImageId": "review-item-b85356a9-8c1",
+      "existingAsset": "content/heme/heme-mds/assets/review-item-b85356a9-8c1.jpg",
+      "dHashDistance": 0
+    },
+    {
+      "upload": 6,
+      "sha256": "041754860f3ccf81bac81c27c2e9cf1a825dc3579531447091e624d593e1e557",
+      "existingTopicId": "heme-mds",
+      "existingImageId": "review-item-ab47817c-507",
+      "existingAsset": "content/heme/heme-mds/assets/review-item-ab47817c-507.jpg",
+      "dHashDistance": 0
+    },
+    {
+      "upload": 7,
+      "sha256": "dc97c0d39aaa1bca0a56429d4d85fabb6ca902a8efaa7274245284367b29fbfd",
+      "existingTopicId": "heme-iron-anemia",
+      "existingImageId": "review-item-c1433cb6-273",
+      "existingAsset": "content/heme/heme-iron-anemia/assets/review-item-c1433cb6-273.jpg",
+      "dHashDistance": 2
+    }
+  ],
+  "notes": [
+    "Original uploaded bytes retained; no AI redraw, crop or upscaling.",
+    "Low-resolution supplied infographics remain visibly draft. Image3 performance percentages are unsupported, not clinical evidence.",
+    "No uploaded figure is attributed to Harrison or treated as licensed/authored from filename alone.",
+    "No new topic or duplicate binary created. Existing source items and approvals left unchanged."
+  ]
+}

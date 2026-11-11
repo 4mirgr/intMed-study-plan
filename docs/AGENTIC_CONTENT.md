@@ -47,8 +47,9 @@ equivalence. Multi-topic mapping, uncertain-source correction and independent cl
 still separate work. No draft was approved or published to test these changes.
 
 The weekly no-model audit also inspects canonical local image existence, topic confinement,
-actual PNG/JPEG/GIF dimensions, size/hash consistency and provenance. SVG/WebP dimensions remain
-unverified by that dependency-free checker. Audits propose findings, not medical changes.
+actual PNG/JPEG/GIF dimensions, size/hash consistency and provenance. Bounded SVG pixel-dimension
+and WebP header checks were added on 2026-11-11; vector images do not get raster-resolution warnings.
+Audits propose findings, not medical changes.
 
 Official source checks (2026-11-05): [McGraw Hill's Harrison 22e announcement](https://www.mheducation.com/about-us/news-insights/press-releases/mcgraw-hill-releases-new-edition-of-harrisons-principles-of-internal-medicine.html)
 and [AccessMedicine](https://accessmedicine.mhmedical.com/book.aspx?bookid=3541) establish the 2025

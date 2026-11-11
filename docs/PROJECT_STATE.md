@@ -3,6 +3,17 @@
 This is the short, canonical handoff. Update it in the same commit when a decision, production
 dependency, or backlog item changes. Do not copy chat transcripts here.
 
+## Owner image intake — 2026-11-11
+
+- Ten owner-supplied images compared against canonical and generated assets using SHA-256,
+  perceptual similarity and visual inspection. Three same-figure duplicates (uploads 2, 6, 7)
+  were skipped; seven originals were added to five existing topics, without creating new topics.
+- ECG potassium comparison is in `cardio-ecg`; PBS workflow/preparation in `heme-iron-anemia`;
+  neutrophil morphology in `heme-mds`; maturation comparison in `heme-aml`; RBC shape table
+  and morphology montage in `heme-hemolytic-anemia`. The generated library uses the same entries.
+- Source hashes, dimensions and duplicate mappings: `content/_imports/chat-images-2026-11-11.json`.
+  New captions remain draft; small originals were not enlarged. AI-workflow numerical claims are
+  explicitly unverified. No Harrison edition, author, license or clinical approval was invented.
 ## Product decisions
 
 - The coordinator owns scope, integration, tests, commits, pushes, and production checks.
