@@ -9,7 +9,49 @@ import unittest
 import zlib
 from pathlib import Path
 
-from content_quality_audit import Finding, audit_topic, finding_fingerprint, markdown_report, report_payload
+from content_quality_audit import Finding, audit_topic, finding_fingerprint, image_dimensions, markdown_report, report_payload
+
+
+class ImageDimensionsTest(unittest.TestCase):
+    def test_svg_explicit_pixel_dimensions(self):
+        for raw in (b'<svg width="1200" height="800px"/>',
+                    b'\xef\xbb\xbf<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"/>'):
+            with self.subTest(raw=raw):
+                self.assertEqual(image_dimensions(raw), (1200, 800))
+
+    def test_svg_does_not_guess_relative_or_viewbox_dimensions(self):
+        for raw in (b'<svg viewBox="0 0 1200 800"/>',
+                    b'<svg width="100%" height="800"/>',
+                    b'<svg width="1cm" height="800"/>',
+                    b'<svg width="0" height="800"/>',
+                    b'<svg width="NaN" height="800"/>',
+                    b'<html width="1200" height="800"/>'):
+            with self.subTest(raw=raw):
+                self.assertIsNone(image_dimensions(raw))
+
+    def test_svg_rejects_entities_and_unbounded_root_prefix(self):
+        for raw in (b'<!DOCTYPE svg [<!ENTITY size "1200">]><svg width="&size;" height="800"/>',
+                    b'<!DOCTYPE svg SYSTEM "file:///etc/passwd"><svg width="1200" height="800"/>',
+                    b' ' * 65536 + b'<svg width="1200" height="800"/>'):
+            with self.subTest(raw=raw[:80]):
+                self.assertIsNone(image_dimensions(raw))
+
+    def test_webp_dimensions_from_all_three_bitstream_headers(self):
+        # RIFF payloads use hand-encoded 900 by 800 header dimensions.
+        chunks = [(b'VP8X', b'\0' * 4 + b'\x83\x03\0\x1f\x03\0'),
+                  (b'VP8L', b'\x2f\x83\xc3\xc7\0'),
+                  (b'VP8 ', b'\0\0\0\x9d\x01\x2a\x84\x03\x20\x03')]
+        for kind, payload in chunks:
+            chunk = kind + struct.pack('<I', len(payload)) + payload + b'\0' * (len(payload) % 2)
+            raw = b'RIFF' + struct.pack('<I', 4 + len(chunk)) + b'WEBP' + chunk
+            with self.subTest(kind=kind):
+                self.assertEqual(image_dimensions(raw), (900, 800))
+
+    def test_webp_rejects_truncated_or_invalid_headers(self):
+        for raw in (b'RIFF\x16\0\0\0WEBPVP8X\x0a\0\0\0' + b'\0' * 5,
+                    b'RIFF\x0e\0\0\0WEBPVP8L\x05\0\0\0\x00\0\0\0\0\0'):
+            with self.subTest(raw=raw):
+                self.assertIsNone(image_dimensions(raw))
 
 
 class LocalImageAuditTest(unittest.TestCase):
@@ -44,6 +86,12 @@ class LocalImageAuditTest(unittest.TestCase):
     def test_local_low_resolution_is_reported_using_actual_bytes(self):
         self.write_png(64, 48)
         self.assertIn('IMAGE_LOW_RESOLUTION', self.codes())
+
+    def test_small_svg_checks_dimensions_without_raster_resolution_warning(self):
+        self.image.update(assetPath='diagram.svg', width=900, height=800)
+        (self.topic / 'diagram.svg').write_bytes(b'<svg width="64" height="48"/>')
+        self.assertIn('IMAGE_DIMENSIONS_MISMATCH', self.codes())
+        self.assertNotIn('IMAGE_LOW_RESOLUTION', self.codes())
 
     def test_missing_asset_is_a_finding_instead_of_aborting_audit(self):
         self.assertIn('IMAGE_ASSET_MISSING', self.codes())

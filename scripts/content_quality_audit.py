@@ -12,9 +12,11 @@ import argparse
 import base64
 import hashlib
 import json
+import math
 import re
 import struct
 import sys
+import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -111,11 +113,64 @@ def items(data: dict[str, Any]) -> Iterable[tuple[str, int, dict[str, Any]]]:
                 yield field, index, value
 
 
-def image_dimensions(raw: bytes) -> tuple[int, int] | None:
+def image_dimensions(raw: bytes) -> tuple[int | float, int | float] | None:
     if raw.startswith(b"\x89PNG\r\n\x1a\n") and len(raw) >= 24:
         return struct.unpack(">II", raw[16:24])
     if raw[:6] in (b"GIF87a", b"GIF89a") and len(raw) >= 10:
         return struct.unpack("<HH", raw[6:10])
+    if raw[:4] == b"RIFF" and raw[8:12] == b"WEBP" and len(raw) >= 20:
+        end = int.from_bytes(raw[4:8], "little") + 8
+        if end > len(raw):
+            return None
+        offset = 12
+        # Bound the metadata scan even for files with many ancillary chunks.
+        for _ in range(256):
+            if offset + 8 > end:
+                break
+            kind = raw[offset:offset + 4]
+            size = int.from_bytes(raw[offset + 4:offset + 8], "little")
+            start = offset + 8
+            if start + size + (size % 2) > end:
+                return None
+            header = raw[start:start + min(size, 10)]
+            if kind == b"VP8X" and size == 10:
+                return (1 + int.from_bytes(header[4:7], "little"),
+                        1 + int.from_bytes(header[7:10], "little"))
+            if kind == b"VP8L" and size >= 5 and header[0] == 0x2F and header[4] >> 5 == 0:
+                bits = int.from_bytes(header[1:5], "little")
+                return (1 + (bits & 0x3FFF), 1 + ((bits >> 14) & 0x3FFF))
+            if kind == b"VP8 " and size >= 10 and not header[0] & 1 and header[3:6] == b"\x9d\x01\x2a":
+                width = int.from_bytes(header[6:8], "little") & 0x3FFF
+                height = int.from_bytes(header[8:10], "little") & 0x3FFF
+                return (width, height) if width and height else None
+            offset = start + size + (size % 2)
+        return None
+    if raw.lstrip(b"\xef\xbb\xbf \t\r\n").startswith(b"<"):
+        # Read only a bounded UTF-8 root prefix. Reject declarations before XML parsing,
+        # so entity expansion and external-resource resolution are never attempted.
+        try:
+            prefix = raw[:65536].decode("utf-8-sig")
+            if re.search(r"<!\s*(?:DOCTYPE|ENTITY)\b", prefix, re.I):
+                return None
+            parser = ET.XMLPullParser(events=("start",))
+            for offset in range(0, len(prefix), 1024):
+                parser.feed(prefix[offset:offset + 1024])
+                for _, root in parser.read_events():
+                    if root.tag not in {"svg", "{http://www.w3.org/2000/svg}svg"}:
+                        return None
+                    dimensions = []
+                    for key in ("width", "height"):
+                        value = root.get(key, "").strip()
+                        if not re.fullmatch(r"(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?:px)?", value):
+                            return None
+                        number = float(value.removesuffix("px"))
+                        if not math.isfinite(number) or number <= 0:
+                            return None
+                        dimensions.append(int(number) if number.is_integer() else number)
+                    return tuple(dimensions)
+        except (UnicodeDecodeError, ET.ParseError, ValueError):
+            return None
+        return None
     if raw.startswith(b"\xff\xd8"):
         offset = 2
         while offset + 9 < len(raw):
@@ -260,7 +315,7 @@ def audit_topic(path: Path) -> list[Finding]:
             if raw is not None and item.get("byteSize") is not None and item["byteSize"] != len(raw):
                 add("warning", "IMAGE_BYTE_SIZE_MISMATCH", location,
                     f"Declared image byteSize differs from actual {len(raw)} bytes.")
-            if dimensions and max(dimensions) < 800:
+            if dimensions and max(dimensions) < 800 and not raw.lstrip(b"\xef\xbb\xbf \t\r\n").startswith(b"<"):
                 add("warning", "IMAGE_LOW_RESOLUTION", location, f"{label} image is only {dimensions[0]}×{dimensions[1]} px.")
             if raw and len(raw) > 2_500_000:
                 add("warning", "IMAGE_WEB_WEIGHT", location, f"{label} source is {len(raw) / 1_000_000:.1f} MB; publish an optimized derivative.")

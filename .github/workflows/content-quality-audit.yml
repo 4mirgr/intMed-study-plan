@@ -1,6 +1,11 @@
 name: Weekly content quality audit
 
 on:
+  push:
+    paths:
+      - .github/workflows/content-quality-audit.yml
+      - scripts/content_quality_audit.py
+      - scripts/content_quality_audit_test.py
   schedule:
     # Saturday 05:30 Iran time during standard UTC+3:30.
     - cron: "0 2 * * 6"
@@ -22,6 +27,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install validator
+        run: python3 -m pip install --disable-pip-version-check 'jsonschema>=4.20,<5'
       - name: Validate canonical content
         run: python3 scripts/content_pipeline.py validate
       - name: Run deterministic audit
@@ -37,6 +44,7 @@ jobs:
           path: audit-report/
           retention-days: 90
       - name: Create or update the single review issue
+        if: github.ref_name == github.event.repository.default_branch
         uses: actions/github-script@v7
         env:
           REPORT_JSON: audit-report/content-quality.json

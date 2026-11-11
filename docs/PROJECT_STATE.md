@@ -41,8 +41,8 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 ## Shipped baseline (2026-10-26)
 
 - Persian/Tehran dashboard and planning dates, Saturday-first week, Google Calendar and ICS.
-- Calendar-email Edge Function and delivery ledger; production email is blocked until
-  `RESEND_API_KEY` and a verified `NEWSLETTER_FROM` are configured in Supabase.
+- Calendar-email Edge Function and delivery ledger. Resend/sender secrets are present as of the
+  2026-11-11 metadata check; sender verification and actual delivery remain unverified.
 - Immediate IntMed signup approval, safer session expiry, duplicate-email/recovery flow, signup
   Telegram notification, newsletter server scaffolding.
 - Separate account/message entry points and notification badges with adaptive 8-second foreground
@@ -51,7 +51,8 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Production Supabase migrations/functions were installed; Telegram secret exists. The GitHub
   branch is `claude/quirky-ride-mavb6b`. Confirm the branch and current remote SHA before edits.
 - A generated image/algorithm library provides Persian search, filters, full viewers, private
-  favorites/recent history and stable lesson deep links for 402 current entries.
+  favorites/recent history and stable lesson deep links. The generated library index is the
+  authority for its current entry count; historical checkpoint counts are not release invariants.
 - A conservative weekly content-audit workflow publishes artifacts and maintains one deduplicated
   review issue; it cannot modify medical content.
 - The secure Telegram inbox accepts authorized direct/forwarded text, PDF and images into a private
@@ -98,9 +99,9 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   `algorithm`, `table`, `tracing`, `chart`) is stored in the selected topic's canonical `images`
   collection, so it appears both in that lesson's «تصاویر مهم» tab and in the global library. The
   reviewed title is the caption and the reviewed golden summary is the visible note under the image.
-- Controlled review defaults to an existing taxonomy topic. The new-topic form stays hidden and is
-  offered only after a typed destination has no exact match; it is an explicit fallback, never a
-  required field. From `draft_ready`, the admin can use one «تأیید و انتشار روی سایت» action, which
+- Controlled review selects an existing taxonomy topic only; the redundant new-topic form was
+  subsequently removed. Legacy new-topic drafts need an explicit existing destination. From
+  `draft_ready`, the admin can use one «تأیید و انتشار روی سایت» action, which
   records the scientific approval and dispatches publication while the dialog follows the result.
   Local Finder files and unrelated working-tree changes cannot affect the cloud publisher.
 - A planned topic may already exist in taxonomy before its canonical `data.json` exists. The first
@@ -115,7 +116,11 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 - Multimodal PDF analysis now records page-by-page extraction (including page count and unreadable-page flags), uses a PDF-sized output budget, and feeds the full extracted evidence into a second-stage generator. Generated lessons contain real titled sections, paragraphs and key points; publication writes those sections plus selected MCQ/flashcard/KF outputs into the chosen canonical topic. Dynamic topic/index payloads are network-first with exact versioned cache keys, so a successful publication is no longer hidden behind an older PWA cache.
 
-## Open work, in priority order
+## Implemented content-processing checkpoints
+
+These dated records retain earlier evidence, not a new verification of today's production state.
+The actionable backlog follows the checkpoints; shipped work below must not be reopened merely
+because an older revision described it as a next gate.
 
 ### Content-factory revision checkpoint (2026-11-03)
 
@@ -172,7 +177,7 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   with the original. A configured active cloud provider prevents old laptop watchers from
   claiming new inbox work; explicit maintenance/manual mode preserves the local fallback.
 
-### P0 — release correctness
+### Queue, review and provenance checkpoint
 
 - Added six visually inspected, openly licensed Commons PBS originals to the matching anemia/CML
   topics and generated PBS library filter. Persian captions retain diagnostic limitations and draft
@@ -211,20 +216,81 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - The global library viewer now displays creator, license, source links and modification notes,
   as well as a draft-caption warning. Source metadata must remain visible outside topic pages too.
 
+## Remaining work, in priority order — audited 2026-11-11
+
+This audit compared the handoff with repository source and the publication runbook. Coordinator
+read-only production checks supplied the snapshot below; secret values were not inspected, no
+medical draft was approved, and configuration presence does not establish delivery acceptance.
+A local test result, deployment and teacher acceptance are separate evidence.
+
+### Read-only production snapshot — 2026-11-11
+
+- The remote study commit begins `ebb63ed`; the host's IntMed pin matches it. The host AUS pin
+  advanced independently and is outside this task. Matching pins do not prove the server-held
+  publisher token can write a subsequent pin.
+- Drafts: nine approved, 30 draft-ready, 17 published and 18 rejected. Intake: 72 accepted and two
+  rejected, with no pending/processing/error rows. All four recorded content jobs are completed.
+  These counts are a dated snapshot, not ongoing queue monitoring or clinical approval.
+- Signup alerts: seven sent; Telegram alerts: 40 sent. No historical signup alerts remain pending;
+  the old four-alert retry task is resolved. The five-minute content sweep Cron is active.
+- Secret metadata confirms `RESEND_API_KEY`, `NEWSLETTER_FROM`, `INTMED_GITHUB_ACTIONS_TOKEN` and
+  `GEMINI_API_KEY` exist. Sender verification and calendar/newsletter end-to-end delivery are not
+  established; there are no recorded email deliveries in this check.
+- The latest weekly content-audit run, `42356283759`, failed because `jsonschema` was missing.
+  The local workflow repair is recorded below; a successful remote rerun is still required before
+  claiming the periodic audit is healthy.
+
+### Locally verified maintenance — 2026-11-11
+
+- The weekly audit workflow now installs `jsonschema` and has narrow push triggers for its own
+  file, the audit script and its tests, so changes to that path receive a real regression run.
+  The recurring schedule is unchanged; remote CI/deployment acceptance is pending.
+- Deterministic image QA now reads SVG/WebP dimensions as well as PNG/JPEG/GIF dimensions.
+  The coordinator reports 21 focused audit tests and all 93 Python tests passing.
+- The coordinator reports source validation passing for 82 canonical/145 planned topics with
+  zero validation warnings, and 227 generated files current. This structural validation does not
+  clear the separate medical/provenance review backlog.
+- Backend state isolation and generation, question-source, publisher, sweep and notification
+  JavaScript checks passed locally. These results do not establish production deployment or
+  external service delivery. No new provider/model cost or medical approval was introduced.
+
+### P0 — release and external acceptance
+
+- **Owner credential action:** the cross-repository hosting bridge is implemented in
+  `backend/supabase/functions/intmed-content-publisher/index.ts`; the last recorded permission
+  failure is `hosting_permission_required` (2026-11-05). Verify the existing selected-repository
+  token's Contents write on `4mirgr/gerami-website` and add it if still missing, then retry an
+  already-approved publication and verify mounted public
+  manifest/topic bytes. Do not implement a second bridge or call unattended publication accepted
+  from repository code alone. See [the runbook](BACKGROUND_PUBLICATION.md).
 - Keep GitHub validation/deployment green; investigate any failing SQL/browser test before calling
-  a release complete.
-- Configure and end-to-end test Resend sender, calendar email, newsletter test/send/unsubscribe.
+  a release complete. The actual host must pin the verified IntMed commit, not merely finish a
+  study-repository Pages job.
+- **Email integration acceptance:** verify the configured Resend sender, then test calendar email
+  and newsletter test/send/unsubscribe. The key/sender secrets and scaffolding already exist;
+  delivery acceptance remains open.
 - Test signup, login, recovery, account/messages, calendar and email on real iOS/Android networks.
 - Recheck Supabase redirect allow-list, Auth email templates, CSP, rate limits and abuse protection.
-- Retry the four historical pending signup alerts from the authenticated admin panel and confirm
-  that new signup alerts continue to deliver automatically.
 
 ### P1 — content factory and learning product
 
+- Implement multi-topic splitting/routing within a single source and explicit correction of
+  uncertain original question evidence/keys with revision checks. Existing generated-artifact
+  editing and scientific-finding resolution do not provide those source-correction workflows.
+- Run a representative typed, scanned/handwritten and visual/table-heavy benchmark against
+  teacher-approved references. Independently check claims, answer keys, OCR ordering and clinical
+  numbers. Parser page counts, structural guards and persisted findings are already implemented;
+  they do not establish clinical correctness. Reanalyse legacy PDF drafts without verified maps.
+- Revision-bound Telegram approval/publication and Telegram audit-report delivery remain feature
+  work. Approval must bind private sender/chat, revision/hash and expiring one-use intent and reuse
+  the existing clinical/provenance gates. Budgeted ongoing source research needs an owner budget
+  and approved provider; the current weekly audit deliberately makes no model calls.
 - Run the PDF workflow in `AGENTIC_CONTENT.md` for each supplied chapter; complete lung neoplasms
   and every earlier draft with teacher clinical review.
 - Re-extract low-quality PDF figures from original embedded streams or render the figure region at
   high DPI; record page, source, copyright and visual QA. Never upscale a bad thumbnail as a fix.
+  Embedded-figure extraction/backfill is implemented; vector-only figures and scanned-page region
+  selection remain distinct implementation work requiring authorized source material.
 - Validate normalized message backfill in production and retire the legacy fallback only after
   acceptance; conversation RPCs are already the primary UI (see baseline). Realtime/native push
   remain later work, not prerequisites for the current adaptive foreground polling.
@@ -245,8 +311,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - At publication time recheck the current official Bazaar/Myket contracts and IAP rules, Enamad,
   tax obligations, privacy/terms/refund policy, and medical-education disclaimer. Store terms and
   fees change; do not encode remembered percentages.
-- Introduce a branded `.ir` domain and transactional sender only after DNS ownership; configure
-  SPF, DKIM and DMARC, then migrate links/redirects/CORS gradually.
+- For any further branded-domain or transactional-sender migration, confirm DNS ownership and
+  configure SPF, DKIM and DMARC before migrating links/redirects/CORS. The recorded live gateway
+  already uses `api.drgerami-md.ir`; do not treat all domain setup as unstarted or change the
+  current `/intmed/` host as part of routine content delivery.
 
 ### P2 — scalability and operations
 
@@ -254,10 +322,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   tables; add indexes, pagination, retention and observability before large growth.
 - Add staging, migration rollback notes, backup/restore drills, error tracking and load tests.
 - Establish accessibility/performance budgets and reduced-motion/low-end-device regression tests.
-- Activate and smoke-test the Telegram webhook from the admin panel after deploying its function;
-  decide which future events merit notification.
+- Telegram intake, webhook installation and delivered alerts have recorded acceptance above.
+  Recheck the webhook after a relevant deployment; decide which additional events merit alerts.
 
-## Completion rule
+## Later delivery checkpoints
 
 ### Gallery browsing — 2026-11-06 (Tehran)
 
@@ -283,14 +351,20 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Explicit original keys, question/answer pages and sourceQuestionId/origin survive publication. A summary/outline is not a lesson for question-bank drafts. Source-only MCQ imports avoid an additional lesson-generation call. Prepared source evidence is not yet independently clinically verified; teacher approval remains required.
 - Message badges refresh every 8 seconds on visible online pages, without study-save starvation or replacing pending legacy edits. This is message notification polling, not automatic refresh of every admin signup/statistics counter.
 - Weekly deterministic image QA now checks canonical local assets, confinement (including symlinks), PNG/JPEG/GIF dimensions, byte/hash consistency and provenance. No new model loop or provider was activated. Existing content has a substantial warning/review backlog; findings are not automatic fixes.
-- **Still pending:** representative real-file benchmark and clinical verification, multi-topic mapping, correcting uncertain original keys from the panel, revision-bound Telegram approval/publication and Telegram audit-report delivery, budgeted source research, and the cross-repository public hosting-pin bridge below. No real draft was approved or published for testing.
+- **Still pending:** representative real-file benchmark and clinical verification, multi-topic mapping, correcting uncertain original keys from the panel, revision-bound Telegram approval/publication and Telegram audit-report delivery, and budgeted source research. The hosting-pin bridge was subsequently implemented; its last recorded blocker is host-token permission in the background-publication checkpoint. No real draft was approved or published to test this question-first checkpoint.
 
 ### Review destination and mounted publication — 2026-11-05 (Tehran)
 
 - Public taxonomy, manifest and topic payload consumers must use `/intmed/content/`, not root `/content/`. Review, worker, Telegram and local runner were corrected; API origins/CORS remain unchanged.
 - The review dialog now selects an existing destination only; the redundant new-topic form is removed. Legacy new-topic drafts require an explicit existing selection, never silent topic creation.
 - Raw extraction is source evidence, not polished teaching output. Publishing does not rewrite lesson/question prose; inspect and edit generated artifacts first. The legacy summary/outline fallback remains and must not be mistaken for a generated lesson.
-- **Unresolved publication bridge:** the cloud publisher pushes the study repository, but the actual Cloudflare host uses the pinned IntMed commit in `4mirgr/gerami-website/deploy/projects.json`. Future button-driven publication needs a reviewed, least-privilege cross-repository pin-update mechanism. Mounted freshness URLs alone do not complete that bridge. Do not mark a draft published until its public payload matches.
+- **Superseded bridge gap:** the actual Cloudflare host uses the pinned IntMed commit in
+  `4mirgr/gerami-website/deploy/projects.json`. The capability-scoped pin-update mechanism is now
+  implemented as described above; its remaining recorded dependency is host write permission and
+  live acceptance. Mounted freshness URLs alone do not prove delivery. Do not mark a draft
+  published until its public payload matches.
+
+## Completion rule
 
 “Done” means source changed, focused tests passed, generated files are current, a coherent commit is
 on the remote branch, GitHub Actions/deployment completed, and remaining external blockers are
