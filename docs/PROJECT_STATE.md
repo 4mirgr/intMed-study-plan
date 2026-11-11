@@ -14,7 +14,21 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - Source hashes, dimensions and duplicate mappings: `content/_imports/chat-images-2026-11-11.json`.
   New captions remain draft; small originals were not enlarged. AI-workflow numerical claims are
   explicitly unverified. No Harrison edition, author, license or clinical approval was invented.
+## Second owner-image batch — 2026-11-11
+
+- Nine distinct supplied figures checked against 74 unique existing image binaries; no exact or
+  visually confirmed duplicate found. The CBC-analyzer limitations infographic is added as a draft
+  chart in `heme-iron-anemia`, with unchanged original bytes and no invented source/license.
+- Eight originals explicitly carry Harrison 22e / McGraw Hill reserved-rights notices. They were
+  NOT copied into canonical assets, generated public payloads or public GitHub. Destination metadata
+  only is retained in `content/_imports/chat-images-2026-11-11-b.json`: figures 2–8 belong to
+  `pulm-pe` and figure 9 to `heme-coag`. Private gallery delivery or an authored replacement needs
+  a separate implementation/owner choice; do not describe these eight as already on the site.
+- `pulm-pe` is planned in taxonomy but does not yet have a canonical package. Do not create a
+  publicly empty or copyrighted-image-only chapter merely to imply this intake is complete.
+
 ## Product decisions
+
 
 - The coordinator owns scope, integration, tests, commits, pushes, and production checks.
   Worker agents get non-overlapping files and return diffs/test evidence only.
