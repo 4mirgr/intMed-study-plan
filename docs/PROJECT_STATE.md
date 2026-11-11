@@ -50,6 +50,17 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - See `docs/content-intake-pulm-2026-11-11.md` and canonical `sourceCoverage` for limitations,
   corrections and teacher-review requirements. Existing content IDs are preserved.
 
+## Rheumatology PDF intake — 2026-11-11
+
+- Six Persian source banks: 136 native-text pages, 315 actual questions with scoped numbering.
+- SLE, vasculitis and SpA augmented/created in their existing taxonomy positions; added explicit
+  sarcoidosis, systemic/other arthritis and APS chapters under rheumatology.
+- New drafts: 66 lesson sections, 171 cards, 90 curated MCQs, 13 KF cases and 25 searchable
+  tables/algorithms. Coverage: 220 supported/mapped, 95 withheld/requiring review.
+- Existing SLE IDs/images preserved with documented safety corrections; no raw source figures
+  published. All new medical units need teacher review; legacy SLE image-rights warnings remain.
+- Intake, source hashes, counts and limitations: `docs/content-intake-rheum-2026-11-11.md`.
+
 ## Product decisions
 
 

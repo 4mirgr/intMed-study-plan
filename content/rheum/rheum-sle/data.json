@@ -1,22 +1,38 @@
 {
   "topicId": "rheum-sle",
   "category": "rheum",
-  "sourceNote": "این نسخهٔ اول از دانش عمومی داخلی (سطح هاریسون/بورد) نوشته شده، نه از پکیج گودرزی — چون هنوز فایل مشخصی از آن پکیج برای لوپوس در اختیارم نبوده. وقتی فایل را بدهی، این محتوا بازبینی و با نکات اختصاصی‌تر جایگزین/تکمیل می‌شود.",
+  "sourceNote": "محتوای پیشین با حفظ شناسه‌ها نگه داشته شده و با پیش‌نویس آموزشی مستند به بانک پرسش ۲۸ صفحه‌ای تکمیل شده است. ارجاع به بانک پرسش، تأیید مستقل هاریسون ۲۰۲۵ نیست. کلیدهای مبهم در پوشش منبع با needs_review مشخص شده‌اند.",
   "flashcards": [
     {
       "id": "sle-1",
       "front": "تفاوت اصلی معیار طبقه‌بندی ACR 1997 و SLICC در لوپوس چیست؟",
-      "back": "SLICC حساسیت بالاتری دارد و به بیمار اجازه می‌دهد فقط با معیار ایمونولوژیک (بدون معیار بالینی) هم واجد شرایط شود اگر نفریت لوپوسی اثبات‌شده با بافت‌شناسی + ANA یا anti-dsDNA مثبت داشته باشد؛ ACR 1997 قدیمی‌تر و کمی اختصاصی‌تر است.",
+      "back": "در SLICC، نفریت لوپوسی اثبات‌شده با بیوپسی همراه ANA یا anti-dsDNA مثبت، مسیر استثنایی طبقه‌بندی بدون الزام به قاعده چهار معیار است؛ این به معنی نبود تظاهر بالینی نیست، زیرا خود نفریت درگیری کلیوی است. جزئیات مقایسه با ACR 1997 نیازمند بازبینی منبع اصلی است.",
       "tags": [
         "diagnosis"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
       ]
     },
     {
       "id": "sle-2",
       "front": "ANA در لوپوس: حساسیت یا اختصاصیت بالاتر؟",
-      "back": "حساسیت خیلی بالا (~۹۵-۹۹٪) اما اختصاصیت پایین — ANA منفی عملاً لوپوس را رد می‌کند، ANA مثبت به‌تنهایی تشخیصی نیست.",
+      "back": "ANA حساسیت بالا و اختصاصیت پایین دارد؛ مثبت بودن آن به‌تنهایی تشخیص نیست. نتیجه منفی احتمال SLE را کم می‌کند، ولی در تظاهرات بسیار مطرح‌کننده، ارزیابی بالینی و anti-Ro/SSA همچنان اهمیت دارد.",
       "tags": [
         "labs"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            24,
+            25
+          ]
+        }
       ]
     },
     {
@@ -25,6 +41,12 @@
       "back": "anti-dsDNA با فعالیت بیماری و نفریت همبستگی دارد و می‌تواند نوسان کند؛ anti-Smith خیلی اختصاصی است ولی با فعالیت بیماری کاری ندارد و ثابت می‌ماند.",
       "tags": [
         "labs"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
       ]
     },
     {
@@ -33,6 +55,12 @@
       "back": "آنتی‌بادی ضد هیستون (anti-histone) مثبت؛ داروهای شایع: procainamide، hydralazine، isoniazid. معمولاً کلیه و CNS را درگیر نمی‌کند و با قطع دارو برطرف می‌شود.",
       "tags": [
         "pharm"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
       ]
     },
     {
@@ -41,6 +69,12 @@
       "back": "کاهش می‌یابد (مصرف کمپلمان در تشکیل ایمنی کمپلکس) — همراه با افزایش anti-dsDNA یکی از بهترین نشانگرهای آزمایشگاهی فعالیت بیماری است.",
       "tags": [
         "labs"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
       ]
     },
     {
@@ -49,6 +83,12 @@
       "back": "در flare خالص لوپوسی، CRP معمولاً طبیعی یا فقط کمی بالاست (برخلاف ESR که می‌تواند بالا باشد)؛ CRP به‌وضوح بالا بیشتر به سمت عفونت همزمان مطرح می‌کند — نکتهٔ دام‌دار رایج در تست.",
       "tags": [
         "pitfall"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
       ]
     },
     {
@@ -57,6 +97,12 @@
       "back": "هیدروکسی‌کلروکین (hydroxychloroquine)؛ باید سالانه از نظر رتینوپاتی (توکسیسیتی رتینال) با معاینهٔ چشم پیگیری شود.",
       "tags": [
         "treatment"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
       ]
     },
     {
@@ -65,6 +111,12 @@
       "back": "کلاس IV (دیفیوز پرولیفراتیو) شدیدترین است؛ درمان تهاجمی با mycophenolate mofetil یا cyclophosphamide + کورتیکواستروئید ± belimumab/voclosporin.",
       "tags": [
         "treatment"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
       ]
     },
     {
@@ -73,6 +125,12 @@
       "back": "APS ثانویه شایع است (lupus anticoagulant، anticardiolipin، anti-β2-glycoprotein I)؛ تست RPR/VDRL برای سیفلیس می‌تواند کاذب مثبت شود.",
       "tags": [
         "complications"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
       ]
     },
     {
@@ -81,13 +139,379 @@
       "back": "خطر لوپوس نوزادی و مهم‌تر، بلوک کامل قلبی مادرزادی (congenital complete heart block) در جنین.",
       "tags": [
         "pregnancy"
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f01",
+      "reviewStatus": "draft",
+      "front": "فقدان علامت کلیوی در SLE چه چیزی را رد نمی‌کند؟",
+      "back": "نفریت خاموش؛ ادرار، پروتئین کمی و عملکرد کلیه باید پایش شوند.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            22,
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f02",
+      "reviewStatus": "draft",
+      "front": "در منبع این بسته، چه بازه‌ای برای پایش روتین بیمار بی‌علامت مطرح شده است؟",
+      "back": "فصلی؛ شامل CBC، ادرار، کراتینین/eGFR و سنجش کمی پروتئین.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            25,
+            27
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f03",
+      "reviewStatus": "draft",
+      "front": "UPCr بیش از چه مقدار در این منبع محرک بررسی برای بیوپسی است؟",
+      "back": "بیش از ۰٫۵ g/g؛ افت عملکرد کلیه نیز مستقل از آن اهمیت دارد.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            24,
+            25,
+            28
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f04",
+      "reviewStatus": "draft",
+      "front": "افزایش anti-dsDNA و افت کمپلمان بدون بررسی ادرار چه محدودیتی دارد؟",
+      "back": "هشدار فعالیت است، اما به‌تنهایی نفریت را اثبات نمی‌کند.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            23,
+            24
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f05",
+      "reviewStatus": "draft",
+      "front": "در درد زانو حین مصرف استروئید، رادیوگرافی طبیعی AVN را رد می‌کند؟",
+      "back": "خیر؛ اگر شک بالینی باقی باشد MRI مفصل مبتلا لازم است.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f06",
+      "reviewStatus": "draft",
+      "front": "علائم غالب الگوی نوع ۲ در SLE کدام‌اند؟",
+      "back": "خستگی، درد منتشر، اختلال خواب، اختلال شناخت/brain fog و علائم خلقی.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            23
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f07",
+      "reviewStatus": "draft",
+      "front": "پاسخ علائم غالب نوع ۲ به افزایش سرکوب ایمنی معمولاً چگونه است؟",
+      "back": "کمتر از تظاهرات التهابی نوع ۱؛ ابتدا علل علائم و فعالیت عینی ارزیابی شوند.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            23
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f08",
+      "reviewStatus": "draft",
+      "front": "دو گزینه اصلی القا در نفریت پرولیفراتیو فعالِ منبع، همراه استروئید چیست؟",
+      "back": "MMF یا cyclophosphamide وریدی؛ انتخاب به شدت و شرایط بیمار وابسته است.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            4,
+            6,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f09",
+      "reviewStatus": "draft",
+      "front": "پس از پاسخ نفریت به القا، دو گزینه نگهدارنده مطرح‌شده کدام‌اند؟",
+      "back": "MMF یا azathioprine؛ برنامه بارداری در انتخاب مؤثر است.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            7,
+            11,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f10",
+      "reviewStatus": "draft",
+      "front": "برای بیمار روی MMF که قصد بارداری دارد چه اصل درمانی مطرح است؟",
+      "back": "جایگزینی برنامه‌ریزی‌شده با داروی سازگار مثل azathioprine و اثبات پایداری؛ MMF ادامه نمی‌یابد.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            12,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f11",
+      "reviewStatus": "draft",
+      "front": "برای کاهش عود بلوک قلبی جنین در مادر anti-Ro مثبت با سابقه جنین مبتلا چه دارویی مطرح است؟",
+      "back": "HCQ در بارداری، همراه مراقبت بارداری پرخطر و پایش جنین.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            4,
+            12,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f12",
+      "reviewStatus": "draft",
+      "front": "aPL مثبت بدون حادثه ترومبوتیک یا عارضه مامایی، معادل APS بالینی است؟",
+      "back": "خیر؛ سابقه بالینی و پروفایل آزمایشگاهی باید با هم ارزیابی شوند.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            10,
+            11,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f13",
+      "reviewStatus": "draft",
+      "front": "در بارداری SLE، low-dose aspirin در این منبع برای چه هدف عمومی مطرح شده است؟",
+      "back": "پیشگیری پره‌اکلامپسی؛ جایگزین LMWH در اندیکاسیون ضدانعقاد نیست.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            1,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f14",
+      "reviewStatus": "draft",
+      "front": "کدام الگوی لام همراه افت پلاکت و علائم عصبی هشدار TMA است؟",
+      "back": "شیستوسیت/fragmented RBC همراه شواهد همولیز؛ ارزیابی اورژانسی لازم است.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            10,
+            17,
+            21
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f15",
+      "reviewStatus": "draft",
+      "front": "رتیکولوسیت و LDH بالا با بیلی‌روبین غیرمستقیم بالا چه فرایندی را مطرح می‌کند؟",
+      "back": "همولیز؛ برای تعیین علت به DAT، لام و زمینه بالینی نیاز است.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            27,
+            28
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f16",
+      "reviewStatus": "draft",
+      "front": "ANA مثبتِ بدون علامت در مصرف‌کننده داروی مرتبط، DIL را ثابت می‌کند؟",
+      "back": "خیر؛ ANA ممکن است بدون علائم ایجاد شود و تشخیص به زمان‌بندی و تظاهر بالینی نیاز دارد.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            21
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f17",
+      "reviewStatus": "draft",
+      "front": "در DIL کلاسیک درگیری کلیه/CNS چگونه توصیف می‌شود؟",
+      "back": "کمتر و نادرتر از SLE، نه مطلقاً ناممکن.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            8,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f18",
+      "reviewStatus": "draft",
+      "front": "در تب، خلط و consolidation موضعی حین سرکوب ایمنی، نخستین تشخیص مهم چیست؟",
+      "back": "پنومونی عفونی؛ فعالیت لوپوس و عفونت باید با شواهد افتراق داده شوند.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            19
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f19",
+      "reviewStatus": "draft",
+      "front": "هدف کاهش prednisone در الگوریتم غیرکلیوی منبع چیست؟",
+      "back": "رسیدن به ≤۵ mg/day و قطع در صورت امکان، با حفظ کنترل بیماری.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-f20",
+      "reviewStatus": "draft",
+      "front": "آیا درد منتشر همراه آزمایش پایدار الزاماً نشانه شعله‌وری التهابی است؟",
+      "back": "خیر؛ فیبرومیالژی، علائم نوع ۲ و علل غیرالتهابی باید بررسی شوند.",
+      "tags": [
+        "source-intake"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            1,
+            23
+          ]
+        }
       ]
     }
   ],
   "mcq": [
     {
       "id": "sle-mcq-1",
-      "stem": "زن ۲۴ ساله با راش مالار، آرترالژی و پروتئینوری تازه‌کشف‌شده مراجعه کرده. ANA و anti-dsDNA مثبت است. مهم‌ترین قدم بعدی برای تعیین درمان کدام است؟",
+      "stem": "زن ۲۴ ساله با راش مالار و آرترالژی، UPCr تأییدشده ۰٫۸ g/g و کراتینین رو به افزایش مراجعه کرده است. ANA و anti-dsDNA مثبت‌اند. گام تعیین‌کننده برای طبقه‌بندی نفریت و هدایت درمان کدام است؟",
       "options": [
         "شروع تجربی پردنیزولون بدون تست بیشتر",
         "بیوپسی کلیه برای تعیین کلاس نفریت",
@@ -95,11 +519,28 @@
         "شروع مستقیم سیکلوفسفامید"
       ],
       "correctIndex": 1,
-      "explanation": "درمان نفریت لوپوسی بر اساس کلاس بافت‌شناسی (I-VI) تعیین می‌شود؛ بدون بیوپسی نمی‌توان شدت و نوع درمان تهاجمی را مشخص کرد."
+      "explanation": "درمان نفریت لوپوسی بر اساس کلاس بافت‌شناسی (I-VI) تعیین می‌شود؛ بدون بیوپسی نمی‌توان شدت و نوع درمان تهاجمی را مشخص کرد.",
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            22,
+            24,
+            25
+          ]
+        }
+      ],
+      "optionExplanations": [
+        "در بیماری پایدار تعیین نوع نفریت برای انتخاب درمان اهمیت دارد.",
+        "بیوپسی با اندیکاسیون مناسب کلاس و فعالیت نفریت را تعیین می‌کند.",
+        "تکرار ANA جای ارزیابی کلیه را نمی‌گیرد.",
+        "شروع داروی القایی بدون تعیین وضعیت کلیه در این سناریو مناسب نیست."
+      ]
     },
     {
       "id": "sle-mcq-2",
-      "stem": "بیمار تحت درمان با ایزونیازید دچار آرترالژی، سروزیت خفیف و ANA مثبت می‌شود ولی درگیری کلیوی یا CNS ندارد. کدام آنتی‌بادی بیشترین اختصاصیت را برای این تصویر بالینی دارد؟",
+      "stem": "بیمار تحت درمان با ایزونیازید دچار آرترالژی، سروزیت خفیف و ANA مثبت شده و درگیری کلیه یا CNS ندارد. کدام آنتی‌بادی در این زمینه بیشتر با لوپوس دارویی ارتباط دارد؟",
       "options": [
         "Anti-dsDNA",
         "Anti-Smith",
@@ -107,7 +548,23 @@
         "Anti-centromere"
       ],
       "correctIndex": 2,
-      "explanation": "الگوی بالینی و دارو مطرح‌کنندهٔ لوپوس دارویی است؛ anti-histone در این زمینه اختصاصی‌ترین یافته است."
+      "explanation": "Anti-histone در لوپوس دارویی شایع است، اما اختصاصی نیست و به‌تنهایی تشخیص را تأیید نمی‌کند؛ ارتباط زمانی و بهبود پس از قطع عامل نیز اهمیت دارند.",
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            8,
+            12
+          ]
+        }
+      ],
+      "optionExplanations": [
+        "در DIL کلاسیک کمتر شایع است و در این سناریو بهترین گزینه نیست.",
+        "برای SLE اختصاصی‌تر است، نه نشانگر معمول DIL.",
+        "در زمینه دارو و سروزیت با DIL ارتباط دارد؛ اختصاصی یا قطعی نیست.",
+        "با این الگو ارتباط معمول ندارد."
+      ]
     },
     {
       "id": "sle-mcq-3",
@@ -119,7 +576,19 @@
         "پروکلسی‌تونین بالا"
       ],
       "correctIndex": 1,
-      "explanation": "کمپلمان پایین با CRP نسبتاً طبیعی الگوی کلاسیک فعالیت لوپوس است؛ CRP خیلی بالا بیشتر مطرح‌کنندهٔ عفونت است."
+      "explanation": "کمپلمان پایین با CRP نسبتاً طبیعی الگوی کلاسیک فعالیت لوپوس است؛ CRP خیلی بالا بیشتر مطرح‌کنندهٔ عفونت است.",
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ],
+      "optionExplanations": [
+        "عفونت را بیشتر مطرح می‌کند، ولی به‌تنهایی قطعی نیست.",
+        "افت کمپلمان همراه CRP کم‌ارتفاع در این زمینه بیشتر با فعالیت سازگار است.",
+        "می‌تواند با عفونت یا دارو مرتبط باشد و اختصاصی فعالیت لوپوس نیست.",
+        "بیشتر عفونت را مطرح می‌کند و تست قطعی نیست."
+      ]
     },
     {
       "id": "sle-mcq-4",
@@ -131,7 +600,19 @@
         "Methotrexate"
       ],
       "correctIndex": 1,
-      "explanation": "هیدروکسی‌کلروکین درمان پایهٔ تقریباً همهٔ بیماران SLE است، حتی در بیماری خفیف/بدون درگیری ارگان ماژور."
+      "explanation": "هیدروکسی‌کلروکین درمان پایهٔ تقریباً همهٔ بیماران SLE است، حتی در بیماری خفیف/بدون درگیری ارگان ماژور.",
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ],
+      "optionExplanations": [
+        "داروی القای بیماری شدید است و پایه همگانی نیست.",
+        "HCQ در نبود منع مصرف درمان پایه است.",
+        "بیولوژیک برای بیماران منتخب است.",
+        "برای تظاهرات منتخب، به‌ویژه آرتریت، مطرح است."
+      ]
     },
     {
       "id": "sle-mcq-5",
@@ -143,7 +624,508 @@
         "میکروسفالی"
       ],
       "correctIndex": 1,
-      "explanation": "anti-Ro/SSA (و anti-La/SSB) با بلوک کامل قلبی مادرزادی و لوپوس نوزادی مرتبط است — نیازمند مانیتورینگ اکوی جنین."
+      "explanation": "anti-Ro/SSA (و anti-La/SSB) با بلوک کامل قلبی مادرزادی و لوپوس نوزادی مرتبط است — نیازمند مانیتورینگ اکوی جنین.",
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ],
+      "optionExplanations": [
+        "ارتباط اصلی anti-Ro در این سؤال نیست.",
+        "Anti-Ro با بلوک قلبی مادرزادی ارتباط دارد.",
+        "ارتباط اصلی anti-Ro در این سؤال نیست.",
+        "ارتباط اصلی anti-Ro در این سؤال نیست."
+      ]
+    },
+    {
+      "id": "sle-intake-m01",
+      "reviewStatus": "draft",
+      "stem": "بیمار SLE بی‌علامت است، ولی anti-dsDNA افزایش و C3/C4 کاهش یافته‌اند. کراتینین قبلی طبیعی بوده و هنوز ادرار جدید بررسی نشده است. مناسب‌ترین گام کدام است؟",
+      "options": [
+        "بررسی ادرار، UPCr و عملکرد کلیه",
+        "افزایش استروئید فقط بر اساس سرولوژی",
+        "بیوپسی فوری بدون ارزیابی ادرار",
+        "حذف پایش تا یک سال"
+      ],
+      "correctIndex": 0,
+      "explanation": "روند سرولوژی هشدار است و باید با ارزیابی کلیه تکمیل شود.",
+      "optionExplanations": [
+        "روند سرولوژی هشدار است و باید با ارزیابی کلیه تکمیل شود.",
+        "سرولوژی تنها برای تشدید خودکار درمان کافی نیست.",
+        "ابتدا باید شواهد بالینی/آزمایشگاهی تعیین‌کننده اندیکاسیون روشن شود.",
+        "نفریت خاموش ممکن است رخ دهد و تأخیر طولانی مناسب نیست."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-appendix-003"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            23,
+            24
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m02",
+      "reviewStatus": "draft",
+      "stem": "در بیمار SLE، UPCr تکرارشده ۰٫۶۲ g/g و کراتینین رو به افزایش است. کدام اقدام مناسب‌تر است؟",
+      "options": [
+        "فقط پیگیری در شش ماه",
+        "جایگزینی ارزیابی استاندارد با CD163",
+        "بیوپسی کلیه با ارزیابی تخصصی",
+        "تصمیم به کلاس IV فقط از روی سرولوژی"
+      ],
+      "correctIndex": 2,
+      "explanation": "این یافته‌ها در منبع محرک بررسی برای بیوپسی‌اند.",
+      "optionExplanations": [
+        "اختلال عملکرد و پروتئینوری نیازمند بررسی فعال است.",
+        "بیومارکر جدید جای بیوپسی لازم را نمی‌گیرد.",
+        "این یافته‌ها در منبع محرک بررسی برای بیوپسی‌اند.",
+        "کلاس نفریت از بافت تعیین می‌شود."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-appendix-004",
+        "sle-src-appendix-006",
+        "sle-src-appendix-014"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            24,
+            25,
+            28
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m03",
+      "reviewStatus": "draft",
+      "stem": "بیمار SLE بدون علامت جدید با UPCr برابر ۰٫۱۸ و eGFR پایدار ۹۲ مراجعه کرده است. مناسب‌ترین برنامه چیست؟",
+      "options": [
+        "بیوپسی فوری",
+        "افزایش استروئید صرفاً برای پیشگیری",
+        "قطع همه پیگیری‌ها",
+        "پایش فصلی CBC، ادرار و عملکرد کلیه"
+      ],
+      "correctIndex": 3,
+      "explanation": "پایش منظم بیماری خاموش کلیوی و خونی را جست‌وجو می‌کند.",
+      "optionExplanations": [
+        "اندیکاسیون تازه‌ای برای بیوپسی در سناریو وجود ندارد.",
+        "در غیاب فعالیت، افزایش پیشگیرانه استروئید از داده‌ها پشتیبانی نمی‌شود.",
+        "نبود شکایت جایگزین پایش نیست.",
+        "پایش منظم بیماری خاموش کلیوی و خونی را جست‌وجو می‌کند."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-appendix-011"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            27
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m04",
+      "reviewStatus": "draft",
+      "stem": "در بیمار با SLE، درد منتشر و اختلال خواب وجود دارد؛ تورم مفصل، تغییر سرولوژی یا اختلال ادرار ندارد. کدام مسیر مناسب‌تر است؟",
+      "options": [
+        "افزایش cyclophosphamide",
+        "ارزیابی فیبرومیالژی و علل غیرالتهابی",
+        "پالس استروئید برای هر درد تازه",
+        "بیوپسی کلیه فقط به علت درد"
+      ],
+      "correctIndex": 1,
+      "explanation": "این الگو با علائم غیرالتهابی/فیبرومیالژی سازگار است.",
+      "optionExplanations": [
+        "شواهدی برای التهاب تهدیدکننده عضو ذکر نشده است.",
+        "این الگو با علائم غیرالتهابی/فیبرومیالژی سازگار است.",
+        "درد به‌تنهایی نشانه نیاز به پالس نیست.",
+        "یافته کلیوی برای بیوپسی وجود ندارد."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-002",
+        "sle-src-appendix-001"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            1,
+            23
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m05",
+      "reviewStatus": "draft",
+      "stem": "بیمار دریافت‌کننده prednisone دچار درد مکانیکی زانو شده است. رادیوگرافی طبیعی، مایع مفصل غیرالتهابی و شاخص‌های فعالیت پایدارند. گام بعدی مناسب‌تر چیست؟",
+      "options": [
+        "تزریق استروئید در مفصل بدون بررسی بیشتر",
+        "افزایش prednisone",
+        "MRI همان زانو برای آسیب ساختاری از جمله AVN",
+        "تجویز MMF برای درد به‌تنهایی"
+      ],
+      "correctIndex": 2,
+      "explanation": "AVN زودرس ممکن است در رادیوگرافی دیده نشود.",
+      "optionExplanations": [
+        "علت ساختاری باید پیش از تزریق روشن شود.",
+        "افزایش استروئید علت ساختاری را درمان نمی‌کند و ممکن است آسیب را بیشتر کند.",
+        "AVN زودرس ممکن است در رادیوگرافی دیده نشود.",
+        "در این سناریو شواهد فعالیت التهابی برای MMF وجود ندارد."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-033"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m06",
+      "reviewStatus": "draft",
+      "stem": "نفریت پرولیفراتیو فعال با کرسنت سلولی و نکروز فیبرینوئید همراه افت عملکرد کلیه گزارش شده است. کدام دارو در سناریوی این منبع همراه گلوکوکورتیکوئید برای القا انتخاب شده است؟",
+      "options": [
+        "Cyclophosphamide وریدی",
+        "Hydroxychloroquine به‌تنهایی",
+        "Azathioprine به‌تنهایی",
+        "Methotrexate هفتگی"
+      ],
+      "correctIndex": 0,
+      "explanation": "منبع در این سناریوی شدید cyclophosphamide را برگزیده است؛ انتخاب فردی نیازمند ارزیابی تخصصی است.",
+      "optionExplanations": [
+        "منبع در این سناریوی شدید cyclophosphamide را برگزیده است؛ انتخاب فردی نیازمند ارزیابی تخصصی است.",
+        "HCQ پایه است ولی به‌تنهایی برای نفریت شدید کافی نیست.",
+        "Azathioprine بیشتر در مسیر نگهداری مطرح شده است.",
+        "Methotrexate گزینه القای نفریت شدید نیست."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-013"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m07",
+      "reviewStatus": "draft",
+      "stem": "پس از القای نفریت با cyclophosphamide، پروتئینوری و کراتینین به‌وضوح بهبود یافته‌اند. کدام مسیر با منبع سازگارتر است؟",
+      "options": [
+        "افزودن rituximab بدون نشانه مقاومت",
+        "ادامه نامحدود cyclophosphamide",
+        "قطع همه داروها فوراً",
+        "برنامه‌ریزی نگهداری با MMF یا azathioprine و کاهش استروئید"
+      ],
+      "correctIndex": 3,
+      "explanation": "پاسخ به القا زمینه انتقال به نگهداری را فراهم می‌کند.",
+      "optionExplanations": [
+        "در سناریوی پاسخ، نشانه‌ای برای تشدید بی‌دلیل وجود ندارد.",
+        "درمان القایی با cyclophosphamide نامحدود نیست.",
+        "بهبود اولیه به معنی بی‌نیازی از نگهداری نیست.",
+        "پاسخ به القا زمینه انتقال به نگهداری را فراهم می‌کند."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-016"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m08",
+      "reviewStatus": "draft",
+      "stem": "بیمار SLE پایدار برای بارداری برنامه‌ریزی می‌کند و HCQ و methotrexate می‌گیرد. کدام اصل درست است؟",
+      "options": [
+        "ادامه هر دو بدون مشاوره",
+        "قطع برنامه‌ریزی‌شده methotrexate و ادامه HCQ در نبود منع",
+        "قطع HCQ و ادامه methotrexate",
+        "قطع همه درمان‌ها بدون جایگزین"
+      ],
+      "correctIndex": 1,
+      "explanation": "داروی تراتوژن باید پیش از اقدام مدیریت شود و HCQ معمولاً ادامه دارد.",
+      "optionExplanations": [
+        "Methotrexate تراتوژن است.",
+        "داروی تراتوژن باید پیش از اقدام مدیریت شود و HCQ معمولاً ادامه دارد.",
+        "HCQ سازگار است و methotrexate داروی مشکل‌ساز این ترکیب است.",
+        "قطع خودسرانه همه داروها می‌تواند بیماری را فعال کند."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-015",
+        "sle-src-main-025"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            6,
+            9,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m09",
+      "reviewStatus": "draft",
+      "stem": "بیمار با نفریت خاموش روی MMF قصد بارداری دارد. مناسب‌ترین اصل درمانی کدام است؟",
+      "options": [
+        "جایگزینی برنامه‌ریزی‌شده با داروی سازگار مانند azathioprine و پایش",
+        "ادامه MMF در بارداری",
+        "جایگزینی MMF با methotrexate",
+        "قطع درمان و اقدام فوری بدون پایش"
+      ],
+      "correctIndex": 0,
+      "explanation": "در منبع azathioprine گزینه سازگار برای ادامه کنترل بیماری است.",
+      "optionExplanations": [
+        "در منبع azathioprine گزینه سازگار برای ادامه کنترل بیماری است.",
+        "MMF تراتوژن است.",
+        "Methotrexate نیز تراتوژن است.",
+        "باید کنترل بیماری با رژیم سازگار اثبات و پیگیری شود."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-032",
+        "sle-src-main-050"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            12,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m10",
+      "reviewStatus": "draft",
+      "stem": "مادر anti-Ro مثبت با سابقه جنین مبتلا به بلوک قلبی، اکنون باردار و ضربان جنین طبیعی است. کدام رویکرد مناسب‌تر است؟",
+      "options": [
+        "حذف پایش چون ضربان فعلی طبیعی است",
+        "تجویز dexamethasone روتین برای همه موارد",
+        "قطع HCQ به علت بارداری",
+        "ادامه HCQ و مراقبت بارداری پرخطر با پایش قلب جنین"
+      ],
+      "correctIndex": 3,
+      "explanation": "HCQ خطر عود را کاهش می‌دهد و پایش همچنان لازم است.",
+      "optionExplanations": [
+        "معاینه فعلی طبیعی خطر آینده را حذف نمی‌کند.",
+        "استروئید فلوئورینه پیشگیری روتین برای قلب طبیعی جنین نیست.",
+        "منبع HCQ را در بارداری سازگار می‌داند.",
+        "HCQ خطر عود را کاهش می‌دهد و پایش همچنان لازم است."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-009",
+        "sle-src-main-034",
+        "sle-src-main-051"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            4,
+            13,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m11",
+      "reviewStatus": "draft",
+      "stem": "زن باردار مبتلا به SLE با aPL پرخطرِ پایدار، بدون سابقه ترومبوز یا عارضه مامایی است. در سناریوهای منبع کدام افزودنی انتخاب شده است؟",
+      "options": [
+        "Warfarin برای همه موارد",
+        "هپارین درمانی فقط به دلیل آنتی‌بادی",
+        "Low-dose aspirin همراه درمان پایه",
+        "قطع HCQ برای پیشگیری ترومبوز"
+      ],
+      "correctIndex": 2,
+      "explanation": "در مثال‌های بدون حادثه منبع aspirin انتخاب شده است.",
+      "optionExplanations": [
+        "Warfarin در بارداری تراتوژن است و این سناریو اندیکاسیون خودکار آن نیست.",
+        "آنتی‌بادی تنها معادل APS بالینی و اندیکاسیون خودکار دوز درمانی نیست.",
+        "در مثال‌های بدون حادثه منبع aspirin انتخاب شده است.",
+        "HCQ معمولاً ادامه می‌یابد؛ قطع آن پیشگیری ترومبوز محسوب نمی‌شود."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-028",
+        "sle-src-main-038"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            10,
+            11,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m12",
+      "reviewStatus": "draft",
+      "stem": "بیمار SLE با تشنج، افت پلاکت، LDH بالا و fragmented RBC فراوان مراجعه کرده است. علاوه بر گلوکوکورتیکوئید و ارزیابی فوری تخصصی، کدام درمان در سناریوی مشکوک به TTP منبع اولویت دارد؟",
+      "options": [
+        "Azathioprine خوراکی و پیگیری سرپایی",
+        "تعویض پلاسما",
+        "افزایش HCQ به‌تنهایی",
+        "Methotrexate هفتگی"
+      ],
+      "correctIndex": 1,
+      "explanation": "منبع در سناریوی TMA مشکوک به TTP تعویض پلاسما را برگزیده است.",
+      "optionExplanations": [
+        "TMA همراه تظاهر عصبی اورژانس است و این درمان کافی نیست.",
+        "منبع در سناریوی TMA مشکوک به TTP تعویض پلاسما را برگزیده است.",
+        "HCQ به‌تنهایی اورژانس میکروآنژیوپاتی را درمان نمی‌کند.",
+        "Methotrexate درمان این اورژانس نیست."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-027",
+        "sle-src-main-047",
+        "sle-src-main-061"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            10,
+            17,
+            21
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m13",
+      "reviewStatus": "draft",
+      "stem": "بیمار SLE با Hb پایین، رتیکولوسیت بالا، LDH بالا و بیلی‌روبین غیرمستقیم بالا مراجعه کرده است. کدام برداشت مناسب‌تر است؟",
+      "options": [
+        "کم‌خونی التهابی صرفاً بر اساس Hb",
+        "اثبات نفریت کلاس IV",
+        "رد همولیز چون eGFR طبیعی است",
+        "شواهد همولیز و نیاز به تعیین علت"
+      ],
+      "correctIndex": 3,
+      "explanation": "این مجموعه شاخص‌ها به نفع همولیز است؛ DAT و لام به تعیین علت کمک می‌کنند.",
+      "optionExplanations": [
+        "الگوی افزایش تخریب RBC با کم‌خونی التهابی صرف توضیح داده نمی‌شود.",
+        "شاخص‌های همولیز کلاس نفریت را تعیین نمی‌کنند.",
+        "همولیز می‌تواند با عملکرد کلیه طبیعی رخ دهد.",
+        "این مجموعه شاخص‌ها به نفع همولیز است؛ DAT و لام به تعیین علت کمک می‌کنند."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-appendix-013"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            27,
+            28
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m14",
+      "reviewStatus": "draft",
+      "stem": "بیمار سرکوب ایمنی‌شده با SLE، تب و خلط، consolidation موضعی ریه و CRP بسیار بالا دارد؛ مفاصل و سایر اعضا پایدارند. محتمل‌ترین گزینه چیست؟",
+      "options": [
+        "پنومونی عفونی",
+        "پنومونیت لوپوسی قطعی",
+        "خونریزی آلوئولی قطعی",
+        "AVN مفصل"
+      ],
+      "correctIndex": 0,
+      "explanation": "علائم تنفسی عفونی و consolidation موضعی در این زمینه احتمال پنومونی را بالا می‌برند.",
+      "optionExplanations": [
+        "علائم تنفسی عفونی و consolidation موضعی در این زمینه احتمال پنومونی را بالا می‌برند.",
+        "تصویر و CRP به‌تنهایی پنومونیت لوپوسی را ثابت نمی‌کنند.",
+        "افت Hb و شواهد خونریزی ذکر نشده و این تشخیص قطعی نیست.",
+        "AVN این الگوی تنفسی را توضیح نمی‌دهد."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-056"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            19
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-m15",
+      "reviewStatus": "draft",
+      "stem": "در مصرف‌کننده procainamide بدون علامت، ANA تازه مثبت شده است. کدام تفسیر درست‌تر است؟",
+      "options": [
+        "DIL قطعی است و تظاهر بالینی لازم نیست",
+        "این آزمایش نفریت را اثبات می‌کند",
+        "ANA ممکن است پیش از علامت یا بدون DIL بالینی مثبت شود",
+        "ANA مثبت وجود SLE را قطعی می‌کند"
+      ],
+      "correctIndex": 2,
+      "explanation": "منبع تأکید می‌کند ANA ممکن است بدون بروز بیماری بالینی ایجاد شود.",
+      "optionExplanations": [
+        "تشخیص DIL به تظاهر بالینی و ارتباط زمانی نیز نیاز دارد.",
+        "ANA شاخص اثبات نفریت نیست.",
+        "منبع تأکید می‌کند ANA ممکن است بدون بروز بیماری بالینی ایجاد شود.",
+        "ANA حساس ولی غیراختصاصی است."
+      ],
+      "origin": "adapted-source",
+      "sourceQuestionIds": [
+        "sle-src-main-063"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            21
+          ]
+        }
+      ]
     }
   ],
   "kfPmp": [
@@ -156,25 +1138,246 @@
           "prompt": "اولین دستهٔ آزمایش‌هایی که برای غربالگری تشخیصی درخواست می‌کنی؟",
           "expectedAnswer": "CBC، ANA، آزمایش ادرار کامل (برای پروتئینوری/کست) و کراتینین پایه.",
           "id": "sle-kfp-1-step-001",
-          "legacyIndex": 0
+          "legacyIndex": 0,
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "prompt": "ANA مثبت با تیتر بالا برگشته. قدم بعدی برای تأیید اختصاصیت؟",
           "expectedAnswer": "درخواست anti-dsDNA و anti-Smith، به‌همراه C3/C4 برای ارزیابی فعالیت.",
           "id": "sle-kfp-1-step-002",
-          "legacyIndex": 1
+          "legacyIndex": 1,
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "prompt": "آزمایش ادرار پروتئینوری ۲+ و کست گلبول قرمز نشان می‌دهد. قدم تشخیصی قطعی بعدی؟",
           "expectedAnswer": "بیوپسی کلیه برای تعیین کلاس نفریت لوپوسی و هدایت درمان.",
           "id": "sle-kfp-1-step-003",
-          "legacyIndex": 2
+          "legacyIndex": 2,
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "prompt": "درمان پایه‌ای که فارغ از نتیجهٔ بیوپسی باید شروع شود؟",
           "expectedAnswer": "هیدروکسی‌کلروکین، با پیگیری سالانهٔ چشم‌پزشکی برای رتینوپاتی.",
           "id": "sle-kfp-1-step-004",
+          "legacyIndex": 3,
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
+        }
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-k01",
+      "reviewStatus": "draft",
+      "title": "نفریت خاموش تا برنامه بارداری",
+      "vignette": "زن ۲۹ ساله با SLE در مراجعه دوره‌ای شکایت تازه ندارد، اما anti-dsDNA بالا رفته و C3/C4 افت کرده است. کراتینین قبلی طبیعی بوده است.",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            4,
+            6,
+            12,
+            14,
+            18,
+            23,
+            24,
+            25,
+            28
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "id": "sle-intake-k01-s01",
+          "reviewStatus": "draft",
+          "prompt": "اکنون کدام ارزیابی را برای کلیه در اولویت می‌گذارید؟",
+          "expectedAnswer": "ادرار، UPCr کمی و کراتینین/eGFR؛ روند سرولوژی هشدار است اما نفریت را اثبات نمی‌کند.",
+          "criticalErrors": [
+            "پالس استروئید صرفاً از روی سرولوژی",
+            "نادیده گرفتن نفریت در بیمار بی‌علامت"
+          ],
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                23,
+                24,
+                25
+              ]
+            }
+          ],
+          "legacyIndex": 0
+        },
+        {
+          "id": "sle-intake-k01-s02",
+          "reviewStatus": "draft",
+          "prompt": "UPCr در ارزیابی تأییدی ۰٫۷ g/g و کراتینین رو به افزایش است. گام تعیین‌کننده چیست؟",
+          "expectedAnswer": "ارجاع تخصصی و بررسی برای بیوپسی کلیه جهت تعیین نوع و فعالیت نفریت.",
+          "criticalErrors": [
+            "تعویق طولانی بررسی",
+            "تعیین کلاس با ANA"
+          ],
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                24,
+                25,
+                28
+              ]
+            }
+          ],
+          "legacyIndex": 1
+        },
+        {
+          "id": "sle-intake-k01-s03",
+          "reviewStatus": "draft",
+          "prompt": "بیوپسی نفریت پرولیفراتیو فعال نشان می‌دهد. اصل درمان القا چیست؟",
+          "expectedAnswer": "گلوکوکورتیکوئید همراه MMF یا cyclophosphamide وریدی با انتخاب فردی بر اساس شدت و شرایط بیمار؛ HCQ در نبود منع ادامه دارد.",
+          "criticalErrors": [
+            "HCQ به‌تنهایی برای نفریت شدید"
+          ],
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                4,
+                6,
+                14
+              ]
+            }
+          ],
+          "legacyIndex": 2
+        },
+        {
+          "id": "sle-intake-k01-s04",
+          "reviewStatus": "draft",
+          "prompt": "پس از کنترل بیماری روی MMF، بیمار قصد بارداری دارد. چه تغییر برنامه‌ای لازم است؟",
+          "expectedAnswer": "جایگزینی برنامه‌ریزی‌شده MMF با درمان سازگار مانند azathioprine، پایش پایداری و هماهنگی بارداری پرخطر؛ اقدام فوری با MMF مناسب نیست.",
+          "criticalErrors": [
+            "ادامه MMF در بارداری",
+            "قطع خودسرانه همه داروها"
+          ],
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                12,
+                18
+              ]
+            }
+          ],
           "legacyIndex": 3
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-k02",
+      "reviewStatus": "draft",
+      "title": "بارداری anti-Ro مثبت با سابقه بلوک جنینی",
+      "vignette": "زن ۳۰ ساله با SLE کم‌فعال، anti-Ro مثبت و سابقه جنین مبتلا به بلوک قلبی در هفته هشتم بارداری مراجعه می‌کند؛ ضربان فعلی جنین طبیعی است.",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            4,
+            6,
+            10,
+            11,
+            13,
+            14,
+            16,
+            18
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "id": "sle-intake-k02-s01",
+          "reviewStatus": "draft",
+          "prompt": "برای درمان پایه و کاهش عود بلوک چه دارویی مطرح است؟",
+          "expectedAnswer": "HCQ در نبود منع مصرف ادامه/شروع شود؛ طبیعی بودن ضربان فعلی دلیل قطع آن نیست.",
+          "criticalErrors": [
+            "قطع HCQ فقط به علت بارداری"
+          ],
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                4,
+                18
+              ]
+            }
+          ],
+          "legacyIndex": 0
+        },
+        {
+          "id": "sle-intake-k02-s02",
+          "reviewStatus": "draft",
+          "prompt": "پس از ادامه HCQ، برنامه پایش چه تغییری می‌کند؟",
+          "expectedAnswer": "ارجاع به بارداری پرخطر و برنامه پایش قلب جنین؛ HCQ جای پایش را نمی‌گیرد.",
+          "criticalErrors": [
+            "حذف پایش به دلیل ضربان فعلی طبیعی",
+            "dexamethasone روتین برای قلب طبیعی"
+          ],
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                4,
+                6,
+                13,
+                16
+              ]
+            }
+          ],
+          "legacyIndex": 1
+        },
+        {
+          "id": "sle-intake-k02-s03",
+          "reviewStatus": "draft",
+          "prompt": "آزمایش aPL پرخطر پایدار مثبت است، ولی هیچ سابقه ترومبوز یا عارضه مامایی مرتبط با APS ندارد. این نتیجه چگونه برنامه را هدایت می‌کند؟",
+          "expectedAnswer": "aPL تنها معادل APS بالینی نیست؛ در سناریوهای بدون حادثه منبع low-dose aspirin همراه درمان پایه مطرح شده است. نیاز/دوز LMWH با فنوتیپ و ارزیابی تخصصی تعیین می‌شود.",
+          "criticalErrors": [
+            "شروع warfarin در بارداری",
+            "فرض لزوم هپارین درمانی فقط از روی aPL"
+          ],
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                10,
+                11,
+                14
+              ]
+            }
+          ],
+          "legacyIndex": 2
         }
       ]
     }
@@ -184,13 +1387,25 @@
       "caption": "معیار طبقه‌بندی SLICC برای لوپوس (یادداشت شخصی)",
       "sourceUrl": "https://drive.google.com/file/d/1jIOcLhBjjHLi1-olKEXcdOZv-YSYdEEc/view",
       "note": "عکس از یادداشت‌های شخصی؛ فقط برای مرور خودت، لینک به درایو شخصی‌ات.",
-      "id": "img-001"
+      "id": "img-001",
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ]
     },
     {
       "caption": "معیار طبقه‌بندی ACR ۱۹۹۷ برای لوپوس (یادداشت شخصی)",
       "sourceUrl": "https://drive.google.com/file/d/1jTMygbplgRYfCpq22ms4Uy3MBOmgF5er/view",
       "note": "عکس از یادداشت‌های شخصی؛ فقط برای مرور خودت، لینک به درایو شخصی‌ات.",
-      "id": "img-002"
+      "id": "img-002",
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ]
     }
   ],
   "tables": [
@@ -220,6 +1435,604 @@
         6,
         7,
         8
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-t01",
+      "reviewStatus": "draft",
+      "title": "الگوریتم authored پایش کلیه",
+      "markdown": "| وضعیت | گام بعدی | دام |\n| --- | --- | --- |\n| بدون علامت و عملکرد پایدار | پایش فصلی CBC، ادرار، کراتینین/eGFR و پروتئین کمی | نبود شکایت، نفریت خاموش را رد نمی‌کند |\n| anti-dsDNA رو به افزایش و C3/C4 رو به کاهش | بازبینی ادرار، UPCr و عملکرد کلیه | سرولوژی به‌تنهایی اثبات نفریت نیست |\n| UPCr بیش از ۰٫۵ g/g و/یا افت عملکرد کلیه | بررسی برای بیوپسی و تعیین کلاس | آستانه پایین‌تر، منع مطلق بیوپسی نیست |\n| کرسنت و نکروز همراه افت عملکرد | تصمیم تخصصی سریع برای القا | کست RBC به‌تنهایی اثبات RPGN نیست |\n| بهبود پس از القا | ورود به نگهداری و کاهش استروئید | ادامه نامحدود cyclophosphamide هدف نیست |",
+      "rowIds": [
+        "sle-intake-t01-r00",
+        "sle-intake-t01-r01",
+        "sle-intake-t01-r02",
+        "sle-intake-t01-r03",
+        "sle-intake-t01-r04"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            6,
+            7,
+            22,
+            24,
+            25,
+            28
+          ]
+        }
+      ],
+      "origin": "authored-synthesis",
+      "rowMetadata": [
+        {
+          "id": "sle-intake-t01-r00",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                6,
+                7,
+                22,
+                24,
+                25,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t01-r01",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                6,
+                7,
+                22,
+                24,
+                25,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t01-r02",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                6,
+                7,
+                22,
+                24,
+                25,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t01-r03",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                6,
+                7,
+                22,
+                24,
+                25,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t01-r04",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                6,
+                7,
+                22,
+                24,
+                25,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        }
+      ],
+      "legacyIndex": 1,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "sle-intake-t02",
+      "reviewStatus": "draft",
+      "title": "الگوریتم authored درد تازه در SLE",
+      "markdown": "| الگو | اولویت ارزیابی | اقدام نابجا |\n| --- | --- | --- |\n| درد منتشر، خواب مختل، نبود تورم و آزمایش پایدار | فیبرومیالژی/علائم نوع ۲ و سایر علل خستگی | افزایش خودکار سرکوب ایمنی |\n| درد موضعی مفصل در مصرف‌کننده استروئید | آسیب ساختاری از جمله AVN | تزریق بدون روشن شدن علت |\n| زانوی دردناک، رادیوگرافی طبیعی، مایع غیرالتهابی | MRI زانوی مبتلا برای AVN | رد AVN صرفاً با رادیوگرافی طبیعی |\n| آرتریت متورم با یافته عینی فعالیت | ارزیابی فعالیت التهابی | انتساب همه دردها به نوع ۲ |",
+      "rowIds": [
+        "sle-intake-t02-r00",
+        "sle-intake-t02-r01",
+        "sle-intake-t02-r02",
+        "sle-intake-t02-r03"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            1,
+            2,
+            11,
+            12,
+            23
+          ]
+        }
+      ],
+      "origin": "authored-synthesis",
+      "rowMetadata": [
+        {
+          "id": "sle-intake-t02-r00",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                2,
+                11,
+                12,
+                23
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t02-r01",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                2,
+                11,
+                12,
+                23
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t02-r02",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                2,
+                11,
+                12,
+                23
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t02-r03",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                2,
+                11,
+                12,
+                23
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        }
+      ],
+      "legacyIndex": 2,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "sle-intake-t03",
+      "reviewStatus": "draft",
+      "title": "بارداری و داروها؛ بازنویسی آموزشی",
+      "markdown": "| دارو/گروه | نقش در منبع | ملاحظه |\n| --- | --- | --- |\n| HCQ | درمان پایه قابل ادامه | بدون منع مصرف؛ به‌ویژه در anti-Ro و سابقه بلوک |\n| Prednisone | در صورت نیاز برای فعالیت | کمترین دوز مؤثر |\n| Azathioprine / tacrolimus | گزینه سازگار برای نیاز به سرکوب ایمنی | انتخاب و پایش تخصصی |\n| MMF / methotrexate | اجتناب به علت تراتوژنیسیته | قطع/جایگزینی برنامه‌ریزی‌شده پیش از بارداری |\n| Low-dose aspirin | پیشگیری پره‌اکلامپسی؛ مثال‌های aPL بدون حادثه | جایگزین ضدانعقاد لازم در APS نیست |\n| LMWH | در APS/اندیکاسیون مرتبط | دوز وابسته به فنوتیپ؛ aPL مثبت تنها کافی نیست |",
+      "rowIds": [
+        "sle-intake-t03-r00",
+        "sle-intake-t03-r01",
+        "sle-intake-t03-r02",
+        "sle-intake-t03-r03",
+        "sle-intake-t03-r04",
+        "sle-intake-t03-r05"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            1,
+            6,
+            7,
+            9,
+            11,
+            12,
+            14,
+            18
+          ]
+        }
+      ],
+      "origin": "authored-synthesis",
+      "rowMetadata": [
+        {
+          "id": "sle-intake-t03-r00",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                6,
+                7,
+                9,
+                11,
+                12,
+                14,
+                18
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t03-r01",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                6,
+                7,
+                9,
+                11,
+                12,
+                14,
+                18
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t03-r02",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                6,
+                7,
+                9,
+                11,
+                12,
+                14,
+                18
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t03-r03",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                6,
+                7,
+                9,
+                11,
+                12,
+                14,
+                18
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t03-r04",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                6,
+                7,
+                9,
+                11,
+                12,
+                14,
+                18
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t03-r05",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                6,
+                7,
+                9,
+                11,
+                12,
+                14,
+                18
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        }
+      ],
+      "legacyIndex": 3,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "sle-intake-t04",
+      "reviewStatus": "draft",
+      "title": "ماتریس authored همولیز و افت پلاکت",
+      "markdown": "| یافته | برداشت | تصمیم |\n| --- | --- | --- |\n| رتیک بالا، LDH بالا، بیلی‌روبین غیرمستقیم بالا | همولیز | تعیین نوع و علت |\n| DAT مثبت و اسفروسیت در زمینه مناسب | AIHA محتمل | درمان متناسب با شدت؛ گلوکوکورتیکوئید در مثال منبع |\n| شیستوسیت و افت پلاکت با تظاهر عصبی/کلیوی | TMA یک اورژانس | ارزیابی فوری؛ تعویض پلاسما در سناریوی مشکوک به TTP |\n| پلاکت حدود ۵۰ هزار، بدون خونریزی، بیماری پایدار | افزایش دارو الزاماً لازم نیست | روند، علت و خطر خونریزی را ارزیابی کنید |",
+      "rowIds": [
+        "sle-intake-t04-r00",
+        "sle-intake-t04-r01",
+        "sle-intake-t04-r02",
+        "sle-intake-t04-r03"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            2,
+            10,
+            16,
+            17,
+            19,
+            21,
+            27,
+            28
+          ]
+        }
+      ],
+      "origin": "authored-synthesis",
+      "rowMetadata": [
+        {
+          "id": "sle-intake-t04-r00",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                10,
+                16,
+                17,
+                19,
+                21,
+                27,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t04-r01",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                10,
+                16,
+                17,
+                19,
+                21,
+                27,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t04-r02",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                10,
+                16,
+                17,
+                19,
+                21,
+                27,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t04-r03",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                10,
+                16,
+                17,
+                19,
+                21,
+                27,
+                28
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        }
+      ],
+      "legacyIndex": 4,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "sle-intake-t05",
+      "reviewStatus": "draft",
+      "title": "بازنویسی authored الگوریتم غیرکلیوی صفحه ۳",
+      "markdown": "| مرحله | اقدام | هدف |\n| --- | --- | --- |\n| همه شدت‌ها | HCQ در نبود منع مصرف؛ کنترل عوامل خطر و پایبندی | کاهش فعالیت و آسیب |\n| التهاب نیازمند مهار سریع | گلوکوکورتیکوئید به‌قدر نیاز؛ کاهش سریع در صورت امکان | کمترین دوز مؤثر، هدف ≤۵ mg/day |\n| پوست/مفصل پایدار | درمان موضعی و انتخاب داروی تعدیل‌کننده متناسب | کاهش وابستگی به استروئید |\n| فعالیت مقاوم منتخب | بررسی belimumab یا anifrolumab و گزینه متناسب با عضو | کنترل بیماری با سمیت کمتر |\n| درگیری شدید عضو | درمان تخصصی سرکوب ایمنی متناسب با مکانیسم | پیشگیری از آسیب برگشت‌ناپذیر |",
+      "rowIds": [
+        "sle-intake-t05-r00",
+        "sle-intake-t05-r01",
+        "sle-intake-t05-r02",
+        "sle-intake-t05-r03",
+        "sle-intake-t05-r04"
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            2,
+            3,
+            13
+          ]
+        }
+      ],
+      "origin": "authored-synthesis",
+      "rowMetadata": [
+        {
+          "id": "sle-intake-t05-r00",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                3,
+                13
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t05-r01",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                3,
+                13
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t05-r02",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                3,
+                13
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t05-r03",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                3,
+                13
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "sle-intake-t05-r04",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                3,
+                13
+              ]
+            }
+          ],
+          "reviewStatus": "draft"
+        }
+      ],
+      "legacyIndex": 5,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
       ]
     }
   ],
@@ -231,12 +2044,30 @@
         {
           "id": "lsn-001-p01",
           "text": "لوپوس اریتماتوز سیستمیک (SLE) یک بیماری اتوایمیون مزمن چندسیستمی است که با تولید اتوآنتی‌بادی علیه اجزای هسته سلول (به‌خصوص DNA و پروتئین‌های هسته‌ای) و رسوب کمپلکس ایمنی در بافت‌های مختلف مشخص می‌شود. الگوی بیماری بسیار متنوع است — از درگیری خفیف پوست و مفاصل تا نفریت شدید و درگیری CNS تهدیدکننده حیات.",
-          "legacyLoc": "lesson:0:0"
+          "legacyLoc": "lesson:0:0",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-001-p02",
           "text": "شیوع آن در زنان سنین باروری (۹۰٪ موارد در زنان، نسبت زن به مرد ۹ به ۱) بسیار بیشتر از مردان است و اوج شروع بیماری دهه دوم تا چهارم زندگی است. نکته امتحانی: SLE در مردان و در سنین خیلی جوان یا خیلی مسن، معمولاً شدت بالینی و پیش‌آگهی متفاوتی دارد و باید علل ثانویه (لوپوس دارویی) نیز مدنظر باشد.",
-          "legacyLoc": "lesson:0:1"
+          "legacyLoc": "lesson:0:1",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
+        }
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
         }
       ]
     },
@@ -247,12 +2078,30 @@
         {
           "id": "lsn-002-p01",
           "text": "نقص در پاک‌سازی سلول‌های آپوپتوتیک باعث می‌شود آنتی‌ژن‌های هسته‌ای (DNA، هیستون‌ها، ریبونوکلئوپروتئین‌ها) در معرض سیستم ایمنی قرار بگیرند. در افراد مستعد ژنتیکی (HLA-DR2/DR3، نقص اجزای اولیه کمپلمان مثل C1q، C2، C4)، این امر به تولید اتوآنتی‌بادی و تشکیل کمپلکس‌های ایمنی می‌انجامد.",
-          "legacyLoc": "lesson:1:0"
+          "legacyLoc": "lesson:1:0",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-002-p02",
           "text": "این کمپلکس‌های ایمنی در بافت‌ها (به‌خصوص گلومرول کلیه، پوست، عروق کوچک) رسوب کرده و کمپلمان را فعال می‌کنند و التهاب موضعی ایجاد می‌کنند — به همین دلیل است که مصرف کمپلمان (کاهش C3 و C4) یکی از نشانگرهای فعالیت بیماری، به‌خصوص نفریت لوپوسی، است. درک این مکانیسم برای تفسیر روند آزمایشگاهی بیمار (مثلاً افت هم‌زمان C3/C4 هنگام فلر) ضروری است.",
-          "legacyLoc": "lesson:1:1"
+          "legacyLoc": "lesson:1:1",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
+        }
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
         }
       ]
     },
@@ -262,38 +2111,86 @@
       "paragraphs": [
         {
           "id": "lsn-003-p01",
-          "text": "پوست و مخاط: راش مالار (پروانه‌ای، صافی بینی را درگیر نمی‌کند و چین نازولبیال را رد می‌کند — نکته افتراقی مهم با روزاسه)، لوپوس دیسکوئید (ضایعات اسکار‌دهنده)، فتوسنسیتیویتی، زخم‌های دهانی معمولاً بدون‌درد.",
-          "legacyLoc": "lesson:2:0"
+          "text": "پوست و مخاط: راش مالار روی گونه‌ها و پل بینی دیده می‌شود و معمولاً چین نازولبیال را حفظ می‌کند؛ ضایعات دیسکوئید ممکن است اسکار دهند. حساسیت به نور و زخم‌های دهانی معمولاً بدون درد نیز از تظاهرات شناخته‌شده‌اند.",
+          "legacyLoc": "lesson:2:0",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-003-p02",
           "text": "اسکلتی-عضلانی: آرترالژی/آرتریت غیرفرسایشی متقارن مفاصل کوچک — برخلاف روماتوئید آرتریت، معمولاً فرسایش استخوانی در رادیوگرافی ایجاد نمی‌کند (آرتروپاتی ژاکو یک استثنای نادر با دفورمیتی غیرفرسایشی است).",
-          "legacyLoc": "lesson:2:1"
+          "legacyLoc": "lesson:2:1",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-003-p03",
           "text": "کلیه: نفریت لوپوسی مهم‌ترین عامل مرگ‌ومیر و موربیدیتی بلندمدت است؛ طیف از کلاس I تا VI طبق طبقه‌بندی ISN/RPS دارد. کلاس III و IV (پرولیفراتیو فوکال/دیفیوز) تهاجمی‌ترین هستند و نیاز به ایمونوساپرشن قوی دارند.",
-          "legacyLoc": "lesson:2:2"
+          "legacyLoc": "lesson:2:2",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-003-p04",
           "text": "خون‌شناسی: سیتوپنی‌ها شایع‌اند — آنمی همولیتیک اتوایمیون (Coombs مثبت)، لکوپنی (به‌خصوص لنفوپنی)، ترومبوسیتوپنی.",
-          "legacyLoc": "lesson:2:3"
+          "legacyLoc": "lesson:2:3",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-003-p05",
           "text": "عصبی-روانی (NPSLE): طیف وسیعی از سردرد و اختلال شناختی خفیف تا سایکوز، تشنج، میلیت عرضی و سکته مغزی (به‌خصوص در حضور آنتی‌بادی آنتی‌فسفولیپید).",
-          "legacyLoc": "lesson:2:4"
+          "legacyLoc": "lesson:2:4",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-003-p06",
           "text": "سروزیت: پلوریت و پریکاردیت، معمولاً با درد قفسه سینه وابسته به تنفس یا وضعیت بدن.",
-          "legacyLoc": "lesson:2:5"
+          "legacyLoc": "lesson:2:5",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-003-p07",
           "text": "نکته امتحانی رایج: سؤالات بورد اغلب یک بیمار خانم جوان با ترکیبی از راش مالار + آرترالژی + پروتئینوری/سیتوپنی را مطرح می‌کنند و از شما تشخیص یا قدم بعدی (چک ANA) را می‌خواهند.",
-          "legacyLoc": "lesson:2:6"
+          "legacyLoc": "lesson:2:6",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
+        }
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
         }
       ]
     },
@@ -304,38 +2201,86 @@
         {
           "id": "lsn-004-p01",
           "text": "ANA (آنتی‌بادی ضد هسته) حساس‌ترین تست غربالگری است (حساسیت >۹۵٪) اما اختصاصیت پایینی دارد — ANA مثبت به‌تنهایی تشخیص SLE نیست و در افراد سالم و بیماری‌های دیگر نیز دیده می‌شود.",
-          "legacyLoc": "lesson:3:0"
+          "legacyLoc": "lesson:3:0",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-004-p02",
           "text": "Anti-dsDNA و Anti-Sm اختصاصیت بالایی برای SLE دارند؛ Anti-dsDNA علاوه‌براین با فعالیت بیماری و به‌خصوص نفریت همبستگی دارد و برای پایش پاسخ به درمان مفید است. Anti-Sm اختصاصی‌تر است اما با فعالیت بیماری همبستگی کمتری دارد.",
-          "legacyLoc": "lesson:3:1"
+          "legacyLoc": "lesson:3:1",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-004-p03",
           "text": "Anti-Ro/SSA و Anti-La/SSB با سندرم شوگرن همپوشانی دارند و در لوپوس نوزادی و بلوک قلبی مادرزادی نقش دارند — نکته مهم برای زنان باردار مبتلا به لوپوس.",
-          "legacyLoc": "lesson:3:2"
+          "legacyLoc": "lesson:3:2",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-004-p04",
           "text": "کمپلمان (C3، C4): کاهش آن‌ها نشانه فعال شدن بیماری از طریق مصرف کمپلمان است، برخلاف بسیاری بیماری‌های التهابی دیگر که کمپلمان به‌عنوان reactant فاز حاد افزایش می‌یابد.",
-          "legacyLoc": "lesson:3:3"
+          "legacyLoc": "lesson:3:3",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-004-p05",
           "text": "آنتی‌بادی آنتی‌فسفولیپید (لوپوس آنتی‌کوآگولانت، anticardiolipin، anti-β2GPI) باید در هر بیمار SLE با سابقه ترومبوز یا سقط مکرر بررسی شود؛ همراهی SLE و APS شایع است.",
-          "legacyLoc": "lesson:3:4"
+          "legacyLoc": "lesson:3:4",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
+        }
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
         }
       ]
     },
     {
-      "heading": "معیارهای تشخیصی",
+      "heading": "معیارهای طبقه‌بندی و قضاوت تشخیصی",
       "id": "lsn-005",
       "paragraphs": [
         {
           "id": "lsn-005-p01",
-          "text": "معیارهای EULAR/ACR 2019 استاندارد فعلی هستند: ورود اجباری ANA مثبت (تیتر ≥۱:۸۰) به‌عنوان معیار ورودی، سپس امتیازدهی وزنی بر اساس حوزه‌های بالینی (تب، پوست، آرتریت، سروزیت، عصبی، خونی، کلیوی) و ایمونولوژیک (کمپلمان، آنتی‌بادی‌های اختصاصی، آنتی‌فسفولیپید)؛ مجموع امتیاز ≥۱۰ برای طبقه‌بندی SLE لازم است. نکته کلیدی: این معیارها برای طبقه‌بندی در مطالعات طراحی شده‌اند، اما در عمل بالینی و امتحانات به‌عنوان راهنمای تشخیصی استفاده می‌شوند.",
-          "legacyLoc": "lesson:4:0"
+          "text": "معیارهای EULAR/ACR 2019 برای طبقه‌بندی پژوهشی تدوین شده‌اند و جایگزین تشخیص بالینی نیستند. ANA با تیتر ≥۱:۸۰ در دست‌کم یک نوبت معیار ورود است؛ سپس وجود حداقل یک معیار بالینی و مجموع امتیاز ≥۱۰ با رعایت قواعد انتساب و حوزه‌ها برای طبقه‌بندی لازم است. در بیمار با شواهد بالینی قوی، نرسیدن به معیار ورود نباید به‌تنهایی به رد تشخیص منجر شود. جزئیات امتیازدهی این بند از محتوای پیشین است و به بازبینی مستقل نیاز دارد.",
+          "legacyLoc": "lesson:4:0",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
+        }
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
         }
       ]
     },
@@ -346,27 +2291,63 @@
         {
           "id": "lsn-006-p01",
           "text": "هیدروکسی‌کلروکین (HCQ) ستون فقرات درمان SLE در تقریباً همه بیماران است — نه فقط برای کنترل تظاهرات خفیف پوستی-مفصلی، بلکه چون کاهش فلر، کاهش خطر ترومبوز، بهبود پروفایل لیپیدی و حتی افزایش بقا نشان داده شده. عارضه مهم قابل پایش آن رتینوپاتی است که نیاز به معاینه چشم سالانه دارد.",
-          "legacyLoc": "lesson:5:0"
+          "legacyLoc": "lesson:5:0",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-006-p02",
           "text": "کورتیکواستروئید بسته به شدت (از دوز پایین برای تظاهرات خفیف تا پالس متیل‌پردنیزولون در بحران‌های تهدیدکننده حیات مثل نفریت شدید یا NPSLE) تیتر می‌شود، با هدف کاهش تدریجی به کمترین دوز مؤثر به دلیل عوارض بلندمدت.",
-          "legacyLoc": "lesson:5:1"
+          "legacyLoc": "lesson:5:1",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-006-p03",
           "text": "داروهای ایمونوساپرسیو (مایکوفنولات موفتیل، سیکلوفسفامید، آزاتیوپرین) برای درگیری ارگان‌های حیاتی (نفریت کلاس III/IV، NPSLE شدید) به کار می‌روند؛ انتخاب بین مایکوفنولات و سیکلوفسفامید معمولاً بر اساس شدت، نژاد/اتنیسیته بیمار و ملاحظات باروری صورت می‌گیرد.",
-          "legacyLoc": "lesson:5:2"
+          "legacyLoc": "lesson:5:2",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-006-p04",
           "text": "بیولوژیک‌ها (بلیموماب علیه BLyS، آنیفرولوماب علیه گیرنده اینترفرون تیپ I) به‌عنوان افزودنی در بیماران با فعالیت مداوم علی‌رغم درمان استاندارد به کار می‌روند.",
-          "legacyLoc": "lesson:5:3"
+          "legacyLoc": "lesson:5:3",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
         },
         {
           "id": "lsn-006-p05",
           "text": "نکته امتحانی: در بیمار بارداری با SLE، NSAIDs در سه‌ماهه سوم و متوترکسات/مایکوفنولات به‌طور مطلق ممنوع هستند؛ هیدروکسی‌کلروکین در بارداری ایمن است و باید ادامه یابد.",
-          "legacyLoc": "lesson:5:4"
+          "legacyLoc": "lesson:5:4",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
+        }
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
         }
       ]
     },
@@ -377,9 +2358,2902 @@
         {
           "id": "lsn-007-p01",
           "text": "۱) راش مالار چین نازولبیال را درگیر نمی‌کند — نکته افتراقی با روزاسه.\n۲) ANA حساس ولی غیراختصاصی؛ Anti-dsDNA و Anti-Sm اختصاصی و اولی هم با فعالیت بیماری/نفریت همبستگی دارد.\n۳) کاهش C3/C4 = فعالیت بیماری (برخلاف اکثر بیماری‌های التهابی).\n۴) نفریت لوپوسی مهم‌ترین تعیین‌کننده پیش‌آگهی است؛ کلاس III/IV نیاز به ایمونوساپرشن تهاجمی دارد.\n۵) HCQ در همه بیماران (حتی بارداری) ادامه یابد مگر منع مطلق.\n۶) در بیمار با سابقه ترومبوز/سقط مکرر، همیشه آنتی‌بادی آنتی‌فسفولیپید را بررسی کن.",
-          "legacyLoc": "lesson:6:0"
+          "legacyLoc": "lesson:6:0",
+          "reviewStatus": "draft",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-legacy-unverified"
+            }
+          ]
+        }
+      ],
+      "reviewStatus": "draft",
+      "sourceRefs": [
+        {
+          "sourceId": "sle-legacy-unverified"
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l01",
+      "reviewStatus": "draft",
+      "heading": "ارزیابی علائم تازه: التهاب، آسیب یا علائم نوع ۲؟",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l01-p01",
+          "reviewStatus": "draft",
+          "text": "در هر مراجعه ابتدا بپرسید آیا علامت تازه با یافته عینی التهاب عضو همراه است: آرتریت متورم، سروزیت، نفریت یا واسکولیت به نفع تظاهرات نوع ۱ هستند. در مقابل خستگی، درد منتشر، اختلال خواب، اضطراب، افسردگی و brain fog ممکن است در الگوی علائم نوع ۲ غالب باشند؛ این اصطلاح توصیف الگوی علائم است و کلاس نفریت یا معیار طبقه‌بندی SLE نیست. پاسخ این علائم به افزایش سرکوب ایمنی معمولاً کمتر است.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                23
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:7:0"
+        },
+        {
+          "id": "sle-intake-l01-p02",
+          "reviewStatus": "draft",
+          "text": "در بیمار با درد منتشر و خواب مختل، نبود تورم مفصل، ادرار و عملکرد کلیه طبیعی و مارکرهای پایدار، پیش از افزایش استروئید به فیبرومیالژی و علل غیرالتهابی فکر کنید. برای الگوی همراه درد و اختلال خواب، منبع گاباپنتین/پرگابالین، آمی‌تریپتیلین یا Cyclobenzaprine را مطرح می‌کند؛ این انتخاب جایگزین بررسی علل درد و خستگی نیست و نسخه واحدی برای همه بیماران محسوب نمی‌شود.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:7:1"
+        },
+        {
+          "id": "sle-intake-l01-p03",
+          "reviewStatus": "draft",
+          "text": "درد موضعی پیشرونده شانه، زانو یا هیپ در مصرف‌کننده گلوکوکورتیکوئید، به‌ویژه با التهاب سیستمیک خاموش، باید شک به نکروز آواسکولار ایجاد کند. رادیوگرافی طبیعی AVN زودرس را رد نمی‌کند؛ در مثال زانوی دردناک با مایع غیرالتهابی و رادیوگرافی طبیعی، MRI مفصل مبتلا اقدام بعدی است. افزایش استروئید یا تزریق داخل مفصل بدون روشن شدن علت می‌تواند تشخیص آسیب را به تأخیر اندازد.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                10,
+                11,
+                12
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:7:2"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            1,
+            2,
+            10,
+            11,
+            12,
+            23
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l02",
+      "reviewStatus": "draft",
+      "heading": "سرولوژی را در زمینه بالینی تفسیر کنید",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l02-p01",
+          "reviewStatus": "draft",
+          "text": "ANA تست حساس ولی غیراختصاصی است و در افراد سالم نیز ممکن است مثبت شود. تیتر ≥۱:۸۰ در منبع آستانه قابل توجه و در معیار طبقه‌بندی معیار ورود است؛ این عدد مرز قطعی تشخیص فردی نیست. اگر ANA منفی یا زیر آستانه باشد ولی تظاهرات بسیار مطرح‌کننده باشند، anti-Ro/SSA می‌تواند به ارزیابی کمک کند؛ به‌تنهایی تأیید تشخیص نمی‌کند.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                24,
+                25
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:8:0"
+        },
+        {
+          "id": "sle-intake-l02-p02",
+          "reviewStatus": "draft",
+          "text": "Anti-Sm و anti-dsDNA اختصاصیت ارزیابی SLE را افزایش می‌دهند. افزایش anti-dsDNA همراه افت C3/C4 می‌تواند هشدار نفریت فعال باشد؛ تصمیم درمانی باید با ادرار، مقدار پروتئینوری، کراتینین/eGFR و معاینه تلفیق شود. سرولوژی غیرطبیعی به‌تنهایی معادل اثبات نفریت یا مجوز خودکار پالس استروئید نیست. کلیدهای قدیمی درمان صرفاً بر پایه سرولوژی در همین منبع محل اشکال‌اند و وارد آزمون امتیازدار نشده‌اند.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                15,
+                17,
+                22,
+                23,
+                24
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:8:1"
+        },
+        {
+          "id": "sle-intake-l02-p03",
+          "reviewStatus": "draft",
+          "text": "جدول خصوصی آنتی‌بادی‌های صفحه ۱۷، anti-Ro را با لوپوس پوستی تحت‌حاد، علائم sicca، لوپوس نوزادی و بلوک قلبی مرتبط می‌داند؛ aPL با ترومبوز و عوارض بارداری ارتباط دارد. ارتباط آزمایش با یک تظاهر، معادل تشخیص قطعی آن تظاهر نیست؛ جدول از anti-ribosomal P به‌عنوان ارتباط احتمالی CNS یاد می‌کند، نه تست قطعی برای انتساب سایکوز.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                17
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:8:2"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            15,
+            17,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l03",
+      "reviewStatus": "draft",
+      "heading": "نفریت خاموش: از غربالگری تا بیوپسی",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l03-p01",
+          "reviewStatus": "draft",
+          "text": "نفریت ممکن است بدون علامت خارج کلیوی یا در بیمار ظاهراً بدون شکایت وجود داشته باشد. منبع پایش فصلی CBC، کراتینین/eGFR، آزمایش ادرار و سنجش کمی پروتئین با UPCr رندم یا ادرار ۲۴ ساعته را مطرح می‌کند. کم‌خونی، لکوپنی و ترومبوسیتوپنی نیز ممکن است بی‌علامت باشند؛ فقدان شکایت جای آزمایش را نمی‌گیرد.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                22,
+                24,
+                25,
+                27,
+                28
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:9:0"
+        },
+        {
+          "id": "sle-intake-l03-p02",
+          "reviewStatus": "draft",
+          "text": "در منبع، UPCr بیش از ۰٫۵ g/g و/یا افت عملکرد کلیه محرک بررسی برای بیوپسی است. سدیمان فعال و کست RBC اهمیت شک به گلومرولونفریت را بیشتر می‌کنند. بیوپسی کلاس و فعالیت/مزمن بودن آسیب را برای انتخاب درمان روشن می‌کند. این آستانه قانون منع بیوپسی در مقادیر کمتر نیست؛ تصمیم با روند عملکرد کلیه و سایر یافته‌ها گرفته می‌شود.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                22,
+                24,
+                25,
+                28
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:9:1"
+        },
+        {
+          "id": "sle-intake-l03-p03",
+          "reviewStatus": "draft",
+          "text": "وقتی عملکرد کلیه پایدار است و UPCr پایین‌تر از آستانه مطرح‌شده باقی مانده، به‌جای تشخیص قطعی نفریت از روی anti-dsDNA، روند ادرار و عملکرد کلیه را پیگیری کنید. افزایش سرولوژی می‌تواند موجب ارزیابی زودتر شود. IL-16 یا CD163 ادراری در متن به‌عنوان بیومارکرهای در حال بررسی مطرح‌اند و جایگزین ارزیابی استاندارد یا بیوپسی لازم نیستند.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                25,
+                26,
+                27,
+                28
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:9:2"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            22,
+            24,
+            25,
+            26,
+            27,
+            28
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l04",
+      "reviewStatus": "draft",
+      "heading": "نفریت: القا، نگهداری و پاسخ",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l04-p01",
+          "reviewStatus": "draft",
+          "text": "برای نفریت پرولیفراتیو فعال کلاس III/IV و موارد مختلط با V، منبع گلوکوکورتیکوئید همراه MMF خوراکی یا cyclophosphamide وریدی را به‌عنوان گزینه‌های القا مطرح می‌کند. HCQ درمان پایه است، اما به‌تنهایی درمان کافی نفریت شدید نیست. وجود کرسنت سلولی و نکروز فیبرینوئید همراه افت عملکرد کلیه در سناریوهای منبع، ضرورت درمان تخصصی سریع را نشان می‌دهد؛ کست RBC به‌تنهایی اثبات RPGN نیست.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                4,
+                5,
+                6,
+                14
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:10:0"
+        },
+        {
+          "id": "sle-intake-l04-p02",
+          "reviewStatus": "draft",
+          "text": "در نمونه‌های نفریت پرولیفراتیو کرسنتیک، منبع cyclophosphamide را انتخاب ترجیحی سؤال می‌داند؛ این ترجیح نباید به حکم همیشگی برتری آن بر MMF تعمیم یابد. خطر عفونت، باروری، شدت و آسیب بافتی و برنامه بارداری در تصمیم فردی مؤثرند. داشتن فرزند دلیل بی‌اهمیت شدن حفظ باروری یا مشاوره نیست. در کلاس V با پروتئینوری نفروتیک، پرسش ۱۱ MMF را از میان گزینه‌ها انتخاب کرده است.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                4,
+                5,
+                6
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:10:1"
+        },
+        {
+          "id": "sle-intake-l04-p03",
+          "reviewStatus": "draft",
+          "text": "پس از پاسخ به القا، مسیر به سمت درمان نگهدارنده با MMF یا azathioprine و کاهش استروئید می‌رود؛ تداوم نامحدود cyclophosphamide هدف نیست. در مثال منبع افت پروتئینوری و بهبود کراتینین زمینه تبدیل به نگهداری را فراهم می‌کند. برنامه بارداری انتخاب نگهدارنده را تغییر می‌دهد، زیرا MMF تراتوژن است.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                7,
+                11,
+                12,
+                18
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:10:2"
+        },
+        {
+          "id": "sle-intake-l04-p04",
+          "reviewStatus": "draft",
+          "text": "اهداف پاسخ ذکرشده در منبع شامل کاهش حداقل ۲۵٪ پروتئینوری در ۳ ماه، حداقل ۵۰٪ در ۶ ماه و رسیدن به مقدار پایین حدود ۰٫۵ تا ۰٫۷ طی ۱۲ تا ۲۴ ماه است؛ این اعداد باید با روند eGFR و وضعیت بیمار سنجیده شوند. متن میان UPCr و واحد گرم در روز جابه‌جا شده است؛ پیش از استفاده از اعداد به‌عنوان دستور درمان، واحد و راهنمای اصلی باید توسط مدرس بررسی شود.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                7
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:10:3"
+        },
+        {
+          "id": "sle-intake-l04-p05",
+          "reviewStatus": "draft",
+          "text": "Cyclophosphamide می‌تواند نارسایی تخمدان ایجاد کند؛ مشاوره حفظ باروری پیش از درمان اهمیت دارد. منبع امکان استفاده از آگونیست GnRH را مطرح می‌کند، ولی کلید پرسش ۲۱ با علامت سؤال آمده است؛ نام و زمان‌بندی یک رژیم مشخص از آن کلید استخراج نشده است.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                4,
+                8
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:10:4"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l05",
+      "reviewStatus": "draft",
+      "heading": "هدف درمان غیرکلیوی و کاهش آسیب دارویی",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l05-p01",
+          "reviewStatus": "draft",
+          "text": "الگوریتم اصلی صفحه ۳، HCQ را در همه بیماران فاقد منع مصرف درمان پایه می‌داند. گلوکوکورتیکوئید در صورت نیاز برای مهار فعالیت استفاده و در اولین فرصت به کمترین دوز مؤثر کاهش داده می‌شود؛ هدف نمایش‌داده‌شده ≤۵ mg/day معادل prednisone و قطع در صورت امکان است. پایداری بیماری و پیشگیری از آسیب اهمیت دارد و آزمایش غیرطبیعی منفرد نباید جای ارزیابی بیمار را بگیرد.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                3
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:11:0"
+        },
+        {
+          "id": "sle-intake-l05-p02",
+          "reviewStatus": "draft",
+          "text": "برای پوست و مفصل، محافظت در برابر آفتاب و ضدملاریا پایه‌اند؛ درمان موضعی با استروئید یا مهارکننده کلسینورین در ضایعات پوستی مطرح است. بیماری پایدار ممکن است به داروی تعدیل‌کننده ایمنی نیاز داشته باشد. Methotrexate برای آرتریت، و azathioprine یا MMF در برخی تظاهرات پایدار گزینه‌اند؛ belimumab و anifrolumab در بیماران منتخب می‌توانند کنترل بیماری و کاهش استروئید را کمک کنند. کلید تک‌پاسخی پرسش پوستی ۳۵ خود منبع مورد اختلاف است.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                3,
+                13,
+                15
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:11:1"
+        },
+        {
+          "id": "sle-intake-l05-p03",
+          "reviewStatus": "draft",
+          "text": "آسیب مرتبط با استروئید شامل کاتاراکت، پوکی استخوان/شکستگی، AVN و دیابت است. الگوریتم منبع بر محافظت آفتاب، ورزش، ترک سیگار، واکسیناسیون، وزن مناسب و کنترل فشارخون، چربی و قند تأکید دارد. پایبندی درمانی باید قبل از برچسب مقاومت به درمان بررسی شود.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                3,
+                10,
+                11,
+                12
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:11:2"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            2,
+            3,
+            10,
+            11,
+            12,
+            13,
+            15
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l06",
+      "reviewStatus": "draft",
+      "heading": "بارداری: داروها و برنامه‌ریزی",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l06-p01",
+          "reviewStatus": "draft",
+          "text": "در بیماری خاموش یا کم‌فعال و با داروهای سازگار، بارداری می‌تواند پیامد مطلوب داشته باشد. منبع برای برنامه‌ریزی پس از نفریت بر دوره خاموشی پایدار تأکید می‌کند؛ عدد شش ماه در پاسخ پرسش ۵۰ آمده و باید با شرایط فردی تفسیر شود. قطع خودسرانه همه داروها خطر شعله‌وری دارد. HCQ معمولاً ادامه می‌یابد و prednisone در صورت نیاز با کمترین دوز مؤثر استفاده می‌شود.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                6,
+                7,
+                18
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:12:0"
+        },
+        {
+          "id": "sle-intake-l06-p02",
+          "reviewStatus": "draft",
+          "text": "MMF و methotrexate تراتوژن‌اند و باید پیش از اقدام به بارداری با برنامه تخصصی قطع/جایگزین شوند. برای بیماری نیازمند سرکوب ایمنی، azathioprine یا tacrolimus از گزینه‌های سازگار مطرح‌شده در منبع‌اند. در بیمار روی MMF، صرف قطع دارو بدون طراحی درمان جایگزین و پایش پایداری کافی نیست؛ فاصله دقیق قطع هر دارو از این بسته تعیین نشده است.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                6,
+                7,
+                9,
+                12,
+                18
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:12:1"
+        },
+        {
+          "id": "sle-intake-l06-p03",
+          "reviewStatus": "draft",
+          "text": "منبع low-dose aspirin را برای پیشگیری پره‌اکلامپسی در بارداری SLE مطرح می‌کند. aPL مثبت بدون سابقه ترومبوز یا عارضه بارداری با APS بالینی یکسان نیست؛ در مثال‌های بدون حادثه، aspirin همراه ادامه HCQ انتخاب شده است. در APS یا سابقه مرتبط، نیاز به LMWH بر اساس فنوتیپ و ارزیابی تخصصی مطرح می‌شود؛ نوع و دوز ضدانعقاد را نمی‌توان فقط از مثبت بودن آنتی‌بادی تعیین کرد. Warfarin در بارداری تراتوژن است.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                1,
+                10,
+                11,
+                14
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:12:2"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            1,
+            6,
+            7,
+            9,
+            10,
+            11,
+            12,
+            14,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l07",
+      "reviewStatus": "draft",
+      "heading": "Anti-Ro و مراقبت جنین",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l07-p01",
+          "reviewStatus": "draft",
+          "text": "Anti-Ro/SSA از جفت عبور می‌کند و می‌تواند با لوپوس نوزادی و بلوک قلبی مادرزادی همراه باشد. بثورات یا تغییرات آزمایشگاهی نوزاد ممکن است گذرا باشند، اما بلوک قلبی پیامد مهم متفاوتی است. Anti-Ro مثبت به‌ویژه با سابقه جنین مبتلا، نیاز به ارجاع بارداری پرخطر و پایش قلب جنین دارد؛ خود آنتی‌بادی به معنی وجود بلوک فعلی نیست.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                4,
+                6,
+                13,
+                15,
+                16
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:13:0"
+        },
+        {
+          "id": "sle-intake-l07-p02",
+          "reviewStatus": "draft",
+          "text": "در مادر دارای سابقه جنین مبتلا به بلوک قلبی، HCQ در بارداری خطر عود بلوک را کاهش می‌دهد. طبیعی بودن ضربان فعلی جنین مجوز قطع HCQ یا حذف پایش نیست. Dexamethasone درمان پیشگیرانه روتین برای هر مادر anti-Ro مثبت با قلب طبیعی جنین نیست؛ منبع استفاده انتخابی استروئید فلوئورینه در بلوک درجه اول/دوم را فقط به‌عنوان تصمیم تخصصی مطرح می‌کند.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                4,
+                12,
+                13,
+                15,
+                18
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:13:1"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            4,
+            6,
+            12,
+            13,
+            15,
+            16,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l08",
+      "reviewStatus": "draft",
+      "heading": "سیتوپنی و اورژانس میکروآنژیوپاتی",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l08-p01",
+          "reviewStatus": "draft",
+          "text": "در کم‌خونی، رتیکولوسیت بالا، LDH بالا و بیلی‌روبین غیرمستقیم بالا به همولیز کمک می‌کنند؛ اسفروسیت و DAT مثبت الگوی AIHA را تقویت می‌کنند. در مثال منبع AIHA علامت‌دار با prednisone درمان می‌شود؛ rituximab نیز برای موارد منتخب همولیز یا ترومبوسیتوپنی شدید مطرح است. نوع کم‌خونی را فقط از Hb پایین تعیین نکنید.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                3,
+                9,
+                16,
+                27,
+                28
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:14:0"
+        },
+        {
+          "id": "sle-intake-l08-p02",
+          "reviewStatus": "draft",
+          "text": "افت پلاکت همراه fragmented RBC/شیستوسیت، LDH بالا و تظاهر عصبی یا کلیوی باید میکروآنژیوپاتی ترومبوتیک را در اولویت قرار دهد. در سناریوهای پرسش‌های ۲۷، ۴۷ و ۶۱، درمان فوری مبتنی بر تعویض پلاسما همراه گلوکوکورتیکوئید انتخاب شده است. این ترکیب، دستور واحد برای همه انواع TMA نیست و افتراق TTP، TMA وابسته به کمپلمان و APS فاجعه‌بار به ارزیابی تخصصی فوری نیاز دارد.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                10,
+                16,
+                17,
+                21
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:14:1"
+        },
+        {
+          "id": "sle-intake-l08-p03",
+          "reviewStatus": "draft",
+          "text": "در مقابل، پلاکت حدود ۵۰ هزار در بیمار بدون خونریزی با معاینه، ادرار و شاخص‌های فعالیت پایدار، در چند مثال منبع با ادامه درمان قبلی مدیریت شده است. گزاره منبع «هر پلاکت بالای ۴۰ هزار نیاز به درمان ندارد» نباید قانون عمومی شود؛ خونریزی، روند شمارش، علت، داروها و اقدام تهاجمی برنامه‌ریزی‌شده در تصمیم مؤثرند.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                7,
+                16,
+                19
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:14:2"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            2,
+            3,
+            7,
+            9,
+            10,
+            16,
+            17,
+            19,
+            21,
+            27,
+            28
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l09",
+      "reviewStatus": "draft",
+      "heading": "تظاهر عصبی و تنفسی: پیش از انتساب به لوپوس",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l09-p01",
+          "reviewStatus": "draft",
+          "text": "شکایت شناختی/brain fog در منبع شایع توصیف شده است؛ تشنج، سایکوز و میلیت عرضی نیز ممکن‌اند. در سایکوز جدید باید اثر گلوکوکورتیکوئید، عفونت و علل متابولیک کنار فعالیت التهابی بررسی شوند. کلیدهای قدیمی سایکوز در این بانک ناسازگار یا وابسته به مطالب حذف‌شده‌اند؛ صرف دوز استروئید یا طبیعی بودن CBC برای انتساب کافی نیست.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                2,
+                19,
+                20,
+                21
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:15:0"
+        },
+        {
+          "id": "sle-intake-l09-p02",
+          "reviewStatus": "draft",
+          "text": "در درگیری التهابی شدید CNS پس از ارزیابی علل دیگر، منبع گلوکوکورتیکوئید با یک داروی سرکوب ایمنی مانند cyclophosphamide، MMF یا rituximab را مطرح می‌کند؛ تشنج نیز درمان علامتی خود را می‌خواهد. یافتن ترومبوز یا TMA مسیر درمان را تغییر می‌دهد و این موارد نباید همگی به عنوان cerebritis درمان شوند.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                3,
+                14,
+                15,
+                20
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:15:1"
+        },
+        {
+          "id": "sle-intake-l09-p03",
+          "reviewStatus": "draft",
+          "text": "پلوریت شایع‌ترین تظاهر ریوی ذکرشده است. در تب و ارتشاح ریوی بیمار سرکوب ایمنی‌شده، عفونت باید بررسی شود؛ پنومونیت لوپوسی ممکن است در تصویر مشابه عفونت باشد. هموپتیزی همراه افت Hb و ارتشاح آلوئولی دوطرفه هشدار خونریزی آلوئولی است، اما CT به‌تنهایی علت را قطعی نمی‌کند. ILD، shrinking lung syndrome، پرفشاری ریوی و آمبولی ریه نیز در افتراق‌اند.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                13,
+                19,
+                22
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:15:2"
+        },
+        {
+          "id": "sle-intake-l09-p04",
+          "reviewStatus": "draft",
+          "text": "در مثال تب، خلط، consolidation موضعی و CRP بسیار بالا حین cyclophosphamide و prednisone، پنومونی عفونی محتمل‌ترین گزینه است؛ این الگو دلیل افزایش خودکار استروئید نیست. CRP به‌تنهایی عفونت را ثابت یا رد نمی‌کند و عفونت و فعالیت لوپوس می‌توانند همزمان باشند.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                19
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:15:3"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            2,
+            3,
+            13,
+            14,
+            15,
+            19,
+            20,
+            21,
+            22
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sle-intake-l10",
+      "reviewStatus": "draft",
+      "heading": "لوپوس دارویی: ارتباط زمانی و قطع عامل",
+      "paragraphs": [
+        {
+          "id": "sle-intake-l10-p01",
+          "reviewStatus": "draft",
+          "text": "در DIL، مواجهه دارویی پیش از تب، درد مفاصل، میالژی، راش یا سروزیت قرار می‌گیرد. ANA اغلب مثبت است و anti-histone شایع است؛ هیچ‌یک به‌تنهایی تشخیص قطعی نمی‌دهند. ANA حتی ممکن است پیش از علامت یا بدون بیماری بالینی مثبت شود. درگیری کلیه و CNS در الگوی کلاسیک DIL کمتر است، نه غیرممکن.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                8,
+                12,
+                21
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:16:0"
+        },
+        {
+          "id": "sle-intake-l10-p02",
+          "reviewStatus": "draft",
+          "text": "Hydralazine و procainamide از داروهای کلاسیک مطرح‌شده‌اند؛ منبع hydrochlorothiazide و چند گروه دیگر را نیز ذکر می‌کند. تطبیق زمان شروع و شکل بالینی اهمیت دارد. بهبود پس از قطع/جایگزینی عامل مظنون به تشخیص کمک می‌کند و اغلب طی چند هفته رخ می‌دهد؛ ANA مثبت بدون علامت به‌تنهایی دلیل برچسب DIL یا قطع هر داروی ضروری نیست.",
+          "sourceRefs": [
+            {
+              "sourceId": "sle-qbank-61a5fcfa",
+              "pages": [
+                8,
+                11,
+                12,
+                21
+              ]
+            }
+          ],
+          "legacyLoc": "lesson:16:1"
+        }
+      ],
+      "sourceRefs": [
+        {
+          "sourceId": "sle-qbank-61a5fcfa",
+          "pages": [
+            8,
+            11,
+            12,
+            21
+          ]
         }
       ]
     }
-  ]
+  ],
+  "sources": [
+    {
+      "id": "sle-legacy-unverified",
+      "title": "محتوای پیشین IntMed و یادداشت‌های شخصی لوپوس",
+      "type": "legacy-unverified",
+      "note": "ارجاع کتاب‌شناختی و تأیید مستقل برای محتوای پیشین موجود نیست؛ اتصال به این رکورد به معنی تأیید علمی نیست."
+    },
+    {
+      "id": "sle-qbank-61a5fcfa",
+      "title": "۱-لوپوس؛ بانک پرسش فارسی، ۶۶ پرسش اصلی و ۱۴ پرسش پیوست",
+      "type": "user-supplied-question-bank",
+      "sha256": "61a5fcfaf09bd521263efd7babe9381616c71a3b8975b8614552dd73d0a1e94d",
+      "pageCount": 28,
+      "reviewStatus": "draft",
+      "note": "منبع ثانویه فارسی با ادعای تطبیق برخی پاسخ‌ها با هاریسون ۲۰۲۵؛ متن اصلی هاریسون مستقلاً بررسی نشده است. شماره صفحه‌ها شماره PDF است. دو تصویر اصلی خصوصی باقی می‌مانند."
+    }
+  ],
+  "sourceCoverage": {
+    "sourceId": "sle-qbank-61a5fcfa",
+    "sourceSha256": "61a5fcfaf09bd521263efd7babe9381616c71a3b8975b8614552dd73d0a1e94d",
+    "actualQuestionCount": 80,
+    "mainQuestionCount": 66,
+    "appendixQuestionCount": 14,
+    "numberingNotes": [
+      "شماره‌های ۱ تا ۶۶ پیوسته‌اند؛ در صفحه ۲۳ شماره‌گذاری پیوست از ۱ تا ۱۴ از نو آغاز می‌شود.",
+      "در سؤال اصلی ۱۵، برچسب گزینه دوم به اشتباه ۳ چاپ شده و دو گزینه با برچسب ۳ دیده می‌شود؛ ترتیب چهار گزینه در شاهد خصوصی حفظ شده است.",
+      "گزینه‌های ۱ و ۴ سؤال اصلی ۵۰ تقریباً یکسان‌اند.",
+      "تکرار مفهومی فراوان است: ۴۱/۶۶ سرولوژی تنها؛ ۳/۱۸/۴۴/۵۵ پلاکت پایدار؛ ۹/۳۴/۴۲/۵۱ پیشگیری بلوک. هر رخداد شناسه جدا دارد."
+    ],
+    "questions": [
+      {
+        "id": "sle-src-main-001",
+        "sourceQuestionId": "sle-src-main-001",
+        "sourceNumber": 1,
+        "series": "main",
+        "questionPage": 1,
+        "answerPage": 1,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              1,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-002",
+        "sourceQuestionId": "sle-src-main-002",
+        "sourceNumber": 2,
+        "series": "main",
+        "questionPage": 1,
+        "answerPage": 1,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l01",
+          "sle-intake-t02",
+          "sle-intake-m04"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              1,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-003",
+        "sourceQuestionId": "sle-src-main-003",
+        "sourceNumber": 3,
+        "series": "main",
+        "questionPage": 1,
+        "answerPage": 2,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-t04"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              1,
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-004",
+        "sourceQuestionId": "sle-src-main-004",
+        "sourceNumber": 4,
+        "series": "main",
+        "questionPage": 2,
+        "answerPage": 2,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l01",
+          "sle-intake-t02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              2,
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-005",
+        "sourceQuestionId": "sle-src-main-005",
+        "sourceNumber": 5,
+        "series": "main",
+        "questionPage": 2,
+        "answerPage": 2,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l09"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              2,
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-006",
+        "sourceQuestionId": "sle-src-main-006",
+        "sourceNumber": 6,
+        "series": "main",
+        "questionPage": 3,
+        "answerPage": 3,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید prednisone به عنوان اولویت بر HCQ در خستگی بدون شواهد عضو، در خود پاسخ محل اعتراض است؛ از آموزش و امتیازدهی کنار گذاشته شد.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-007",
+        "sourceQuestionId": "sle-src-main-007",
+        "sourceNumber": 7,
+        "series": "main",
+        "questionPage": 3,
+        "answerPage": 3,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l09"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              3,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-008",
+        "sourceQuestionId": "sle-src-main-008",
+        "sourceNumber": 8,
+        "series": "main",
+        "questionPage": 3,
+        "answerPage": 4,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              3,
+              4
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-009",
+        "sourceQuestionId": "sle-src-main-009",
+        "sourceNumber": 9,
+        "series": "main",
+        "questionPage": 4,
+        "answerPage": 4,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l07",
+          "sle-intake-k02",
+          "sle-intake-m10"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              4,
+              4
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-010",
+        "sourceQuestionId": "sle-src-main-010",
+        "sourceNumber": 10,
+        "series": "main",
+        "questionPage": 4,
+        "answerPage": 5,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-011",
+        "sourceQuestionId": "sle-src-main-011",
+        "sourceNumber": 11,
+        "series": "main",
+        "questionPage": 5,
+        "answerPage": 5,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              5,
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-012",
+        "sourceQuestionId": "sle-src-main-012",
+        "sourceNumber": 12,
+        "series": "main",
+        "questionPage": 5,
+        "answerPage": 6,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-013",
+        "sourceQuestionId": "sle-src-main-013",
+        "sourceNumber": 13,
+        "series": "main",
+        "questionPage": 6,
+        "answerPage": 6,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01",
+          "sle-intake-m06"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              6,
+              6
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-014",
+        "sourceQuestionId": "sle-src-main-014",
+        "sourceNumber": 14,
+        "series": "main",
+        "questionPage": 6,
+        "answerPage": 6,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l07",
+          "sle-intake-k02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              6,
+              6
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-015",
+        "sourceQuestionId": "sle-src-main-015",
+        "sourceNumber": 15,
+        "series": "main",
+        "questionPage": 6,
+        "answerPage": 6,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03",
+          "sle-intake-m08"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              6,
+              6
+            ]
+          }
+        ],
+        "numberingAmbiguity": "برچسب گزینه دوم ۳ چاپ شده و گزینه سوم نیز ۳ است؛ کلید ۴ و مفهوم قطع methotrexate از پرسش ۲۵ نیز پشتیبانی می‌شود."
+      },
+      {
+        "id": "sle-src-main-016",
+        "sourceQuestionId": "sle-src-main-016",
+        "sourceNumber": 16,
+        "series": "main",
+        "questionPage": 7,
+        "answerPage": 7,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01",
+          "sle-intake-m07"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              7,
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-017",
+        "sourceQuestionId": "sle-src-main-017",
+        "sourceNumber": 17,
+        "series": "main",
+        "questionPage": 7,
+        "answerPage": 7,
+        "sourceKey": 3,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "عدد HR>6 در توضیح منبع مستند نشده؛ نقص کمپلمان در درس پیشین آمده ولی این عدد آزمون‌پذیر نیست.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              7,
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-018",
+        "sourceQuestionId": "sle-src-main-018",
+        "sourceNumber": 18,
+        "series": "main",
+        "questionPage": 7,
+        "answerPage": 7,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-t04"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              7,
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-019",
+        "sourceQuestionId": "sle-src-main-019",
+        "sourceNumber": 19,
+        "series": "main",
+        "questionPage": 7,
+        "answerPage": 7,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l10"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              7,
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-020",
+        "sourceQuestionId": "sle-src-main-020",
+        "sourceNumber": 20,
+        "series": "main",
+        "questionPage": 8,
+        "answerPage": 8,
+        "sourceKey": 4,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "در پاسخ به سناریوی ریوی، توضیح نفریت تکرار شده و انتساب عفونت/خونریزی یا پنومونیت روشن نیست.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              8,
+              8
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-021",
+        "sourceQuestionId": "sle-src-main-021",
+        "sourceNumber": 21,
+        "series": "main",
+        "questionPage": 8,
+        "answerPage": 8,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید با ؟؟ و نام دارو با نویسه مبهم آمده است؛ مفهوم خطر گنادی از دیگر صفحات پشتیبانی می‌شود ولی این کلید استفاده نشده است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              8,
+              8
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-022",
+        "sourceQuestionId": "sle-src-main-022",
+        "sourceNumber": 22,
+        "series": "main",
+        "questionPage": 8,
+        "answerPage": 9,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-t04"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              8,
+              9
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-023",
+        "sourceQuestionId": "sle-src-main-023",
+        "sourceNumber": 23,
+        "series": "main",
+        "questionPage": 9,
+        "answerPage": 9,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              9,
+              9
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-024",
+        "sourceQuestionId": "sle-src-main-024",
+        "sourceNumber": 24,
+        "series": "main",
+        "questionPage": 9,
+        "answerPage": 9,
+        "sourceKey": 4,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "خود منبع کلید را ؟؟ و غیرقابل پاسخ با مرجع ادعایی می‌داند.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              9,
+              9
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-025",
+        "sourceQuestionId": "sle-src-main-025",
+        "sourceNumber": 25,
+        "series": "main",
+        "questionPage": 9,
+        "answerPage": 9,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03",
+          "sle-intake-m08"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              9,
+              9
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-026",
+        "sourceQuestionId": "sle-src-main-026",
+        "sourceNumber": 26,
+        "series": "main",
+        "questionPage": 10,
+        "answerPage": 10,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l01",
+          "sle-intake-t02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              10,
+              10
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-027",
+        "sourceQuestionId": "sle-src-main-027",
+        "sourceNumber": 27,
+        "series": "main",
+        "questionPage": 10,
+        "answerPage": 10,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-t04",
+          "sle-intake-m12"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              10,
+              10
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-028",
+        "sourceQuestionId": "sle-src-main-028",
+        "sourceNumber": 28,
+        "series": "main",
+        "questionPage": 10,
+        "answerPage": 11,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03",
+          "sle-intake-m11"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              10,
+              11
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-029",
+        "sourceQuestionId": "sle-src-main-029",
+        "sourceNumber": 29,
+        "series": "main",
+        "questionPage": 11,
+        "answerPage": 11,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              11,
+              11
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-030",
+        "sourceQuestionId": "sle-src-main-030",
+        "sourceNumber": 30,
+        "series": "main",
+        "questionPage": 11,
+        "answerPage": 11,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l01",
+          "sle-intake-t02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              11,
+              11
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-031",
+        "sourceQuestionId": "sle-src-main-031",
+        "sourceNumber": 31,
+        "series": "main",
+        "questionPage": 11,
+        "answerPage": 11,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l10"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              11,
+              11
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-032",
+        "sourceQuestionId": "sle-src-main-032",
+        "sourceNumber": 32,
+        "series": "main",
+        "questionPage": 12,
+        "answerPage": 12,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03",
+          "sle-intake-m09"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              12,
+              12
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-033",
+        "sourceQuestionId": "sle-src-main-033",
+        "sourceNumber": 33,
+        "series": "main",
+        "questionPage": 12,
+        "answerPage": 12,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l01",
+          "sle-intake-t02",
+          "sle-intake-m05"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              12,
+              12
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-034",
+        "sourceQuestionId": "sle-src-main-034",
+        "sourceNumber": 34,
+        "series": "main",
+        "questionPage": 12,
+        "answerPage": 12,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l07",
+          "sle-intake-k02",
+          "sle-intake-m10"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              12,
+              12
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-035",
+        "sourceQuestionId": "sle-src-main-035",
+        "sourceNumber": 35,
+        "series": "main",
+        "questionPage": 13,
+        "answerPage": 13,
+        "sourceKey": 3,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "خود منبع بیش از یک گزینه صحیح اعلام می‌کند؛ آزمون تک‌پاسخی معتبر نیست.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              13,
+              13
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-036",
+        "sourceQuestionId": "sle-src-main-036",
+        "sourceNumber": 36,
+        "series": "main",
+        "questionPage": 13,
+        "answerPage": 13,
+        "sourceKey": 4,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید با ؟ آمده و پنومونیت/عفونت/خونریزی تفکیک نشده؛ از سناریوی تشخیصی امتیازدار استفاده نشد.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              13,
+              13
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-037",
+        "sourceQuestionId": "sle-src-main-037",
+        "sourceNumber": 37,
+        "series": "main",
+        "questionPage": 14,
+        "answerPage": 14,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              14,
+              14
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-038",
+        "sourceQuestionId": "sle-src-main-038",
+        "sourceNumber": 38,
+        "series": "main",
+        "questionPage": 14,
+        "answerPage": 14,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03",
+          "sle-intake-m11"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              14,
+              14
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-039",
+        "sourceQuestionId": "sle-src-main-039",
+        "sourceNumber": 39,
+        "series": "main",
+        "questionPage": 14,
+        "answerPage": 14,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l09"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              14,
+              14
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-040",
+        "sourceQuestionId": "sle-src-main-040",
+        "sourceNumber": 40,
+        "series": "main",
+        "questionPage": 15,
+        "answerPage": 15,
+        "sourceKey": 3,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "پاسخ سیستمیک cyclosporine با توضیح مهارکننده موضعی کلسینورین توجیه شده؛ استدلال درمان سیتوپنی ناکافی است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              15,
+              15
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-041",
+        "sourceQuestionId": "sle-src-main-041",
+        "sourceNumber": 41,
+        "series": "main",
+        "questionPage": 15,
+        "answerPage": 15,
+        "sourceKey": 1,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید درمان بر پایه سرولوژی تنها با ؟ آمده و منبع حذف نکته را اعلام کرده است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              15,
+              15
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-042",
+        "sourceQuestionId": "sle-src-main-042",
+        "sourceNumber": 42,
+        "series": "main",
+        "questionPage": 15,
+        "answerPage": 15,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l07",
+          "sle-intake-k02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              15,
+              15
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-043",
+        "sourceQuestionId": "sle-src-main-043",
+        "sourceNumber": 43,
+        "series": "main",
+        "questionPage": 15,
+        "answerPage": 15,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l07",
+          "sle-intake-k02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              15,
+              15
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-044",
+        "sourceQuestionId": "sle-src-main-044",
+        "sourceNumber": 44,
+        "series": "main",
+        "questionPage": 16,
+        "answerPage": 16,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-t04"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              16,
+              16
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-045",
+        "sourceQuestionId": "sle-src-main-045",
+        "sourceNumber": 45,
+        "series": "main",
+        "questionPage": 16,
+        "answerPage": 16,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              16,
+              16
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-046",
+        "sourceQuestionId": "sle-src-main-046",
+        "sourceNumber": 46,
+        "series": "main",
+        "questionPage": 16,
+        "answerPage": 16,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              16,
+              16
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-047",
+        "sourceQuestionId": "sle-src-main-047",
+        "sourceNumber": 47,
+        "series": "main",
+        "questionPage": 16,
+        "answerPage": 17,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-t04",
+          "sle-intake-m12"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              16,
+              17
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-048",
+        "sourceQuestionId": "sle-src-main-048",
+        "sourceNumber": 48,
+        "series": "main",
+        "questionPage": 17,
+        "answerPage": 17,
+        "sourceKey": 4,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید افزایش استروئید به ۳۰ با ؟؟ و حذف نکته در مرجع ادعایی همراه است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              17,
+              17
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-049",
+        "sourceQuestionId": "sle-src-main-049",
+        "sourceNumber": 49,
+        "series": "main",
+        "questionPage": 17,
+        "answerPage": 17,
+        "sourceKey": 1,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "فقط کلید antineuronal در CSF بدون استدلال یا معیار انتساب CNS ارائه شده است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              17,
+              17
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-050",
+        "sourceQuestionId": "sle-src-main-050",
+        "sourceNumber": 50,
+        "series": "main",
+        "questionPage": 18,
+        "answerPage": 18,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l06",
+          "sle-intake-t03",
+          "sle-intake-m09"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              18,
+              18
+            ]
+          }
+        ],
+        "duplicateOptions": "متن گزینه‌های ۱ و ۴ تقریباً یکسان است؛ این سؤال اصلی برای امتیازدهی بازنشر نشده است."
+      },
+      {
+        "id": "sle-src-main-051",
+        "sourceQuestionId": "sle-src-main-051",
+        "sourceNumber": 51,
+        "series": "main",
+        "questionPage": 18,
+        "answerPage": 18,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l07",
+          "sle-intake-k02",
+          "sle-intake-m10"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              18,
+              18
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-052",
+        "sourceQuestionId": "sle-src-main-052",
+        "sourceNumber": 52,
+        "series": "main",
+        "questionPage": 18,
+        "answerPage": 18,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید ؟؟ و ادعای حذف درمان از مرجع؛ برای انتخاب دقیق درمان میلیت شاهد کافی ندارد.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              18,
+              18
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-053",
+        "sourceQuestionId": "sle-src-main-053",
+        "sourceNumber": 53,
+        "series": "main",
+        "questionPage": 18,
+        "answerPage": 19,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید ادامه درمان بدون افزودن aspirin با توصیه عمومی خود منبع به aspirin در بارداری SLE ناسازگار است؛ از امتیازدهی کنار گذاشته شد.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              18,
+              19
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-054",
+        "sourceQuestionId": "sle-src-main-054",
+        "sourceNumber": 54,
+        "series": "main",
+        "questionPage": 19,
+        "answerPage": 19,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "افتراق سایکوز دارویی/التهابی و سؤال منفی، بدون شواهد کافی و با ادعای حذف نکته است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              19,
+              19
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-055",
+        "sourceQuestionId": "sle-src-main-055",
+        "sourceNumber": 55,
+        "series": "main",
+        "questionPage": 19,
+        "answerPage": 19,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-t04"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              19,
+              19
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-056",
+        "sourceQuestionId": "sle-src-main-056",
+        "sourceNumber": 56,
+        "series": "main",
+        "questionPage": 19,
+        "answerPage": 19,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l09",
+          "sle-intake-m14"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              19,
+              19
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-057",
+        "sourceQuestionId": "sle-src-main-057",
+        "sourceNumber": 57,
+        "series": "main",
+        "questionPage": 20,
+        "answerPage": 20,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              20,
+              20
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-058",
+        "sourceQuestionId": "sle-src-main-058",
+        "sourceNumber": 58,
+        "series": "main",
+        "questionPage": 20,
+        "answerPage": 20,
+        "sourceKey": 3,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید ؟؟؛ انفارکتوس و CSF غیرطبیعی بدون روشن شدن عفونت/ترومبوز/التهاب مطرح شده است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              20,
+              20
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-059",
+        "sourceQuestionId": "sle-src-main-059",
+        "sourceNumber": 59,
+        "series": "main",
+        "questionPage": 20,
+        "answerPage": 20,
+        "sourceKey": 4,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "افتراق سایکوز پس از افزایش استروئید به داده بیشتر نیاز دارد و منبع حذف نکته را اعلام می‌کند.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              20,
+              20
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-060",
+        "sourceQuestionId": "sle-src-main-060",
+        "sourceNumber": 60,
+        "series": "main",
+        "questionPage": 21,
+        "answerPage": 21,
+        "sourceKey": 1,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "صرف CBC و دوز ثابت برای انتساب سایکوز کافی نیست؛ منبع حذف نکته را اعلام می‌کند.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              21,
+              21
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-061",
+        "sourceQuestionId": "sle-src-main-061",
+        "sourceNumber": 61,
+        "series": "main",
+        "questionPage": 21,
+        "answerPage": 21,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-t04",
+          "sle-intake-m12"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              21,
+              21
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-062",
+        "sourceQuestionId": "sle-src-main-062",
+        "sourceNumber": 62,
+        "series": "main",
+        "questionPage": 21,
+        "answerPage": 21,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "کلید دوز NSAID بدون ارزیابی ایمنی کلیه و با ادعای حذف نکته است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              21,
+              21
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-063",
+        "sourceQuestionId": "sle-src-main-063",
+        "sourceNumber": 63,
+        "series": "main",
+        "questionPage": 21,
+        "answerPage": 21,
+        "sourceKey": 4,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l10",
+          "sle-intake-m15"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              21,
+              21
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-064",
+        "sourceQuestionId": "sle-src-main-064",
+        "sourceNumber": 64,
+        "series": "main",
+        "questionPage": 22,
+        "answerPage": 22,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-l04",
+          "sle-intake-t01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              22,
+              22
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-065",
+        "sourceQuestionId": "sle-src-main-065",
+        "sourceNumber": 65,
+        "series": "main",
+        "questionPage": 22,
+        "answerPage": 22,
+        "sourceKey": 1,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l09"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              22,
+              22
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-main-066",
+        "sourceQuestionId": "sle-src-main-066",
+        "sourceNumber": 66,
+        "series": "main",
+        "questionPage": 22,
+        "answerPage": 22,
+        "sourceKey": 1,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "بازطرح نزدیک پرسش ۴۱؛ درمان سرولوژی تنها و ادعای حذف نکته از مرجع.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              22,
+              22
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-001",
+        "sourceQuestionId": "sle-src-appendix-001",
+        "sourceNumber": 1,
+        "series": "appendix",
+        "questionPage": 23,
+        "answerPage": 23,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l01",
+          "sle-intake-m04"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              23,
+              23
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-002",
+        "sourceQuestionId": "sle-src-appendix-002",
+        "sourceNumber": 2,
+        "series": "appendix",
+        "questionPage": 23,
+        "answerPage": 23,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "گزینه فیبرومیالژی با الگوی نوع ۲ همپوشانی دارد؛ تک‌پاسخی بودن کافی نیست.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              23,
+              23
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-003",
+        "sourceQuestionId": "sle-src-appendix-003",
+        "sourceNumber": 3,
+        "series": "appendix",
+        "questionPage": 23,
+        "answerPage": 24,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-t01",
+          "sle-intake-m01"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              23,
+              24
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-004",
+        "sourceQuestionId": "sle-src-appendix-004",
+        "sourceNumber": 4,
+        "series": "appendix",
+        "questionPage": 24,
+        "answerPage": 24,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-t01",
+          "sle-intake-m02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              24,
+              24
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-005",
+        "sourceQuestionId": "sle-src-appendix-005",
+        "sourceNumber": 5,
+        "series": "appendix",
+        "questionPage": 24,
+        "answerPage": 24,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "ANA زیر آستانه طبقه‌بندی به عنوان مرز تشخیص تعبیر شده و برتری anti-Ro بر سایر تست‌ها قطعی نیست.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              24,
+              24
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-006",
+        "sourceQuestionId": "sle-src-appendix-006",
+        "sourceNumber": 6,
+        "series": "appendix",
+        "questionPage": 25,
+        "answerPage": 25,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-t01",
+          "sle-intake-m02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              25,
+              25
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-007",
+        "sourceQuestionId": "sle-src-appendix-007",
+        "sourceNumber": 7,
+        "series": "appendix",
+        "questionPage": 25,
+        "answerPage": 25,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              25,
+              25
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-008",
+        "sourceQuestionId": "sle-src-appendix-008",
+        "sourceNumber": 8,
+        "series": "appendix",
+        "questionPage": 26,
+        "answerPage": 26,
+        "sourceKey": 2,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "سیتوپنی غیراختصاصی بدون زمینه کافی؛ ANA به‌عنوان گام اجباری برای همه علل سیتوپنی توجیه نشده است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              26,
+              26
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-009",
+        "sourceQuestionId": "sle-src-appendix-009",
+        "sourceNumber": 9,
+        "series": "appendix",
+        "questionPage": 26,
+        "answerPage": 26,
+        "sourceKey": 3,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "رد مطلق نیاز به مارکرهای دیگر با توضیحات پایش منبع هماهنگ نیست.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              26,
+              26
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-010",
+        "sourceQuestionId": "sle-src-appendix-010",
+        "sourceNumber": 10,
+        "series": "appendix",
+        "questionPage": 26,
+        "answerPage": 26,
+        "sourceKey": 3,
+        "reviewStatus": "needs_review",
+        "disposition": "withheld",
+        "contentIds": [],
+        "withheldReason": "تفسیر آستانه UPCr به عنوان منع مطلق بیوپسی و ناهمخوانی عددی پروتئینوری/نسبت نیاز به بررسی دارد.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              26,
+              26
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-011",
+        "sourceQuestionId": "sle-src-appendix-011",
+        "sourceNumber": 11,
+        "series": "appendix",
+        "questionPage": 27,
+        "answerPage": 27,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-t01",
+          "sle-intake-m03"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              27,
+              27
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-012",
+        "sourceQuestionId": "sle-src-appendix-012",
+        "sourceNumber": 12,
+        "series": "appendix",
+        "questionPage": 27,
+        "answerPage": 27,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              27,
+              27
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-013",
+        "sourceQuestionId": "sle-src-appendix-013",
+        "sourceNumber": 13,
+        "series": "appendix",
+        "questionPage": 27,
+        "answerPage": 27,
+        "sourceKey": 2,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l08",
+          "sle-intake-m13"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              27,
+              27
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sle-src-appendix-014",
+        "sourceQuestionId": "sle-src-appendix-014",
+        "sourceNumber": 14,
+        "series": "appendix",
+        "questionPage": 28,
+        "answerPage": 28,
+        "sourceKey": 3,
+        "reviewStatus": "draft",
+        "disposition": "mapped",
+        "contentIds": [
+          "sle-intake-l03",
+          "sle-intake-t01",
+          "sle-intake-m02"
+        ],
+        "withheldReason": null,
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              28,
+              28
+            ]
+          }
+        ]
+      }
+    ],
+    "figureInventory": [
+      {
+        "page": 3,
+        "kind": "algorithm",
+        "privateOnly": true,
+        "inspected": true,
+        "sha256": "0bb95f5299276dc5446eb5ec984f1396cff34c7419c92e06ae95c0af3c5f840e",
+        "authoredRepresentationIds": [
+          "sle-intake-l05",
+          "sle-intake-t05"
+        ]
+      },
+      {
+        "page": 17,
+        "kind": "table",
+        "privateOnly": true,
+        "inspected": true,
+        "sha256": "d0d5fe4dc84a35a956fa70dae356c67432e368128754f42470761f1f8fa844d6",
+        "authoredRepresentationIds": [
+          "sle-intake-l02"
+        ]
+      }
+    ],
+    "reviewStatus": "draft",
+    "pageMap": [
+      {
+        "pages": [
+          1,
+          2
+        ],
+        "contents": "پرسش‌های اصلی ۱–۵: بارداری، فیبرومیالژی، پلاکت پایدار، AVN و شناخت"
+      },
+      {
+        "pages": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "contents": "پرسش‌های اصلی ۶–۱۹: درمان غیرکلیوی، نفریت/کرسنت، anti-Ro، بارداری، نگهداری و DIL"
+      },
+      {
+        "pages": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22
+        ],
+        "contents": "پرسش‌های اصلی ۲۰–۶۶: TMA، داروهای بارداری، AVN، پوست، ریه، سایکوز، نفریت خاموش و کلیدهای مورد اختلاف"
+      },
+      {
+        "pages": [
+          23,
+          24,
+          25,
+          26,
+          27,
+          28
+        ],
+        "contents": "پیوست ۱–۱۴ با شماره‌گذاری تازه: الگوی نوع ۲، سرولوژی، غربالگری/بیوپسی و همولیز"
+      }
+    ]
+  },
+  "intakeReview": {
+    "reviewStatus": "draft",
+    "clinicalApproval": false,
+    "independentHarrison2025Verified": false,
+    "notes": [
+      "تمام واحدهای جدید پیش‌نویس‌اند و به بازبینی مستقل مدرس نیاز دارند.",
+      "عبارت ANA منفی عملاً ردکننده و خطای آناتومیک پل بینی در محتوای قبلی اصلاح شد؛ شناسه‌ها حفظ شدند.",
+      "جزئیات پایش رتینوپاتی، اعداد دقیق اپیدمیولوژی/پیش‌آگهی، امتیازهای طبقه‌بندی و سایر ادعاهای پیشین هنوز فقط legacy-unverified هستند.",
+      "آستانه ثابت ۴۰ هزار پلاکت، تعمیم سن/تعداد فرزند به اهمیت باروری و برداشت کست RBC=RPGN به‌عنوان قانون آموزشی پذیرفته نشد.",
+      "هیچ تصویر اصلی کتاب/بانک در پوشه عمومی اضافه نشد."
+    ],
+    "legacyCorrections": [
+      {
+        "id": "sle-2",
+        "change": "حذف ادعای ANA منفی عملاً ردکننده؛ نتیجه منفی احتمال را کم می‌کند اما تشخیص بالینی را به تنهایی رد نمی‌کند.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              24,
+              25
+            ]
+          }
+        ],
+        "reviewStatus": "draft"
+      },
+      {
+        "id": "lsn-003-p01",
+        "change": "اصلاح خطای صافی/پل بینی: راش مالار پل بینی را درگیر می‌کند و معمولاً چین نازولبیال را حفظ می‌کند.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-legacy-unverified",
+            "note": "اصلاح آناتومیک متن قبلی؛ منبع حاضر توضیح صریح کامل این جمله را ندارد و بازبینی مستقل لازم است."
+          }
+        ],
+        "reviewStatus": "draft"
+      },
+      {
+        "id": "lsn-005-p01",
+        "change": "تفکیک طبقه‌بندی EULAR/ACR 2019 از تشخیص بالینی؛ افزودن قید حداقل یک معیار بالینی و قواعد انتساب؛ جزئیات معیار از منبع حاضر مستقلاً تأیید نشده است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-legacy-unverified"
+          }
+        ],
+        "reviewStatus": "draft"
+      },
+      {
+        "id": "sle-mcq-1",
+        "change": "افزودن UPCr تأییدشده ۰٫۸ و افزایش کراتینین برای رفع ابهام اندیکاسیون بیوپسی؛ گزینه‌ها و کلید حفظ شدند.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              22,
+              24,
+              25
+            ]
+          }
+        ],
+        "reviewStatus": "draft"
+      },
+      {
+        "id": "sle-mcq-2",
+        "change": "جایگزینی ادعای بیشترین اختصاصیت anti-histone با ارتباط بالینی DIL؛ توضیح محدودیت اختصاصیت؛ گزینه‌ها و کلید حفظ شدند.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-qbank-61a5fcfa",
+            "pages": [
+              8,
+              12
+            ]
+          }
+        ],
+        "reviewStatus": "draft"
+      },
+      {
+        "id": "sle-1",
+        "change": "اصلاح استثنای SLICC به استثنا از قاعده چهار معیار؛ حذف ادعای نبود تظاهر بالینی. منبع اصلی این معیار در بانک پرسش حاضر مستند نشده و این اصلاح همچنان پیش‌نویس نیازمند بازبینی است.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-legacy-unverified",
+            "note": "صفحه مستند برای معیار SLICC در منبع حاضر در دسترس نیست؛ ارجاع صفحه ساخته نشده است."
+          }
+        ],
+        "reviewStatus": "draft"
+      },
+      {
+        "id": "sle-mcq-1..5",
+        "change": "افزودن توضیح هر چهار گزینه و برچسب draft؛ شناسه‌ها، ترتیب گزینه‌ها و کلیدهای قبلی حفظ شدند.",
+        "sourceRefs": [
+          {
+            "sourceId": "sle-legacy-unverified"
+          }
+        ],
+        "reviewStatus": "draft"
+      }
+    ]
+  }
 }

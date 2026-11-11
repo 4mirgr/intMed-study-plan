@@ -522,6 +522,18 @@
         {
           "id": "rheum-spa",
           "label": "اسپوندیلوآرتروپاتی‌ها"
+        },
+        {
+          "id": "rheum-sarcoidosis",
+          "label": "سارکوئیدوز"
+        },
+        {
+          "id": "rheum-systemic-arthritis",
+          "label": "آرتریت همراه بیماری‌های سیستمیک و سایر آرتریت‌ها"
+        },
+        {
+          "id": "rheum-aps",
+          "label": "سندرم آنتی‌فسفولیپید (APS)"
         }
       ]
     },
