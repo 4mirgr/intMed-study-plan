@@ -41,6 +41,15 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   caption warns that dosing, fluids and dialysis/treatment branches are not independently verified;
   the image is not an endorsed treatment protocol. No medical answer/lesson was generated from it.
 
+## Lung PDF intake — 2026-11-11
+
+- Asthma (45 pages) and COPD (29 pages) augment existing chapters as source-linked drafts.
+- Inventory covers 182 source questions; 31 curated MCQs, 30 flashcards, 3 KF/PMP cases,
+  10 lesson sections and 3 structured algorithms/tables added. Ambiguous keys remain flagged.
+- Original asthma schematic added; all 10 extracted source figures remain private.
+- See `docs/content-intake-pulm-2026-11-11.md` and canonical `sourceCoverage` for limitations,
+  corrections and teacher-review requirements. Existing content IDs are preserved.
+
 ## Product decisions
 
 
