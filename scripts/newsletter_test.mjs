@@ -30,7 +30,7 @@ authenticated=false;assert.equal((await post(payload)).status,401);authenticated
 assert.equal((await (await post({...payload,action:'preview'})).json()).recipients,1);assert.equal(sends,0);
 r=await post(payload);assert.equal(r.status,200);assert.equal((await r.json()).sent,1);assert.equal(sends,1);assert.deepEqual(mail[0].to,['member@example.com']);assert.equal(logs[0].status,'sent');
 await post(payload);assert.equal(sends,1,'Duplicate campaign sent again');assert.equal((await post({...payload,text:'changed'})).status,409);
-const unsubscribe=mail[0].text.match(/https:\/\/drgerami-md\.ir\/newsletter\.html#token=\S+/)[0],unsubscribeToken=new URLSearchParams(new URL(unsubscribe).hash.slice(1)).get('token');
+const unsubscribe=mail[0].text.match(/https:\/\/drgerami-md\.ir\/intmed\/newsletter\.html#token=\S+/)[0],unsubscribeToken=new URLSearchParams(new URL(unsubscribe).hash.slice(1)).get('token');
 const publicUnsubscribe=token=>handler(new Request('https://test.supabase.co/functions/v1/intmed-newsletter',{method:'POST',headers:{Origin:'https://drgerami-md.ir','Content-Type':'application/json'},body:JSON.stringify({action:'unsubscribe',token})}));
 r=await handler(new Request('https://test.supabase.co/functions/v1/intmed-newsletter'));assert.equal(r.status,403);assert.equal(states[memberId].itemState['newsletter:subscription'].subscribed,true,'GET email scanner changed consent');
 r=await publicUnsubscribe(unsubscribeToken+'x');assert.ok((await r.text()).includes('معتبر نیست'));assert.equal(states[memberId].itemState['newsletter:subscription'].subscribed,true);

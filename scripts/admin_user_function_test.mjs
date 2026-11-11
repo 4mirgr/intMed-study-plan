@@ -19,5 +19,8 @@ const input={userId:'22222222-2222-4222-8222-222222222222',username:'edited_user
 const send=body=>handler(new Request('https://project.supabase.co/functions/v1/intmed-admin-user',{method:'POST',headers:{origin:'https://drgerami-md.ir',authorization:'Bearer manager-token'},body:JSON.stringify(body)}));
 let result=await send(input);assert.equal(result.status,200);assert.equal(authUpdate.email,'new@example.com');assert.equal(authUpdate.email_confirm,true);assert.equal(authUpdate.user_metadata.kept,true);assert.equal(profileUpdate.username,'edited_user');assert.equal(profileUpdate.degree,'پزشکی عمومی');assert.equal(profileUpdate.specialty,'بیماری های داخلی');
 result=await send({...input,password:'forbidden'});assert.equal(result.status,400);
+result=await send({...input,profile:{...input.profile,degree:'سایر'}});assert.equal(result.status,200,'admin can save the Other degree offered by registration');assert.equal(profileUpdate.degree,'سایر');assert.equal(authUpdate.user_metadata.degree,'سایر');
+const previousProfile=profileUpdate;
+result=await send({...input,profile:{...input.profile,degree:'invalid-degree'}});assert.equal(result.status,400);assert.equal(profileUpdate,previousProfile,'invalid degree must not write a profile');
 manager=false;result=await send(input);assert.equal(result.status,403);
 console.log('Admin user function passed: verified admin, all account fields updated, password rejected, non-admin denied.');

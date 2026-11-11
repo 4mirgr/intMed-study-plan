@@ -236,15 +236,18 @@ A local test result, deployment and teacher acceptance are separate evidence.
 - Secret metadata confirms `RESEND_API_KEY`, `NEWSLETTER_FROM`, `INTMED_GITHUB_ACTIONS_TOKEN` and
   `GEMINI_API_KEY` exist. Sender verification and calendar/newsletter end-to-end delivery are not
   established; there are no recorded email deliveries in this check.
-- The latest weekly content-audit run, `42356283759`, failed because `jsonschema` was missing.
-  The local workflow repair is recorded below; a successful remote rerun is still required before
-  claiming the periodic audit is healthy.
+- Historical weekly content-audit run `42356283759` failed because `jsonschema` was missing.
+  Repaired run [42939000423](https://github.com/4mirgr/intMed-study-plan/actions/runs/42939000423)
+  completed successfully and uploaded the full report; issue #1 was updated. The report has zero
+  deterministic errors, 8,319 warnings and 1,366 review notices. Most warnings are missing unit-level
+  source references (6,976) or missing distractor reviews (1,085), not 8,319 proven clinical errors.
 
 ### Locally verified maintenance — 2026-11-11
 
 - The weekly audit workflow now installs `jsonschema` and has narrow push triggers for its own
   file, the audit script and its tests, so changes to that path receive a real regression run.
-  The recurring schedule is unchanged; remote CI/deployment acceptance is pending.
+  The recurring schedule is unchanged; the repaired remote audit passed. Feature branches may
+  produce reports but cannot overwrite the default branch's shared review issue.
 - Deterministic image QA now reads SVG/WebP dimensions as well as PNG/JPEG/GIF dimensions.
   The coordinator reports 21 focused audit tests and all 93 Python tests passing.
 - The coordinator reports source validation passing for 82 canonical/145 planned topics with
@@ -253,6 +256,16 @@ A local test result, deployment and teacher acceptance are separate evidence.
 - Backend state isolation and generation, question-source, publisher, sweep and notification
   JavaScript checks passed locally. These results do not establish production deployment or
   external service delivery. No new provider/model cost or medical approval was introduced.
+- Signup audit found a real validation mismatch: the UI offers `سایر`, but the database signup
+  trigger and admin editor rejected it. The additive upgrade changes only the allowlist, preserving
+  installed approval behavior and existing users. Dedicated SQL/admin regressions cover acceptance,
+  invalid-degree rejection and migration idempotence; production acceptance is tracked with release.
+- Newsletter links must use the mounted `/intmed/` application path, while CORS values remain
+  origin-only. Signed unsubscribe and administrator authorization require separate regression checks;
+  configured keys alone do not establish actual email delivery.
+  The deployed newsletter gateway was also requiring JWT before the signed-unsubscribe handler,
+  contrary to `config.toml`. Restore the existing handler-auth design: HMAC-valid unsubscribe only,
+  live verified-admin authorization for all management/send actions. No mailing is part of this fix.
 
 ### P0 — release and external acceptance
 
@@ -271,6 +284,12 @@ A local test result, deployment and teacher acceptance are separate evidence.
   delivery acceptance remains open.
 - Test signup, login, recovery, account/messages, calendar and email on real iOS/Android networks.
 - Recheck Supabase redirect allow-list, Auth email templates, CSP, rate limits and abuse protection.
+  The live check confirms password minimum eight and email confirmation enabled. `.dev` preview
+  recovery redirects are not allow-listed. Captcha and leaked-password protection are not enabled;
+  introducing them needs a compatible provider/plan and user-flow decision, not silent activation.
+  Advisor notices about three IntMed trigger-function EXECUTE grants should be narrowed separately
+  without changing their bodies or touching shared applications. Service-only content tables with
+  RLS and no browser policy are intentional, not a reason to add public read policies.
 
 ### P1 — content factory and learning product
 

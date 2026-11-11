@@ -1,6 +1,7 @@
 // Verify JWT OFF only because signed unsubscribe links are public.
 // Every status/preview/send request validates its Auth JWT and active admin profile here.
 const SITE='https://drgerami-md.ir';
+const APP_BASE=SITE+'/intmed/';
 const allowed=[SITE,'https://www.drgerami-md.ir','http://127.0.0.1:8765','http://localhost:8765'];
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const encoder=new TextEncoder();
@@ -21,7 +22,7 @@ Deno.serve(async req=>{
  try{
   if(req.method!=='POST'||(origin&&!allowed.includes(origin)))return reply(403,{message:'Forbidden'});
   const body=await req.json();
-  // The public confirmation page lives on SITE. GET never changes consent.
+  // The public confirmation page lives under APP_BASE. GET never changes consent.
   if(body.action==='unsubscribe'){
    const signed=await verifyToken(typeof body.token==='string'?body.token:'');if(!signed)return reply(400,{message:'لینک معتبر نیست یا منقضی شده است.'});
    for(let attempt=0;attempt<4;attempt++){
@@ -44,7 +45,7 @@ Deno.serve(async req=>{
   if(body.action==='preview')return reply(200,{recipients:members.length,subject,text});
   if(!key||!sender||!secret||secret.length<32)return reply(503,{message:'ابتدا سرویس ارسال و کلید امضای لغو عضویت را تنظیم کنید.'});
   async function confirmed(member){const r=await fetch(base+'/auth/v1/admin/users/'+member.id,{headers:sh});if(!r.ok)return false;const auth=await r.json();return !!auth.email_confirmed_at&&String(auth.email||'').toLowerCase()===String(member.email||'').toLowerCase();}
-  async function send(member,idempotency){const link=SITE+'/newsletter.html#token='+encodeURIComponent(await tokenFor(member.id,member.email));return fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':idempotency},body:JSON.stringify({from:sender,to:[member.email],subject:body.action==='test'?'[آزمایشی] '+subject:subject,text:text+'\n\nIntMed — '+SITE+'\nلغو عضویت: '+link})});}
+  async function send(member,idempotency){const link=APP_BASE+'newsletter.html#token='+encodeURIComponent(await tokenFor(member.id,member.email));return fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':idempotency},body:JSON.stringify({from:sender,to:[member.email],subject:body.action==='test'?'[آزمایشی] '+subject:subject,text:text+'\n\nIntMed — '+APP_BASE+'\nلغو عضویت: '+link})});}
   if(body.action==='test'){const own=await db('profiles?id=eq.'+user.id+'&select=id,email');if(!own[0]?.email||!await confirmed(own[0]))return reply(400,{message:'ایمیل تأییدشدهٔ مدیر لازم است.'});const r=await send(own[0],'intmed-test-'+crypto.randomUUID());if(!r.ok)return reply(503,{message:'ارسال آزمایشی موفق نشد؛ دامنه و فرستنده را بررسی کنید.'});return reply(200,{sent:1});}
   if(!uuid.test(body.campaignId||''))return reply(400,{message:'Invalid campaign'});
   let logs=[],logOffset=0;while(true){const part=await db('intmed_newsletter_deliveries?campaign_id=eq.'+body.campaignId+'&select=user_id,status,body_hash&limit=500&offset='+logOffset);logs.push(...part);if(part.length<500)break;logOffset+=500;}if(logs.some(log=>log.body_hash!==digest))return reply(409,{message:'متن این نوبت ارسال تغییر کرده است؛ یک خبرنامهٔ جدید بسازید.'});
