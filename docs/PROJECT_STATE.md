@@ -27,7 +27,22 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 - `pulm-pe` is planned in taxonomy but does not yet have a canonical package. Do not create a
   publicly empty or copyrighted-image-only chapter merely to imply this intake is complete.
 
+## Third owner-image batch — 2026-11-11
+
+- The nine images were supplied in two byte-identical attachment directories; counted once.
+  Figures 1–3 are recompressed duplicates of `heme-breast-ca` images `img-001`–`img-003` and were
+  skipped. Figures 4–9 have no confirmed duplicate in canonical/generated assets or prior uploads.
+- Five new figures with explicit Harrison/McGraw Hill reserved-rights footers remain private-only
+  attachments, not public assets: Cushing, mineralocorticoid excess, adrenal incidentaloma, and
+  adrenal insufficiency (clinical pigmentation photo plus algorithm). Their exact intended topics
+  and hashes are in `content/_imports/chat-images-2026-11-11-c.json`.
+- Figure 9 is a supplied tumor-lysis algorithm added only as a draft in `heme-aml`. No footer is
+  visible, so authorship/edition/license were left unknown, not guessed from its layout. The visible
+  caption warns that dosing, fluids and dialysis/treatment branches are not independently verified;
+  the image is not an endorsed treatment protocol. No medical answer/lesson was generated from it.
+
 ## Product decisions
+
 
 
 - The coordinator owns scope, integration, tests, commits, pushes, and production checks.

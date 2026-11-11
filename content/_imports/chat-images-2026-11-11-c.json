@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "date": "2026-11-11",
+  "duplicateCheck": {
+    "canonicalGeneratedAndPriorUploads": true,
+    "visuallyConfirmedDuplicates": [
+      1,
+      2,
+      3
+    ],
+    "duplicateAttachmentDirectoriesAreByteIdentical": true
+  },
+  "items": [
+    {
+      "upload": 1,
+      "width": 496,
+      "height": 359,
+      "byteSize": 48277,
+      "sha256": "f3263cc2ebfd5cc729c2cc2b04ad3ae59329ec9b82f0272ab0a6508df890c594",
+      "topicId": "heme-breast-ca",
+      "title": "رویکرد تشخیصی به علائم مشکوک سرطان",
+      "kind": "algorithm",
+      "status": "duplicate-skipped",
+      "existingImageId": "img-001",
+      "dHashDistance": 3
+    },
+    {
+      "upload": 2,
+      "width": 519,
+      "height": 489,
+      "byteSize": 69725,
+      "sha256": "caeed74a496db8bb0f9ad2e8477a75e5f2d9cd6d1a016a423ae107a009e58575",
+      "topicId": "heme-breast-ca",
+      "title": "ارزیابی تشخیصی پستان",
+      "kind": "algorithm",
+      "status": "duplicate-skipped",
+      "existingImageId": "img-002",
+      "dHashDistance": 0
+    },
+    {
+      "upload": 3,
+      "width": 506,
+      "height": 370,
+      "byteSize": 52924,
+      "sha256": "7be2cf28e999bc96d950a803951830ce0209f4141c54720dcc6c80ddf8337e31",
+      "topicId": "heme-breast-ca",
+      "title": "طیف پیشرفت و درمان سرطان پستان",
+      "kind": "chart",
+      "status": "duplicate-skipped",
+      "existingImageId": "img-003",
+      "dHashDistance": 1
+    },
+    {
+      "upload": 4,
+      "width": 520,
+      "height": 685,
+      "byteSize": 97241,
+      "sha256": "3324598c2c4e8542fc7ecf2d37751c351a9717a553b55c0a62d3e2f4adf2c54c",
+      "topicId": "endo-cushing",
+      "title": "رویکرد تشخیصی کوشینگ",
+      "kind": "algorithm",
+      "status": "private-original-pending",
+      "sourceClass": "harrison-private",
+      "publicAssetAdded": false
+    },
+    {
+      "upload": 5,
+      "width": 520,
+      "height": 730,
+      "byteSize": 108653,
+      "sha256": "2bb431816c4c341530192099c35a4d6e562af783b535405f8147679dda07ea88",
+      "topicId": "endo-mineralocorticoid-excess",
+      "title": "رویکرد افزایش مینرالوکورتیکوئید",
+      "kind": "algorithm",
+      "status": "private-original-pending",
+      "sourceClass": "harrison-private",
+      "publicAssetAdded": false
+    },
+    {
+      "upload": 6,
+      "width": 520,
+      "height": 507,
+      "byteSize": 91341,
+      "sha256": "e9a9a30290ff5ca26fefcfc480e5e102b31f1d4c6c125b5cdb6bb01a067474b0",
+      "topicId": "endo-incidentaloma",
+      "title": "بررسی تودهٔ آدرنال",
+      "kind": "algorithm",
+      "status": "private-original-pending",
+      "sourceClass": "harrison-private",
+      "publicAssetAdded": false
+    },
+    {
+      "upload": 7,
+      "width": 520,
+      "height": 610,
+      "byteSize": 73514,
+      "sha256": "8fb5210db38a3b3f12f936032907f59ccdc3dde1d52099b85ceee38536a59d47",
+      "topicId": "endo-adrenal-insufficiency",
+      "title": "عکس بالینی پیگمانتاسیون در مبحث نارسایی آدرنال",
+      "kind": "clinical",
+      "status": "private-original-pending",
+      "sourceClass": "harrison-private",
+      "publicAssetAdded": false
+    },
+    {
+      "upload": 8,
+      "width": 520,
+      "height": 617,
+      "byteSize": 84865,
+      "sha256": "4d12afa7cb4abf9b37947af38897080ff00626963a7df4d1beb7fe22429f56ab",
+      "topicId": "endo-adrenal-insufficiency",
+      "title": "رویکرد تشخیصی نارسایی آدرنال",
+      "kind": "algorithm",
+      "status": "private-original-pending",
+      "sourceClass": "harrison-private",
+      "publicAssetAdded": false
+    },
+    {
+      "upload": 9,
+      "width": 1056,
+      "height": 1280,
+      "byteSize": 190936,
+      "sha256": "d0bcb0ef0e2001858ab53ec3bc11f5ae3c6e24ee23fb1155c602daaf5cfb5f33",
+      "topicId": "heme-aml",
+      "title": "الگوریتم ارسالی لیز تومور؛ نیازمند بازبینی علمی",
+      "kind": "algorithm",
+      "status": "public-draft-added",
+      "imageId": "upload-tumor-lysis-algorithm-20261111",
+      "assetPath": "content/heme/heme-aml/assets/tumor-lysis-supplied-algorithm.jpg",
+      "sourceClass": null,
+      "reviewStatus": "draft",
+      "scientificReviewRequired": true
+    }
+  ],
+  "notes": [
+    "Figures1–8 carry Harrison22/McGrawHill reserved-rights footers; duplicate existing items were not republished and new originals were not added to public assets.",
+    "Figure9 has no visible footer; no source/license/edition guessed from style. Doses, fluid choice and treatment/dialysis thresholds remain unverified, with a visible draft warning.",
+    "No clinical recommendations, lessons or answer keys were generated from these figures."
+  ]
+}
