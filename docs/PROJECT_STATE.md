@@ -242,7 +242,7 @@ A local test result, deployment and teacher acceptance are separate evidence.
   deterministic errors, 8,319 warnings and 1,366 review notices. Most warnings are missing unit-level
   source references (6,976) or missing distractor reviews (1,085), not 8,319 proven clinical errors.
 
-### Locally verified maintenance — 2026-11-11
+### Maintenance checkpoint — 2026-11-11
 
 - The weekly audit workflow now installs `jsonschema` and has narrow push triggers for its own
   file, the audit script and its tests, so changes to that path receive a real regression run.
@@ -259,13 +259,17 @@ A local test result, deployment and teacher acceptance are separate evidence.
 - Signup audit found a real validation mismatch: the UI offers `سایر`, but the database signup
   trigger and admin editor rejected it. The additive upgrade changes only the allowlist, preserving
   installed approval behavior and existing users. Dedicated SQL/admin regressions cover acceptance,
-  invalid-degree rejection and migration idempotence; production acceptance is tracked with release.
+  invalid-degree rejection and migration idempotence passed in remote CI. Production migration
+  `intmed_accept_other_registration_degree` was applied; before/after definition hashes prove only
+  the degree list changed. `intmed-admin-user` v11 is deployed with gateway JWT verification retained.
 - Newsletter links must use the mounted `/intmed/` application path, while CORS values remain
   origin-only. Signed unsubscribe and administrator authorization require separate regression checks;
   configured keys alone do not establish actual email delivery.
-  The deployed newsletter gateway was also requiring JWT before the signed-unsubscribe handler,
-  contrary to `config.toml`. Restore the existing handler-auth design: HMAC-valid unsubscribe only,
-  live verified-admin authorization for all management/send actions. No mailing is part of this fix.
+  `intmed-newsletter` v11 is deployed with the existing `config.toml` handler-auth design restored:
+  HMAC-valid unsubscribe only, live verified-admin authorization for all management/send actions.
+  This corrects the gateway JWT setting that previously intercepted signed public unsubscribe.
+  Unauthenticated management returns 401 and invalid unsubscribe signatures return 400 in live
+  non-mutating probes. No email was sent and no user's consent was changed to test this release.
 
 ### P0 — release and external acceptance
 
