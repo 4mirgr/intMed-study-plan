@@ -2,1220 +2,1233 @@
   "topicId": "pulm-copd",
   "category": "pulm",
   "sources": [
-      {
-        "id": "copd-question-bank-2025-adb9d8f59541",
-        "title": "سؤالات فصل بیماری انسدادی مزمن ریوی؛ فایل ارسالی 1-COPD.pdf",
-        "edition": "جزوهٔ سؤال و پاسخ با ارجاع به Harrison 2025؛ ویرایش مستقل احراز نشده",
-        "type": "uploaded-question-bank",
-        "sha256": "adb9d8f595413b1e97bc9738263a1e03939c16ffb2ee82e37f4e575807cc1006",
-        "pageCount": 29,
-        "note": "همهٔ ۲۹ صفحهٔ متن بومی و فهرست ۷ تصویر بررسی شد. تصاویر اصلی کتاب خصوصی‌اند و از این ورودی بازنشر نشده‌اند. شمارهٔ ۲۴ دو بار و شمارهٔ ۶۱ غایب است؛ انتهای فایل سه سؤال با شماره‌گذاری مجدد دارد. متن آموزشی و آزمون‌های جدید بازنویسی تألیفی و پیش‌نویس‌اند، نه رونویسی کامل بانک."
-      }
-    ],
-    "sourceCoverage": {
-      "sourceId": "copd-question-bank-2025-adb9d8f59541",
-      "reviewStatus": "draft",
-      "actualQuestions": 74,
+    {
+      "id": "copd-question-bank-2025-adb9d8f59541",
+      "title": "سؤالات فصل بیماری انسدادی مزمن ریوی؛ فایل ارسالی 1-COPD.pdf",
+      "edition": "جزوهٔ سؤال و پاسخ با ارجاع به Harrison 2025؛ ویرایش مستقل احراز نشده",
+      "type": "uploaded-question-bank",
+      "sha256": "adb9d8f595413b1e97bc9738263a1e03939c16ffb2ee82e37f4e575807cc1006",
       "pageCount": 29,
+      "note": "همهٔ ۲۹ صفحهٔ متن بومی و فهرست ۷ تصویر بررسی شد. تصاویر اصلی کتاب خصوصی‌اند و از این ورودی بازنشر نشده‌اند. شمارهٔ ۲۴ دو بار و شمارهٔ ۶۱ غایب است؛ انتهای فایل سه سؤال با شماره‌گذاری مجدد دارد. متن آموزشی و آزمون‌های جدید بازنویسی تألیفی و پیش‌نویس‌اند، نه رونویسی کامل بانک."
+    }
+  ],
+  "sourceCoverage": {
+    "sourceId": "copd-question-bank-2025-adb9d8f59541",
+    "reviewStatus": "draft",
+    "actualQuestions": 74,
+    "pageCount": 29,
     "allPagesInspected": true,
     "evidencePolicy": "کلید چاپی در فهرست حفظ شده است؛ needs_review به معنی تأیید کلید نیست. نگاشت پرسش محل مرور مفهوم را نشان می‌دهد، نه تأیید همهٔ مقدمات یا توضیح‌های آن سؤال. اصلاحات اصطلاحی/تعمیم‌های متن قدیمی، پیشنهادی و نیازمند تأیید مدرس و مرجع تخصصی‌اند.",
-    "legacyCorrections": ["lsn-009-p04", "lsn-011-p02", "lsn-011-p07", "lsn-012-p02", "copd-fc-35", "copd-fc-36", "copd-kf-2-step-003", "copd-kf-2-step-004", "lsn-006-p05", "lsn-011-p08", "copd-fc-68", "copd-kf-3-step-005"],
-      "scope": "فهرست کامل پرسش‌ها و کلیدهای چاپی؛ نگاشت مفاهیم به درس/آزمون، نه ادعای واردکردن کامل و لفظ‌به‌لفظ همهٔ پرسش‌ها",
-      "numberingNotes": [
-        "main-24 occurrence 1 و 2 مستقل‌اند",
-        "main-61 در فایل وجود ندارد",
-        "supplemental-1 تا supplemental-3 از main جدا هستند"
-      ],
-      "questions": [
-        {
-          "id": "copd-qb-1",
-          "section": "main",
-          "questionNumber": "1",
-          "occurrence": 1,
-          "pages": [
-            1,
-            2
-          ],
-          "sourceKey": 4,
-          "title": "تشدید با EOS96",
-          "mappedItemIds": [
-            "copd-qb-mcq-01"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-2",
-          "section": "main",
-          "questionNumber": "2",
-          "occurrence": 1,
-          "pages": [
-            2,
-            3
-          ],
-          "sourceKey": 3,
-          "title": "NIV با اسیدوز",
-          "mappedItemIds": [
-            "copd-mcq-14"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-3",
-          "section": "main",
-          "questionNumber": "3",
-          "occurrence": 1,
-          "pages": [
-            3
-          ],
-          "sourceKey": 1,
-          "title": "هیپوکسمی بدون هیپرکاپنی",
-          "mappedItemIds": [
-            "copd-supp-gas-niv"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-4",
-          "section": "main",
-          "questionNumber": "4",
-          "occurrence": 1,
-          "pages": [
-            3
-          ],
-          "sourceKey": 3,
-          "title": "توانبخشی و کیفیت زندگی",
-          "mappedItemIds": [
-            "copd-supp-function-rehab"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-5",
-          "section": "main",
-          "questionNumber": "5",
-          "occurrence": 1,
-          "pages": [
-            3
-          ],
-          "sourceKey": 3,
-          "title": "استروئید کوتاه‌مدت",
-          "mappedItemIds": [
-            "copd-qb-mcq-05"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-6",
-          "section": "main",
-          "questionNumber": "6",
-          "occurrence": 1,
-          "pages": [
-            3,
-            4
-          ],
-          "sourceKey": 1,
-          "title": "تنگی نفس مقاوم و اوپیوئید",
-          "mappedItemIds": [
-            "copd-supp-function-rehab"
-          ],
-          "status": "needs_review",
-          "reviewNote": "اثر اوپیوئیدها در متن خود منبع متناقض و نیازمند تصمیم فردی است."
-        },
-        {
-          "id": "copd-qb-7",
-          "section": "main",
-          "questionNumber": "7",
-          "occurrence": 1,
-          "pages": [
-            4
-          ],
-          "sourceKey": 2,
-          "title": "پنومونی و بازبینی ICS",
-          "mappedItemIds": [
-            "copd-qb-mcq-07"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-8",
-          "section": "main",
-          "questionNumber": "8",
-          "occurrence": 1,
-          "pages": [
-            5
-          ],
-          "sourceKey": 2,
-          "title": "اسیدوز و NIV",
-          "mappedItemIds": [
-            "copd-mcq-14"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-9",
-          "section": "main",
-          "questionNumber": "9",
-          "occurrence": 1,
-          "pages": [
-            5
-          ],
-          "sourceKey": 4,
-          "title": "ائوزینوفیل خلط و درمان ترکیبی",
-          "mappedItemIds": [
-            "copd-supp-assessment-eos"
-          ],
-          "status": "needs_review",
-          "reviewNote": "عدد ۲۰۰ ائوزینوفیل برای خلط آمده؛ واحد/شمارش خون و انتخاب هم‌زمان سه افزودنی قابل تأیید نیست."
-        },
-        {
-          "id": "copd-qb-10",
-          "section": "main",
-          "questionNumber": "10",
-          "occurrence": 1,
-          "pages": [
-            5,
-            6
-          ],
-          "sourceKey": 4,
-          "title": "روفلومیلاست و تشدید",
-          "mappedItemIds": [
-            "copd-supp-escalation-roflumilast"
-          ],
-          "status": "needs_review",
-          "reviewNote": "فنوتیپ برونشیت مزمن صریح نیست؛ از تنگی نفس تنها روفلومیلاست نتیجه نشود."
-        },
-        {
-          "id": "copd-qb-11",
-          "section": "main",
-          "questionNumber": "11",
-          "occurrence": 1,
-          "pages": [
-            6
-          ],
-          "sourceKey": 2,
-          "title": "برونشیت مزمن و روفلومیلاست",
-          "mappedItemIds": [
-            "copd-mcq-11"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-12",
-          "section": "main",
-          "questionNumber": "12",
-          "occurrence": 1,
-          "pages": [
-            6
-          ],
-          "sourceKey": 3,
-          "title": "گروه E با علائم کم",
-          "mappedItemIds": [
-            "copd-qb-mcq-12"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-13",
-          "section": "main",
-          "questionNumber": "13",
-          "occurrence": 1,
-          "pages": [
-            7
-          ],
-          "sourceKey": 4,
-          "title": "برونشیت مزمن با تشدید مکرر",
-          "mappedItemIds": [
-            "copd-mcq-11"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-14",
-          "section": "main",
-          "questionNumber": "14",
-          "occurrence": 1,
-          "pages": [
-            7
-          ],
-          "sourceKey": 2,
-          "title": "تهویه و بازدم ناکامل",
-          "mappedItemIds": [
-            "copd-qb-mcq-14"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-15",
-          "section": "main",
-          "questionNumber": "15",
-          "occurrence": 1,
-          "pages": [
-            7,
-            8
-          ],
-          "sourceKey": 3,
-          "title": "هیپوکسمی و اکسیژن",
-          "mappedItemIds": [
-            "copd-mcq-12"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-16",
-          "section": "main",
-          "questionNumber": "16",
-          "occurrence": 1,
-          "pages": [
-            8
-          ],
-          "sourceKey": 2,
-          "title": "اسیدوز و بستری/NIV",
-          "mappedItemIds": [
-            "copd-mcq-14"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-17",
-          "section": "main",
-          "questionNumber": "17",
-          "occurrence": 1,
-          "pages": [
-            8
-          ],
-          "sourceKey": 4,
-          "title": "بستری قبلی و دو برونکودیلاتور",
-          "mappedItemIds": [
-            "copd-qb-mcq-12"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-18",
-          "section": "main",
-          "questionNumber": "18",
-          "occurrence": 1,
-          "pages": [
-            9
-          ],
-          "sourceKey": 3,
-          "title": "هدف درمان",
-          "mappedItemIds": [
-            "copd-supp-assessment"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-19",
-          "section": "main",
-          "questionNumber": "19",
-          "occurrence": 1,
-          "pages": [
-            9
-          ],
-          "sourceKey": 2,
-          "title": "NIV با pH طبیعی",
-          "mappedItemIds": [
-            "copd-supp-gas-niv"
-          ],
-          "status": "needs_review",
-          "reviewNote": "pH=7.37 با معیار اسیدوز همان توضیح سازگار نیست؛ کلید NIV بازبینی شود."
-        },
-        {
-          "id": "copd-qb-20",
-          "section": "main",
-          "questionNumber": "20",
-          "occurrence": 1,
-          "pages": [
-            9,
-            10
-          ],
-          "sourceKey": 2,
-          "title": "تنگی نفس و LABA/LAMA",
-          "mappedItemIds": [
-            "copd-supp-escalation-withdrawal"
-          ],
-          "status": "needs_review",
-          "reviewNote": "تصمیم قطع ICS بدون شمارش ائوزینوفیل/ارزیابی کامل قابل تعمیم نیست."
-        },
-        {
-          "id": "copd-qb-21",
-          "section": "main",
-          "questionNumber": "21",
-          "occurrence": 1,
-          "pages": [
-            10
-          ],
-          "sourceKey": 2,
-          "title": "توانبخشی و بستری مجدد",
-          "mappedItemIds": [
-            "copd-qb-mcq-21"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-22",
-          "section": "main",
-          "questionNumber": "22",
-          "occurrence": 1,
-          "pages": [
-            10
-          ],
-          "sourceKey": 2,
-          "title": "افزودن LABA",
-          "mappedItemIds": [
-            "copd-supp-assessment-dyspnea"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-24a",
-          "section": "main",
-          "questionNumber": "24",
-          "occurrence": 1,
-          "pages": [
-            12
-          ],
-          "sourceKey": 1,
-          "title": "ICS تک‌دارویی",
-          "mappedItemIds": [
-            "copd-supp-escalation-withdrawal"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-24b",
-          "section": "main",
-          "questionNumber": "24",
-          "occurrence": 2,
-          "pages": [
-            12
-          ],
-          "sourceKey": 4,
-          "title": "CT کم‌دوز",
-          "mappedItemIds": [
-            "copd-supp-function-redflags"
-          ],
-          "status": "needs_review",
-          "reviewNote": "توصیهٔ CT برای همهٔ سیگاری‌های COPD بیش از محدودهٔ معیارهای غربالگری است."
-        },
-        {
-          "id": "copd-qb-23",
-          "section": "main",
-          "questionNumber": "23",
-          "occurrence": 1,
-          "pages": [
-            11
-          ],
-          "sourceKey": 3,
-          "title": "انتخاب توانبخشی/جراحی",
-          "mappedItemIds": [
-            "copd-supp-function-surgery"
-          ],
-          "status": "needs_review",
-          "reviewNote": "تفسیر تصویر و عدم صلاحیت LVRS/پیوند در متن قطعی نشده است."
-        },
-        {
-          "id": "copd-qb-25",
-          "section": "main",
-          "questionNumber": "25",
-          "occurrence": 1,
-          "pages": [
-            12
-          ],
-          "sourceKey": 2,
-          "title": "گروه B",
-          "mappedItemIds": [
-            "copd-supp-assessment-abe"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-26",
-          "section": "main",
-          "questionNumber": "26",
-          "occurrence": 1,
-          "pages": [
-            12
-          ],
-          "sourceKey": 2,
-          "title": "اکسیژن و بقای ادعایی",
-          "mappedItemIds": [
-            "copd-supp-gas-oxygen"
-          ],
-          "status": "needs_review",
-          "reviewNote": "اشباع استراحت ۹۳٪ و فعالیت ۸۹٪ سود بقای اکسیژن را اثبات نمی‌کند."
-        },
-        {
-          "id": "copd-qb-27",
-          "section": "main",
-          "questionNumber": "27",
-          "occurrence": 1,
-          "pages": [
-            13
-          ],
-          "sourceKey": 2,
-          "title": "افزودن LAMA",
-          "mappedItemIds": [
-            "copd-supp-assessment-dyspnea"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-28",
-          "section": "main",
-          "questionNumber": "28",
-          "occurrence": 1,
-          "pages": [
-            13
-          ],
-          "sourceKey": 1,
-          "title": "گروه E",
-          "mappedItemIds": [
-            "copd-qb-mcq-12"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-29",
-          "section": "main",
-          "questionNumber": "29",
-          "occurrence": 1,
-          "pages": [
-            13
-          ],
-          "sourceKey": 2,
-          "title": "ICS با EOS370",
-          "mappedItemIds": [
-            "copd-mcq-10"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-30",
-          "section": "main",
-          "questionNumber": "30",
-          "occurrence": 1,
-          "pages": [
-            14
-          ],
-          "sourceKey": 4,
-          "title": "پیش‌بینی تشدید",
-          "mappedItemIds": [
-            "copd-qb-mcq-30"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-31",
-          "section": "main",
-          "questionNumber": "31",
-          "occurrence": 1,
-          "pages": [
-            14
-          ],
-          "sourceKey": 1,
-          "title": "ماکرولید پیشگیرانه",
-          "mappedItemIds": [
-            "copd-qb-mcq-01"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-32",
-          "section": "main",
-          "questionNumber": "32",
-          "occurrence": 1,
-          "pages": [
-            14
-          ],
-          "sourceKey": 4,
-          "title": "ارتقا به LABA/LAMA",
-          "mappedItemIds": [
-            "copd-supp-assessment-dyspnea"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-33",
-          "section": "main",
-          "questionNumber": "33",
-          "occurrence": 1,
-          "pages": [
-            15
-          ],
-          "sourceKey": 1,
-          "title": "NIV و اسیدوز",
-          "mappedItemIds": [
-            "copd-mcq-14"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-34",
-          "section": "main",
-          "questionNumber": "34",
-          "occurrence": 1,
-          "pages": [
-            15,
-            16
-          ],
-          "sourceKey": 2,
-          "title": "تنگی نفس بدون تشدید",
-          "mappedItemIds": [
-            "copd-supp-assessment-dyspnea"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-35",
-          "section": "main",
-          "questionNumber": "35",
-          "occurrence": 1,
-          "pages": [
-            16
-          ],
-          "sourceKey": 1,
-          "title": "انتخاب LVRS ناسازگار",
-          "mappedItemIds": [
-            "copd-supp-function-surgery"
-          ],
-          "status": "needs_review",
-          "reviewNote": "شرح سؤال آمفیزم فوقانی می‌گوید ولی توضیح آن را منتشر می‌نامد؛ کلید بازبینی شود."
-        },
-        {
-          "id": "copd-qb-36",
-          "section": "main",
-          "questionNumber": "36",
-          "occurrence": 1,
-          "pages": [
-            16,
-            17
-          ],
-          "sourceKey": 2,
-          "title": "چاقی و هیپوونتیلاسیون",
-          "mappedItemIds": [
-            "copd-supp-function-aat"
-          ],
-          "status": "needs_review",
-          "reviewNote": "انسداد وجود ندارد و چاقی/هیپوونتیلاسیون مطرح است؛ خارج از COPD خالص."
-        },
-        {
-          "id": "copd-qb-37",
-          "section": "main",
-          "questionNumber": "37",
-          "occurrence": 1,
-          "pages": [
-            17
-          ],
-          "sourceKey": 1,
-          "title": "افت هوشیاری شدید",
-          "mappedItemIds": [
-            "copd-qb-mcq-37"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-38",
-          "section": "main",
-          "questionNumber": "38",
-          "occurrence": 1,
-          "pages": [
-            17
-          ],
-          "sourceKey": 3,
-          "title": "LVRS منتخب و بقا",
-          "mappedItemIds": [
-            "copd-mcq-13"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-39",
-          "section": "main",
-          "questionNumber": "39",
-          "occurrence": 1,
-          "pages": [
-            17
-          ],
-          "sourceKey": 1,
-          "title": "ارزیابی پیوند",
-          "mappedItemIds": [
-            "copd-supp-function-surgery"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-40",
-          "section": "main",
-          "questionNumber": "40",
-          "occurrence": 1,
-          "pages": [
-            18
-          ],
-          "sourceKey": 4,
-          "title": "NIV با اسیدوز",
-          "mappedItemIds": [
-            "copd-mcq-14"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-41",
-          "section": "main",
-          "questionNumber": "41",
-          "occurrence": 1,
-          "pages": [
-            18
-          ],
-          "sourceKey": 4,
-          "title": "اشباع89 و PH",
-          "mappedItemIds": [
-            "copd-qb-mcq-41"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-42",
-          "section": "main",
-          "questionNumber": "42",
-          "occurrence": 1,
-          "pages": [
-            18
-          ],
-          "sourceKey": 1,
-          "title": "آمفیزم فوقانی و LVRS",
-          "mappedItemIds": [
-            "copd-mcq-13"
-          ],
-          "status": "needs_review",
-          "reviewNote": "شرایط ارزیابی پس از توانبخشی/صلاحیت جراحی کامل نیست."
-        },
-        {
-          "id": "copd-qb-43",
-          "section": "main",
-          "questionNumber": "43",
-          "occurrence": 1,
-          "pages": [
-            18,
-            19
-          ],
-          "sourceKey": 2,
-          "title": "شکست درمان سرپایی",
-          "mappedItemIds": [
-            "copd-mcq-14"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-44",
-          "section": "main",
-          "questionNumber": "44",
-          "occurrence": 1,
-          "pages": [
-            19
-          ],
-          "sourceKey": 1,
-          "title": "تکرار اسپیرومتری",
-          "mappedItemIds": [
-            "copd-supp-function-redflags"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-45",
-          "section": "main",
-          "questionNumber": "45",
-          "occurrence": 1,
-          "pages": [
-            19
-          ],
-          "sourceKey": 2,
-          "title": "تشدید و کیفیت زندگی",
-          "mappedItemIds": [
-            "copd-supp-assessment"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-46",
-          "section": "main",
-          "questionNumber": "46",
-          "occurrence": 1,
-          "pages": [
-            19
-          ],
-          "sourceKey": 2,
-          "title": "پرهیز از استروئید مزمن",
-          "mappedItemIds": [
-            "copd-supp-escalation"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-47",
-          "section": "main",
-          "questionNumber": "47",
-          "occurrence": 1,
-          "pages": [
-            19,
-            20
-          ],
-          "sourceKey": 2,
-          "title": "اکسیژن طولانی‌مدت",
-          "mappedItemIds": [
-            "copd-mcq-12"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-48",
-          "section": "main",
-          "questionNumber": "48",
-          "occurrence": 1,
-          "pages": [
-            20
-          ],
-          "sourceKey": 1,
-          "title": "آزیترومایسین پیشگیرانه",
-          "mappedItemIds": [
-            "copd-supp-escalation-azithro"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-49",
-          "section": "main",
-          "questionNumber": "49",
-          "occurrence": 1,
-          "pages": [
-            20
-          ],
-          "sourceKey": 1,
-          "title": "کمبود AAT بدون بیماری",
-          "mappedItemIds": [
-            "copd-qb-mcq-49"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-50",
-          "section": "main",
-          "questionNumber": "50",
-          "occurrence": 1,
-          "pages": [
-            20,
-            21
-          ],
-          "sourceKey": 4,
-          "title": "روفلومیلاست و عوارض",
-          "mappedItemIds": [
-            "copd-qb-mcq-50"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-51",
-          "section": "main",
-          "questionNumber": "51",
-          "occurrence": 1,
-          "pages": [
-            21
-          ],
-          "sourceKey": 3,
-          "title": "FEV1 پایین و LVRS",
-          "mappedItemIds": [
-            "copd-supp-function-surgery"
-          ],
-          "status": "needs_review",
-          "reviewNote": "FEV1 پایین تنها، معیار ترکیبی خطر بالای LVRS را کامل نمی‌کند."
-        },
-        {
-          "id": "copd-qb-52",
-          "section": "main",
-          "questionNumber": "52",
-          "occurrence": 1,
-          "pages": [
-            21
-          ],
-          "sourceKey": 2,
-          "title": "عوامل خطر تشدید",
-          "mappedItemIds": [
-            "copd-qb-mcq-30"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-53",
-          "section": "main",
-          "questionNumber": "53",
-          "occurrence": 1,
-          "pages": [
-            21
-          ],
-          "sourceKey": 1,
-          "title": "توانبخشی و تنگی نفس",
-          "mappedItemIds": [
-            "copd-supp-function-rehab"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-54",
-          "section": "main",
-          "questionNumber": "54",
-          "occurrence": 1,
-          "pages": [
-            21
-          ],
-          "sourceKey": 1,
-          "title": "کلابینگ و تصویربرداری",
-          "mappedItemIds": [
-            "copd-mcq-6"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-55",
-          "section": "main",
-          "questionNumber": "55",
-          "occurrence": 1,
-          "pages": [
-            21,
-            22
-          ],
-          "sourceKey": 2,
-          "title": "ترک سیگار",
-          "mappedItemIds": [
-            "lsn-010"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-56",
-          "section": "main",
-          "questionNumber": "56",
-          "occurrence": 1,
-          "pages": [
-            22
-          ],
-          "sourceKey": 4,
-          "title": "خلط چرکی و آنتی‌بیوتیک",
-          "mappedItemIds": [
-            "copd-qb-mcq-56"
-          ],
-          "status": "needs_review",
-          "reviewNote": "تغییر وضعیت ذهنی نیازمند ارزیابی شدت مستقل است؛ عدم نیاز به حمایت راه هوایی از CO2 تنها نتیجه نشود."
-        },
-        {
-          "id": "copd-qb-57",
-          "section": "main",
-          "questionNumber": "57",
-          "occurrence": 1,
-          "pages": [
-            22
-          ],
-          "sourceKey": 3,
-          "title": "پیشگیری با ماکرولید",
-          "mappedItemIds": [
-            "copd-supp-escalation-azithro"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-58",
-          "section": "main",
-          "questionNumber": "58",
-          "occurrence": 1,
-          "pages": [
-            23
-          ],
-          "sourceKey": 1,
-          "title": "هیپوکسمی بدون اسیدوز",
-          "mappedItemIds": [
-            "copd-supp-gas-niv"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-59",
-          "section": "main",
-          "questionNumber": "59",
-          "occurrence": 1,
-          "pages": [
-            23,
-            24
-          ],
-          "sourceKey": 3,
-          "title": "الگوی آمفیزم",
-          "mappedItemIds": [
-            "copd-mcq-2"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-60",
-          "section": "main",
-          "questionNumber": "60",
-          "occurrence": 1,
-          "pages": [
-            24
-          ],
-          "sourceKey": 1,
-          "title": "DLCO و تعمیم نادرست",
-          "mappedItemIds": [
-            "copd-supp-function-redflags"
-          ],
-          "status": "needs_review",
-          "reviewNote": "DLCO در همهٔ COPD پایین نیست؛ التهاب راه هوایی در COPD وجود دارد؛ CO2 از FEV1 قابل تعیین قطعی نیست."
-        },
-        {
-          "id": "copd-qb-62",
-          "section": "main",
-          "questionNumber": "62",
-          "occurrence": 1,
-          "pages": [
-            24
-          ],
-          "sourceKey": 2,
-          "title": "انسداد پایدار و آسم",
-          "mappedItemIds": [
-            "copd-supp-function-redflags"
-          ],
-          "status": "needs_review",
-          "reviewNote": "عدم برگشت در یک تست آسم را قطعی رد نمی‌کند؛ نبود سوزش سردل GERD را رد نمی‌کند."
-        },
-        {
-          "id": "copd-qb-63",
-          "section": "main",
-          "questionNumber": "63",
-          "occurrence": 1,
-          "pages": [
-            25
-          ],
-          "sourceKey": 4,
-          "title": "ریسک تشدید",
-          "mappedItemIds": [
-            "copd-qb-mcq-30"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-64",
-          "section": "main",
-          "questionNumber": "64",
-          "occurrence": 1,
-          "pages": [
-            25,
-            26
-          ],
-          "sourceKey": 4,
-          "title": "درمان حاد در مقابل نگهدارنده",
-          "mappedItemIds": [
-            "copd-qb-mcq-64"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-65",
-          "section": "main",
-          "questionNumber": "65",
-          "occurrence": 1,
-          "pages": [
-            26
-          ],
-          "sourceKey": 3,
-          "title": "توانبخشی در پایدار",
-          "mappedItemIds": [
-            "copd-supp-function-rehab"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-66",
-          "section": "main",
-          "questionNumber": "66",
-          "occurrence": 1,
-          "pages": [
-            26
-          ],
-          "sourceKey": 2,
-          "title": "هیپوکسمی/اسیدوز بدون گزینه NIV",
-          "mappedItemIds": [
-            "copd-supp-gas-oxygen"
-          ],
-          "status": "needs_review",
-          "reviewNote": "NIV در گزینه‌ها نیست با وجود اسیدوز و هیپرکاپنی؛ کلید اکسیژن جای تصمیم تهویه را نمی‌گیرد."
-        },
-        {
-          "id": "copd-qb-67",
-          "section": "main",
-          "questionNumber": "67",
-          "occurrence": 1,
-          "pages": [
-            26,
-            27
-          ],
-          "sourceKey": 2,
-          "title": "DLCO15 و انتخاب جراحی",
-          "mappedItemIds": [
-            "copd-supp-function-surgery"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-68",
-          "section": "main",
-          "questionNumber": "68",
-          "occurrence": 1,
-          "pages": [
-            27
-          ],
-          "sourceKey": 3,
-          "title": "کاهش هوشیاری و منع NIV",
-          "mappedItemIds": [
-            "copd-qb-mcq-37"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-69",
-          "section": "main",
-          "questionNumber": "69",
-          "occurrence": 1,
-          "pages": [
-            27
-          ],
-          "sourceKey": 1,
-          "title": "پنومونی بدون اسیدوز",
-          "mappedItemIds": [
-            "copd-supp-gas-niv"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-70",
-          "section": "main",
-          "questionNumber": "70",
-          "occurrence": 1,
-          "pages": [
-            27
-          ],
-          "sourceKey": 1,
-          "title": "اثر LAMA بر تشدید",
-          "mappedItemIds": [
-            "lsn-011-p01"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-71",
-          "section": "main",
-          "questionNumber": "71",
-          "occurrence": 1,
-          "pages": [
-            28
-          ],
-          "sourceKey": 2,
-          "title": "CO2 تنها بدون pH",
-          "mappedItemIds": [
-            "copd-supp-gas-niv"
-          ],
-          "status": "needs_review",
-          "reviewNote": "PaCO2=60 بدون pH و ارزیابی بالینی برای اندیکاسیون قطعی NIV کافی نیست."
-        },
-        {
-          "id": "copd-qb-s1",
-          "section": "supplemental",
-          "questionNumber": "1",
-          "occurrence": 1,
-          "pages": [
-            28
-          ],
-          "sourceKey": 2,
-          "title": "افزودن ICS با EOS150",
-          "mappedItemIds": [
-            "copd-qb-mcq-s1"
-          ],
-          "status": "mapped-draft"
-        },
-        {
-          "id": "copd-qb-s2",
-          "section": "supplemental",
-          "questionNumber": "2",
-          "occurrence": 1,
-          "pages": [
-            28
-          ],
-          "sourceKey": 2,
-          "title": "بیولوژیک با EOS343",
-          "mappedItemIds": [
-            "copd-supp-escalation-biologic"
-          ],
-          "status": "needs_review",
-          "reviewNote": "جزئیات فنوتیپ و معیارهای کامل انتخاب بیولوژیک در صورت سؤال کافی نیست."
-        },
-        {
-          "id": "copd-qb-s3",
-          "section": "supplemental",
-          "questionNumber": "3",
-          "occurrence": 1,
-          "pages": [
-            29
-          ],
-          "sourceKey": 4,
-          "title": "تنگی نفس و ensifentrine",
-          "mappedItemIds": [
-            "copd-qb-mcq-s3"
-          ],
-          "status": "mapped-draft"
-        }
-      ],
-      "figureInventory": [
-        {
-          "pages": [
-            1
-          ],
-          "kind": "دو الگوریتم دارویی",
-          "disposition": "متن الگوریتم به‌صورت تألیفی بازنویسی شد؛ اصل خصوصی"
-        },
-        {
-          "pages": [
-            6
-          ],
-          "kind": "الگوریتم درمان",
-          "disposition": "پوشش متنی؛ اصل خصوصی"
-        },
-        {
-          "pages": [
-            7
-          ],
-          "kind": "نمودار فلو/فشار ونتیلاتور",
-          "disposition": "اصل خصوصی؛ تفسیر مستقل برای سؤال نیازمند بازبینی"
-        },
-        {
-          "pages": [
-            11
-          ],
-          "kind": "CT",
-          "disposition": "اصل خصوصی؛ سؤال تصویرمحور نیازمند بازبینی"
-        },
-        {
-          "pages": [
-            24
-          ],
-          "kind": "تصویر CT الگوهای آمفیزم",
-          "disposition": "اصل خصوصی؛ تعمیم‌های متن با احتیاط"
-        },
-        {
-          "pages": [
-            29
-          ],
-          "kind": "الگوریتم دارویی",
-          "disposition": "پوشش متنی؛ اصل خصوصی"
-        }
-      ]
-    },
+    "legacyCorrections": [
+      "lsn-009-p04",
+      "lsn-011-p02",
+      "lsn-011-p07",
+      "lsn-012-p02",
+      "copd-fc-35",
+      "copd-fc-36",
+      "copd-kf-2-step-003",
+      "copd-kf-2-step-004",
+      "lsn-006-p05",
+      "lsn-011-p08",
+      "copd-fc-68",
+      "copd-kf-3-step-005"
+    ],
+    "scope": "فهرست کامل پرسش‌ها و کلیدهای چاپی؛ نگاشت مفاهیم به درس/آزمون، نه ادعای واردکردن کامل و لفظ‌به‌لفظ همهٔ پرسش‌ها",
+    "numberingNotes": [
+      "main-24 occurrence 1 و 2 مستقل‌اند",
+      "main-61 در فایل وجود ندارد",
+      "supplemental-1 تا supplemental-3 از main جدا هستند"
+    ],
+    "questions": [
+      {
+        "id": "copd-qb-1",
+        "section": "main",
+        "questionNumber": "1",
+        "occurrence": 1,
+        "pages": [
+          1,
+          2
+        ],
+        "sourceKey": 4,
+        "title": "تشدید با EOS96",
+        "mappedItemIds": [
+          "copd-qb-mcq-01"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-2",
+        "section": "main",
+        "questionNumber": "2",
+        "occurrence": 1,
+        "pages": [
+          2,
+          3
+        ],
+        "sourceKey": 3,
+        "title": "NIV با اسیدوز",
+        "mappedItemIds": [
+          "copd-mcq-14"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-3",
+        "section": "main",
+        "questionNumber": "3",
+        "occurrence": 1,
+        "pages": [
+          3
+        ],
+        "sourceKey": 1,
+        "title": "هیپوکسمی بدون هیپرکاپنی",
+        "mappedItemIds": [
+          "copd-supp-gas-niv"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-4",
+        "section": "main",
+        "questionNumber": "4",
+        "occurrence": 1,
+        "pages": [
+          3
+        ],
+        "sourceKey": 3,
+        "title": "توانبخشی و کیفیت زندگی",
+        "mappedItemIds": [
+          "copd-supp-function-rehab"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-5",
+        "section": "main",
+        "questionNumber": "5",
+        "occurrence": 1,
+        "pages": [
+          3
+        ],
+        "sourceKey": 3,
+        "title": "استروئید کوتاه‌مدت",
+        "mappedItemIds": [
+          "copd-qb-mcq-05"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-6",
+        "section": "main",
+        "questionNumber": "6",
+        "occurrence": 1,
+        "pages": [
+          3,
+          4
+        ],
+        "sourceKey": 1,
+        "title": "تنگی نفس مقاوم و اوپیوئید",
+        "mappedItemIds": [
+          "copd-supp-function-rehab"
+        ],
+        "status": "needs_review",
+        "reviewNote": "اثر اوپیوئیدها در متن خود منبع متناقض و نیازمند تصمیم فردی است."
+      },
+      {
+        "id": "copd-qb-7",
+        "section": "main",
+        "questionNumber": "7",
+        "occurrence": 1,
+        "pages": [
+          4
+        ],
+        "sourceKey": 2,
+        "title": "پنومونی و بازبینی ICS",
+        "mappedItemIds": [
+          "copd-qb-mcq-07"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-8",
+        "section": "main",
+        "questionNumber": "8",
+        "occurrence": 1,
+        "pages": [
+          5
+        ],
+        "sourceKey": 2,
+        "title": "اسیدوز و NIV",
+        "mappedItemIds": [
+          "copd-mcq-14"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-9",
+        "section": "main",
+        "questionNumber": "9",
+        "occurrence": 1,
+        "pages": [
+          5
+        ],
+        "sourceKey": 4,
+        "title": "ائوزینوفیل خلط و درمان ترکیبی",
+        "mappedItemIds": [
+          "copd-supp-assessment-eos"
+        ],
+        "status": "needs_review",
+        "reviewNote": "عدد ۲۰۰ ائوزینوفیل برای خلط آمده؛ واحد/شمارش خون و انتخاب هم‌زمان سه افزودنی قابل تأیید نیست."
+      },
+      {
+        "id": "copd-qb-10",
+        "section": "main",
+        "questionNumber": "10",
+        "occurrence": 1,
+        "pages": [
+          5,
+          6
+        ],
+        "sourceKey": 4,
+        "title": "روفلومیلاست و تشدید",
+        "mappedItemIds": [
+          "copd-supp-escalation-roflumilast"
+        ],
+        "status": "needs_review",
+        "reviewNote": "فنوتیپ برونشیت مزمن صریح نیست؛ از تنگی نفس تنها روفلومیلاست نتیجه نشود."
+      },
+      {
+        "id": "copd-qb-11",
+        "section": "main",
+        "questionNumber": "11",
+        "occurrence": 1,
+        "pages": [
+          6
+        ],
+        "sourceKey": 2,
+        "title": "برونشیت مزمن و روفلومیلاست",
+        "mappedItemIds": [
+          "copd-mcq-11"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-12",
+        "section": "main",
+        "questionNumber": "12",
+        "occurrence": 1,
+        "pages": [
+          6
+        ],
+        "sourceKey": 3,
+        "title": "گروه E با علائم کم",
+        "mappedItemIds": [
+          "copd-qb-mcq-12"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-13",
+        "section": "main",
+        "questionNumber": "13",
+        "occurrence": 1,
+        "pages": [
+          7
+        ],
+        "sourceKey": 4,
+        "title": "برونشیت مزمن با تشدید مکرر",
+        "mappedItemIds": [
+          "copd-mcq-11"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-14",
+        "section": "main",
+        "questionNumber": "14",
+        "occurrence": 1,
+        "pages": [
+          7
+        ],
+        "sourceKey": 2,
+        "title": "تهویه و بازدم ناکامل",
+        "mappedItemIds": [
+          "copd-qb-mcq-14"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-15",
+        "section": "main",
+        "questionNumber": "15",
+        "occurrence": 1,
+        "pages": [
+          7,
+          8
+        ],
+        "sourceKey": 3,
+        "title": "هیپوکسمی و اکسیژن",
+        "mappedItemIds": [
+          "copd-mcq-12"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-16",
+        "section": "main",
+        "questionNumber": "16",
+        "occurrence": 1,
+        "pages": [
+          8
+        ],
+        "sourceKey": 2,
+        "title": "اسیدوز و بستری/NIV",
+        "mappedItemIds": [
+          "copd-mcq-14"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-17",
+        "section": "main",
+        "questionNumber": "17",
+        "occurrence": 1,
+        "pages": [
+          8
+        ],
+        "sourceKey": 4,
+        "title": "بستری قبلی و دو برونکودیلاتور",
+        "mappedItemIds": [
+          "copd-qb-mcq-12"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-18",
+        "section": "main",
+        "questionNumber": "18",
+        "occurrence": 1,
+        "pages": [
+          9
+        ],
+        "sourceKey": 3,
+        "title": "هدف درمان",
+        "mappedItemIds": [
+          "copd-supp-assessment"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-19",
+        "section": "main",
+        "questionNumber": "19",
+        "occurrence": 1,
+        "pages": [
+          9
+        ],
+        "sourceKey": 2,
+        "title": "NIV با pH طبیعی",
+        "mappedItemIds": [
+          "copd-supp-gas-niv"
+        ],
+        "status": "needs_review",
+        "reviewNote": "pH=7.37 با معیار اسیدوز همان توضیح سازگار نیست؛ کلید NIV بازبینی شود."
+      },
+      {
+        "id": "copd-qb-20",
+        "section": "main",
+        "questionNumber": "20",
+        "occurrence": 1,
+        "pages": [
+          9,
+          10
+        ],
+        "sourceKey": 2,
+        "title": "تنگی نفس و LABA/LAMA",
+        "mappedItemIds": [
+          "copd-supp-escalation-withdrawal"
+        ],
+        "status": "needs_review",
+        "reviewNote": "تصمیم قطع ICS بدون شمارش ائوزینوفیل/ارزیابی کامل قابل تعمیم نیست."
+      },
+      {
+        "id": "copd-qb-21",
+        "section": "main",
+        "questionNumber": "21",
+        "occurrence": 1,
+        "pages": [
+          10
+        ],
+        "sourceKey": 2,
+        "title": "توانبخشی و بستری مجدد",
+        "mappedItemIds": [
+          "copd-qb-mcq-21"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-22",
+        "section": "main",
+        "questionNumber": "22",
+        "occurrence": 1,
+        "pages": [
+          10
+        ],
+        "sourceKey": 2,
+        "title": "افزودن LABA",
+        "mappedItemIds": [
+          "copd-supp-assessment-dyspnea"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-24a",
+        "section": "main",
+        "questionNumber": "24",
+        "occurrence": 1,
+        "pages": [
+          12
+        ],
+        "sourceKey": 1,
+        "title": "ICS تک‌دارویی",
+        "mappedItemIds": [
+          "copd-supp-escalation-withdrawal"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-24b",
+        "section": "main",
+        "questionNumber": "24",
+        "occurrence": 2,
+        "pages": [
+          12
+        ],
+        "sourceKey": 4,
+        "title": "CT کم‌دوز",
+        "mappedItemIds": [
+          "copd-supp-function-redflags"
+        ],
+        "status": "needs_review",
+        "reviewNote": "توصیهٔ CT برای همهٔ سیگاری‌های COPD بیش از محدودهٔ معیارهای غربالگری است."
+      },
+      {
+        "id": "copd-qb-23",
+        "section": "main",
+        "questionNumber": "23",
+        "occurrence": 1,
+        "pages": [
+          11
+        ],
+        "sourceKey": 3,
+        "title": "انتخاب توانبخشی/جراحی",
+        "mappedItemIds": [
+          "copd-supp-function-surgery"
+        ],
+        "status": "needs_review",
+        "reviewNote": "تفسیر تصویر و عدم صلاحیت LVRS/پیوند در متن قطعی نشده است."
+      },
+      {
+        "id": "copd-qb-25",
+        "section": "main",
+        "questionNumber": "25",
+        "occurrence": 1,
+        "pages": [
+          12
+        ],
+        "sourceKey": 2,
+        "title": "گروه B",
+        "mappedItemIds": [
+          "copd-supp-assessment-abe"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-26",
+        "section": "main",
+        "questionNumber": "26",
+        "occurrence": 1,
+        "pages": [
+          12
+        ],
+        "sourceKey": 2,
+        "title": "اکسیژن و بقای ادعایی",
+        "mappedItemIds": [
+          "copd-supp-gas-oxygen"
+        ],
+        "status": "needs_review",
+        "reviewNote": "اشباع استراحت ۹۳٪ و فعالیت ۸۹٪ سود بقای اکسیژن را اثبات نمی‌کند."
+      },
+      {
+        "id": "copd-qb-27",
+        "section": "main",
+        "questionNumber": "27",
+        "occurrence": 1,
+        "pages": [
+          13
+        ],
+        "sourceKey": 2,
+        "title": "افزودن LAMA",
+        "mappedItemIds": [
+          "copd-supp-assessment-dyspnea"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-28",
+        "section": "main",
+        "questionNumber": "28",
+        "occurrence": 1,
+        "pages": [
+          13
+        ],
+        "sourceKey": 1,
+        "title": "گروه E",
+        "mappedItemIds": [
+          "copd-qb-mcq-12"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-29",
+        "section": "main",
+        "questionNumber": "29",
+        "occurrence": 1,
+        "pages": [
+          13
+        ],
+        "sourceKey": 2,
+        "title": "ICS با EOS370",
+        "mappedItemIds": [
+          "copd-mcq-10"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-30",
+        "section": "main",
+        "questionNumber": "30",
+        "occurrence": 1,
+        "pages": [
+          14
+        ],
+        "sourceKey": 4,
+        "title": "پیش‌بینی تشدید",
+        "mappedItemIds": [
+          "copd-qb-mcq-30"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-31",
+        "section": "main",
+        "questionNumber": "31",
+        "occurrence": 1,
+        "pages": [
+          14
+        ],
+        "sourceKey": 1,
+        "title": "ماکرولید پیشگیرانه",
+        "mappedItemIds": [
+          "copd-qb-mcq-01"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-32",
+        "section": "main",
+        "questionNumber": "32",
+        "occurrence": 1,
+        "pages": [
+          14
+        ],
+        "sourceKey": 4,
+        "title": "ارتقا به LABA/LAMA",
+        "mappedItemIds": [
+          "copd-supp-assessment-dyspnea"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-33",
+        "section": "main",
+        "questionNumber": "33",
+        "occurrence": 1,
+        "pages": [
+          15
+        ],
+        "sourceKey": 1,
+        "title": "NIV و اسیدوز",
+        "mappedItemIds": [
+          "copd-mcq-14"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-34",
+        "section": "main",
+        "questionNumber": "34",
+        "occurrence": 1,
+        "pages": [
+          15,
+          16
+        ],
+        "sourceKey": 2,
+        "title": "تنگی نفس بدون تشدید",
+        "mappedItemIds": [
+          "copd-supp-assessment-dyspnea"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-35",
+        "section": "main",
+        "questionNumber": "35",
+        "occurrence": 1,
+        "pages": [
+          16
+        ],
+        "sourceKey": 1,
+        "title": "انتخاب LVRS ناسازگار",
+        "mappedItemIds": [
+          "copd-supp-function-surgery"
+        ],
+        "status": "needs_review",
+        "reviewNote": "شرح سؤال آمفیزم فوقانی می‌گوید ولی توضیح آن را منتشر می‌نامد؛ کلید بازبینی شود."
+      },
+      {
+        "id": "copd-qb-36",
+        "section": "main",
+        "questionNumber": "36",
+        "occurrence": 1,
+        "pages": [
+          16,
+          17
+        ],
+        "sourceKey": 2,
+        "title": "چاقی و هیپوونتیلاسیون",
+        "mappedItemIds": [
+          "copd-supp-function-aat"
+        ],
+        "status": "needs_review",
+        "reviewNote": "انسداد وجود ندارد و چاقی/هیپوونتیلاسیون مطرح است؛ خارج از COPD خالص."
+      },
+      {
+        "id": "copd-qb-37",
+        "section": "main",
+        "questionNumber": "37",
+        "occurrence": 1,
+        "pages": [
+          17
+        ],
+        "sourceKey": 1,
+        "title": "افت هوشیاری شدید",
+        "mappedItemIds": [
+          "copd-qb-mcq-37"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-38",
+        "section": "main",
+        "questionNumber": "38",
+        "occurrence": 1,
+        "pages": [
+          17
+        ],
+        "sourceKey": 3,
+        "title": "LVRS منتخب و بقا",
+        "mappedItemIds": [
+          "copd-mcq-13"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-39",
+        "section": "main",
+        "questionNumber": "39",
+        "occurrence": 1,
+        "pages": [
+          17
+        ],
+        "sourceKey": 1,
+        "title": "ارزیابی پیوند",
+        "mappedItemIds": [
+          "copd-supp-function-surgery"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-40",
+        "section": "main",
+        "questionNumber": "40",
+        "occurrence": 1,
+        "pages": [
+          18
+        ],
+        "sourceKey": 4,
+        "title": "NIV با اسیدوز",
+        "mappedItemIds": [
+          "copd-mcq-14"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-41",
+        "section": "main",
+        "questionNumber": "41",
+        "occurrence": 1,
+        "pages": [
+          18
+        ],
+        "sourceKey": 4,
+        "title": "اشباع89 و PH",
+        "mappedItemIds": [
+          "copd-qb-mcq-41"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-42",
+        "section": "main",
+        "questionNumber": "42",
+        "occurrence": 1,
+        "pages": [
+          18
+        ],
+        "sourceKey": 1,
+        "title": "آمفیزم فوقانی و LVRS",
+        "mappedItemIds": [
+          "copd-mcq-13"
+        ],
+        "status": "needs_review",
+        "reviewNote": "شرایط ارزیابی پس از توانبخشی/صلاحیت جراحی کامل نیست."
+      },
+      {
+        "id": "copd-qb-43",
+        "section": "main",
+        "questionNumber": "43",
+        "occurrence": 1,
+        "pages": [
+          18,
+          19
+        ],
+        "sourceKey": 2,
+        "title": "شکست درمان سرپایی",
+        "mappedItemIds": [
+          "copd-mcq-14"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-44",
+        "section": "main",
+        "questionNumber": "44",
+        "occurrence": 1,
+        "pages": [
+          19
+        ],
+        "sourceKey": 1,
+        "title": "تکرار اسپیرومتری",
+        "mappedItemIds": [
+          "copd-supp-function-redflags"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-45",
+        "section": "main",
+        "questionNumber": "45",
+        "occurrence": 1,
+        "pages": [
+          19
+        ],
+        "sourceKey": 2,
+        "title": "تشدید و کیفیت زندگی",
+        "mappedItemIds": [
+          "copd-supp-assessment"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-46",
+        "section": "main",
+        "questionNumber": "46",
+        "occurrence": 1,
+        "pages": [
+          19
+        ],
+        "sourceKey": 2,
+        "title": "پرهیز از استروئید مزمن",
+        "mappedItemIds": [
+          "copd-supp-escalation"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-47",
+        "section": "main",
+        "questionNumber": "47",
+        "occurrence": 1,
+        "pages": [
+          19,
+          20
+        ],
+        "sourceKey": 2,
+        "title": "اکسیژن طولانی‌مدت",
+        "mappedItemIds": [
+          "copd-mcq-12"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-48",
+        "section": "main",
+        "questionNumber": "48",
+        "occurrence": 1,
+        "pages": [
+          20
+        ],
+        "sourceKey": 1,
+        "title": "آزیترومایسین پیشگیرانه",
+        "mappedItemIds": [
+          "copd-supp-escalation-azithro"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-49",
+        "section": "main",
+        "questionNumber": "49",
+        "occurrence": 1,
+        "pages": [
+          20
+        ],
+        "sourceKey": 1,
+        "title": "کمبود AAT بدون بیماری",
+        "mappedItemIds": [
+          "copd-qb-mcq-49"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-50",
+        "section": "main",
+        "questionNumber": "50",
+        "occurrence": 1,
+        "pages": [
+          20,
+          21
+        ],
+        "sourceKey": 4,
+        "title": "روفلومیلاست و عوارض",
+        "mappedItemIds": [
+          "copd-qb-mcq-50"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-51",
+        "section": "main",
+        "questionNumber": "51",
+        "occurrence": 1,
+        "pages": [
+          21
+        ],
+        "sourceKey": 3,
+        "title": "FEV1 پایین و LVRS",
+        "mappedItemIds": [
+          "copd-supp-function-surgery"
+        ],
+        "status": "needs_review",
+        "reviewNote": "FEV1 پایین تنها، معیار ترکیبی خطر بالای LVRS را کامل نمی‌کند."
+      },
+      {
+        "id": "copd-qb-52",
+        "section": "main",
+        "questionNumber": "52",
+        "occurrence": 1,
+        "pages": [
+          21
+        ],
+        "sourceKey": 2,
+        "title": "عوامل خطر تشدید",
+        "mappedItemIds": [
+          "copd-qb-mcq-30"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-53",
+        "section": "main",
+        "questionNumber": "53",
+        "occurrence": 1,
+        "pages": [
+          21
+        ],
+        "sourceKey": 1,
+        "title": "توانبخشی و تنگی نفس",
+        "mappedItemIds": [
+          "copd-supp-function-rehab"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-54",
+        "section": "main",
+        "questionNumber": "54",
+        "occurrence": 1,
+        "pages": [
+          21
+        ],
+        "sourceKey": 1,
+        "title": "کلابینگ و تصویربرداری",
+        "mappedItemIds": [
+          "copd-mcq-6"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-55",
+        "section": "main",
+        "questionNumber": "55",
+        "occurrence": 1,
+        "pages": [
+          21,
+          22
+        ],
+        "sourceKey": 2,
+        "title": "ترک سیگار",
+        "mappedItemIds": [
+          "lsn-010"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-56",
+        "section": "main",
+        "questionNumber": "56",
+        "occurrence": 1,
+        "pages": [
+          22
+        ],
+        "sourceKey": 4,
+        "title": "خلط چرکی و آنتی‌بیوتیک",
+        "mappedItemIds": [
+          "copd-qb-mcq-56"
+        ],
+        "status": "needs_review",
+        "reviewNote": "تغییر وضعیت ذهنی نیازمند ارزیابی شدت مستقل است؛ عدم نیاز به حمایت راه هوایی از CO2 تنها نتیجه نشود."
+      },
+      {
+        "id": "copd-qb-57",
+        "section": "main",
+        "questionNumber": "57",
+        "occurrence": 1,
+        "pages": [
+          22
+        ],
+        "sourceKey": 3,
+        "title": "پیشگیری با ماکرولید",
+        "mappedItemIds": [
+          "copd-supp-escalation-azithro"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-58",
+        "section": "main",
+        "questionNumber": "58",
+        "occurrence": 1,
+        "pages": [
+          23
+        ],
+        "sourceKey": 1,
+        "title": "هیپوکسمی بدون اسیدوز",
+        "mappedItemIds": [
+          "copd-supp-gas-niv"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-59",
+        "section": "main",
+        "questionNumber": "59",
+        "occurrence": 1,
+        "pages": [
+          23,
+          24
+        ],
+        "sourceKey": 3,
+        "title": "الگوی آمفیزم",
+        "mappedItemIds": [
+          "copd-mcq-2"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-60",
+        "section": "main",
+        "questionNumber": "60",
+        "occurrence": 1,
+        "pages": [
+          24
+        ],
+        "sourceKey": 1,
+        "title": "DLCO و تعمیم نادرست",
+        "mappedItemIds": [
+          "copd-supp-function-redflags"
+        ],
+        "status": "needs_review",
+        "reviewNote": "DLCO در همهٔ COPD پایین نیست؛ التهاب راه هوایی در COPD وجود دارد؛ CO2 از FEV1 قابل تعیین قطعی نیست."
+      },
+      {
+        "id": "copd-qb-62",
+        "section": "main",
+        "questionNumber": "62",
+        "occurrence": 1,
+        "pages": [
+          24
+        ],
+        "sourceKey": 2,
+        "title": "انسداد پایدار و آسم",
+        "mappedItemIds": [
+          "copd-supp-function-redflags"
+        ],
+        "status": "needs_review",
+        "reviewNote": "عدم برگشت در یک تست آسم را قطعی رد نمی‌کند؛ نبود سوزش سردل GERD را رد نمی‌کند."
+      },
+      {
+        "id": "copd-qb-63",
+        "section": "main",
+        "questionNumber": "63",
+        "occurrence": 1,
+        "pages": [
+          25
+        ],
+        "sourceKey": 4,
+        "title": "ریسک تشدید",
+        "mappedItemIds": [
+          "copd-qb-mcq-30"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-64",
+        "section": "main",
+        "questionNumber": "64",
+        "occurrence": 1,
+        "pages": [
+          25,
+          26
+        ],
+        "sourceKey": 4,
+        "title": "درمان حاد در مقابل نگهدارنده",
+        "mappedItemIds": [
+          "copd-qb-mcq-64"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-65",
+        "section": "main",
+        "questionNumber": "65",
+        "occurrence": 1,
+        "pages": [
+          26
+        ],
+        "sourceKey": 3,
+        "title": "توانبخشی در پایدار",
+        "mappedItemIds": [
+          "copd-supp-function-rehab"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-66",
+        "section": "main",
+        "questionNumber": "66",
+        "occurrence": 1,
+        "pages": [
+          26
+        ],
+        "sourceKey": 2,
+        "title": "هیپوکسمی/اسیدوز بدون گزینه NIV",
+        "mappedItemIds": [
+          "copd-supp-gas-oxygen"
+        ],
+        "status": "needs_review",
+        "reviewNote": "NIV در گزینه‌ها نیست با وجود اسیدوز و هیپرکاپنی؛ کلید اکسیژن جای تصمیم تهویه را نمی‌گیرد."
+      },
+      {
+        "id": "copd-qb-67",
+        "section": "main",
+        "questionNumber": "67",
+        "occurrence": 1,
+        "pages": [
+          26,
+          27
+        ],
+        "sourceKey": 2,
+        "title": "DLCO15 و انتخاب جراحی",
+        "mappedItemIds": [
+          "copd-supp-function-surgery"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-68",
+        "section": "main",
+        "questionNumber": "68",
+        "occurrence": 1,
+        "pages": [
+          27
+        ],
+        "sourceKey": 3,
+        "title": "کاهش هوشیاری و منع NIV",
+        "mappedItemIds": [
+          "copd-qb-mcq-37"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-69",
+        "section": "main",
+        "questionNumber": "69",
+        "occurrence": 1,
+        "pages": [
+          27
+        ],
+        "sourceKey": 1,
+        "title": "پنومونی بدون اسیدوز",
+        "mappedItemIds": [
+          "copd-supp-gas-niv"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-70",
+        "section": "main",
+        "questionNumber": "70",
+        "occurrence": 1,
+        "pages": [
+          27
+        ],
+        "sourceKey": 1,
+        "title": "اثر LAMA بر تشدید",
+        "mappedItemIds": [
+          "lsn-011-p01"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-71",
+        "section": "main",
+        "questionNumber": "71",
+        "occurrence": 1,
+        "pages": [
+          28
+        ],
+        "sourceKey": 2,
+        "title": "CO2 تنها بدون pH",
+        "mappedItemIds": [
+          "copd-supp-gas-niv"
+        ],
+        "status": "needs_review",
+        "reviewNote": "PaCO2=60 بدون pH و ارزیابی بالینی برای اندیکاسیون قطعی NIV کافی نیست."
+      },
+      {
+        "id": "copd-qb-s1",
+        "section": "supplemental",
+        "questionNumber": "1",
+        "occurrence": 1,
+        "pages": [
+          28
+        ],
+        "sourceKey": 2,
+        "title": "افزودن ICS با EOS150",
+        "mappedItemIds": [
+          "copd-qb-mcq-s1"
+        ],
+        "status": "mapped-draft"
+      },
+      {
+        "id": "copd-qb-s2",
+        "section": "supplemental",
+        "questionNumber": "2",
+        "occurrence": 1,
+        "pages": [
+          28
+        ],
+        "sourceKey": 2,
+        "title": "بیولوژیک با EOS343",
+        "mappedItemIds": [
+          "copd-supp-escalation-biologic"
+        ],
+        "status": "needs_review",
+        "reviewNote": "جزئیات فنوتیپ و معیارهای کامل انتخاب بیولوژیک در صورت سؤال کافی نیست."
+      },
+      {
+        "id": "copd-qb-s3",
+        "section": "supplemental",
+        "questionNumber": "3",
+        "occurrence": 1,
+        "pages": [
+          29
+        ],
+        "sourceKey": 4,
+        "title": "تنگی نفس و ensifentrine",
+        "mappedItemIds": [
+          "copd-qb-mcq-s3"
+        ],
+        "status": "mapped-draft"
+      }
+    ],
+    "figureInventory": [
+      {
+        "pages": [
+          1
+        ],
+        "kind": "دو الگوریتم دارویی",
+        "disposition": "متن الگوریتم به‌صورت تألیفی بازنویسی شد؛ اصل خصوصی"
+      },
+      {
+        "pages": [
+          6
+        ],
+        "kind": "الگوریتم درمان",
+        "disposition": "پوشش متنی؛ اصل خصوصی"
+      },
+      {
+        "pages": [
+          7
+        ],
+        "kind": "نمودار فلو/فشار ونتیلاتور",
+        "disposition": "اصل خصوصی؛ تفسیر مستقل برای سؤال نیازمند بازبینی"
+      },
+      {
+        "pages": [
+          11
+        ],
+        "kind": "CT",
+        "disposition": "اصل خصوصی؛ سؤال تصویرمحور نیازمند بازبینی"
+      },
+      {
+        "pages": [
+          24
+        ],
+        "kind": "تصویر CT الگوهای آمفیزم",
+        "disposition": "اصل خصوصی؛ تعمیم‌های متن با احتیاط"
+      },
+      {
+        "pages": [
+          29
+        ],
+        "kind": "الگوریتم دارویی",
+        "disposition": "پوشش متنی؛ اصل خصوصی"
+      }
+    ]
+  },
   "sourceNote": "Harrison's Principles of Internal Medicine, 22nd ed., Chapter 303 (Chronic Obstructive Pulmonary Disease). Figures 303-1/2/3/4/5/6 are McGraw Hill copyrighted artwork and are NOT embedded (per repo rule 6); their data/algorithm content is reproduced as markdown tables or described in lesson prose instead. Table 303-1 reproduced verbatim (factual data table).",
   "flashcards": [
     {
@@ -1571,14 +1584,30 @@
       "front": "تست آزمایشگاهی اولیهٔ غربالگری کمبود α1AT چیست؟",
       "back": "سطح سرمی α1AT؛ در سطح پایین، تأیید با فنوتیپ پروتئینی و/یا آزمایش ژنتیک مناسب. Isoelectric focusing فنوتیپ پروتئین را تعیین می‌کند، نه ژنوتیپ DNA.",
       "reviewStatus": "draft",
-      "sourceRefs": [{"sourceId":"copd-question-bank-2025-adb9d8f59541","pages":[20],"note":"اصلاح اصطلاحی فنوتیپ/ژنوتیپ متن پیشین؛ تأیید مرجع تخصصی لازم است"}]
+      "sourceRefs": [
+        {
+          "sourceId": "copd-question-bank-2025-adb9d8f59541",
+          "pages": [
+            20
+          ],
+          "note": "اصلاح اصطلاحی فنوتیپ/ژنوتیپ متن پیشین؛ تأیید مرجع تخصصی لازم است"
+        }
+      ]
     },
     {
       "id": "copd-fc-36",
       "front": "درمان اختصاصی کمبود شدید α1AT چیست و معیار واجد شرایط‌بودن؟",
       "back": "درمان تقویتی وریدی α1AT در بیماران منتخب با کمبود شدید و بیماری انسدادی مرتبط، پس از ارزیابی تخصصی مطرح است. سطح زیر ۱۱ میکرومولار به‌تنهایی برای شروع درمان کافی نیست؛ در عملکرد ریوی و CT طبیعی درمان خودکار توصیه نمی‌شود.",
       "reviewStatus": "draft",
-      "sourceRefs": [{"sourceId":"copd-question-bank-2025-adb9d8f59541","pages":[20],"note":"اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"}]
+      "sourceRefs": [
+        {
+          "sourceId": "copd-question-bank-2025-adb9d8f59541",
+          "pages": [
+            20
+          ],
+          "note": "اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"
+        }
+      ]
     },
     {
       "id": "copd-fc-37",
@@ -1738,7 +1767,17 @@
     {
       "id": "copd-fc-68",
       "reviewStatus": "draft",
-      "sourceRefs": [{"sourceId": "copd-question-bank-2025-adb9d8f59541", "pages": [1,2,28,29]}],
+      "sourceRefs": [
+        {
+          "sourceId": "copd-question-bank-2025-adb9d8f59541",
+          "pages": [
+            1,
+            2,
+            28,
+            29
+          ]
+        }
+      ],
       "front": "دوپیلوماب در COPD برای چه بیمارانی نشان داده مؤثر است؟",
       "back": "بیماران منتخب با برونشیت مزمن، ائوزینوفیل خون ≥۳۰۰ و تشدیدهای مکرر علی‌رغم درمان سه‌گانه؛ دوپیلوماب پس از ارزیابی تخصصی مطرح می‌شود."
     },
@@ -2148,7 +2187,7 @@
     },
     {
       "id": "copd-qb-mcq-56",
-    "adaptationNote": "برای آزمودن اصل انتخاب آنتی‌بیوتیک، کنفیوژن/آژیتاسیون مبهم صورت اصلی حذف و نبود شواهد نارسایی راه هوایی تصریح شده است؛ این بازنویسی تأیید کلید یا تمام مقدمات سؤال اصلی نیست.",
+      "adaptationNote": "برای آزمودن اصل انتخاب آنتی‌بیوتیک، کنفیوژن/آژیتاسیون مبهم صورت اصلی حذف و نبود شواهد نارسایی راه هوایی تصریح شده است؛ این بازنویسی تأیید کلید یا تمام مقدمات سؤال اصلی نیست.",
       "origin": "adapted-source",
       "sourceQuestionId": "copd-qb-56",
       "reviewStatus": "draft",
@@ -2481,7 +2520,8 @@
                 2
               ]
             }
-          ]
+          ],
+          "legacyIndex": 0
         },
         {
           "id": "copd-qb-kf-prevention-2",
@@ -2501,7 +2541,8 @@
                 20
               ]
             }
-          ]
+          ],
+          "legacyIndex": 1
         },
         {
           "id": "copd-qb-kf-prevention-3",
@@ -2519,7 +2560,8 @@
                 29
               ]
             }
-          ]
+          ],
+          "legacyIndex": 2
         }
       ]
     },
@@ -2556,7 +2598,8 @@
                 5
               ]
             }
-          ]
+          ],
+          "legacyIndex": 0
         },
         {
           "id": "copd-qb-kf-ventilation-2",
@@ -2574,7 +2617,8 @@
                 27
               ]
             }
-          ]
+          ],
+          "legacyIndex": 1
         },
         {
           "id": "copd-qb-kf-ventilation-3",
@@ -2591,7 +2635,8 @@
                 7
               ]
             }
-          ]
+          ],
+          "legacyIndex": 2
         }
       ]
     },
@@ -2659,7 +2704,15 @@
           "prompt": "اگر سطح سرمی پایین باشد، گام تشخیصی تأییدی بعدی چیست؟",
           "expectedAnswer": "تأیید کمبود با فنوتیپ پروتئینی و/یا آزمایش ژنتیک مناسب؛ isoelectric focusing فنوتیپ پروتئین را مشخص می‌کند، در حالی که بررسی واریانت‌های SERPINA1 یا توالی‌یابی DNA ژنوتیپ را تعیین می‌کند.",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId":"copd-question-bank-2025-adb9d8f59541","pages":[20],"note":"اصلاح اصطلاحی فنوتیپ/ژنوتیپ متن پیشین؛ تأیید مرجع تخصصی لازم است"}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                20
+              ],
+              "note": "اصلاح اصطلاحی فنوتیپ/ژنوتیپ متن پیشین؛ تأیید مرجع تخصصی لازم است"
+            }
+          ],
           "id": "copd-kf-2-step-003",
           "legacyIndex": 2
         },
@@ -2667,7 +2720,15 @@
           "prompt": "اگر سطح سرمی α1AT زیر ۱۱ میکرومولار (≈۵۵ میلی‌گرم/دسی‌لیتر) تأیید شود، درمان اختصاصی چیست؟",
           "expectedAnswer": "ارزیابی تخصصی برای درمان تقویتی α1AT؛ سطح کمتر از ۱۱ میکرومولار نشان‌دهندهٔ کمبود شدید است، اما به‌تنهایی کافی نیست. وجود بیماری انسدادی مرتبط، شرایط بالینی، وضعیت سیگار و صلاحیت درمان باید بررسی شوند؛ درمان خودکار همهٔ افراد با سطح پایین توصیه نمی‌شود.",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId":"copd-question-bank-2025-adb9d8f59541","pages":[20],"note":"اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                20
+              ],
+              "note": "اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"
+            }
+          ],
           "id": "copd-kf-2-step-004",
           "legacyIndex": 3
         },
@@ -2713,7 +2774,17 @@
           "expectedAnswer": "دوپیلوماب (آنتی‌بادی مونوکلونال ضد IL-4/IL-13).",
           "id": "copd-kf-3-step-005",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId": "copd-question-bank-2025-adb9d8f59541", "pages": [1,2,28,29]}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                1,
+                2,
+                28,
+                29
+              ]
+            }
+          ],
           "legacyIndex": 4
         }
       ]
@@ -2763,7 +2834,28 @@
         "آزیترومایسین",
         "ensifentrine"
       ],
-      "markdown": "| موقعیت بالینی | اقدام محوری | قید تصمیم |\n|---|---|---|\n| ارزیابی اولیه، یک بستری یا حداقل دو تشدید متوسط در سال | گروه E در چارچوب ABE؛ معمولاً LABA+LAMA | CAT پایین یا FEV1 بالاتر این خطر را حذف نمی‌کند؛ ائوزینوفیل ≥۳۰۰ بررسی درمان سه‌گانه را تقویت می‌کند |\n| تنگی نفس با یک برونکودیلاتور طولانی‌اثر | LABA+LAMA | تکنیک، پایبندی و تشخیص‌های همراه را بازبینی کنید |\n| تنگی نفس با LABA+LAMA | ارزیابی وسیله، توانبخشی و علل دیگر؛ بررسی گزینهٔ علامتی مناسب | Ensifentrine در منبع مطرح است؛ روفلومیلاست صرفاً برای تنگی نفس توصیه نمی‌شود |\n| تشدید مکرر با LABA+LAMA و ائوزینوفیل خون ≥۱۰۰ | بررسی افزودن ICS و درمان سه‌گانه | احتمال سود با شمارش بالاتر بیشتر است؛ زیر ۱۰۰ سود معمولاً کم است |\n| تشدید مکرر با ائوزینوفیل پایین یا با درمان بهینه | ارزیابی افزودنی متناسب با فنوتیپ | روفلومیلاست: برونشیت مزمن، FEV1<۵۰٪ و تشدید؛ آزیترومایسین: بیمار منتخب، به‌ویژه سابقاً سیگاری، با بررسی QTc/شنوایی/مقاومت |\n| تشدید مکرر با درمان سه‌گانه و ائوزینوفیل ≥۳۰۰ | ارجاع برای بررسی فنوتیپ و شرایط درمان هدفمند | در الگوریتم منبع، برونشیت مزمن نیز شرط انتخاب دوپیلوماب است؛ این دارو انتخاب روتین برای همهٔ COPD نیست |\n| پنومونی یا عارضهٔ مهم با ICS | بازبینی سود و زیان و امکان کاهش درمان | قطع ICS در همهٔ بیماران پایدار بی‌خطر نیست؛ سابقهٔ تشدید و ائوزینوفیل را لحاظ کنید |"
+      "markdown": "| موقعیت بالینی | اقدام محوری | قید تصمیم |\n|---|---|---|\n| ارزیابی اولیه، یک بستری یا حداقل دو تشدید متوسط در سال | گروه E در چارچوب ABE؛ معمولاً LABA+LAMA | CAT پایین یا FEV1 بالاتر این خطر را حذف نمی‌کند؛ ائوزینوفیل ≥۳۰۰ بررسی درمان سه‌گانه را تقویت می‌کند |\n| تنگی نفس با یک برونکودیلاتور طولانی‌اثر | LABA+LAMA | تکنیک، پایبندی و تشخیص‌های همراه را بازبینی کنید |\n| تنگی نفس با LABA+LAMA | ارزیابی وسیله، توانبخشی و علل دیگر؛ بررسی گزینهٔ علامتی مناسب | Ensifentrine در منبع مطرح است؛ روفلومیلاست صرفاً برای تنگی نفس توصیه نمی‌شود |\n| تشدید مکرر با LABA+LAMA و ائوزینوفیل خون ≥۱۰۰ | بررسی افزودن ICS و درمان سه‌گانه | احتمال سود با شمارش بالاتر بیشتر است؛ زیر ۱۰۰ سود معمولاً کم است |\n| تشدید مکرر با ائوزینوفیل پایین یا با درمان بهینه | ارزیابی افزودنی متناسب با فنوتیپ | روفلومیلاست: برونشیت مزمن، FEV1<۵۰٪ و تشدید؛ آزیترومایسین: بیمار منتخب، به‌ویژه سابقاً سیگاری، با بررسی QTc/شنوایی/مقاومت |\n| تشدید مکرر با درمان سه‌گانه و ائوزینوفیل ≥۳۰۰ | ارجاع برای بررسی فنوتیپ و شرایط درمان هدفمند | در الگوریتم منبع، برونشیت مزمن نیز شرط انتخاب دوپیلوماب است؛ این دارو انتخاب روتین برای همهٔ COPD نیست |\n| پنومونی یا عارضهٔ مهم با ICS | بازبینی سود و زیان و امکان کاهش درمان | قطع ICS در همهٔ بیماران پایدار بی‌خطر نیست؛ سابقهٔ تشدید و ائوزینوفیل را لحاظ کنید |",
+      "rowIds": [
+        "copd-qb-alg-followup-r00",
+        "copd-qb-alg-followup-r01",
+        "copd-qb-alg-followup-r02",
+        "copd-qb-alg-followup-r03",
+        "copd-qb-alg-followup-r04",
+        "copd-qb-alg-followup-r05",
+        "copd-qb-alg-followup-r06",
+        "copd-qb-alg-followup-r07"
+      ],
+      "legacyIndex": 0,
+      "legacyRowIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
     },
     {
       "title": "جدول ۳۰۳-۱: مقایسهٔ معیارهای GOLD برای شدت انسداد جریان هوا (داده خام، نه تصویر)",
@@ -2958,7 +3050,8 @@
                 13
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:0:0"
         },
         {
           "id": "copd-supp-assessment-dyspnea",
@@ -2975,7 +3068,8 @@
                 29
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:0:1"
         },
         {
           "id": "copd-supp-assessment-eos",
@@ -2991,7 +3085,8 @@
                 28
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:0:2"
         }
       ]
     },
@@ -3034,7 +3129,8 @@
                 22
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:0"
         },
         {
           "id": "copd-supp-escalation-roflumilast",
@@ -3052,7 +3148,8 @@
                 21
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:1"
         },
         {
           "id": "copd-supp-escalation-withdrawal",
@@ -3066,7 +3163,8 @@
                 10
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:2"
         },
         {
           "id": "copd-supp-escalation-biologic",
@@ -3080,7 +3178,8 @@
                 28
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:1:3"
         }
       ]
     },
@@ -3130,7 +3229,8 @@
                 27
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:2:0"
         },
         {
           "id": "copd-supp-gas-niv",
@@ -3150,7 +3250,8 @@
                 28
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:2:1"
         },
         {
           "id": "copd-supp-gas-invasive",
@@ -3166,7 +3267,8 @@
                 27
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:2:2"
         },
         {
           "id": "copd-supp-gas-acute",
@@ -3183,7 +3285,8 @@
                 26
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:2:3"
         }
       ]
     },
@@ -3229,7 +3332,8 @@
                 26
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:3:0"
         },
         {
           "id": "copd-supp-function-surgery",
@@ -3248,7 +3352,8 @@
                 27
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:3:1"
         },
         {
           "id": "copd-supp-function-redflags",
@@ -3264,7 +3369,8 @@
                 24
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:3:2"
         },
         {
           "id": "copd-supp-function-aat",
@@ -3279,7 +3385,8 @@
                 20
               ]
             }
-          ]
+          ],
+          "legacyLoc": "lesson:3:3"
         }
       ]
     },
@@ -3440,7 +3547,14 @@
         {
           "id": "lsn-006-p05",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId": "copd-question-bank-2025-adb9d8f59541", "pages": [20]}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                20
+              ]
+            }
+          ],
           "text": "**کمبود آلفا-۱-آنتی‌تریپسین (α1AT):** ژن PI (SERPINA1) چندین واریانت دارد؛ آلل M معمول با سطح طبیعی α1AT، آلل S با کاهش خفیف، آلل Z با کاهش شدید همراه است. ژنوتیپ PiZZ (دو آلل Z، یا Z + آلل null) شایع‌ترین شکل کمبود شدید است. تنها حدود ۱٪ بیماران COPD کمبود شدید α1AT دارند، اما نشان‌دهندهٔ تأثیر عمیق ژنتیک در استعدادند. حدود ۱ در ۳۰۰۰ نفر در آمریکا کمبود شدید دارند، اکثراً تشخیص داده نشده‌اند. سیگارکشیدن حتی در PiZZ به‌شدت ریسک و سن شروع COPD را تحت تأثیر قرار می‌دهد، اما حتی غیرسیگاری‌های PiZZ تنوع قابل‌توجهی در بروز انسداد دارند — آسم و جنسیت مذکر هم ریسک را بالا می‌برند. درمان تقویتی وریدی در بیماران منتخب با کمبود شدید و بیماری انسدادی مرتبط، پس از ارزیابی تخصصی مطرح است؛ سطح سرمی زیر ۱۱ میکرومولار به‌تنهایی کافی نیست. در PiMZ هتروزیگوت (که سیگاری‌هایشان ریسک افزایش‌یافتهٔ COPD دارند) توصیه نمی‌شود.",
           "legacyLoc": "lesson:5:4"
         },
@@ -3511,7 +3625,15 @@
           "id": "lsn-009-p04",
           "text": "**غربالگری α1AT:** در بیماران COPD یا آسم با انسداد مزمن باید کمبود α1AT را بررسی کرد. سطح سرمی آزمون اولیه است و مقدار پایین با آزمایش تکمیلی تأیید می‌شود. Isoelectric focusing فنوتیپ پروتئین را مشخص می‌کند؛ تعیین ژنوتیپ یا توالی‌یابی DNA روش بررسی واریانت‌های ژنی است. این دو اصطلاح را به جای هم به کار نبرید.",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId":"copd-question-bank-2025-adb9d8f59541","pages":[20],"note":"اصلاح اصطلاحی فنوتیپ/ژنوتیپ متن پیشین؛ تأیید مرجع تخصصی لازم است"}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                20
+              ],
+              "note": "اصلاح اصطلاحی فنوتیپ/ژنوتیپ متن پیشین؛ تأیید مرجع تخصصی لازم است"
+            }
+          ],
           "legacyLoc": "lesson:8:3"
         }
       ]
@@ -3560,7 +3682,18 @@
           "id": "lsn-011-p02",
           "text": "**ICS:** نقش اصلی کاهش تشدید است. در ائوزینوفیل خون زیر ۱۰۰ سود پیشگیرانه معمولاً کم است؛ احتمال سود با شمارش بالاتر افزایش می‌یابد و در گروه E با ائوزینوفیل ≥۳۰۰ می‌توان درمان سه‌گانه را از ابتدا بررسی کرد. ICS به‌تنهایی درمان COPD نیست و در ترکیب با برونکودیلاتورهای مناسب استفاده می‌شود. عوارض شامل کاندیدیازیس دهانی و پنومونی است. در پنومونی یا عارضهٔ مهم، ضرورت ادامهٔ ICS را بازبینی کنید؛ قطع آن در همهٔ بیماران پایدار بی‌خطر نیست و به‌ویژه در ائوزینوفیل ≥۳۰۰ یا سابقهٔ تشدید مکرر می‌تواند خطر تشدید را بالا ببرد. کاهش درمان باید با ارزیابی سود و زیان و پایش همراه باشد.",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId":"copd-question-bank-2025-adb9d8f59541","pages":[1,2,4,29],"note":"اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                1,
+                2,
+                4,
+                29
+              ],
+              "note": "اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"
+            }
+          ],
           "legacyLoc": "lesson:10:1"
         },
         {
@@ -3587,13 +3720,31 @@
           "id": "lsn-011-p07",
           "text": "**α1AT تقویتی:** در بیماران منتخب با کمبود شدید و بیماری انسدادی مرتبط، پس از ارزیابی تخصصی مطرح است. سطح زیر ۱۱ میکرومولار به‌تنهایی برای شروع درمان کافی نیست. در کمبود شدید با عملکرد ریوی و CT طبیعی، درمان خودکار توصیه نمی‌شود.",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId":"copd-question-bank-2025-adb9d8f59541","pages":[20],"note":"اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                20
+              ],
+              "note": "اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"
+            }
+          ],
           "legacyLoc": "lesson:10:6"
         },
         {
           "id": "lsn-011-p08",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId": "copd-question-bank-2025-adb9d8f59541", "pages": [1,2,28,29]}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                1,
+                2,
+                28,
+                29
+              ]
+            }
+          ],
           "text": "**دوپیلوماب:** آنتی‌بادی مونوکلونال ضد مسیر IL-4/IL-13؛ در الگوریتم منبع برای بیماران منتخب با برونشیت مزمن، ائوزینوفیل خون ≥۳۰۰ و تشدید مکرر علی‌رغم درمان سه‌گانه مطرح است. انتخاب درمان به بررسی کامل فنوتیپ و شرایط تخصصی وابسته است.",
           "legacyLoc": "lesson:10:7"
         }
@@ -3612,7 +3763,15 @@
           "id": "lsn-012-p02",
           "text": "**پیوند ریه:** در بیمار منتخب با انسداد بسیار شدید و ناتوانی مهم علی‌رغم درمان حداکثری، ارزیابی پیوند مطرح است. بیماری‌های همراه مهم و امکان استفاده از LVRS/BLVR در انتخاب بیمار اهمیت دارند. پیوند درمان پیشرفته برای بهبود عملکرد و کیفیت زندگی در افراد منتخب است؛ نباید آن را درمان قطعی بدون خطر، مراقبت مداوم یا عوارض پیوند معرفی کرد.",
           "reviewStatus": "draft",
-          "sourceRefs": [{"sourceId":"copd-question-bank-2025-adb9d8f59541","pages":[17],"note":"اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"}],
+          "sourceRefs": [
+            {
+              "sourceId": "copd-question-bank-2025-adb9d8f59541",
+              "pages": [
+                17
+              ],
+              "note": "اصلاح تعمیم بالینی متن پیشین؛ پیش‌نویس نیازمند بازبینی"
+            }
+          ],
           "legacyLoc": "lesson:11:1"
         }
       ]
