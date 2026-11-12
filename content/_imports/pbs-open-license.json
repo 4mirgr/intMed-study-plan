@@ -1,7 +1,7 @@
 {
   "version": 1,
   "purpose": "Curated authentic peripheral-blood microscopy; staged originals require visual and clinical review before public insertion.",
-  "visualQaNote": "Original staged JPEGs visually inspected by the coordinator on 2026-11-04 for readability and caption correspondence. Images are unchanged. Visual approval is not independent clinical approval; teaching captions remain drafts.",
+  "visualQaNote": "Initial seven originals visually inspected in earlier intakes; twenty additional Commons originals inspected 2026-11-12. Eighteen admitted, two withheld with per-record reasons. Images unchanged. Visual QA is not clinical approval; all teaching captions remain drafts.",
   "images": [
     {
       "id": "pbs-iron-deficiency-uthman",
@@ -137,8 +137,9 @@
       "height": 960,
       "caption": "لام خون محیطی فرد سالم بالغ؛ مقایسهٔ RBC، WBC و پلاکت",
       "note": "راهنمای اشیا: دیسک‌های صورتی RBC، سلول‌های بزرگ‌ترِ هسته‌دار WBC و قطعات کوچک بنفش پلاکت‌اند. طبیعی‌بودن در شرح منبع آمده و این یک میدان، جای گزارش کامل CBC و بررسی لام را نمی‌گیرد.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-mixed-cells",
@@ -154,8 +155,9 @@
       "height": 1368,
       "caption": "نمای عمومی لام خون محیطی؛ مقایسهٔ اندازه و رنگ سلول‌ها",
       "note": "راهنمای اشیا: گلبول‌های قرمزِ بدون هسته را با لکوسیت‌های هسته‌دار و پلاکت‌های کوچک مقایسه کنید. شرح منبع فقط وجود انواع سلول‌ها را تأیید می‌کند؛ برای این تصویر تشخیص یا طبیعی‌بودن کلی فرض نشده است.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-targets",
@@ -171,8 +173,9 @@
       "height": 1678,
       "caption": "سلول‌های هدف‌مانند (Target cells) در PBS",
       "note": "راهنمای اشیا: RBC با مرکز هموگلوبینی تیره، حلقهٔ روشن و حاشیهٔ محیطی را پیدا کنید. سلول هدف یک الگوی مورفولوژیک است و به‌تنهایی نوع هموگلوبینوپاتی یا بیماری کبد را مشخص نمی‌کند.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-rouleaux",
@@ -188,8 +191,9 @@
       "height": 960,
       "caption": "Rouleaux؛ چیدمان سکه‌ای RBCها در لام خون محیطی",
       "note": "راهنمای اشیا: زنجیره‌های سکه‌ای گلبول قرمز را دنبال کنید. منبع نمونه را از بیمار مبتلا به میلوم معرفی می‌کند؛ این ظاهر به‌تنهایی تشخیص میلوم یا وجود پروتئین مونوکلونال را ثابت نمی‌کند.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-myeloma-field",
@@ -205,8 +209,9 @@
       "height": 1297,
       "caption": "نمای PBS با Rouleaux و سلول پلاسما؛ زمینهٔ گزارش‌شدهٔ میلوم",
       "note": "راهنمای اشیا: آرایش RBCها، رنگ‌گرفتگی پس‌زمینه و سلول هسته‌داری را که منبع سلول پلاسما می‌نامد مقایسه کنید. تشخیص و زمینهٔ میلوم گزارش منبع است، نه نتیجهٔ مستقل این عکس؛ بررسی پروتئین و ارزیابی تخصصی لازم است.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-sickle-field",
@@ -222,8 +227,9 @@
       "height": 960,
       "caption": "سلول‌های داسی و هدف‌مانند در PBS با رنگ‌آمیزی Giemsa",
       "note": "راهنمای اشیا: RBCهای کشیده با انتهای باریک را از سلول‌های هدف‌مانندِ گرد جدا کنید. منبع نمونه را آنمی داسی‌شکل معرفی کرده است؛ تعیین ژنوتیپ از شکل سلول به‌تنهایی ممکن نیست.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-acanthocyte-field",
@@ -240,7 +246,9 @@
       "caption": "آکانتوسیت‌ها در میدان کامل‌ترِ لام خون محیطی",
       "note": "راهنمای اشیا: زوائد نامنظمِ گلبول قرمز را بررسی کنید. این نمای بزرگ‌ترِ فایل اصلی است، نه برش ۱۳۱×۱۱۶ پیکسلی. ظاهر آکانتوسیت به‌تنهایی علت بالینی را تعیین نمی‌کند.",
       "visualApproved": false,
-      "reviewStatus": "draft"
+      "reviewStatus": "draft",
+      "selectionStatus": "withheld",
+      "visualQaNote": "Withheld: repeated/tiled cell clusters; not a continuous blood-film field."
     },
     {
       "id": "pbs-atlas-eosinophil",
@@ -256,8 +264,9 @@
       "height": 1443,
       "caption": "ائوزینوفیل در PBS؛ شناسایی هسته و گرانول‌ها",
       "note": "راهنمای اشیا: سلول هسته‌دار با گرانول‌های برجسته را با RBCهای اطراف مقایسه کنید. نام سلول بر اساس شرح منبع است؛ مشاهدهٔ یک سلول معادل ائوزینوفیلی در شمارش افتراقی نیست. برچسب تعاملی صفحهٔ Commons الزاماً در پیکسل‌های عکس وجود ندارد.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-monocyte",
@@ -274,7 +283,9 @@
       "caption": "مونوسیت در میان گلبول‌های قرمز؛ رنگ‌آمیزی Wright",
       "note": "راهنمای اشیا: لکوسیت بزرگ با هستهٔ فرورفته و سیتوپلاسم نسبتاً وسیع را بررسی کنید. این تصویر برای شناسایی مورفولوژی است، نه اثبات مونوسیتوز یا یک بیماری خاص.",
       "visualApproved": false,
-      "reviewStatus": "draft"
+      "reviewStatus": "draft",
+      "selectionStatus": "withheld",
+      "visualQaNote": "Withheld: morphology overlaps band neutrophil; source cell identity uncertain."
     },
     {
       "id": "pbs-atlas-lymphocytes",
@@ -290,8 +301,9 @@
       "height": 1536,
       "caption": "لنفوسیت‌ها در لام خون محیطی با رنگ‌آمیزی Wright",
       "note": "راهنمای اشیا: هسته‌های نسبتاً گرد و نوار سیتوپلاسم را با RBCهای بدون هسته مقایسه کنید. کلونالیته و افتراق جمعیت واکنشی از نئوپلاستیک به زمینهٔ بالینی و در صورت اندیکاسیون فلوسیتومتری نیاز دارد.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-reactive-lymphocyte",
@@ -307,8 +319,9 @@
       "height": 607,
       "caption": "لنفوسیت واکنشی در خون محیطی",
       "note": "راهنمای اشیا: سیتوپلاسم و ارتباط حاشیهٔ سلول با RBCهای مجاور را ببینید. برچسب واکنشی گزارش منبع است و ظاهر یک سلول عامل عفونی مشخصی را ثابت نمی‌کند.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-basophils",
@@ -324,8 +337,9 @@
       "height": 1612,
       "caption": "دو بازوفیل در PBS؛ مقایسه با RBCهای پیرامون",
       "note": "راهنمای اشیا: گرانول‌های تیرهٔ سلول‌های هسته‌دار را پیدا کنید. منبع وجود سلول‌های هدف‌مانند و استوماتوسیت‌ها را هم در RBCهای اطراف گزارش می‌کند؛ کل لام به‌عنوان طبیعی معرفی نشده است.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-neutrophils",
@@ -341,8 +355,9 @@
       "height": 610,
       "caption": "نوتروفیل‌های سگمانته در لام خون",
       "note": "راهنمای اشیا: لوب‌های هسته را با رشته‌های نازک اتصال مقایسه کنید. این فایل والدِ برش Neutrophil_in_a_blood_smear.jpg است؛ هر دو به‌عنوان دو نمونهٔ مستقل شمارش نشده‌اند. این میدان برای شمارش افتراقی کامل کافی نیست.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-reactive-closeup",
@@ -357,9 +372,10 @@
       "width": 437,
       "height": 575,
       "caption": "نمای نزدیکِ لنفوسیت واکنشی در میان RBCها",
-      "note": "راهنمای اشیا: بزرگی سلول و گستردگی سیتوپلاسم در تماس با گلبول‌های قرمز را بررسی کنید. نمای نزدیک، زمینهٔ کل لام و شمارش جمعیت سلولی را نشان نمی‌دهد.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "note": "راهنمای اشیا: بزرگی سلول و گستردگی سیتوپلاسم در تماس با گلبول‌های قرمز را بررسی کنید. نمای نزدیک، زمینهٔ کل لام و شمارش جمعیت سلولی را نشان نمی‌دهد. این نمای نزدیک کم‌وضوح است و فقط نمونهٔ کمکی برای شکل کلی هسته و سیتوپلاسم محسوب می‌شود؛ جزئیات کروماتین، nucleolus یا گرانول را از آن قضاوت نکنید.",
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-teardrops",
@@ -375,8 +391,9 @@
       "height": 932,
       "caption": "داکروسیت‌ها؛ گلبول‌های قرمز اشکی‌شکل",
       "note": "راهنمای اشیا: RBC با یک انتهای باریک و بدنهٔ گردتر را پیدا کنید. جهت‌گیری مشابه همهٔ سلول‌های کشیده می‌تواند نیاز به بررسی آرتیفکت تهیهٔ لام را مطرح کند؛ مشاهدهٔ داکروسیت به‌تنهایی میلوفیبروز را ثابت نمی‌کند.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-howell-jolly-overview",
@@ -392,8 +409,9 @@
       "height": 2940,
       "caption": "Howell–Jolly bodies؛ نمای گسترده‌ترِ خون محیطی",
       "note": "راهنمای اشیا: اجسام کوچک، گرد و تیرهٔ داخل RBC را از پلاکتِ روی‌افتاده جدا کنید. منبع حضور Howell–Jolly را در خون بیمار گزارش کرده است؛ عکس به‌تنهایی علت اختلال عملکرد طحال یا کم‌خونی را تعیین نمی‌کند.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-stippling",
@@ -408,9 +426,10 @@
       "width": 2560,
       "height": 2048,
       "caption": "Basophilic stippling؛ نقاط بازوفیلیک در گلبول‌های قرمز",
-      "note": "راهنمای اشیا: نقاط متعدد ریز داخل RBC را بررسی کنید. stippling به‌تنهایی اختصاصی مسمومیت با سرب نیست و باید با شرح حال و آزمایش‌ها تفسیر شود.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "note": "راهنمای اشیا: نقاط متعدد ریز داخل RBC را بررسی کنید. stippling به‌تنهایی اختصاصی مسمومیت با سرب نیست و باید با شرح حال و آزمایش‌ها تفسیر شود. برچسب مقیاسِ 1000 µm درج‌شده در تصویر منبع با اندازهٔ سلول‌ها سازگار نیست و برای اندازه‌گیری معتبر نیست.",
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-elliptocytes",
@@ -426,8 +445,9 @@
       "height": 1920,
       "caption": "الیپتوسیت‌ها؛ RBCهای بیضوی و کشیده",
       "note": "راهنمای اشیا: سلول‌های بیضوی را با RBCهای گرد مقایسه کنید. عنوان منبع به الیپتوسیتوز ارثی اشاره دارد، اما تشخیص ارثی‌بودن از یک عکس به‌تنهایی ممکن نیست.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-acanthocytes-uthman",
@@ -443,8 +463,9 @@
       "height": 1339,
       "caption": "آکانتوسیت‌ها؛ زوائد نامنظم RBC در PBS",
       "note": "راهنمای اشیا: تعداد و توزیع نامنظم زوائد را بررسی کنید. نمونه بر اساس شرح منبع خون محیطی است؛ این الگو علت زمینه‌ای را به‌تنهایی مشخص نمی‌کند.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     },
     {
       "id": "pbs-atlas-howell-jolly-detail",
@@ -460,8 +481,9 @@
       "height": 1036,
       "caption": "Howell–Jolly bodies؛ نمونهٔ دوم برای مقایسهٔ انکلوزیون RBC",
       "note": "راهنمای اشیا: انکلوزیون گرد و منفردِ تیره را با رنگ‌گرفتگی منتشر یا ذرات روی سطح سلول اشتباه نکنید. این نمونه برای مقایسهٔ مورفولوژی است و برآورد فراوانی یا تشخیص بیماری از این میدان معتبر نیست.",
-      "visualApproved": false,
-      "reviewStatus": "draft"
+      "visualApproved": true,
+      "reviewStatus": "draft",
+      "visualQaNote": "Original pixels and Persian caption inspected 2026-11-12; visual QA only, educational draft, not clinical approval."
     }
   ]
 }

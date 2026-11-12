@@ -35,12 +35,697 @@
       "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4415389/",
       "edition": "Ann Ib Postgrad Med. 2014;12(2):71–79؛ PMID 25960697",
       "note": "مرجع توصیف کیفی RBC، WBC، پلاکت، rouleaux، inclusion و آرتیفکت؛ متن درس تألیف مستقل است و تصویر مقاله وارد نشده است. اعداد و آستانه‌های قدیمی مقاله مبنای این راهنما نیستند."
+    },
+    {
+      "id": "pbs-bccd-dataset-source",
+      "title": "BCCD Dataset: original labeled example (RBC/WBC/Platelets)",
+      "type": "dataset",
+      "url": "https://github.com/Shenggan/BCCD_Dataset/blob/d272fb14cdff6e473fafeeeba32aba5f560e9e43/README.md",
+      "creator": "shenggan / BCCD contributors; original photographer not identified",
+      "license": "MIT (dataset repository declaration)",
+      "licenseUrl": "https://github.com/Shenggan/BCCD_Dataset/blob/d272fb14cdff6e473fafeeeba32aba5f560e9e43/LICENSE",
+      "note": "README explicitly licenses the dataset under MIT. Original acquisition metadata and photographer are not established; two upstream links were unavailable. Source boxes are dataset annotations, not expert-perfect counts or clinical diagnoses."
+    },
+    {
+      "id": "pbs-atlas-normal-adult-source",
+      "title": "Normal_Adult_Blood_Smear.JPG",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Keith Chambers",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Normal_Adult_Blood_Smear.JPG",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-mixed-cells-source",
+      "title": "Peripheral_blood_smear.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Microrao",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Peripheral_blood_smear.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-targets-source",
+      "title": "Target_Cells,_Peripheral_Blood_Smear_(39144139915).jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Ed Uthman",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Target_Cells%2C_Peripheral_Blood_Smear_(39144139915).jpg",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-rouleaux-source",
+      "title": "Rouleaux.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Gabriel Caponetti",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rouleaux.jpg",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-myeloma-field-source",
+      "title": "Multiple_myeloma_peripheral_blood_morphology_-_rouleaux,_background_staining_and_plasma_cell.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "SpicyMilkBoy",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Multiple_myeloma_peripheral_blood_morphology_-_rouleaux%2C_background_staining_and_plasma_cell.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-sickle-field-source",
+      "title": "Sickle_Cell_Blood_Smear.JPG",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Keith Chambers",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sickle_Cell_Blood_Smear.JPG",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-eosinophil-source",
+      "title": "Eosinophil_blood_smear.JPG",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Bobjgalindo",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eosinophil_blood_smear.JPG",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-lymphocytes-source",
+      "title": "Blood-lymphocytes3.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Echinaceapallida",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blood-lymphocytes3.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-reactive-lymphocyte-source",
+      "title": "Reactive_lymphocyte.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "SpicyMilkBoy",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reactive_lymphocyte.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-basophils-source",
+      "title": "Базофіли.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Makysm",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%91%D0%B0%D0%B7%D0%BE%D1%84%D1%96%D0%BB%D0%B8.jpg",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-neutrophils-source",
+      "title": "Segmented_neutrophils.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "hematologist",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Segmented_neutrophils.jpg",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-reactive-closeup-source",
+      "title": "Reactive_lymphocyte_closeup.JPG",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Bobjgalindo",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reactive_lymphocyte_closeup.JPG",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-teardrops-source",
+      "title": "Teardrop_Cells_smear_2009-09-22.JPG",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Paulo Henrique Orlandi Mourao",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Teardrop_Cells_smear_2009-09-22.JPG",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-howell-jolly-overview-source",
+      "title": "Howell-Jolly_bodies_(Overview_of_peripheral_blood_stain,_May-Grünwald_Giemsa).jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "El*Falaf",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Howell-Jolly_bodies_(Overview_of_peripheral_blood_stain%2C_May-Gr%C3%BCnwald_Giemsa).jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-stippling-source",
+      "title": "Basophilic_stippling_2.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Prof. Erhabor Osaro",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Basophilic_stippling_2.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-elliptocytes-source",
+      "title": "Hereditary_elliptocytosis.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Gabriel Caponetti",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hereditary_elliptocytosis.jpg",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-acanthocytes-uthman-source",
+      "title": "Acanthocytes,_Peripheral_Blood_(3884092551).jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Ed Uthman",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Acanthocytes%2C_Peripheral_Blood_(3884092551).jpg",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
+    },
+    {
+      "id": "pbs-atlas-howell-jolly-detail-source",
+      "title": "Howell-Jolly_smear_2010-11-17.JPG",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Paulo Henrique Orlandi Mourao",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Howell-Jolly_smear_2010-11-17.JPG",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
     }
   ],
   "flashcards": [],
   "mcq": [],
   "kfPmp": [],
-  "images": [],
+  "images": [
+    {
+      "id": "pbs-bccd-labeled-example",
+      "caption": "نمونهٔ کادربندی‌شدهٔ PBS در مجموعهٔ BCCD؛ RBC، WBC و Platelets",
+      "assetPath": "assets/pbs-bccd-labeled-example.jpg",
+      "alt": "عکس واقعی میکروسکوپی با کادرهای سبز RBC، قرمز WBC و آبی Platelets؛ برچسب‌های پژوهشی منبع، نه تشخیص بیماری.",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "creator": "shenggan / BCCD contributors; original photographer not identified",
+      "credit": "BCCD Dataset contributors (shenggan); original photographer not identified",
+      "license": "MIT (dataset repository declaration)",
+      "licenseLabel": "MIT — BCCD dataset",
+      "licenseUrl": "https://github.com/Shenggan/BCCD_Dataset/blob/d272fb14cdff6e473fafeeeba32aba5f560e9e43/LICENSE",
+      "originUrl": "https://github.com/Shenggan/BCCD_Dataset/blob/d272fb14cdff6e473fafeeeba32aba5f560e9e43/example.jpg",
+      "copyright": "MIT License\n\nCopyright (c) 2017 shenggan\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "changesNote": "فایل برچسب‌دارِ منبع بدون تغییر؛ شرح فارسی افزوده شده است.",
+      "reviewStatus": "draft",
+      "width": 640,
+      "height": 480,
+      "note": "راهنمای اشیا: کادرهای سبز RBC، کادر قرمز WBC و کادر آبی Platelets در خودِ تصویر منبع وجود دارند. بعضی کادرها هم‌پوشان و هدف پلاکتی کم‌وضوح است؛ این برچسب‌ها را حقیقت بی‌خطا یا شمارش معتبر فرض نکنید. منشأ بالینی و عکاس اولیه مشخص نشده و هیچ تشخیص بیماری از این عکس اعلام نمی‌شود. مجوز MIT به‌طور صریح در README مجموعه آمده و متن کامل اعلان آن در اطلاعات تصویر و صفحهٔ مجوز همراه حفظ شده است.",
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-bccd-dataset-source"
+        }
+      ],
+      "sourceUrl": "https://github.com/Shenggan/BCCD_Dataset/blob/d272fb14cdff6e473fafeeeba32aba5f560e9e43/example.jpg"
+    },
+    {
+      "id": "pbs-atlas-normal-adult",
+      "caption": "لام خون محیطی فرد سالم بالغ؛ مقایسهٔ RBC، WBC و پلاکت",
+      "note": "راهنمای اشیا: دیسک‌های صورتی RBC، سلول‌های بزرگ‌ترِ هسته‌دار WBC و قطعات کوچک بنفش پلاکت‌اند. طبیعی‌بودن در شرح منبع آمده و این یک میدان، جای گزارش کامل CBC و بررسی لام را نمی‌گیرد. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-normal-adult.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Normal_Adult_Blood_Smear.JPG",
+      "creator": "Keith Chambers",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "credit": "Keith Chambers",
+      "licenseLabel": "CC BY-SA 3.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Normal_Adult_Blood_Smear.JPG",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Keith Chambers — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:Normal_Adult_Blood_Smear.JPG",
+      "reviewStatus": "draft",
+      "width": 1280,
+      "height": 960,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-normal-adult-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-mixed-cells",
+      "caption": "نمای عمومی لام خون محیطی؛ مقایسهٔ اندازه و رنگ سلول‌ها",
+      "note": "راهنمای اشیا: گلبول‌های قرمزِ بدون هسته را با لکوسیت‌های هسته‌دار و پلاکت‌های کوچک مقایسه کنید. شرح منبع فقط وجود انواع سلول‌ها را تأیید می‌کند؛ برای این تصویر تشخیص یا طبیعی‌بودن کلی فرض نشده است. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-mixed-cells.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Peripheral_blood_smear.jpg",
+      "creator": "Microrao",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Microrao",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Peripheral_blood_smear.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Microrao — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Peripheral_blood_smear.jpg",
+      "reviewStatus": "draft",
+      "width": 2348,
+      "height": 1368,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-mixed-cells-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-targets",
+      "caption": "سلول‌های هدف‌مانند (Target cells) در PBS",
+      "note": "راهنمای اشیا: RBC با مرکز هموگلوبینی تیره، حلقهٔ روشن و حاشیهٔ محیطی را پیدا کنید. سلول هدف یک الگوی مورفولوژیک است و به‌تنهایی نوع هموگلوبینوپاتی یا بیماری کبد را مشخص نمی‌کند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-targets.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Target_Cells%2C_Peripheral_Blood_Smear_(39144139915).jpg",
+      "creator": "Ed Uthman",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "credit": "Ed Uthman",
+      "licenseLabel": "CC BY 2.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Target_Cells%2C_Peripheral_Blood_Smear_(39144139915).jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Ed Uthman — CC BY 2.0 — https://commons.wikimedia.org/wiki/File:Target_Cells%2C_Peripheral_Blood_Smear_(39144139915).jpg",
+      "reviewStatus": "draft",
+      "width": 1684,
+      "height": 1678,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-targets-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-rouleaux",
+      "caption": "Rouleaux؛ چیدمان سکه‌ای RBCها در لام خون محیطی",
+      "note": "راهنمای اشیا: زنجیره‌های سکه‌ای گلبول قرمز را دنبال کنید. منبع نمونه را از بیمار مبتلا به میلوم معرفی می‌کند؛ این ظاهر به‌تنهایی تشخیص میلوم یا وجود پروتئین مونوکلونال را ثابت نمی‌کند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-rouleaux.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rouleaux.jpg",
+      "creator": "Gabriel Caponetti",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "credit": "Gabriel Caponetti",
+      "licenseLabel": "CC BY-SA 3.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Rouleaux.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Gabriel Caponetti — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:Rouleaux.jpg",
+      "reviewStatus": "draft",
+      "width": 1280,
+      "height": 960,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-rouleaux-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-myeloma-field",
+      "caption": "نمای PBS با Rouleaux و سلول پلاسما؛ زمینهٔ گزارش‌شدهٔ میلوم",
+      "note": "راهنمای اشیا: آرایش RBCها، رنگ‌گرفتگی پس‌زمینه و سلول هسته‌داری را که منبع سلول پلاسما می‌نامد مقایسه کنید. تشخیص و زمینهٔ میلوم گزارش منبع است، نه نتیجهٔ مستقل این عکس؛ بررسی پروتئین و ارزیابی تخصصی لازم است. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-myeloma-field.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Multiple_myeloma_peripheral_blood_morphology_-_rouleaux%2C_background_staining_and_plasma_cell.jpg",
+      "creator": "SpicyMilkBoy",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "SpicyMilkBoy",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Multiple_myeloma_peripheral_blood_morphology_-_rouleaux%2C_background_staining_and_plasma_cell.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "SpicyMilkBoy — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Multiple_myeloma_peripheral_blood_morphology_-_rouleaux%2C_background_staining_and_plasma_cell.jpg",
+      "reviewStatus": "draft",
+      "width": 1369,
+      "height": 1297,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-myeloma-field-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-sickle-field",
+      "caption": "سلول‌های داسی و هدف‌مانند در PBS با رنگ‌آمیزی Giemsa",
+      "note": "راهنمای اشیا: RBCهای کشیده با انتهای باریک را از سلول‌های هدف‌مانندِ گرد جدا کنید. منبع نمونه را آنمی داسی‌شکل معرفی کرده است؛ تعیین ژنوتیپ از شکل سلول به‌تنهایی ممکن نیست. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-sickle-field.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sickle_Cell_Blood_Smear.JPG",
+      "creator": "Keith Chambers",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "credit": "Keith Chambers",
+      "licenseLabel": "CC BY-SA 3.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Sickle_Cell_Blood_Smear.JPG",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Keith Chambers — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:Sickle_Cell_Blood_Smear.JPG",
+      "reviewStatus": "draft",
+      "width": 1280,
+      "height": 960,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-sickle-field-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-eosinophil",
+      "caption": "ائوزینوفیل در PBS؛ شناسایی هسته و گرانول‌ها",
+      "note": "راهنمای اشیا: سلول هسته‌دار با گرانول‌های برجسته را با RBCهای اطراف مقایسه کنید. نام سلول بر اساس شرح منبع است؛ مشاهدهٔ یک سلول معادل ائوزینوفیلی در شمارش افتراقی نیست. برچسب تعاملی صفحهٔ Commons الزاماً در پیکسل‌های عکس وجود ندارد. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-eosinophil.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eosinophil_blood_smear.JPG",
+      "creator": "Bobjgalindo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Bobjgalindo",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Eosinophil_blood_smear.JPG",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Bobjgalindo — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Eosinophil_blood_smear.JPG",
+      "reviewStatus": "draft",
+      "width": 1584,
+      "height": 1443,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-eosinophil-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-lymphocytes",
+      "caption": "لنفوسیت‌ها در لام خون محیطی با رنگ‌آمیزی Wright",
+      "note": "راهنمای اشیا: هسته‌های نسبتاً گرد و نوار سیتوپلاسم را با RBCهای بدون هسته مقایسه کنید. کلونالیته و افتراق جمعیت واکنشی از نئوپلاستیک به زمینهٔ بالینی و در صورت اندیکاسیون فلوسیتومتری نیاز دارد. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-lymphocytes.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blood-lymphocytes3.jpg",
+      "creator": "Echinaceapallida",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Echinaceapallida",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Blood-lymphocytes3.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Echinaceapallida — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Blood-lymphocytes3.jpg",
+      "reviewStatus": "draft",
+      "width": 2048,
+      "height": 1536,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-lymphocytes-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-reactive-lymphocyte",
+      "caption": "لنفوسیت واکنشی در خون محیطی",
+      "note": "راهنمای اشیا: سیتوپلاسم و ارتباط حاشیهٔ سلول با RBCهای مجاور را ببینید. برچسب واکنشی گزارش منبع است و ظاهر یک سلول عامل عفونی مشخصی را ثابت نمی‌کند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-reactive-lymphocyte.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reactive_lymphocyte.jpg",
+      "creator": "SpicyMilkBoy",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "SpicyMilkBoy",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Reactive_lymphocyte.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "SpicyMilkBoy — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Reactive_lymphocyte.jpg",
+      "reviewStatus": "draft",
+      "width": 636,
+      "height": 607,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-reactive-lymphocyte-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-basophils",
+      "caption": "دو بازوفیل در PBS؛ مقایسه با RBCهای پیرامون",
+      "note": "راهنمای اشیا: گرانول‌های تیرهٔ سلول‌های هسته‌دار را پیدا کنید. منبع وجود سلول‌های هدف‌مانند و استوماتوسیت‌ها را هم در RBCهای اطراف گزارش می‌کند؛ کل لام به‌عنوان طبیعی معرفی نشده است. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-basophils.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%91%D0%B0%D0%B7%D0%BE%D1%84%D1%96%D0%BB%D0%B8.jpg",
+      "creator": "Makysm",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Makysm",
+      "licenseLabel": "CC0 1.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:%D0%91%D0%B0%D0%B7%D0%BE%D1%84%D1%96%D0%BB%D0%B8.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Makysm — CC0 1.0 — https://commons.wikimedia.org/wiki/File:%D0%91%D0%B0%D0%B7%D0%BE%D1%84%D1%96%D0%BB%D0%B8.jpg",
+      "reviewStatus": "draft",
+      "width": 1744,
+      "height": 1612,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-basophils-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-neutrophils",
+      "caption": "نوتروفیل‌های سگمانته در لام خون",
+      "note": "راهنمای اشیا: لوب‌های هسته را با رشته‌های نازک اتصال مقایسه کنید. این فایل والدِ برش Neutrophil_in_a_blood_smear.jpg است؛ هر دو به‌عنوان دو نمونهٔ مستقل شمارش نشده‌اند. این میدان برای شمارش افتراقی کامل کافی نیست. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-neutrophils.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Segmented_neutrophils.jpg",
+      "creator": "hematologist",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "credit": "hematologist",
+      "licenseLabel": "CC BY-SA 3.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Segmented_neutrophils.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "hematologist — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:Segmented_neutrophils.jpg",
+      "reviewStatus": "draft",
+      "width": 800,
+      "height": 610,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-neutrophils-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-reactive-closeup",
+      "caption": "نمای نزدیکِ لنفوسیت واکنشی در میان RBCها",
+      "note": "راهنمای اشیا: بزرگی سلول و گستردگی سیتوپلاسم در تماس با گلبول‌های قرمز را بررسی کنید. نمای نزدیک، زمینهٔ کل لام و شمارش جمعیت سلولی را نشان نمی‌دهد. این نمای نزدیک کم‌وضوح است و فقط نمونهٔ کمکی برای شکل کلی هسته و سیتوپلاسم محسوب می‌شود؛ جزئیات کروماتین، nucleolus یا گرانول را از آن قضاوت نکنید. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-reactive-closeup.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reactive_lymphocyte_closeup.JPG",
+      "creator": "Bobjgalindo",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Bobjgalindo",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Reactive_lymphocyte_closeup.JPG",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Bobjgalindo — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Reactive_lymphocyte_closeup.JPG",
+      "reviewStatus": "draft",
+      "width": 437,
+      "height": 575,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-reactive-closeup-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-teardrops",
+      "caption": "داکروسیت‌ها؛ گلبول‌های قرمز اشکی‌شکل",
+      "note": "راهنمای اشیا: RBC با یک انتهای باریک و بدنهٔ گردتر را پیدا کنید. جهت‌گیری مشابه همهٔ سلول‌های کشیده می‌تواند نیاز به بررسی آرتیفکت تهیهٔ لام را مطرح کند؛ مشاهدهٔ داکروسیت به‌تنهایی میلوفیبروز را ثابت نمی‌کند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-teardrops.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Teardrop_Cells_smear_2009-09-22.JPG",
+      "creator": "Paulo Henrique Orlandi Mourao",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "credit": "Paulo Henrique Orlandi Mourao",
+      "licenseLabel": "CC BY-SA 3.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Teardrop_Cells_smear_2009-09-22.JPG",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Paulo Henrique Orlandi Mourao — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:Teardrop_Cells_smear_2009-09-22.JPG",
+      "reviewStatus": "draft",
+      "width": 1242,
+      "height": 932,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-teardrops-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-howell-jolly-overview",
+      "caption": "Howell–Jolly bodies؛ نمای گسترده‌ترِ خون محیطی",
+      "note": "راهنمای اشیا: اجسام کوچک، گرد و تیرهٔ داخل RBC را از پلاکتِ روی‌افتاده جدا کنید. منبع حضور Howell–Jolly را در خون بیمار گزارش کرده است؛ عکس به‌تنهایی علت اختلال عملکرد طحال یا کم‌خونی را تعیین نمی‌کند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-howell-jolly-overview.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Howell-Jolly_bodies_(Overview_of_peripheral_blood_stain%2C_May-Gr%C3%BCnwald_Giemsa).jpg",
+      "creator": "El*Falaf",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "El*Falaf",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Howell-Jolly_bodies_(Overview_of_peripheral_blood_stain%2C_May-Gr%C3%BCnwald_Giemsa).jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "El*Falaf — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Howell-Jolly_bodies_(Overview_of_peripheral_blood_stain%2C_May-Gr%C3%BCnwald_Giemsa).jpg",
+      "reviewStatus": "draft",
+      "width": 2920,
+      "height": 2940,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-howell-jolly-overview-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-stippling",
+      "caption": "Basophilic stippling؛ نقاط بازوفیلیک در گلبول‌های قرمز",
+      "note": "راهنمای اشیا: نقاط متعدد ریز داخل RBC را بررسی کنید. stippling به‌تنهایی اختصاصی مسمومیت با سرب نیست و باید با شرح حال و آزمایش‌ها تفسیر شود. برچسب مقیاسِ 1000 µm درج‌شده در تصویر منبع با اندازهٔ سلول‌ها سازگار نیست و برای اندازه‌گیری معتبر نیست. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-stippling.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Basophilic_stippling_2.jpg",
+      "creator": "Prof. Erhabor Osaro",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Prof. Erhabor Osaro",
+      "licenseLabel": "CC BY-SA 4.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Basophilic_stippling_2.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Prof. Erhabor Osaro — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Basophilic_stippling_2.jpg",
+      "reviewStatus": "draft",
+      "width": 2560,
+      "height": 2048,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-stippling-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-elliptocytes",
+      "caption": "الیپتوسیت‌ها؛ RBCهای بیضوی و کشیده",
+      "note": "راهنمای اشیا: سلول‌های بیضوی را با RBCهای گرد مقایسه کنید. عنوان منبع به الیپتوسیتوز ارثی اشاره دارد، اما تشخیص ارثی‌بودن از یک عکس به‌تنهایی ممکن نیست. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-elliptocytes.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hereditary_elliptocytosis.jpg",
+      "creator": "Gabriel Caponetti",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "credit": "Gabriel Caponetti",
+      "licenseLabel": "CC BY-SA 3.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Hereditary_elliptocytosis.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Gabriel Caponetti — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:Hereditary_elliptocytosis.jpg",
+      "reviewStatus": "draft",
+      "width": 2560,
+      "height": 1920,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-elliptocytes-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-acanthocytes-uthman",
+      "caption": "آکانتوسیت‌ها؛ زوائد نامنظم RBC در PBS",
+      "note": "راهنمای اشیا: تعداد و توزیع نامنظم زوائد را بررسی کنید. نمونه بر اساس شرح منبع خون محیطی است؛ این الگو علت زمینه‌ای را به‌تنهایی مشخص نمی‌کند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-acanthocytes-uthman.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Acanthocytes%2C_Peripheral_Blood_(3884092551).jpg",
+      "creator": "Ed Uthman",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "credit": "Ed Uthman",
+      "licenseLabel": "CC BY 2.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Acanthocytes%2C_Peripheral_Blood_(3884092551).jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Ed Uthman — CC BY 2.0 — https://commons.wikimedia.org/wiki/File:Acanthocytes%2C_Peripheral_Blood_(3884092551).jpg",
+      "reviewStatus": "draft",
+      "width": 1592,
+      "height": 1339,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-acanthocytes-uthman-source"
+        }
+      ]
+    },
+    {
+      "id": "pbs-atlas-howell-jolly-detail",
+      "caption": "Howell–Jolly bodies؛ نمونهٔ دوم برای مقایسهٔ انکلوزیون RBC",
+      "note": "راهنمای اشیا: انکلوزیون گرد و منفردِ تیره را با رنگ‌گرفتگی منتشر یا ذرات روی سطح سلول اشتباه نکنید. این نمونه برای مقایسهٔ مورفولوژی است و برآورد فراوانی یا تشخیص بیماری از این میدان معتبر نیست. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-atlas-howell-jolly-detail.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Howell-Jolly_smear_2010-11-17.JPG",
+      "creator": "Paulo Henrique Orlandi Mourao",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "credit": "Paulo Henrique Orlandi Mourao",
+      "licenseLabel": "CC BY-SA 3.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Howell-Jolly_smear_2010-11-17.JPG",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Paulo Henrique Orlandi Mourao — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:Howell-Jolly_smear_2010-11-17.JPG",
+      "reviewStatus": "draft",
+      "width": 1386,
+      "height": 1036,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-atlas-howell-jolly-detail-source"
+        }
+      ]
+    }
+  ],
   "tables": [
     {
       "id": "heme-pbs-table-identify",

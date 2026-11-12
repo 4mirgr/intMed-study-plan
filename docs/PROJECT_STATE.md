@@ -463,3 +463,18 @@ A local test result, deployment and teacher acceptance are separate evidence.
 “Done” means source changed, focused tests passed, generated files are current, a coherent commit is
 on the remote branch, GitHub Actions/deployment completed, and remaining external blockers are
 written above. Local-only edits or a green Pages job with a failed validation job are not done.
+## PBS atlas expansion — 2026-11-12
+
+- Added `heme-pbs` with 19 new licensed images, Persian object-identification
+  notes, four lesson sections and two comparison tables; all educational drafts.
+  Seven earlier PBS images in their original chapters are preserved.
+- Reviewed 20 new Commons originals; excluded a tiled acanthocyte montage and
+  an uncertain monocyte identification. Eighteen admitted plus one BCCD source
+  example with embedded RBC/WBC/Platelets boxes and retained MIT notice.
+- Source scale inconsistency and soft-focus limitations are explicit beside
+  affected images. Exact source/licensing and broader dataset inventory:
+  `docs/pbs-atlas-research-2026-11-12.md`. PBC Barcelona's 17,092 images and the
+  remaining BCCD dataset are discoveries, not imported content.
+- Commons intake now handles HTTP 429 with paced, bounded, Retry-After-aware
+  retries and atomic publication; 15 importer regression tests pass.
+
