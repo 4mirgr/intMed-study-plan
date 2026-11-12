@@ -1,5 +1,14 @@
 # IntMed repository guide
 
+## Optional extended skills
+
+Project-local skills are installed in `.agents/skills/`: `ci-cd-pipeline-builder`
+and `dependency-auditor`, from a fixed upstream revision. Read the selected
+`SKILL.md` before use. They supplement, never replace, this guide or medical and
+privacy rules. See `docs/SAFE_MAINTENANCE.md` for provenance and automation limits.
+Read at most two relevant guides per task; do not bulk-run a catalog or execute
+downloaded scripts without inspecting them and their prerequisites first.
+
 Read this file first. Read only the linked document relevant to the task; the archived
 session history is not required for routine work.
 

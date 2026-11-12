@@ -1,0 +1,73 @@
+name: Website maintenance
+
+on:
+  push:
+    paths:
+      - '.github/dependabot.yml'
+      - '.github/workflows/website-maintenance.yml'
+      - 'package*.json'
+      - 'requirements*.txt'
+  schedule:
+    # Saturday 06:30 Asia/Tehran. Scheduled workflows use the default branch.
+    - cron: '0 3 * * 6'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/dependabot.yml'
+      - '.github/workflows/website-maintenance.yml'
+      - 'package*.json'
+      - 'requirements*.txt'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-maintenance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python3 -m pip install -r requirements-dev.txt
+      - run: python3 scripts/content_pipeline.py validate
+      - run: python3 scripts/content_pipeline.py check
+      - run: node scripts/check_inline_js.mjs
+      - run: node scripts/backend_state_test.mjs
+      - run: node scripts/pwa_test.mjs
+      - run: node scripts/exams_unit_test.mjs
+      - name: Record content review findings without modifying lessons
+        if: always()
+        run: python3 scripts/content_quality_audit.py --json --output maintenance-report/content-quality.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: website-maintenance-${{ github.run_id }}
+          path: maintenance-report/
+          retention-days: 30
+  dependency-advisories:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit locked Node dependencies, including test tools
+        run: npm audit --package-lock-only --audit-level=high
+      - name: Audit Python requirements against live advisories
+        if: always()
+        run: |
+          python3 -m pip install 'pip-audit==2.9.0'
+          python3 -m pip_audit -r requirements-dev.txt --progress-spinner off

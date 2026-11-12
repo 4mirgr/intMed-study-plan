@@ -8,8 +8,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages-${{ github.ref }}
@@ -18,6 +16,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37,6 +36,8 @@ jobs:
         run: git diff --exit-code
       - run: python3 scripts/content_pipeline.py validate
       - run: python3 scripts/content_pipeline.py check
+      - run: python3 scripts/content_quality_audit_test.py
+      - run: python3 scripts/release_preflight_test.py
       - run: node scripts/check_inline_js.mjs
       - run: node scripts/backend_unit_test.mjs
       - run: node scripts/login_resume_test.mjs
@@ -117,6 +118,11 @@ jobs:
     if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
     needs: validate
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

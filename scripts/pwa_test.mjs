@@ -16,7 +16,7 @@ for(const stalledBody of [false,true]){
  if(response)Object.defineProperty(response,'type',{value:'basic'});
  vm.runInNewContext(sw,{self:{location:{origin:'https://example.test'},addEventListener:(name,fn)=>handlers[name]=fn},URL,Response,AbortController,
   setTimeout:(fn,ms)=>setTimeout(fn,Math.min(ms,25)),clearTimeout,
-  caches:{match:async()=>{cacheReads++;return cached.clone();}},fetch:async(_request,options)=>{signal=options.signal;return response||new Promise(()=>{});}});
+  caches:{open:async()=>({match:async()=>{cacheReads++;return cached.clone();}})},fetch:async(_request,options)=>{signal=options.signal;return response||new Promise(()=>{});}});
  let result;handlers.fetch({request:{url:'https://example.test/content/taxonomy.json',method:'GET',mode:'cors'},respondWith:value=>{result=value;}});
  const recovered=await Promise.race([result,new Promise(resolve=>setTimeout(()=>resolve(null),250))]);
  assert.ok(recovered,stalledBody?'stalled response body must fall back to cache':'stalled headers must fall back to cache');
@@ -33,3 +33,36 @@ console.log('PWA stalled-network recovery passed: public cache fallback covers h
  let result;handlers.fetch({request:{url:'https://example.test/content/topics/test.json?v=123',method:'GET',mode:'cors'},respondWith:value=>{result=value;}});
  assert.equal(await (await result).text(),'{"topicId":"fresh"}','cache quota must not discard a successfully downloaded public response');
 }
+
+// CacheStorage.match searches caches in creation order. The install-time shell
+// must not hide a newer manifest/taxonomy saved in the public runtime cache.
+{
+ const handlers={},stores=new Map();let current='installed',online=true;
+ const basic=value=>{const response=new Response(value);Object.defineProperty(response,'type',{value:'basic'});return response;};
+ const key=request=>new URL(typeof request==='string'?request:request.url,'https://example.test/').pathname;
+ const caches={
+  open:async name=>{if(!stores.has(name))stores.set(name,new Map());const cache=stores.get(name);return {
+   addAll:async paths=>{for(const path of paths)cache.set(key(path),basic(current));},
+   put:async(request,response)=>{cache.set(key(request),response);},
+   match:async request=>cache.get(key(request))?.clone()
+  };},
+  match:async request=>{for(const cache of stores.values())if(cache.has(key(request)))return cache.get(key(request)).clone();}
+ };
+ vm.runInNewContext(sw,{self:{location:{origin:'https://example.test'},addEventListener:(name,fn)=>handlers[name]=fn},URL,Response,AbortController,setTimeout,clearTimeout,caches,fetch:async()=>{if(!online)throw Error('offline');return basic(current);}});
+ let installing;handlers.install({waitUntil:value=>{installing=value;}});await installing;
+ async function read(path){let result;handlers.fetch({request:{url:'https://example.test'+path,method:'GET',mode:'cors'},respondWith:value=>{result=value;}});return (await result).text();}
+ const actual={};
+ for(const path of ['/content/manifest.json','/content/taxonomy.json']){
+  online=true;current='updated';assert.equal(await read(path),'updated');online=false;actual[path]=await read(path);
+ }
+ online=true;
+ for(const path of ['/content/search.json','/content/library.json','/mounted/content/manifest.json','/mounted/content/taxonomy.json']){
+  current='old';await read(path);await new Promise(resolve=>setTimeout(resolve,0));current='new';actual[path]=await read(path);
+ }
+ assert.deepEqual(actual,{
+  '/content/manifest.json':'updated','/content/taxonomy.json':'updated',
+  '/content/search.json':'new','/content/library.json':'new',
+  '/mounted/content/manifest.json':'new','/mounted/content/taxonomy.json':'new'
+ },'live indexes must prefer current online responses and the newest cached offline manifest');
+}
+console.log('PWA index freshness passed: actual generated/mounted paths use network-first and newer runtime cache wins offline.');

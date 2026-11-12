@@ -15,7 +15,13 @@ self.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_W
 
 function privateRequest(url){return PRIVATE_MARKERS.some(marker=>url.pathname.includes(marker));}
 function publicAsset(url){return PUBLIC_PATHS.some(prefix=>url.pathname.includes(prefix))&&!privateRequest(url)&&url.pathname!='/config.js';}
-function liveContent(url){return url.pathname==='/content/manifest.json'||url.pathname==='/content/taxonomy.json'||url.pathname==='/content/search-index.json'||url.pathname==='/content/library-index.json'||url.pathname.includes('/content/topics/');}
+function liveContent(url){return /\/content\/(manifest|taxonomy|search|library)\.json$/.test(url.pathname)||url.pathname.includes('/content/topics/');}
+async function cachedPublicResponse(request){
+  // Shell is created first and contains the install-time indexes. Prefer a
+  // newer runtime response before falling back to that initial offline copy.
+  const cache=await caches.open(PUBLIC);
+  return (await cache.match(request))||(await caches.match(request));
+}
 async function navigation(request){
   try{return await fetch(request);}
   catch{return (await caches.match('./offline.html'))||Response.error();}
@@ -42,7 +48,7 @@ async function networkFirst(request){
     }
     return response;
   }catch{
-    return (await caches.match(request))||Response.error();
+    return (await cachedPublicResponse(request))||Response.error();
   }finally{clearTimeout(timer);}
 }
 self.addEventListener('fetch',event=>{

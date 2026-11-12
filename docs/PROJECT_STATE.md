@@ -63,6 +63,12 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ## Product decisions
 
+- Safe-maintenance checkpoint (2026-11-12): two pinned MIT extended-library skills
+  under `.agents/skills/`; weekly bounded integrity/advisory workflow and Dependabot
+  update PRs configured. No auto-merge, model calls or clinical auto-approval.
+  PWA live-index/mounted-path and offline runtime-cache precedence regressions fixed.
+  See `SAFE_MAINTENANCE.md` for evidence and remaining root/full-publication-CI gaps.
+
 
 
 - The coordinator owns scope, integration, tests, commits, pushes, and production checks.

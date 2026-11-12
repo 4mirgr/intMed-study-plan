@@ -1,0 +1,44 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: claude/quirky-ride-mavb6b
+    schedule:
+      interval: weekly
+      day: saturday
+      time: '03:00'
+      timezone: Asia/Tehran
+    open-pull-requests-limit: 3
+    groups:
+      compatible-node-tools:
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-major]
+  - package-ecosystem: pip
+    directory: /
+    target-branch: claude/quirky-ride-mavb6b
+    schedule:
+      interval: weekly
+      day: saturday
+      time: '03:15'
+      timezone: Asia/Tehran
+    open-pull-requests-limit: 3
+    groups:
+      compatible-python-tools:
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-major]
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: claude/quirky-ride-mavb6b
+    schedule:
+      interval: weekly
+      day: saturday
+      time: '03:30'
+      timezone: Asia/Tehran
+    open-pull-requests-limit: 3
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-major]
