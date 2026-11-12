@@ -1166,6 +1166,31 @@
           ]
         }
       ]
+    },
+    {
+      "id": "pbs-smudge-haggstrom-20261112",
+      "caption": "Smudge cell در لام خون محیطی؛ بقایای لکوسیت آسیب‌دیده هنگام تهیهٔ گسترش.",
+      "note": "سلول سایه یا خردشده می‌تواند در زمینهٔ شکنندگی لنفوسیت‌ها و از جمله CLL دیده شود، اما به‌تنهایی تشخیص CLL را ثابت نمی‌کند. مورفولوژی سایر سلول‌ها، شمارش خون و در صورت اندیکاسیون فلوسیتومتری باید کنار هم تفسیر شوند. تصویر یک میدان کوچک است و نمای کلی یا برآورد درصد سلول‌های لام را ارائه نمی‌کند. اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است. شرح آموزشی پیش‌نویس است و به بازبینی مدرس نیاز دارد.",
+      "assetPath": "assets/pbs-smudge-haggstrom-20261112.jpg",
+      "kind": "pbs",
+      "sourceClass": "open-license",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Smudge_cell_in_a_peripheral_blood_smear.jpg",
+      "creator": "Mikael Häggström, M.D.",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Mikael Häggström, M.D.",
+      "licenseLabel": "CC0 1.0",
+      "originUrl": "https://commons.wikimedia.org/wiki/File:Smudge_cell_in_a_peripheral_blood_smear.jpg",
+      "changesNote": "اصل تصویر بدون تغییر؛ شرح فارسی آموزشی افزوده شده است.",
+      "copyright": "Mikael Häggström, M.D. — CC0 1.0 — https://commons.wikimedia.org/wiki/File:Smudge_cell_in_a_peripheral_blood_smear.jpg",
+      "reviewStatus": "draft",
+      "width": 509,
+      "height": 441,
+      "sourceRefs": [
+        {
+          "sourceId": "pbs-smudge-haggstrom-20261112-source"
+        }
+      ]
     }
   ],
   "tables": [
@@ -1724,6 +1749,17 @@
       "doi": "10.1093/bjr/tqaf028",
       "edition": "2025",
       "note": "مرجع تکمیلی جدا از PDF برای محدودیت PET و هدایت بیوپسی؛ آستانه SUV پایین، ترانسفورماسیون را با قطعیت رد نمی‌کند."
+    },
+    {
+      "id": "pbs-smudge-haggstrom-20261112-source",
+      "title": "Smudge_cell_in_a_peripheral_blood_smear.jpg",
+      "type": "image",
+      "sourceClass": "open-license",
+      "creator": "Mikael Häggström, M.D.",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Smudge_cell_in_a_peripheral_blood_smear.jpg",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "note": "Original Wikimedia Commons JPEG; no visual modifications."
     }
   ],
   "sourceCoverage": {

@@ -63,6 +63,11 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
 
 ## Product decisions
 
+- PBS web intake (2026-11-12): one new Patholines-linked Commons CC0 smudge-cell
+  original added to CLL/PBS with attributed draft Persian description. ASH public
+  reproduction restricted; Pinterest provenance unavailable; Hemostasis Today
+  image rights unverified. No blanket atlas import. See `pbs-web-intake-2026-11-12.md`.
+
 - Safe-maintenance checkpoint (2026-11-12): two pinned MIT extended-library skills
   under `.agents/skills/`; weekly bounded integrity/advisory workflow and Dependabot
   update PRs configured. No auto-merge, model calls or clinical auto-approval.
