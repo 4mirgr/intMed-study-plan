@@ -101,6 +101,16 @@ class ImportPBSTest(unittest.TestCase):
             self.mod.import_entries(self.root, [self.entry], fetch=lambda url: self.jpeg)
         self.assertEqual(json.loads(self.data.read_text())['images'][0]['caption'], 'User content')
 
+    def test_cc_by_4_original_preserves_creator_license_and_exact_pixels(self):
+        self.entry.update(license='CC BY 4.0',
+                          licenseUrl='https://creativecommons.org/licenses/by/4.0/',
+                          visualApproved=True)
+        self.mod.import_entries(self.root, [self.entry], fetch=lambda url: self.jpeg)
+        image = json.loads(self.data.read_text())['images'][0]
+        self.assertEqual(image['license'], 'CC BY 4.0')
+        self.assertEqual(image['credit'], 'Example Author')
+        self.assertEqual((self.topic / image['assetPath']).read_bytes(), self.jpeg)
+
 
 if __name__ == '__main__':
     unittest.main()
