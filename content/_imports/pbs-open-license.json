@@ -104,6 +104,24 @@
       "note": "مورفولوژی لام به‌تنهایی برای تشخیص CML کافی نیست؛ تأیید BCR::ABL1 و تطبیق با سایر یافته‌های آزمایشگاهی ضروری است.",
       "visualApproved": true,
       "reviewStatus": "draft"
+    },
+    {
+      "id": "pbs-smudge-haggstrom-20261112",
+      "category": "heme",
+      "topicId": "heme-cll",
+      "fileName": "Smudge_cell_in_a_peripheral_blood_smear.jpg",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Smudge_cell_in_a_peripheral_blood_smear.jpg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Smudge_cell_in_a_peripheral_blood_smear.jpg",
+      "discoveredVia": "https://patholines.org/Peripheral_blood_smear/",
+      "creator": "Mikael Häggström, M.D.",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "width": 509,
+      "height": 441,
+      "caption": "Smudge cell در لام خون محیطی؛ بقایای لکوسیت آسیب‌دیده هنگام تهیهٔ گسترش.",
+      "note": "سلول سایه یا خردشده می‌تواند در زمینهٔ شکنندگی لنفوسیت‌ها و از جمله CLL دیده شود، اما به‌تنهایی تشخیص CLL را ثابت نمی‌کند. مورفولوژی سایر سلول‌ها، شمارش خون و در صورت اندیکاسیون فلوسیتومتری باید کنار هم تفسیر شوند. تصویر یک میدان کوچک است و نمای کلی یا برآورد درصد سلول‌های لام را ارائه نمی‌کند.",
+      "visualApproved": false,
+      "reviewStatus": "draft"
     }
   ]
 }
