@@ -5,10 +5,12 @@ No crawling, model calls, credentials, or automatic clinical approval. Edit the 
 manifest, inspect the staged originals, then set visualApproved=true per suitable image.
 """
 import argparse
+from email.utils import parsedate_to_datetime
 import io
 import json
 from pathlib import Path
 import re
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -61,10 +63,34 @@ def download(url, max_bytes=MAX_BYTES):
         'User-Agent': 'IntMed-PBS-Curated-Importer/1.0 (https://github.com/4mirgr/intMed-study-plan)',
         'Accept': 'image/jpeg',
     })
-    with urllib.request.build_opener(NoRedirect).open(request, timeout=60) as response:
-        if response.status != 200 or response.headers.get_content_type() != 'image/jpeg':
-            raise ValueError('Expected HTTP 200 image/jpeg')
-        body = response.read(max_bytes + 1)
+    opener = urllib.request.build_opener(NoRedirect)
+    delay = 1
+    for attempt in range(3):
+        time.sleep(delay)  # Pace every real request, including retries, without slowing injected fetches.
+        try:
+            with opener.open(request, timeout=60) as response:
+                if response.status != 200 or response.headers.get_content_type() != 'image/jpeg':
+                    raise ValueError('Expected HTTP 200 image/jpeg')
+                body = response.read(max_bytes + 1)
+            break
+        except urllib.error.HTTPError as error:
+            error.close()
+            if error.code != 429 or attempt == 2:
+                raise
+            retry_after = (error.headers.get('Retry-After') or '').strip()
+            delay = 1
+            if re.fullmatch(r'[0-9]+', retry_after):
+                delay = float(retry_after)
+            elif retry_after:
+                try:
+                    date = parsedate_to_datetime(retry_after)
+                    if date.tzinfo is not None:
+                        delay = date.timestamp() - time.time()
+                except (ValueError, TypeError, OverflowError):
+                    pass
+            if delay > 60:
+                raise  # Never clamp a server's longer cooldown and retry early.
+            delay = max(1, delay)
     if len(body) > max_bytes:
         raise ValueError('Image exceeds download size limit')
     return body
@@ -106,7 +132,14 @@ def import_entries(root, entries, fetch=None, max_bytes=MAX_BYTES):
         data = topics[data_path]
         if data.get('topicId') != entry['topicId'] or data.get('category') != entry['category']:
             raise ValueError('Topic identity mismatch')
-        body = asset_path.read_bytes() if asset_path.exists() else fetch(entry['imageUrl'])
+        if asset_path.exists():
+            body = asset_path.read_bytes()
+        else:
+            try:
+                body = fetch(entry['imageUrl'])
+            except Exception as error:
+                reason = f'HTTP {error.code}' if isinstance(error, urllib.error.HTTPError) else type(error).__name__
+                raise ValueError(f"Image {entry['id']}: download failed ({reason})") from None
         validate_jpeg(body, entry, max_bytes)
         if entry['visualApproved']:
             source_id = entry['id'] + '-source'

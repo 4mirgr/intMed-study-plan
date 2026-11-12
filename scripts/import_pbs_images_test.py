@@ -1,10 +1,15 @@
 """Offline behavioral checks for the curated PBS importer (no network calls)."""
 import importlib.util
+from contextlib import contextmanager
+from email.message import Message
 import io
 import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
+import urllib.error
 
 from PIL import Image
 
@@ -38,6 +43,108 @@ class ImportPBSTest(unittest.TestCase):
             'width': 800, 'height': 600, 'caption': 'شرح فارسی', 'note': 'محدودیت تشخیصی',
             'visualApproved': False, 'reviewStatus': 'draft',
         }
+
+    @contextmanager
+    def network(self, replies):
+        """Replace only external requests and wall-clock waiting, keeping download real."""
+        elapsed = [0]
+        request_times = []
+        replies = iter(replies)
+
+        def sleep(seconds):
+            elapsed[0] += seconds
+
+        def open_request(request, timeout):
+            self.assertEqual(request.full_url, self.entry['imageUrl'])
+            request_times.append(elapsed[0])
+            reply = next(replies)
+            if isinstance(reply, Exception):
+                raise reply
+            response = io.BytesIO(reply)
+            response.status = 200
+            response.headers = Message()
+            response.headers['Content-Type'] = 'image/jpeg'
+            return response
+
+        clock = SimpleNamespace(time=lambda: elapsed[0], sleep=sleep)
+        with patch.object(self.mod, 'time', clock, create=True), patch.object(
+                self.mod.urllib.request, 'build_opener', return_value=SimpleNamespace(open=open_request)):
+            yield request_times
+
+    def http_error(self, status, retry_after=None):
+        headers = Message()
+        if retry_after is not None:
+            headers['Retry-After'] = retry_after
+        return urllib.error.HTTPError(self.entry['imageUrl'], status,
+                                      'server detail must not reach diagnostics', headers, io.BytesIO())
+
+    def test_rate_limit_retries_original_request_after_integer_cooldown(self):
+        with self.network([self.http_error(429, '4'), self.jpeg]) as requests:
+            self.assertEqual(self.mod.download(self.entry['imageUrl']), self.jpeg)
+        self.assertEqual(len(requests), 2)
+        self.assertGreaterEqual(requests[0], 1)
+        self.assertGreaterEqual(requests[1] - requests[0], 4)
+
+    def test_rate_limit_respects_http_date_cooldown(self):
+        with self.network([self.http_error(429, 'Thu, 01 Jan 1970 00:00:07 GMT'), self.jpeg]) as requests:
+            self.assertEqual(self.mod.download(self.entry['imageUrl']), self.jpeg)
+        self.assertEqual(len(requests), 2)
+        self.assertGreaterEqual(requests[1], 7)
+
+    def test_missing_invalid_and_past_retry_after_still_pace_retry(self):
+        for retry_after in [None, 'invalid', 'Thu, 01 Jan 1970 00:00:00 GMT']:
+            with self.subTest(retry_after=retry_after), self.network([
+                    self.http_error(429, retry_after), self.jpeg]) as requests:
+                self.assertEqual(self.mod.download(self.entry['imageUrl']), self.jpeg)
+                self.assertEqual(len(requests), 2)
+                self.assertGreaterEqual(requests[1] - requests[0], 1)
+
+    def test_each_real_download_is_paced_even_without_rate_limit(self):
+        with self.network([self.jpeg, self.jpeg]) as requests:
+            self.mod.download(self.entry['imageUrl'])
+            self.mod.download(self.entry['imageUrl'])
+        self.assertEqual(len(requests), 2)
+        self.assertGreaterEqual(requests[0], 1)
+        self.assertGreaterEqual(requests[1] - requests[0], 1)
+
+    def test_persistent_rate_limit_stops_after_three_attempts(self):
+        with self.network([self.http_error(429, '0') for _ in range(4)]) as requests:
+            with self.assertRaises(urllib.error.HTTPError):
+                self.mod.download(self.entry['imageUrl'])
+        self.assertEqual(len(requests), 3)
+        self.assertTrue(all(later - earlier >= 1 for earlier, later in zip(requests, requests[1:])))
+
+    def test_forbidden_and_permanent_network_errors_are_not_retried(self):
+        for error in [self.http_error(403, '2'), self.http_error(404), urllib.error.URLError('unavailable')]:
+            with self.subTest(error=type(error).__name__), self.network([error, self.jpeg]) as requests:
+                with self.assertRaises(urllib.error.URLError):
+                    self.mod.download(self.entry['imageUrl'])
+                self.assertEqual(len(requests), 1)
+
+    def test_overlong_retry_after_is_refused_instead_of_retrying_early(self):
+        for retry_after in ['61', 'Thu, 01 Jan 1970 00:01:02 GMT']:
+            with self.subTest(retry_after=retry_after), self.network([
+                    self.http_error(429, retry_after), self.jpeg]) as requests:
+                with self.assertRaises(urllib.error.HTTPError):
+                    self.mod.download(self.entry['imageUrl'])
+                self.assertEqual(len(requests), 1)
+
+    def test_download_error_identifies_record_without_server_details_or_partial_writes(self):
+        first = dict(self.entry, id='pbs-first', visualApproved=True)
+        with self.network([self.jpeg, self.http_error(403)]):
+            with self.assertRaises(ValueError) as caught:
+                self.mod.import_entries(self.root, [first, self.entry])
+        self.assertIn('pbs-test', str(caught.exception))
+        self.assertIn('403', str(caught.exception))
+        self.assertNotIn('server detail', str(caught.exception))
+        self.assertEqual(json.loads(self.data.read_text()), self.original)
+        self.assertFalse((self.topic / 'assets').exists())
+
+    def test_injected_fetch_does_not_wait_for_network_pacing(self):
+        with patch.object(self.mod, 'time', SimpleNamespace(
+                sleep=lambda seconds: self.fail('Injected fetch was paced')), create=True):
+            result = self.mod.import_entries(self.root, [self.entry], fetch=lambda url: self.jpeg)
+        self.assertEqual(result, {'staged': 1, 'published': 0})
 
     def test_unapproved_stages_asset_without_changing_canonical(self):
         before = self.data.read_bytes()
