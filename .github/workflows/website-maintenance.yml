@@ -26,6 +26,19 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  image-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python3 -m pip install -r requirements-dev.txt
+      - run: python3 -m unittest scripts/import_pbs_images_test.py
   integrity:
     runs-on: ubuntu-latest
     timeout-minutes: 15

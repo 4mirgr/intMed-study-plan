@@ -72,6 +72,14 @@ absent; full CI installs it. Local proxy policy blocks npm/PyPI advisory endpoin
 so no current CVE clearance is claimed from this environment. The scheduled
 advisory jobs provide a separate live check once activated.
 
+The first hosted advisory run found 40 reported vulnerabilities in Pillow 12.3.0
+(fix version 13.0.0), while the Node audit passed. This prompted a dedicated
+Pillow migration checkpoint updating both development requirements and the PBS
+import workflow pin. The application only uses Pillow for image decoding and
+fixture generation; importer tests and hosted full CI must pass on the new
+version before advancing the production pin. The audit is not suppressed or
+treated as a clean scan merely because ordinary application tests pass.
+
 Root-site review confirms its exact-pin build runs significant IntMed checks,
 but not the full IntMed or root UI suite. A companion root-repository checkpoint
 adds weekly/PR offline static, CMS OAuth, AUS gateway and connection checks plus
