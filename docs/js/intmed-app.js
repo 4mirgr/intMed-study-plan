@@ -226,7 +226,7 @@
     if(!highlightId){requestAnimationFrame(function(){topic.note.focus();topic.note.scrollIntoView({block:"center",behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});});return Promise.resolve();}
     var highlight=getHighlights(topicId).find(function(h){return h.id===highlightId;});if(!highlight)return Promise.resolve();
     var loc=String(highlight.loc||""),type=loc.indexOf("lesson:")===0?"lesson":loc.indexOf("fc")===0?"flashcards":loc.indexOf("mcq:")===0?"mcq":loc.indexOf("kf:")===0?"kfPmp":loc.indexOf("table:")===0?"tables":"highlights";
-    return (type==="highlights"?Promise.resolve():ensureTopicLoaded(topicId)).then(function(){
+    return (type==="highlights"?Promise.resolve():ensureTopicLoaded(topicId,type)).then(function(){
       if(openTopicDetailId!==topicId)return;
       Object.keys(topic.learnBtns).forEach(function(key){topic.learnBtns[key].classList.toggle("active",key===type);});
       topic.openType=type;topic.learnPanel.classList.add("open");renderLearnPanel(topicId,type);
@@ -425,12 +425,18 @@
             b.classList.add("active");
             learnPanel.classList.add("open");
             topicEls[sub.id].openType = lt.key;
-            (lt.personal ? Promise.resolve() : ensureTopicLoaded(sub.id)).then(function(){
-              if(topicEls[sub.id].openType === lt.key){renderLearnPanel(sub.id, lt.key);if(window.IntMedDashboard)window.IntMedDashboard.open(sub.id,lt.key);}
-            }).catch(function(){
-              if(topicEls[sub.id].openType !== lt.key) return;
-              learnPanel.innerHTML = '<div class="learn-empty">بارگذاری این مبحث ناموفق بود. اتصال را بررسی و دوباره تلاش کنید.</div>';
-            });
+            function loadPanel(){
+              if(topicEls[sub.id].openType !== lt.key)return;
+              if(!lt.personal)learnPanel.innerHTML='<div class="learn-empty" role="status">در حال دریافت محتوای مبحث…</div>';
+              (lt.personal ? Promise.resolve() : ensureTopicLoaded(sub.id,lt.key)).then(function(){
+                if(topicEls[sub.id].openType === lt.key){renderLearnPanel(sub.id, lt.key);if(window.IntMedDashboard)window.IntMedDashboard.open(sub.id,lt.key);}
+              }).catch(function(){
+                if(topicEls[sub.id].openType !== lt.key)return;
+                learnPanel.innerHTML='<div class="learn-empty" role="alert"><p>بارگذاری این مبحث ناموفق بود. اتصال را بررسی و دوباره تلاش کنید.</p><button type="button" class="secondary-action">تلاش مجدد</button></div>';
+                learnPanel.querySelector('button').addEventListener('click',loadPanel);
+              });
+            }
+            loadPanel();
           }
         });
         learnBtns[lt.key] = b;
@@ -493,7 +499,7 @@
   }
   function loadEducationSearchIndex(){
     if(educationSearchPromise)return educationSearchPromise;
-    educationSearchPromise=fetch("content/search.json").then(function(response){if(!response.ok)throw new Error("search "+response.status);return response.json();}).then(function(value){educationSearchIndex=value||{topics:{}};filterEducationTopics();return educationSearchIndex;}).catch(function(){educationSearchIndex={topics:{}};return educationSearchIndex;});
+    educationSearchPromise=publicContentJson("content/search.json").then(function(value){educationSearchIndex=value||{topics:{}};filterEducationTopics();return educationSearchIndex;}).catch(function(){educationSearchPromise=null;return educationSearchIndex;});
     return educationSearchPromise;
   }
   function setupEducationSearch(){
@@ -1813,18 +1819,16 @@
     if(contentMap[topicId]) return Promise.resolve(contentMap[topicId]);
     var metadata = contentManifest.topics && contentManifest.topics[topicId];
     if(!metadata) return Promise.reject(new Error("missing topic metadata"));
-    topicLoadPromises[topicId] = fetch(metadata.path + "?v=" + metadata.sha256).then(function(response){
-      if(!response.ok) throw new Error("http " + response.status);
-      return response.json();
-    }).then(function(payload){
+    topicLoadPromises[topicId] = publicContentJson(metadata.path + "?v=" + metadata.sha256).then(function(payload){
       contentMap[topicId] = payload;updateLearnCounts(topicId);updateContentBadge(topicId);return payload;
     }).catch(function(error){delete topicLoadPromises[topicId];throw error;});
     return topicLoadPromises[topicId];
   }
-  function ensureTopicLoaded(topicId){
+  function ensureTopicLoaded(topicId,type){
     return loadSingleTopic(topicId).then(function(payload){
       var dependencies = [];
       ["mcq","kfPmp"].forEach(function(field){
+        if(type && field !== type)return;
         (payload[field] || []).forEach(function(item){
           [item].concat(item.steps || []).forEach(function(part){
             var ref=part.imageRef;
@@ -2714,7 +2718,7 @@
     if(accountQuickState){accountQuickState.classList.toggle('active',name==='account');accountQuickState.setAttribute('aria-pressed',String(name==='account'));}
     if(messagesQuickState){messagesQuickState.classList.toggle('active',name==='messages'||(name==='management'&&adminTicketsPanel&&adminTicketsPanel.style.display!=='none'));messagesQuickState.setAttribute('aria-pressed',String(name==='messages'));}
     if(name==='dashboard')renderStudyDashboard();
-    if(name==='library'&&window.IntMedLibrary)window.IntMedLibrary.show();
+    if(name==='library'&&window.IntMedLibrary)window.IntMedLibrary.show().catch(function(){});
     if(name==='account'){
       renderUserPanel();
       var profileEditor=document.getElementById('profileEditor');if(profileEditor)profileEditor.open=true;
@@ -2772,13 +2776,13 @@
   document.addEventListener('visibilitychange',function(){scheduleMessagePoll(0);});
 
   if(window.IntMedLibrary)window.IntMedLibrary.init({state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},ready:function(){return stateLoaded;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},open:function(id,type,itemId){
-    goToTopic(id);return ensureTopicLoaded(id).then(function(){var topic=topicEls[id];if(!topic)return;topic.openType=type;Object.keys(topic.learnBtns).forEach(function(key){topic.learnBtns[key].classList.toggle('active',key===type);});topic.learnPanel.classList.add('open');renderLearnPanel(id,type);if(window.IntMedDashboard)window.IntMedDashboard.open(id,type);requestAnimationFrame(function(){var target=topic.learnPanel;if(type==='images'){var imageIndex=(contentMap[id].images||[]).findIndex(function(item){return item.id===itemId;});if(imageIndex>=0)target=topic.learnPanel.querySelectorAll('.img-row')[imageIndex]||target;}else if(type==='kfPmp'){var caseIndex=(contentMap[id].kfPmp||[]).findIndex(function(item){return item.id===itemId;});if(caseIndex>=0)target=topic.learnPanel.querySelectorAll('.kfp-block')[caseIndex]||target;}else if(type==='tables'){var tableIndex=(contentMap[id].tables||[]).findIndex(function(item){return item.id===itemId;});if(tableIndex>=0)target=topic.learnPanel.querySelectorAll('.tbl-title')[tableIndex]||target;}target.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});target.classList.add('annotation-destination');setTimeout(function(){target.classList.remove('annotation-destination');},3500);});});
+    goToTopic(id);return ensureTopicLoaded(id,type).then(function(){var topic=topicEls[id];if(!topic)return;topic.openType=type;Object.keys(topic.learnBtns).forEach(function(key){topic.learnBtns[key].classList.toggle('active',key===type);});topic.learnPanel.classList.add('open');renderLearnPanel(id,type);if(window.IntMedDashboard)window.IntMedDashboard.open(id,type);requestAnimationFrame(function(){var target=topic.learnPanel;if(type==='images'){var imageIndex=(contentMap[id].images||[]).findIndex(function(item){return item.id===itemId;});if(imageIndex>=0)target=topic.learnPanel.querySelectorAll('.img-row')[imageIndex]||target;}else if(type==='kfPmp'){var caseIndex=(contentMap[id].kfPmp||[]).findIndex(function(item){return item.id===itemId;});if(caseIndex>=0)target=topic.learnPanel.querySelectorAll('.kfp-block')[caseIndex]||target;}else if(type==='tables'){var tableIndex=(contentMap[id].tables||[]).findIndex(function(item){return item.id===itemId;});if(tableIndex>=0)target=topic.learnPanel.querySelectorAll('.tbl-title')[tableIndex]||target;}target.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});target.classList.add('annotation-destination');setTimeout(function(){target.classList.remove('annotation-destination');},3500);});});
   }});
   if(window.IntMedDashboard)window.IntMedDashboard.init({
     state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},topics:function(){return topicEls;},
     ready:function(){return stateLoaded;},goto:goToTopic,annotation:openAnnotation,phases:function(){return PHASES;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},
     flush:doFlush,wait:waitForPendingWrites
   });
-  if(window.IntMedExams)window.IntMedExams.init({state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},topics:function(){return topicEls;},ready:function(){return stateLoaded;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},flush:doFlush,load:ensureTopicLoaded,dashboard:renderStudyDashboard,open:function(id,type){goToTopic(id);return ensureTopicLoaded(id).then(function(){var t=topicEls[id];t.openType=type;Object.keys(t.learnBtns).forEach(function(key){t.learnBtns[key].classList.toggle("active",key===type);});t.learnPanel.classList.add("open");renderLearnPanel(id,type);window.IntMedDashboard.open(id,type);}).catch(function(){document.getElementById("examReportStatus").textContent="بارگذاری آزمون انجام نشد؛ دوباره تلاش کنید.";});},refresh:function(id,type){var t=topicEls[id];if(t&&t.openType===type)renderLearnPanel(id,type);}});
+  if(window.IntMedExams)window.IntMedExams.init({state:function(){return STATE;},user:function(){return CURRENT_USER_ID;},topics:function(){return topicEls;},ready:function(){return stateLoaded;},save:function(key,value){myBucket().itemState[key]=value;scheduleFlush(400);},flush:doFlush,load:ensureTopicLoaded,dashboard:renderStudyDashboard,open:function(id,type){goToTopic(id);return ensureTopicLoaded(id,type).then(function(){var t=topicEls[id];t.openType=type;Object.keys(t.learnBtns).forEach(function(key){t.learnBtns[key].classList.toggle("active",key===type);});t.learnPanel.classList.add("open");renderLearnPanel(id,type);window.IntMedDashboard.open(id,type);}).catch(function(){document.getElementById("examReportStatus").textContent="بارگذاری آزمون انجام نشد؛ دوباره تلاش کنید.";});},refresh:function(id,type){var t=topicEls[id];if(t&&t.openType===type)renderLearnPanel(id,type);}});
   refreshAll();
 })();

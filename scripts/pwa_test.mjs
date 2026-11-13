@@ -66,3 +66,29 @@ console.log('PWA stalled-network recovery passed: public cache fallback covers h
  },'live indexes must prefer current online responses and the newest cached offline manifest');
 }
 console.log('PWA index freshness passed: actual generated/mounted paths use network-first and newer runtime cache wins offline.');
+
+// A completed CDN/server failure is still a transient network failure for
+// public lessons. Never replace it with a different version or hide a 404.
+{
+ const origin='https://example.test',oldHash='a'.repeat(64),newHash='b'.repeat(64);
+ const topic=origin+'/content/topics/heme-pbs.json?v='+oldHash;
+ const stored=new Map([[topic,new Response('{"topicId":"cached-exact-version"}')]]);
+ let status=503;
+ const handlers={},basic=(body,status)=>{const response=new Response(body,{status});Object.defineProperty(response,'type',{value:'basic'});return response;};
+ const match=async request=>stored.get(request.url)?.clone();
+ vm.runInNewContext(sw,{self:{location:{origin},addEventListener:(name,fn)=>handlers[name]=fn},URL,Response,AbortController,setTimeout,clearTimeout,
+  caches:{open:async()=>({match,put:async()=>{throw Error('An error response must not be cached');}}),match},
+  fetch:async()=>basic('{"error":"upstream unavailable"}',status)});
+ async function read(url){let result;handlers.fetch({request:{url,method:'GET',mode:'cors'},respondWith:value=>{result=value;}});return result;}
+ for(const code of [503,522]){
+  status=code;const response=await read(topic);
+  assert.equal(response.status,200,'a transient server error must recover the exact cached public lesson');
+  assert.equal((await response.json()).topicId,'cached-exact-version');
+ }
+ status=503;
+ const uncached=await read(origin+'/content/topics/heme-pbs.json?v='+newHash);
+ assert.equal(uncached.status,503,'a new manifest hash must never receive another cached version');
+ assert.equal((await uncached.json()).error,'upstream unavailable');
+ status=404;assert.equal((await read(topic)).status,404,'a missing/withdrawn topic must not be hidden by stale cache');
+}
+console.log('PWA server-error recovery passed: 5xx uses exact cached public content, fresh hashes and definitive 404 remain visible.');

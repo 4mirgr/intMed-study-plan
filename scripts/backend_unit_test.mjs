@@ -159,7 +159,7 @@ assert.equal((await bounded(staleBodyBackend.profile())).id,userId);
 assert.equal(refreshRequests,0,"a partial 401 must time out, not deadlock token refresh");
 
 let rejectedLoginRequests=0;
-const badPasswordBackend=deadlineBackend(()=>{rejectedLoginRequests++;return reply({message:"Invalid login credentials"},400);});
+const badPasswordBackend=deadlineBackend((url,options)=>{if(options.method==='POST')rejectedLoginRequests++;return reply({message:"Invalid login credentials"},400);});
 await assert.rejects(bounded(badPasswordBackend.signIn("doctor@example.test","bad-password")),error=>error.status===400);
 assert.equal(rejectedLoginRequests,1,"completed credential rejection must not replay login against another origin");
 const emptyBackend=deadlineBackend(()=>Promise.resolve({ok:true,status:204,text:()=>{throw Error("204 body must not be consumed");}}));

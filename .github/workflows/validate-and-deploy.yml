@@ -40,6 +40,7 @@ jobs:
       - run: python3 scripts/release_preflight_test.py
       - run: node scripts/check_inline_js.mjs
       - run: node scripts/backend_unit_test.mjs
+      - run: node scripts/auth_route_recovery_test.mjs
       - run: node scripts/login_resume_test.mjs
       - run: node scripts/pwa_test.mjs
       - run: node scripts/backend_state_test.mjs
@@ -97,6 +98,8 @@ jobs:
           node scripts/recovery_support_browser_test.mjs
           node scripts/dashboard_browser_test.mjs
           node scripts/library_browser_test.mjs
+          node scripts/content_loading_browser_test.mjs
+          node scripts/auth_route_browser_test.mjs
           node scripts/annotations_theme_browser_test.mjs
           node scripts/pdf_ecg_browser_test.mjs
           node scripts/study_workspace_browser_test.mjs

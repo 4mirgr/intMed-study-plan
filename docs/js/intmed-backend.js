@@ -5,6 +5,27 @@
   var sessionKey = "intmed_supabase_session";
   var persistenceKey = "intmed_session_persistent";
   var activeOrigin = "";
+  var routeKey = "intmed_api_route";
+  var signInRoutePromise = null;
+
+  function configuredOrigins(){
+    return [config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
+  }
+  function preferredOrigins(){
+    var configuredValues=configuredOrigins();
+    if(!activeOrigin){
+      try{
+        var saved=JSON.parse(sessionStorage.getItem(routeKey)||"null");
+        if(saved&&saved.until>Date.now()&&configuredValues.indexOf(saved.origin)!==-1)activeOrigin=saved.origin;
+      }catch(e){}
+    }
+    return [activeOrigin].concat(configuredValues).filter(function(value,index,list){return configuredValues.indexOf(value)!==-1&&list.indexOf(value)===index;});
+  }
+  function rememberOrigin(origin){
+    activeOrigin=origin;
+    // Route metadata only: no password, JWT, profile, or approval is cached.
+    try{sessionStorage.setItem(routeKey,JSON.stringify({origin:origin,until:Date.now()+5*60*1000}));}catch(e){}
+  }
 
   function configured(){ return /^https:\/\//.test(config.supabaseUrl || config.supabaseFallbackUrl || "") && !!config.supabaseAnonKey; }
   function session(){
@@ -45,7 +66,7 @@
     // fetch resolves when headers arrive, not when the response body finishes.
     // Keep the same timer alive while reading the body so a half-open stream
     // cannot prevent origin fallback or leave a token refresh pending forever.
-    var completed = fetch(url, optionsWithSignal).then(function(response){
+    var completed = Promise.resolve().then(function(){return fetch(url, optionsWithSignal);}).then(function(response){
       if(response.status === 204) return {response:response, text:""};
       return response.text().then(function(text){ return {response:response, text:text}; });
     });
@@ -72,16 +93,43 @@
     translated.cause = error;
     return translated;
   }
+  function prepareSignInRoute(){
+    var candidates=preferredOrigins();
+    if(candidates.length<2)return Promise.resolve(candidates[0]);
+    if(signInRoutePromise)return signInRoutePromise;
+    // Only public health GETs overlap. Select a responsive route before sending
+    // a password; never race password exchanges or rotating refresh tokens.
+    signInRoutePromise=new Promise(function(resolve){
+      var settled=false,remaining=candidates.length,started={},hedge;
+      function probe(index){
+        if(settled||started[index]||!candidates[index])return;
+        started[index]=true;
+        var origin=candidates[index];
+        fetchWithDeadline(origin.replace(/\/$/,"")+"/auth/v1/health",{headers:headers({},false)},Math.max(1,Number(config.authProbeTimeoutMs)||3000)).then(function(result){
+          var body=JSON.parse(result.text);
+          if(!result.response.ok||!body||typeof body!=="object"||Array.isArray(body))throw new Error("unavailable health route");
+          if(settled)return;
+          settled=true;clearTimeout(hedge);rememberOrigin(origin);resolve(origin);
+        }).catch(function(){
+          if(settled)return;
+          remaining--;probe(index+1);
+          if(!remaining){settled=true;clearTimeout(hedge);resolve(null);}
+        });
+      }
+      probe(0);
+      hedge=setTimeout(function(){probe(1);},Math.max(1,Number(config.authProbeDelayMs)||200));
+    }).finally(function(){signInRoutePromise=null;});
+    return signInRoutePromise;
+  }
   function request(path, options){
     options = options || {};
     var authenticated = options.authenticated !== false;
     function origins(){
-      var values=[activeOrigin,config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
-      return values;
+      return preferredOrigins();
     }
     function perform(retried){
       var requestOptions = {};
-      Object.keys(options).forEach(function(key){ if(key !== "authenticated" && key !== "headers") requestOptions[key] = options[key]; });
+      Object.keys(options).forEach(function(key){ if(key !== "authenticated" && key !== "headers" && key !== "signInOrigin") requestOptions[key] = options[key]; });
       requestOptions.headers = headers(options.headers, authenticated);
       var candidates=origins();
       function send(index,firstNetworkError){
@@ -91,12 +139,15 @@
         // known-good fallback is never attempted.
         var configuredDeadline = index === 0 && candidates.length > 1 ? config.authPrimaryTimeoutMs : config.authFallbackTimeoutMs;
         var deadline = Math.max(1, Number(configuredDeadline) || (index === 0 && candidates.length > 1 ? 4500 : 8000));
+        // A confirmed reachable username-login function performs several server
+        // round trips. Do not abort it on the short route-selection deadline.
+        if(options.signInOrigin===origin)deadline=Math.max(deadline,Number(config.authSignInTimeoutMs)||20000);
         return fetchWithDeadline(origin.replace(/\/$/, "") + path, requestOptions, deadline).then(function(result){
         var response=result.response;
         if(response.status === 401 && authenticated && !retried){
           return refreshSession().then(function(){ return perform(true); });
         }
-        if(response.status === 204){ activeOrigin=origin; return null; }
+        if(response.status === 204){ rememberOrigin(origin); return null; }
         var text=result.text;
           var body = null, invalidBody = false;
           if(text){try{body=JSON.parse(text);}catch(parseError){invalidBody=true;}}
@@ -111,7 +162,7 @@
             invalidResponse.code = "invalid_response";
             throw invalidResponse;
           }
-          activeOrigin=origin;
+          rememberOrigin(origin);
           return body;
         }).catch(function(error){
           if(canTryNextOrigin(error) && index+1<candidates.length)return send(index+1,firstNetworkError||error);
@@ -130,9 +181,11 @@
   function signIn(username, password){
     username=String(username||"").trim().toLowerCase();
     // Email compatibility preserves existing accounts during the one-time rollout.
-    var login = username.indexOf("@") !== -1
-      ? auth("token?grant_type=password", {email:username, password:password})
-      : request("/functions/v1/intmed-login", {method:"POST", authenticated:false, body:JSON.stringify({username:username,password:password})});
+    var login = prepareSignInRoute().then(function(origin){
+      return username.indexOf("@") !== -1
+        ? request("/auth/v1/token?grant_type=password", {method:"POST",authenticated:false,signInOrigin:origin,body:JSON.stringify({email:username,password:password})})
+        : request("/functions/v1/intmed-login", {method:"POST",authenticated:false,signInOrigin:origin,body:JSON.stringify({username:username,password:password})});
+    });
     return login.catch(function(error){
       if(!error.status && (error.code === "network_timeout" || /fetch|network|load failed|offline|abort/i.test(error.message||"")))error=withMessage(error,"هیچ‌کدام از مسیرهای امن ورود پاسخ ندادند. این مشکل از مسیر شبکه یا سرویس حساب است و به معنی اشتباه بودن رمز نیست؛ کمی بعد دوباره تلاش کنید.");
       if(error.status === 404) error=withMessage(error,"ورود با نام کاربری هنوز در سرور فعال نشده است؛ تا تکمیل راه‌اندازی از ایمیل حساب استفاده کنید.");

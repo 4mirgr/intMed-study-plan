@@ -478,3 +478,18 @@ written above. Local-only edits or a green Pages job with a failed validation jo
 - Commons intake now handles HTTP 429 with paced, bounded, Retry-After-aware
   retries and atomic publication; 15 importer regression tests pass.
 
+## Login and loading recovery — 2026-11-13
+
+- Bounded public-health route discovery precedes password exchange; a reachable
+  login function gets a separate processing budget. Configured route metadata
+  survives the post-login reload for five minutes without caching identity or
+  bypassing live profile approval. Discovery is single-flight only and refreshes
+  on a later login attempt after network changes.
+- Topic/search/library full-body deadlines, released failed promises and inline
+  retry prevent a half-open response from pinning subsequent opens. Lessons no
+  longer wait for question-only cross-topic image dependencies.
+- Public SW transient 5xx recovery uses an exact successful cached response;
+  private exclusions, distinct version hashes and definitive 404 remain intact.
+- Reproduction, checks and limits: `docs/login-loading-repair-2026-11-13.md`.
+  New unit/mobile/content recovery tests are included in normal source CI.
+

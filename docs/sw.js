@@ -46,6 +46,13 @@ async function networkFirst(request){
     if(original.ok&&original.type==='basic'&&!original.headers.has('set-cookie')){
       try{const cache=await caches.open(PUBLIC);await cache.put(request,response.clone());}catch{}
     }
+    // A completed CDN/server error should not hide a usable offline lesson.
+    // Cache matching keeps the full URL, including the manifest version hash.
+    // Preserve definitive 4xx responses and a 5xx when no successful copy exists.
+    if(original.status>=500){
+      const cached=await cachedPublicResponse(request);
+      if(cached&&cached.ok)return cached;
+    }
     return response;
   }catch{
     return (await cachedPublicResponse(request))||Response.error();

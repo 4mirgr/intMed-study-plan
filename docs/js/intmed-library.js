@@ -11,10 +11,17 @@
   function recentIds(){var value=(bucket().itemState||{})['library:recent'];return value&&Array.isArray(value.ids)?value.ids:[];}
   function remember(entry){if(!api||!api.ready())return;var ids=[entry.id].concat(recentIds().filter(function(id){return id!==entry.id;})).slice(0,8);api.save('library:recent',{ids:ids,updatedAt:new Date().toISOString()});renderRecent();}
   function kindLabel(kind){return labels[kind]||'محتوای تصویری';}
+  function publicContentJson(path){
+    var controller=typeof AbortController==='function'?new AbortController():null,timer;
+    var timeoutMs=Math.max(1,Number((global.INTMED_CONFIG||{}).contentTimeoutMs)||9000);
+    var expired=new Promise(function(resolve,reject){timer=setTimeout(function(){if(controller)controller.abort();reject(new Error('public content timeout'));},timeoutMs);});
+    var received=fetch(path,{cache:'no-cache',...(controller?{signal:controller.signal}:{})}).then(function(response){if(!response.ok)throw Error('content '+response.status);return response.json();});
+    return Promise.race([received,expired]).finally(function(){clearTimeout(timer);});
+  }
   function load(){
     if(data)return Promise.resolve(data);if(loading)return loading;
     status('در حال بارگذاری کتابخانه…');
-    loading=fetch('content/library.json',{cache:'no-cache'}).then(function(response){if(!response.ok)throw Error('library '+response.status);return response.json();}).then(function(value){data=value;populateFilters();status('');return value;}).catch(function(error){status('بارگذاری کتابخانه انجام نشد؛ اتصال را بررسی و دوباره تلاش کنید.');throw error;}).finally(function(){loading=null;});return loading;
+    loading=publicContentJson('content/library.json').then(function(value){data=value;populateFilters();status('');return value;}).catch(function(error){status('بارگذاری کتابخانه انجام نشد؛ اتصال را بررسی و دوباره تلاش کنید.');throw error;}).finally(function(){loading=null;});return loading;
   }
   function status(message){var root=document.getElementById('libraryStatus');if(root)root.textContent=message;}
   function unique(key){var found=new Map();(data.entries||[]).forEach(function(entry){var value=entry[key];if(value&&!found.has(value))found.set(value,key==='categoryId'?entry.categoryLabel:value);});return Array.from(found.entries()).sort(function(a,b){return String(a[1]).localeCompare(String(b[1]),'fa');});}
@@ -37,7 +44,7 @@
     status(entries.length?fa(entries.length)+' مورد پیدا شد.':'موردی با این فیلتر پیدا نشد.');var more=document.getElementById('libraryMore');more.hidden=entries.length<=visible;if(!more.hidden)more.textContent='نمایش '+fa(Math.min(48,entries.length-visible))+' مورد دیگر';renderRecent();
   }
   function renderRecent(){var root=document.getElementById('libraryRecent');if(!root||!data)return;var ids=recentIds(),entries=ids.map(function(id){return data.entries.find(function(entry){return entry.id===id;});}).filter(Boolean);root.hidden=!entries.length;var list=root.querySelector('.library-recent-list');list.replaceChildren();entries.slice(0,5).forEach(function(entry){var button=el('button',null,entry.title);button.type='button';button.addEventListener('click',function(){openViewer(entry);});list.appendChild(button);});}
-  function topic(entry){if(topicCache.has(entry.topicId))return topicCache.get(entry.topicId);var request=fetch('content/topics/'+encodeURIComponent(entry.topicId)+'.json').then(function(response){if(!response.ok)throw Error('topic '+response.status);return response.json();}).catch(function(error){topicCache.delete(entry.topicId);throw error;});topicCache.set(entry.topicId,request);return request;}
+  function topic(entry){if(topicCache.has(entry.topicId))return topicCache.get(entry.topicId);var request=publicContentJson('content/topics/'+encodeURIComponent(entry.topicId)+'.json').catch(function(error){topicCache.delete(entry.topicId);throw error;});topicCache.set(entry.topicId,request);return request;}
   function preparePreview(node,entry){
     if(!node.isConnected)return;topic(entry).then(function(payload){if(!node.isConnected)return;var item=(payload[entry.field]||[]).find(function(row){return row.id===entry.itemId;});if(!item)return;var preview;
       if(entry.field==='images'&&item.sourceUrl){preview=el('img','library-card-visual');preview.src=item.sourceUrl;preview.alt='';preview.loading='lazy';preview.decoding='async';preview.addEventListener('error',function(){preview.replaceWith(emptyVisual(entry));});}
@@ -72,7 +79,7 @@
   function openViewer(entry,navigating){
     if(!navigating){var entries=filtered();viewerEntries=entries.some(function(item){return item.id===entry.id;})?entries:[entry];}
     current=entry;document.getElementById('libraryViewerTitle').textContent=entry.title;document.getElementById('libraryViewerMeta').textContent=kindLabel(entry.kind)+' · '+entry.topicLabel;var body=document.getElementById('libraryViewerBody');body.textContent='در حال دریافت جزئیات…';updateViewerFavorite();remember(entry);history.replaceState(null,'','#library='+encodeURIComponent(entry.id));
-    updateNavigation();var dialog=document.getElementById('libraryViewer');body.scrollTop=0;if(!dialog.open){if(dialog.showModal)dialog.showModal();else dialog.setAttribute('open','');}topic(entry).then(function(payload){if(current&&current.id===entry.id)renderViewer(entry,payload);}).catch(function(){if(current&&current.id===entry.id)body.textContent='دریافت جزئیات انجام نشد.';});
+    updateNavigation();var dialog=document.getElementById('libraryViewer');body.scrollTop=0;if(!dialog.open){if(dialog.showModal)dialog.showModal();else dialog.setAttribute('open','');}topic(entry).then(function(payload){if(current&&current.id===entry.id)renderViewer(entry,payload);}).catch(function(){if(current&&current.id===entry.id){body.textContent='دریافت جزئیات انجام نشد. ';var retry=el('button','secondary-action','تلاش مجدد');retry.type='button';retry.addEventListener('click',function(){openViewer(entry,true);});body.appendChild(retry);}});
   }
   function closeViewer(){var dialog=document.getElementById('libraryViewer');if(dialog.open&&dialog.close)dialog.close();else dialog.removeAttribute('open');current=null;viewerEntries=[];if(location.hash.indexOf('#library=')===0)history.replaceState(null,'',location.pathname+location.search);}
   function openTopic(){if(!current||!api)return;var type=current.field==='kfPmp'?'kfPmp':current.field;var entry=current;closeViewer();api.open(entry.topicId,type,entry.itemId);}
