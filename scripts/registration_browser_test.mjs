@@ -6,6 +6,7 @@ const page=await browser.newPage({viewport:{width:390,height:844}});let signupBo
 await page.route(/https:\/\/(?:[^/]+\.supabase\.co|api\.drgerami-md\.ir)\//,async route=>{
  const req=route.request(),url=new URL(req.url());
  if(url.hostname==='api.drgerami-md.ir'){gatewayAttempts++;return route.abort('failed');}
+ if(url.pathname==='/auth/v1/health')return route.fulfill({json:{name:'GoTrue',version:'synthetic'}});
  if(url.pathname==='/auth/v1/signup'){signupBody=req.postDataJSON();return route.fulfill({json:{user:{id:'test-signup',identities:signupBody.email==='duplicate@example.com'?[]:[{id:'identity'}]}}});}
  if(url.pathname==='/functions/v1/intmed-login'){loginBody=req.postDataJSON();return route.fulfill({status:401,json:{message:'نام کاربری یا رمز عبور اشتباه است.'}});}
  throw Error('Unexpected request '+url.pathname);
