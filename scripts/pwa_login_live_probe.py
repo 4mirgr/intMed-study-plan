@@ -13,6 +13,7 @@ ENDPOINTS = (
     "https://api.drgerami-md.ir/functions/v1/intmed-login",
     "https://upwbktvnybsjugdegjji.supabase.co/functions/v1/intmed-login",
 )
+USER_AGENT = "Gerami-Website-Health/1.0"
 
 
 def read(request):
@@ -23,7 +24,8 @@ def read(request):
 
 
 def main():
-    with urlopen("https://drgerami-md.ir/intmed/config.js", timeout=20) as response:
+    config_request = Request("https://drgerami-md.ir/intmed/config.js", headers={"User-Agent": USER_AGENT})
+    with urlopen(config_request, timeout=20) as response:
         text = response.read(32_768).decode("utf-8")
     match = re.search(r"window\.INTMED_CONFIG\s*=\s*(\{.*\});", text, re.S)
     if not match:
@@ -38,7 +40,7 @@ def main():
             with read(Request(endpoint, method="OPTIONS", headers={
                 "Origin": origin, "Access-Control-Request-Method": "POST",
                 "Access-Control-Request-Headers": "apikey,content-type",
-                "User-Agent": "IntMed-PWA-ReadOnly-Probe/1.0",
+                "User-Agent": USER_AGENT,
             })) as response:
                 assert response.status == 204, "Login preflight rejected"
                 assert response.headers.get("Access-Control-Allow-Origin") == origin, "PWA origin not accepted"
@@ -48,7 +50,7 @@ def main():
             # Empty JSON is rejected before rate limits, username lookup or Auth.
             with read(Request(endpoint, method="POST", data=b"{}", headers={
                 "Origin": origin, "Content-Type": "application/json", "apikey": key,
-                "User-Agent": "IntMed-PWA-ReadOnly-Probe/1.0",
+                "User-Agent": USER_AGENT,
             })) as response:
                 assert response.status == 401, "Empty request must reach credential validation only"
                 assert response.headers.get("Access-Control-Allow-Origin") == origin, "Login error unreadable by PWA"
