@@ -101,7 +101,55 @@
   var loginForm = document.getElementById("loginForm");
   var loginErr = document.getElementById("loginErr");
   var resumePending=false,resumeNeedsReload=false;
+  function clearConnectionDetails(){
+    var previous=document.getElementById("loginConnectionDetails");
+    if(previous)previous.remove();
+  }
+  function connectionErrorCode(error){
+    // Error text and unknown server codes can contain private input. Report
+    // only fixed, recognized codes; never copy the error/cause object.
+    var known=["network_timeout","profile_unavailable","invalid_response","account_inactive","invalid_credentials","invalid_grant","refresh_token_not_found","session_not_found","user_banned","over_request_rate_limit","over_email_send_rate_limit","email_not_confirmed","validation_failed","unexpected_failure"];
+    if(known.indexOf(error.code)!==-1)return error.code;
+    if(error.name==="AbortError"||(error.cause&&error.cause.name==="AbortError"))return "browser_aborted";
+    if(error.name==="TypeError"||(error.cause&&error.cause.name==="TypeError"))return "browser_network_error";
+    return "unclassified";
+  }
+  function connectionBackendVersion(){
+    var scripts=document.querySelectorAll("script[src]");
+    for(var i=0;i<scripts.length;i++){
+      try{
+        var url=new URL(scripts[i].src,location.href);
+        if(!/\/js\/intmed-backend\.js$/.test(url.pathname))continue;
+        var value=url.searchParams.get("v")||"";
+        return /^[a-f0-9]{8,64}$/i.test(value)?value:"unknown";
+      }catch(e){}
+    }
+    return "unknown";
+  }
+  function showConnectionDetails(error){
+    clearConnectionDetails();
+    var standalone=!!navigator.standalone;
+    try{standalone=standalone||window.matchMedia("(display-mode: standalone)").matches;}catch(e){}
+    var report={page:location.origin+location.pathname,standalone:standalone,onlineHint:typeof navigator.onLine==="boolean"?navigator.onLine:null,backendVersion:connectionBackendVersion(),status:typeof error.status==="number"&&Number.isInteger(error.status)&&error.status>=100&&error.status<=599?error.status:null,code:connectionErrorCode(error)};
+    var details=document.createElement("details"),summary=document.createElement("summary"),text=document.createElement("pre"),copy=document.createElement("button"),status=document.createElement("p");
+    details.id="loginConnectionDetails";
+    summary.textContent="اطلاعات اتصال برای پشتیبانی";
+    text.dir="ltr";text.style.whiteSpace="pre-wrap";text.style.overflowWrap="anywhere";
+    text.textContent=JSON.stringify(report,null,2);
+    copy.type="button";copy.className="secondary-action";copy.textContent="کپی اطلاعات اتصال";
+    status.setAttribute("role","status");status.setAttribute("aria-live","polite");
+    copy.addEventListener("click",function(){
+      function unavailable(){status.textContent="کپی خودکار در دسترس نیست؛ متن بالا را انتخاب و کپی کنید.";}
+      try{
+        if(!navigator.clipboard||!navigator.clipboard.writeText){unavailable();return;}
+        Promise.resolve(navigator.clipboard.writeText(text.textContent)).then(function(){status.textContent="اطلاعات اتصال کپی شد.";}).catch(unavailable);
+      }catch(e){unavailable();}
+    });
+    details.append(summary,text,copy,status);
+    loginErr.insertAdjacentElement("afterend",details);
+  }
   function loginBusy(busy){
+    if(busy)clearConnectionDetails();
     loginForm.querySelector("button[type=submit]").disabled=busy;
     document.getElementById("loginUser").disabled=busy;
     document.getElementById("loginPass").disabled=busy;
@@ -115,6 +163,7 @@
     button.textContent=resumePending?"تلاش مجدد برای تکمیل ورود":"ورود";
     loginErr.textContent=error.message==="auth"?"نشست پایان یافته؛ دوباره وارد شوید.":(error.message||"ورود حساب تأیید نشد؛ اتصال و وضعیت حساب را بررسی کنید.");
     loginErr.classList.add("show");
+    showConnectionDetails(error);
   }
   function revealVerifiedSession(result){
     var store=sessionStore();store.setItem("bp_authed","1");store.setItem("bp_user_id",result.session.user.id);

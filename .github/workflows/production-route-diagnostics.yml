@@ -64,3 +64,19 @@ jobs:
               *) echo "Signup route is unhealthy: $origin returned $status" >&2; exit 1 ;;
             esac
           done
+      - name: Verify installed PWA login origins without credentials
+        run: python3 scripts/pwa_login_live_probe.py
+
+  installed-pwa-origin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Verify actual Pages.dev CORS in Chromium and WebKit without credentials
+        run: node scripts/pwa_login_public_browser_test.mjs

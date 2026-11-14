@@ -493,3 +493,17 @@ written above. Local-only edits or a green Pages job with a failed validation jo
 - Reproduction, checks and limits: `docs/login-loading-repair-2026-11-13.md`.
   New unit/mobile/content recovery tests are included in normal source CI.
 
+## Installed PWA origin correction — 2026-11-14
+
+- Owner confirmed `gerami-website.pages.dev/intmed/`. Live preflight exposed
+  a CORS origin mismatch that canonical-domain/timeout tests had missed.
+  Login and gateway now accept exact owned deployment aliases, with trusted
+  alias normalization upstream and original-origin CORS returned to browsers.
+- Supabase login v10 and gateway deployed; direct live preflight/empty-input
+  checks now pass for the alias. Credentials, JWT/profile gates, state and
+  content are preserved. No wildcard/null origins or new Worker routes.
+- Failure-only local support details exclude credentials, sessions, query/hash
+  and unknown server strings. Live Chromium/WebKit Pages.dev probes and exact
+  origin regression tests are included in production/validation workflows.
+- Evidence and scope: `docs/pwa-login-origin-repair-2026-11-14.md`.
+

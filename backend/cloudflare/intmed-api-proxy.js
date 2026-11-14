@@ -5,6 +5,8 @@ const UPSTREAM = 'https://upwbktvnybsjugdegjji.supabase.co';
 const ALLOWED_ORIGINS = new Set([
   'https://drgerami-md.ir',
   'https://www.drgerami-md.ir',
+  'https://4mirgr.github.io',
+  'https://gerami-website.pages.dev',
 ]);
 const ALLOWED_PREFIXES = ['/auth/v1/', '/rest/v1/', '/functions/v1/'];
 const PRIVATE_INBOX_SIGNED_PREFIX = '/storage/v1/object/sign/intmed-content-inbox/';
@@ -59,6 +61,12 @@ export default {
 
     const target = new URL(upstreamPath + incoming.search, UPSTREAM);
     const headers = new Headers(request.headers);
+    // These exact owned PWA aliases share the canonical application. Existing
+    // Edge Functions gate Origin to the canonical site; preserve their gates
+    // and JWT checks while echoing the real browser origin in the response.
+    if (origin === 'https://4mirgr.github.io' || origin === 'https://gerami-website.pages.dev') {
+      headers.set('Origin', 'https://drgerami-md.ir');
+    }
     headers.delete('host');
     headers.delete('cf-connecting-ip');
     headers.delete('cf-ipcountry');

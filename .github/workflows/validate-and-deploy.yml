@@ -48,6 +48,7 @@ jobs:
       - run: node scripts/security_hardening_test.mjs
       - run: python3 scripts/build_services_setup.py --check
       - run: node scripts/username_login_test.mjs
+      - run: node scripts/pwa_login_cors_test.mjs
       - run: node scripts/recovery_support_test.mjs
       - run: node scripts/cloudflare_proxy_test.mjs
       - run: node scripts/admin_user_function_test.mjs
@@ -100,6 +101,7 @@ jobs:
           node scripts/library_browser_test.mjs
           node scripts/content_loading_browser_test.mjs
           node scripts/auth_route_browser_test.mjs
+          node scripts/pwa_login_diagnostics_browser_test.mjs
           node scripts/annotations_theme_browser_test.mjs
           node scripts/pdf_ecg_browser_test.mjs
           node scripts/study_workspace_browser_test.mjs

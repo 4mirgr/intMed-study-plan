@@ -1,12 +1,20 @@
 // Supabase Edge Function. Server secrets stay in the Edge runtime, never in GitHub Pages.
-const allowedOrigins = new Set(['https://drgerami-md.ir','https://www.drgerami-md.ir','http://localhost:8765','http://127.0.0.1:8765']);
+// Installed PWAs retain their installation origin. Keep the exact owned
+// deployment aliases during migration; never accept arbitrary Pages previews.
+const allowedOrigins = new Set(['https://drgerami-md.ir','https://www.drgerami-md.ir','https://4mirgr.github.io','https://gerami-website.pages.dev','http://localhost:8765','http://127.0.0.1:8765']);
+function originLabel(value){
+  try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?u.origin.slice(0,160):'opaque';}catch{return 'opaque';}
+}
 Deno.serve(async (req) => {
   const origin = req.headers.get('origin') || '';
   const cors = {'Access-Control-Allow-Origin':allowedOrigins.has(origin)?origin:'https://drgerami-md.ir','Access-Control-Allow-Headers':'apikey, content-type, authorization','Access-Control-Allow-Methods':'POST, OPTIONS','Vary':'Origin','Cache-Control':'no-store'};
   const reply=(status,body)=>new Response(JSON.stringify(body),{status,headers:{...cors,'Content-Type':'application/json'}});
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
   if(req.method!=='POST')return reply(405,{message:'Method not allowed'});
-  if(origin&&!allowedOrigins.has(origin))return reply(403,{message:'Origin not allowed'});
+  if(origin&&!allowedOrigins.has(origin)){
+    console.warn(JSON.stringify({event:'intmed_login_origin_rejected',origin:originLabel(origin)}));
+    return reply(403,{message:'Origin not allowed'});
+  }
   if(Number(req.headers.get('content-length')||0)>8192)return reply(413,{message:'Request too large'});
   try{
     const raw=await req.text();if(raw.length>8192)return reply(413,{message:'Request too large'});
