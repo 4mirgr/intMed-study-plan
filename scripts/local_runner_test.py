@@ -1,4 +1,5 @@
 import json
+import copy
 import hashlib
 import io
 import sys
@@ -9,6 +10,137 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import local_runner as subject
+
+
+class PublishedMcqIdentityTest(unittest.TestCase):
+    """Saved answers must keep referring to the same question after re-publication."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.topic = self.root / "content/heme/heme-test/data.json"
+        self.topic.parent.mkdir(parents=True)
+        self.prefix = "review-item-44444444-444-mcq-"
+        self.q1 = self.question("bank-q1", "First question", 0)
+        self.q2 = self.question("bank-q2", "Second question", 1)
+        self.unrelated = {**self.question("bank-q1", "Other import", 2), "id": "unrelated-question"}
+        self.topic.write_text(json.dumps({"topicId": "heme-test", "category": "heme", "sources": [],
+            "images": [], "lesson": [], "flashcards": [], "kfPmp": [], "mcq": [self.unrelated,
+                {**self.q1, "id": self.prefix + "1"}, {**self.q2, "id": self.prefix + "2"}]}), "utf-8")
+        self.job = {"draftId": "44444444-4444-4444-8444-444444444444", "title": "Reviewed source",
+            "target": {"categoryId": "heme", "topicId": "heme-test", "kind": "lesson"},
+            "source": {"kind": "text", "filename": "source.txt"},
+            "draft": {"lessonDrafts": [{"heading": "Context", "paragraphs": ["Reviewed context"]}]}}
+        root_patch = mock.patch.object(subject, "ROOT", self.root)
+        process_patch = mock.patch.object(subject.subprocess, "run", return_value=mock.Mock(returncode=0, stdout="ok"))
+        root_patch.start()
+        process_patch.start()
+        self.addCleanup(root_patch.stop)
+        self.addCleanup(process_patch.stop)
+
+    @staticmethod
+    def question(source_id, stem, correct_index):
+        return {"sourceQuestionId": source_id, "origin": "source", "stem": stem,
+            "options": ["A", "B", "C", "D"], "correctIndex": correct_index,
+            "explanation": "Reviewed explanation", "optionExplanations": ["One", "Two", "Three", "Four"]}
+
+    def publish(self, questions):
+        self.job["draft"]["mcqDrafts"] = copy.deepcopy(questions)
+        self.job["draft"]["questionBank"] = {"complete": True,
+            "questions": [{"id": row["sourceQuestionId"], "status": "ready"} for row in questions]}
+        original_job = copy.deepcopy(self.job)
+        subject.integrate_publish_job({}, self.job)
+        self.assertEqual(self.job, original_job)
+        payload = json.loads(self.topic.read_text("utf-8"))
+        self.assertEqual(payload["mcq"][0], self.unrelated)
+        return {row["sourceQuestionId"]: row for row in payload["mcq"] if row["id"] != "unrelated-question"}
+
+    def test_reorder_keeps_legacy_ids_and_question_content(self):
+        saved = self.publish([self.q2, self.q1])
+        self.assertEqual(saved["bank-q1"]["id"], self.prefix + "1")
+        self.assertEqual(saved["bank-q2"]["id"], self.prefix + "2")
+        for original in [self.q1, self.q2]:
+            self.assertEqual({key: saved[original["sourceQuestionId"]][key] for key in original}, original)
+
+    def test_insertion_does_not_reassign_existing_question_ids(self):
+        saved = self.publish([self.question("bank-q3", "New question", 3), self.q1, self.q2])
+        self.assertEqual(saved["bank-q1"]["id"], self.prefix + "1")
+        self.assertEqual(saved["bank-q2"]["id"], self.prefix + "2")
+        self.assertNotIn(saved["bank-q3"]["id"], {self.prefix + "1", self.prefix + "2"})
+
+    def test_removed_identity_is_not_recycled_and_returning_question_recovers_id(self):
+        self.publish([self.q1])
+        saved = self.publish([self.q1, self.question("bank-q3", "New question", 3)])
+        new_id = saved["bank-q3"]["id"]
+        self.assertNotEqual(new_id, self.prefix + "2")
+        saved = self.publish([self.q2, self.q1, self.question("bank-q3", "New question", 3)])
+        self.assertEqual(saved["bank-q2"]["id"], self.prefix + "2")
+        self.assertEqual(saved["bank-q3"]["id"], new_id)
+
+    def test_duplicate_draft_identity_requires_review_without_writing_content(self):
+        before = self.topic.read_bytes()
+        with self.assertRaises(subject.RunnerError):
+            self.publish([self.q1, {**self.q1, "stem": "Conflicting question"}])
+        self.assertEqual(self.topic.read_bytes(), before)
+
+    def test_duplicate_existing_identity_requires_review_without_writing_content(self):
+        payload = json.loads(self.topic.read_text("utf-8"))
+        payload["mcq"].append({**self.q1, "id": self.prefix + "3"})
+        self.topic.write_text(json.dumps(payload), "utf-8")
+        before = self.topic.read_bytes()
+        with self.assertRaises(subject.RunnerError):
+            self.publish([self.q1, self.q2])
+        self.assertEqual(self.topic.read_bytes(), before)
+
+    def test_authored_questions_without_source_identity_keep_ids_when_reordered(self):
+        payload = json.loads(self.topic.read_text("utf-8"))
+        for row in payload["mcq"][1:]:
+            del row["sourceQuestionId"]
+            row["origin"] = "authored"
+        self.topic.write_text(json.dumps(payload), "utf-8")
+        self.job["draft"]["mcqDrafts"] = copy.deepcopy(list(reversed(payload["mcq"][1:])))
+        subject.integrate_publish_job({}, self.job)
+        saved = json.loads(self.topic.read_text("utf-8"))["mcq"]
+        self.assertEqual({row["stem"]: row["id"] for row in saved}, {
+            "Other import": "unrelated-question", "First question": self.prefix + "1",
+            "Second question": self.prefix + "2"})
+
+    def test_ambiguous_question_bank_identity_requires_review_without_writing_content(self):
+        self.job["draft"].update({"mcqDrafts": [self.q1], "questionBank": {"complete": True,
+            "questions": [{"id": "bank-q1", "status": "ready"}, {"id": "bank-q1", "status": "needs_review"}]}})
+        before = self.topic.read_bytes()
+        with self.assertRaises(subject.RunnerError):
+            subject.integrate_publish_job({}, self.job)
+        self.assertEqual(self.topic.read_bytes(), before)
+
+    def test_authored_question_round_trip_preserves_raw_text_and_identity(self):
+        payload = json.loads(self.topic.read_text("utf-8"))
+        authored = {"id": self.prefix + "1", "origin": "authored",
+            "stem": "  تشخیص\n  <b>اصلی</b> چیست؟\u200c ", "options": [" A\n B ", "<i>C</i>", "ی ک", "ي ك"],
+            "correctIndex": 2, "explanation": "  توضیح\t\n چندخطی  ",
+            "optionExplanations": [" A ", " B\n C ", "<p>متن</p>", "ي\u200cك"]}
+        payload["mcq"] = [self.unrelated, authored]
+        self.topic.write_text(json.dumps(payload), "utf-8")
+        self.job["draft"]["mcqDrafts"] = [{key: value for key, value in authored.items() if key != "id"}]
+        original_job = copy.deepcopy(self.job)
+        for _ in range(3):
+            subject.integrate_publish_job({}, self.job)
+            saved = json.loads(self.topic.read_text("utf-8"))["mcq"][1]
+            self.assertEqual({key: saved[key] for key in authored}, authored)
+        self.assertEqual(self.job, original_job)
+
+    def test_nonnumeric_reserved_suffix_does_not_crash_or_recycle_ids(self):
+        payload = json.loads(self.topic.read_text("utf-8"))
+        payload["mcq"][2]["id"] = self.prefix + "²"
+        self.topic.write_text(json.dumps(payload), "utf-8")
+        try:
+            self.publish([self.q1])
+        except ValueError as exc:
+            self.fail("Reserved nondecimal IDs must not enter numeric allocation: " + str(exc))
+        saved = self.publish([self.q1, self.q2, self.question("bank-q3", "New question", 3)])
+        self.assertEqual(saved["bank-q2"]["id"], self.prefix + "²")
+        self.assertNotIn(saved["bank-q3"]["id"], {self.prefix + "1", self.prefix + "²"})
 
 
 class LocalRunnerTest(unittest.TestCase):

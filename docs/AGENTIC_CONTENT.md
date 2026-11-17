@@ -71,6 +71,10 @@ Separate role configuration (`INTMED_EXTRACTION_MODEL`, `INTMED_LESSON_MODEL`,
 `INTMED_ASSESSMENT_MODEL`) must retain current provider defaults until a representative benchmark
 justifies a change. Do not silently send source files to another provider.
 
+> Historical checkpoint: the synchronous description below records the initial
+> revision. The current resumable processing path is described in the subsequent
+> durable-processing paragraphs and implemented by `process_content_job.py`.
+
 The initial revision checkpoint validates model-reported page inventories, rejects truncated
 responses, persists lesson completion before assessment generation, preserves page references,
 and provides human-readable editable review artifacts. These checks are structural, not clinical
@@ -241,6 +245,9 @@ and runs validate/build/check. The build puts the same PBS item in both its topi
 library; do not maintain a second catalog. Its GitHub-token checkpoint does not trigger other
 push workflows: the coordinator must trigger/verify the normal release with a follow-up commit
 or explicit deployment run before reporting public completion.
+
+> Implementation status: the dashboard library described below is now shipped in
+> `docs/js/intmed-library.js`; retain this paragraph as the original design record.
 
 The future dashboard library reads that generated index and offers subject/topic/kind/source filters,
 Persian search, favorites, recent items, full-resolution viewing and a “go to lesson” deep link.

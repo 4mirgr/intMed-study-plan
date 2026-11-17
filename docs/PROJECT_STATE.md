@@ -3,6 +3,17 @@
 This is the short, canonical handoff. Update it in the same commit when a decision, production
 dependency, or backlog item changes. Do not copy chat transcripts here.
 
+## Current system review — 2026-11-17
+
+- Authentication race and stable source-question identity repairs are documented
+  in `system-review-2026-11-17.md`; canonical medical content is preserved.
+- Local focused profiles now distinguish smoke from the full 18-browser inventory;
+  CI reuses that inventory. PWA-origin checks are daily HTTP / weekly browsers.
+- `TASK_ROUTING.md` provides short task-specific read/check packets. Historical
+  passages remain present and explicitly labeled.
+- A separate exact-release CI gate is required for unattended publication; see
+  the review report for discovery and subsequent completion evidence.
+
 ## Owner image intake — 2026-11-11
 
 - Ten owner-supplied images compared against canonical and generated assets using SHA-256,
@@ -506,4 +517,3 @@ written above. Local-only edits or a green Pages job with a failed validation jo
   and unknown server strings. Live Chromium/WebKit Pages.dev probes and exact
   origin regression tests are included in production/validation workflows.
 - Evidence and scope: `docs/pwa-login-origin-repair-2026-11-14.md`.
-

@@ -7,6 +7,22 @@
   var activeOrigin = "";
   var routeKey = "intmed_api_route";
   var signInRoutePromise = null;
+  var sessionGeneration = 0;
+
+  function sessionChanged(){var error=new Error("auth");error.code="session_changed";return error;}
+  function sessionContext(){
+    var current=session(),owner=current&&current.user&&current.user.id;
+    return {generation:sessionGeneration,present:!!current,owner:owner||null,unidentifiedToken:current&&!owner?current.access_token:null};
+  }
+  function assertSessionContext(expected){
+    var current=sessionContext();
+    if(current.generation!==expected.generation||current.present!==expected.present||current.owner!==expected.owner||current.unidentifiedToken!==expected.unidentifiedToken)throw sessionChanged();
+  }
+  function assertSessionGeneration(expected){if(sessionGeneration!==expected)throw sessionChanged();}
+  function changeSession(){
+    sessionGeneration++;refreshPromise=null;refreshContext=null;loadedSnapshot=null;
+    return sessionGeneration;
+  }
 
   function configuredOrigins(){
     return [config.supabaseUrl,config.supabaseFallbackUrl].filter(function(value,index,list){return /^https:\/\//.test(value||"")&&list.indexOf(value)===index;});
@@ -124,15 +140,18 @@
   function request(path, options){
     options = options || {};
     var authenticated = options.authenticated !== false;
+    var context = authenticated ? sessionContext() : null;
     function origins(){
       return preferredOrigins();
     }
     function perform(retried){
+      if(authenticated)assertSessionContext(context);
       var requestOptions = {};
       Object.keys(options).forEach(function(key){ if(key !== "authenticated" && key !== "headers" && key !== "signInOrigin") requestOptions[key] = options[key]; });
       requestOptions.headers = headers(options.headers, authenticated);
       var candidates=origins();
       function send(index,firstNetworkError){
+        if(authenticated)assertSessionContext(context);
         var origin=candidates[index];
         // A browser fetch has no built-in timeout. Without a real deadline a
         // filtered or half-open route can leave login pending forever and the
@@ -143,9 +162,16 @@
         // round trips. Do not abort it on the short route-selection deadline.
         if(options.signInOrigin===origin)deadline=Math.max(deadline,Number(config.authSignInTimeoutMs)||20000);
         return fetchWithDeadline(origin.replace(/\/$/, "") + path, requestOptions, deadline).then(function(result){
+        if(authenticated)assertSessionContext(context);
         var response=result.response;
         if(response.status === 401 && authenticated && !retried){
-          return refreshSession().then(function(){ return perform(true); });
+          return refreshSession().then(function(){
+            assertSessionGeneration(context.generation);
+            // Recovery links initially have no user object. A refresh proven
+            // to belong to that same session may hydrate its server identity.
+            if(context.present&&!context.owner)context=sessionContext();
+            return perform(true);
+          });
         }
         if(response.status === 204){ rememberOrigin(origin); return null; }
         var text=result.text;
@@ -165,6 +191,7 @@
           rememberOrigin(origin);
           return body;
         }).catch(function(error){
+          if(authenticated)assertSessionContext(context);
           if(canTryNextOrigin(error) && index+1<candidates.length)return send(index+1,firstNetworkError||error);
           if(!error.status&&firstNetworkError)throw firstNetworkError;
           throw error;
@@ -180,34 +207,43 @@
   }
   function signIn(username, password){
     username=String(username||"").trim().toLowerCase();
+    var generation=changeSession();
     // Email compatibility preserves existing accounts during the one-time rollout.
     var login = prepareSignInRoute().then(function(origin){
+      assertSessionGeneration(generation);
       return username.indexOf("@") !== -1
         ? request("/auth/v1/token?grant_type=password", {method:"POST",authenticated:false,signInOrigin:origin,body:JSON.stringify({email:username,password:password})})
         : request("/functions/v1/intmed-login", {method:"POST",authenticated:false,signInOrigin:origin,body:JSON.stringify({username:username,password:password})});
     });
     return login.catch(function(error){
+      assertSessionGeneration(generation);
       if(!error.status && (error.code === "network_timeout" || /fetch|network|load failed|offline|abort/i.test(error.message||"")))error=withMessage(error,"هیچ‌کدام از مسیرهای امن ورود پاسخ ندادند. این مشکل از مسیر شبکه یا سرویس حساب است و به معنی اشتباه بودن رمز نیست؛ کمی بعد دوباره تلاش کنید.");
       if(error.status === 404) error=withMessage(error,"ورود با نام کاربری هنوز در سرور فعال نشده است؛ تا تکمیل راه‌اندازی از ایمیل حساب استفاده کنید.");
       throw error;
     }).then(function(value){
+      assertSessionGeneration(generation);
       saveSession(value);
-      return resumeSignIn().then(function(result){telegramEvent("login").catch(function(){});return result;});
+      return resumeSignIn().then(function(result){assertSessionGeneration(generation);telegramEvent("login").catch(function(){});return result;});
     });
   }
   function resumeSignIn(){
     // A saved token is not approval. Verify the profile before revealing the app,
     // but retry transient reads without exchanging the user's password again.
     if(!session() || !session().user)return Promise.reject(new Error("auth"));
+    var context=sessionContext();
     function verify(attempt){
       return profile().then(function(p){
+        assertSessionContext(context);
         if(!p || !p.approved || p.rejected){
+          changeSession();
           saveSession(null);
           var denied=new Error("ورود حساب تأیید نشد؛ حساب فعال نیست یا دسترسی آن معلق شده است.");
           denied.code="account_inactive";throw denied;
         }
         return {session:session(),profile:p};
       }).catch(function(error){
+        if(error.code==="account_inactive")throw error;
+        assertSessionContext(context);
         var temporary=error.code!=="account_inactive" && error.message!=="auth" && (!error.status || error.status===403 || error.status===408 || error.status===425 || error.status===429 || error.status>=500);
         if(temporary && session()){
           if(attempt===0)return new Promise(function(resolve){setTimeout(resolve,800);}).then(function(){return verify(1);});
@@ -220,25 +256,31 @@
     return verify(0);
   }
   var refreshPromise = null;
+  var refreshContext = null;
   function refreshSession(){
     var current = session();
-    if(!current || !current.refresh_token){ saveSession(null); return Promise.reject(new Error("auth")); }
-    if(refreshPromise) return refreshPromise;
-    refreshPromise = auth("token?grant_type=refresh_token", {refresh_token:current.refresh_token}).then(function(value){
+    if(!current || !current.refresh_token){ changeSession();saveSession(null);return Promise.reject(new Error("auth")); }
+    var context=sessionContext();
+    if(refreshPromise&&refreshContext&&refreshContext.generation===context.generation&&refreshContext.owner===context.owner&&refreshContext.token===current.refresh_token)return refreshPromise;
+    function checkRefresh(){assertSessionContext(context);if((session()||{}).refresh_token!==current.refresh_token)throw sessionChanged();}
+    var pending = auth("token?grant_type=refresh_token", {refresh_token:current.refresh_token}).then(function(value){
+      checkRefresh();
       saveSession(value);
-      refreshPromise = null;
       return value;
     }).catch(function(error){
-      refreshPromise = null;
+      checkRefresh();
       // A network/server failure must not destroy the refresh session. Only a
       // definitive rejected refresh requires a fresh password login.
       if(error.status === 400 || error.status === 401 || error.status === 403){
+        changeSession();
         saveSession(null);
         error = withMessage(error,"auth");
       }
       throw error;
-    });
-    return refreshPromise;
+    }).finally(function(){if(refreshPromise===pending){refreshPromise=null;refreshContext=null;}});
+    refreshPromise=pending;
+    refreshContext={generation:context.generation,owner:context.owner,token:current.refresh_token};
+    return pending;
   }
   function signUp(email, password, metadata){
     return auth("signup", {email:email, password:password, data:metadata || {}}).then(function(value){
@@ -270,6 +312,7 @@
     var values = new URLSearchParams(global.location.hash.slice(1));
     var flowType = values.get("type");
     if((flowType !== "recovery" && flowType !== "invite") || !values.get("access_token")) return false;
+    changeSession();
     saveSession({
       access_token:values.get("access_token"),
       refresh_token:values.get("refresh_token") || "",
@@ -289,8 +332,10 @@
   }
   function signOut(){
     var current = session();
-    var promise = current ? request("/auth/v1/logout?scope=local", {method:"POST"}).catch(function(){}) : Promise.resolve();
-    return promise.then(function(){ saveSession(null); });
+    // Local logout is immediate. The remote request keeps its captured token,
+    // never refreshes it, and cannot clear a subsequent login when it finishes.
+    changeSession();saveSession(null);
+    return current ? request("/auth/v1/logout?scope=local", {method:"POST",authenticated:false,headers:{Authorization:"Bearer "+current.access_token}}).catch(function(){}) : Promise.resolve();
   }
   function profile(){
     var current = session();
@@ -333,11 +378,13 @@
   }
   function equal(a,b){ return JSON.stringify(canonical(a)) === JSON.stringify(canonical(b)); }
   function loadLegacyState(){
+    var context=sessionContext();
     return Promise.all([
       select("profiles?select=*"),
       select("study_state?select=user_id,state,updated_at"),
       select("tickets?select=id,user_id,payload,updated_at")
     ]).then(function(results){
+      assertSessionContext(context);
       var profiles = results[0] || [], stateRows = results[1] || [], ticketRows = results[2] || [];
       var stateByUser = {};
       stateRows.forEach(function(row){ stateByUser[row.user_id] = row; });
@@ -438,6 +485,7 @@
   function saveLegacyState(state){
     var current = session();
     if(!current || !current.user || !loadedSnapshot) return Promise.reject(new Error("auth"));
+    var context=sessionContext();
     var owner = current.user.id;
     var snapshot = clone(state);
     var old = loadedSnapshot;
@@ -445,7 +493,7 @@
     var own = cleanBucket((snapshot.users || {})[owner]);
     var before = cleanBucket((old.users || {})[owner]);
     // Admin profile visibility never means rewriting other users' study snapshots.
-    if(!equal(own,before)) work.push(saveOwnState(owner,before,own,0).then(function(){return telegramEvent("activity").catch(function(){});}));
+    if(!equal(own,before)) work.push(saveOwnState(owner,before,own,0).then(function(){assertSessionContext(context);return telegramEvent("activity").catch(function(){});}));
     (snapshot.tickets || []).forEach(function(ticket){
       if(ticket._normalized) return;
       var previous = (old.tickets || []).find(function(row){return row.id===ticket.id;});
@@ -460,7 +508,7 @@
         method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({full_name:p.fullName||null,degree:p.degree||null,id_number:p.idNumber||null,phone:p.phone||null,...((p.specialty || (((old.users || {})[userId] || {}).profile || {}).specialty) ? {specialty:p.specialty||null} : {}),...((p.province || (((old.users || {})[userId] || {}).profile || {}).province) ? {province:p.province||null} : {}),updated_at:new Date().toISOString()})
       }));
     });
-    return Promise.all(work).then(function(){ loadedSnapshot=snapshot; });
+    return Promise.all(work).then(function(){assertSessionContext(context);loadedSnapshot=snapshot;});
   }
   function approveUser(userId, approved){
     return request("/rest/v1/rpc/set_intmed_user_approval", {

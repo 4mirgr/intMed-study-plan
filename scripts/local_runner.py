@@ -752,6 +752,69 @@ def add_source(payload: dict[str, Any], source_id: str, title: str,
                         "note": note[:1000]})
 
 
+def publish_mcq_identities(payload: dict[str, Any], draft: dict[str, Any],
+                           source_id: str, item_id: str) -> list[tuple[dict[str, Any], str]]:
+    """Keep saved-answer identities across retries, including removal and return."""
+    prefix = item_id + "-mcq-"
+    sources = [row for row in payload.get("sources", []) if isinstance(row, dict) and row.get("id") == source_id]
+    if len(sources) != 1:
+        raise RunnerError("شناسهٔ منبع سؤال تکراری است؛ بازبینی لازم است.")
+    stored = sources[0].get("mcqIdentityMap", {})
+    if not isinstance(stored, dict) or any(
+        not isinstance(key, str) or not key or not isinstance(value, str) or not value.startswith(prefix)
+        for key, value in stored.items()
+    ) or len(set(stored.values())) != len(stored):
+        raise RunnerError("نگاشت شناسه‌های سؤال مبهم است؛ بازبینی لازم است.")
+    identities = dict(stored)
+
+    def identity(row: dict[str, Any]) -> str:
+        if isinstance(row.get("sourceQuestionId"), str) and row["sourceQuestionId"]:
+            return "source:" + row["sourceQuestionId"]
+        # Authored legacy questions may have no source identifier. Content changes
+        # get a fresh identity rather than inheriting another question's answers.
+        fields = {key: row[key] for key in ("stem", "options", "correctIndex", "explanation", "optionExplanations") if key in row}
+        return "content:" + hashlib.sha256(json.dumps(fields, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+
+    previous = [row for row in payload.get("mcq", [])
+                if isinstance(row, dict) and str(row.get("id") or "").startswith(prefix)]
+    seen_previous = set()
+    for row in previous:
+        key, canonical_id = identity(row), row["id"]
+        if key in seen_previous or (key in identities and identities[key] != canonical_id) or any(
+            other != key and value == canonical_id for other, value in identities.items()
+        ):
+            raise RunnerError("شناسهٔ سؤال منتشرشده مبهم است؛ بازبینی لازم است.")
+        seen_previous.add(key)
+        identities[key] = canonical_id
+    used = set(identities.values())
+    next_index = max((int(value[len(prefix):]) for value in used
+                      if re.fullmatch(r"[0-9]+", value[len(prefix):])), default=0) + 1
+    result, seen_draft = [], set()
+    bank = draft.get("questionBank")
+    for row in draft.get("mcqDrafts") or []:
+        if not isinstance(row, dict) or len(row.get("options") or []) != 4:
+            continue
+        if row.get("sourceQuestionId") and isinstance(bank, dict):
+            matches = [question for question in bank.get("questions", [])
+                       if isinstance(question, dict) and question.get("id") == row["sourceQuestionId"]]
+            if len(matches) > 1:
+                raise RunnerError("شناسهٔ سؤال در بانک منبع تکراری است؛ بازبینی لازم است.")
+            if bank.get("complete") is not True or not matches or matches[0].get("status") != "ready":
+                continue
+        key = identity(row)
+        if key in seen_draft:
+            raise RunnerError("شناسهٔ سؤال پیش‌نویس تکراری است؛ بازبینی لازم است.")
+        seen_draft.add(key)
+        if key not in identities:
+            identities[key] = prefix + str(next_index)
+            next_index += 1
+        result.append((row, identities[key]))
+    # Retain removed bindings: their IDs must never be reassigned to new questions.
+    if identities:
+        sources[0]["mcqIdentityMap"] = identities
+    return result
+
+
 def create_existing_topic_package(topic_file: Path, category: str, topic_id: str) -> None:
     """Materialize a taxonomy placeholder without adding a duplicate taxonomy entry."""
     topic_file.parent.mkdir(parents=True, exist_ok=True)
@@ -803,6 +866,8 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
         return [{"sourceId": source_id, **({"pages": pages} if pages else {})}]
     source_title = str(source.get("filename") or source.get("sourceName") or job.get("title") or "منبع تلگرام")
     add_source(payload, source_id, source_title, source_class, rights)
+    visual = kind in {"image", "pbs", "algorithm", "table", "tracing", "radiology", "pathology", "clinical", "chart"}
+    mcq_rows = [] if visual else publish_mcq_identities(payload, draft, source_id, item_id)
     # A retry updates the same stable item rather than duplicating it.
     payload["images"] = [row for row in payload.get("images", [])
                          if not isinstance(row, dict) or row.get("id") != item_id]
@@ -816,7 +881,6 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                         if not isinstance(row, dict) or row.get("id") != item_id + "-kf"]
     payload["flashcards"] = [row for row in payload.get("flashcards", [])
                              if not isinstance(row, dict) or not str(row.get("id") or "").startswith(item_id + "-fc-")]
-    visual = kind in {"image", "pbs", "algorithm", "table", "tracing", "radiology", "pathology", "clinical", "chart"}
     if visual:
         if source_class == "harrison-private":
             raise RunnerError("دارایی خصوصی هاریسون قابل انتشار در bundle عمومی نیست.")
@@ -867,22 +931,13 @@ def integrate_publish_job(config: dict[str, Any], job: dict[str, Any]) -> None:
                                     "sourceRefs": [{"sourceId": source_id}]} for index, value in enumerate(paragraphs)]})
                 lesson_count = 1
         mcq_count = 0
-        for index, row in enumerate(draft.get("mcqDrafts") or []):
-            if not isinstance(row, dict) or len(row.get("options") or []) != 4:
-                continue
-            if row.get("sourceQuestionId") and isinstance(draft.get("questionBank"), dict):
-                bank = draft["questionBank"]
-                if bank.get("complete") is not True or not any(
-                    question.get("id") == row["sourceQuestionId"] and question.get("status") == "ready"
-                    for question in bank.get("questions", []) if isinstance(question, dict)
-                ):
-                    continue
+        for row, canonical_id in mcq_rows:
             question = {key: row[key] for key in ("stem", "options", "correctIndex", "explanation", "optionExplanations") if key in row}
             if row.get("origin") in ("source", "authored"):
                 question["origin"] = row["origin"]
             if isinstance(row.get("sourceQuestionId"), str):
                 question["sourceQuestionId"] = row["sourceQuestionId"]
-            question.update({"id": item_id + "-mcq-" + str(index + 1), "reviewStatus": "reviewed",
+            question.update({"id": canonical_id, "reviewStatus": "reviewed",
                              "sourceRefs": source_refs(row)})
             payload.setdefault("mcq", []).append(question)
             mcq_count += 1

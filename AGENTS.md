@@ -27,6 +27,13 @@ session history is not required for routine work.
 - `docs/architecture.md`: application, persistence, deployment, and migration design.
 - `docs/archive/CLAUDE-history.md`: historical session notes; consult only for archaeology.
 
+For a focused task, use `docs/TASK_ROUTING.md` to select files and checks. Read the
+relevant headings in the handoff/history with `rg` before loading long documents.
+`npm run test:core` is the fast integrity/client regression profile;
+`npm run test:auth` covers client authentication. `npm run test:browser` remains
+smoke-only; `npm run test:browser:all` is the complete local browser inventory used
+by CI. These profiles do not replace the full SQL/Python/server checks in CI.
+
 ## Required workflow
 
 1. Preserve existing user changes and use the existing checkout; do not create a worktree.

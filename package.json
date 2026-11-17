@@ -3,7 +3,13 @@
   "private": true,
   "scripts": {
     "test:js": "node scripts/check_inline_js.mjs",
-    "test:browser": "node scripts/browser_smoke.mjs"
+    "test:core": "python3 scripts/content_pipeline.py check && npm run test:js && node scripts/backend_state_test.mjs && node scripts/pwa_test.mjs && node scripts/exams_unit_test.mjs",
+    "test:auth": "node scripts/backend_unit_test.mjs && node scripts/auth_route_recovery_test.mjs && node scripts/auth_session_race_test.mjs && node scripts/login_resume_test.mjs && node scripts/username_login_test.mjs && node scripts/pwa_login_cors_test.mjs && node scripts/cloudflare_proxy_test.mjs",
+    "test:browser": "node scripts/browser_smoke.mjs",
+    "test:browser:auth": "node scripts/auth_browser_test.mjs && node scripts/login_resume_browser_test.mjs && node scripts/registration_browser_test.mjs && node scripts/delete_user_browser_test.mjs && node scripts/recovery_browser_test.mjs && node scripts/recovery_support_browser_test.mjs && node scripts/auth_route_browser_test.mjs && node scripts/pwa_login_diagnostics_browser_test.mjs",
+    "test:browser:content": "node scripts/browser_smoke.mjs && node scripts/heme_content_browser_test.mjs && node scripts/library_browser_test.mjs && node scripts/content_loading_browser_test.mjs && node scripts/pdf_ecg_browser_test.mjs && node scripts/content_review_browser_test.mjs",
+    "test:browser:workspace": "node scripts/favorites_browser_test.mjs && node scripts/dashboard_browser_test.mjs && node scripts/annotations_theme_browser_test.mjs && node scripts/study_workspace_browser_test.mjs",
+    "test:browser:all": "npm run test:browser:auth && npm run test:browser:content && npm run test:browser:workspace"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.10",
