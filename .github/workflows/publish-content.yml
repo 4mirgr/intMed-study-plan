@@ -24,8 +24,20 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
+      - name: Mask publication capability
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as handle:
+              capability = json.load(handle).get("inputs", {}).get("capability", "")
+          if not isinstance(capability, str) or not re.fullmatch(r"[0-9a-f]{64}", capability):
+              raise SystemExit("Invalid publication capability.")
+          masked = capability.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+          print("::add-mask::" + masked, flush=True)
+          PY
+
       - uses: actions/checkout@v4
         with:
           ref: claude/quirky-ride-mavb6b
@@ -43,6 +55,4 @@ jobs:
           INTMED_PUBLISH_ENDPOINT: https://upwbktvnybsjugdegjji.supabase.co/functions/v1/intmed-content-publisher
           INTMED_DRAFT_ID: ${{ inputs.draft_id }}
           INTMED_PUBLISH_CAPABILITY: ${{ inputs.capability }}
-        run: |
-          echo "::add-mask::$INTMED_PUBLISH_CAPABILITY"
-          python scripts/publish_reviewed_content.py
+        run: python scripts/publish_reviewed_content.py

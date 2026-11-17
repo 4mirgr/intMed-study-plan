@@ -11,8 +11,10 @@ dependency, or backlog item changes. Do not copy chat transcripts here.
   CI reuses that inventory. PWA-origin checks are daily HTTP / weekly browsers.
 - `TASK_ROUTING.md` provides short task-specific read/check packets. Historical
   passages remain present and explicitly labeled.
-- A separate exact-release CI gate is required for unattended publication; see
-  the review report for discovery and subsequent completion evidence.
+- Unattended publication now requires exact-source CI and a tested immutable
+  root candidate before main advances; result writes and capability consumption
+  are guarded against stale work. See the review report and
+  `BACKGROUND_PUBLICATION.md` for tests, credential scopes and operational limits.
 
 ## Owner image intake — 2026-11-11
 

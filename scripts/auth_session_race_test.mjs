@@ -11,10 +11,11 @@ const renewedB={...B,access_token:'renewed-B',refresh_token:'renewed-refresh-B'}
 function deferred(){let resolve;return {promise:new Promise(r=>resolve=r),resolve:value=>resolve(value)};}
 function response(body,status=200){return {status,ok:status>=200&&status<300,text:async()=>body==null?'':JSON.stringify(body)};}
 function storage(){const values=new Map();return {getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};}
-function fixture(){
+function fixture({holdResumeRetry=false}={}){
  const tab=storage(),local=storage(),calls=[],refreshStarted=deferred(),refreshReply=deferred(),logoutStarted=deferred(),logoutReply=deferred(),profileStarted=deferred(),profileReply=deferred();
+ const resumeRetryStarted=deferred();let releaseResumeRetry;
  tab.setItem(key,JSON.stringify(A));
- const state={holdLogout:false,holdInitialProfile:false,bExpired:false,bRefreshCalls:0,bRefreshStarted:deferred(),bRefreshReply:deferred()};
+ const state={holdLogout:false,holdInitialProfile:false,transientAProfile:false,bExpired:false,bRefreshCalls:0,bRefreshStarted:deferred(),bRefreshReply:deferred()};
  const window={INTMED_CONFIG:{supabaseUrl:'https://service.test',supabaseAnonKey:'public',authFallbackTimeoutMs:1000}};
  const fetch=async(url,options={})=>{
   calls.push({url,authorization:options.headers?.Authorization,body:options.body});
@@ -29,6 +30,7 @@ function fixture(){
   if(url.includes('/profiles')){
    const token=options.headers.Authorization;
    if(token==='Bearer expired-A'){
+    if(state.transientAProfile)return response({message:'Temporary profile outage'},503);
     profileStarted.resolve();return state.holdInitialProfile?profileReply.promise:response({message:'Expired A'},401);
    }
    if(token==='Bearer access-B'&&state.bExpired)return response({message:'Expired B'},401);
@@ -37,8 +39,12 @@ function fixture(){
   if(url.includes('/functions/v1/intmed-telegram-bot'))return response({ok:true});
   throw Error('Unexpected synthetic request '+url);
  };
- vm.runInNewContext(source,{window,fetch,localStorage:local,sessionStorage:tab,AbortController,setTimeout,clearTimeout,URLSearchParams,console});
- return {backend:window.IntMedBackend,tab,calls,state,refreshStarted,refreshReply,logoutStarted,logoutReply,profileStarted,profileReply};
+ const schedule=(callback,delay)=>{
+  if(holdResumeRetry&&delay===800){releaseResumeRetry=callback;resumeRetryStarted.resolve();return -1;}
+  return setTimeout(callback,delay);
+ };
+ vm.runInNewContext(source,{window,fetch,localStorage:local,sessionStorage:tab,AbortController,setTimeout:schedule,clearTimeout,URLSearchParams,console});
+ return {backend:window.IntMedBackend,tab,calls,state,refreshStarted,refreshReply,logoutStarted,logoutReply,profileStarted,profileReply,resumeRetryStarted,releaseResumeRetry:()=>releaseResumeRetry()};
 }
 const settle=promise=>promise.then(value=>({value}),error=>({error}));
 const stale=result=>assert.match(result.error?.message||'',/^auth$/,'a stale operation must reject instead of succeeding in a new session');
@@ -112,4 +118,13 @@ for(const status of [200,400,403]){
  f.refreshReply.resolve(response(renewedA));assert.equal((await update).value?.updated,true,'same-session recovery refresh must permit password update');
  assert.equal(f.backend.session().user.id,'user-A');
 }
-console.log('Auth session races passed: logout/new-login boundaries, stale refresh success/rejection, stale 401, external storage changes and current-session refresh single-flight.');
+// A delayed approval retry for A must stop before sending a request as B.
+{
+ const f=fixture({holdResumeRetry:true});f.state.transientAProfile=true;
+ const oldResume=settle(f.backend.resumeSignIn());await f.resumeRetryStarted.promise;
+ await f.backend.signIn('b@example.test','synthetic-password');
+ const beforeRetry=f.calls.length;f.releaseResumeRetry();stale(await oldResume);
+ assert.equal(f.calls.length,beforeRetry,'stale resume retry must not send any request under the newer session');
+ assert.equal(f.backend.session().user.id,'user-B');
+}
+console.log('Auth session races passed: logout/new-login boundaries, stale refresh success/rejection, stale 401, external storage changes, delayed resume retries and current-session refresh single-flight.');

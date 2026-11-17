@@ -5,6 +5,63 @@ reviewed draft in Supabase and closes its dialog. It does not immediately mean t
 The manager's queue polls server statuses every eight seconds without changing another open draft.
 Closing the page or the laptop does not terminate GitHub's publisher.
 
+## Exact-release validation contract — 2026-11-17
+
+The current publisher must validate both repositories before changing production:
+
+1. The trusted runner pushes the integrated source commit and an immutable
+   `intmed-release-check-<full SHA>` lightweight tag using its existing GitHub
+   Actions Contents-write permission. An existing tag must resolve to that SHA;
+   it is never moved or force-pushed.
+2. The capability-scoped server verifies the active publication, branch ancestry,
+   topic manifest and tag. It explicitly dispatches `validate-and-deploy.yml`
+   against that fixed tag: pushes made with `GITHUB_TOKEN` do not normally start
+   another push workflow. Status polling never dispatches work.
+3. After source CI passes, the server prepares an immutable root candidate from
+   the fresh `gerami-website/main`. Its only change is `intmed.commit` in
+   `deploy/projects.json`; AUS, mounts, repositories and all other fields remain
+   equal to the base. The existing `site-checks.yml` runs its browser checks and
+   combined Cloudflare build on that exact candidate.
+4. Before deployment, the server independently rechecks both fixed workflows and
+   the candidate/ref contract. It advances main without force only if main still
+   equals the base (or the exact already-applied candidate), then rereads main.
+   GitHub's ref API has no expected-old-SHA parameter: the fresh read plus
+   non-fast-forward rejection prevents overwriting ordinary concurrent advances.
+   A different main requires a fresh candidate and validation.
+5. The runner verifies both mounted public manifest and topic bytes, waits for
+   any visible redundant main-push validation, and submits success. The server repeats
+   the validation/current-main checks before recording `published` or consuming
+   its capability. A conditional row write must confirm an active publication
+   changed; consumption targets the exact presented capability. No caller-supplied
+   success flag substitutes for proof.
+
+Only the newest eligible exact-SHA run of each fixed workflow counts; PR/fork,
+wrong-repository and other-workflow runs cannot satisfy the gate. Newer pending,
+cancelled or failed runs block an older success. A dispatch visibility floor
+avoids confusing an old failed run with the newly requested run. Exact-current
+host pins still require root CI; a newer/different pin is not implicit success.
+
+CI waits share a 12-minute budget; public byte verification keeps its separate
+eight-minute limit. The workflow allows 30 minutes, within the existing 35-minute
+abandonment and 45-minute capability limits. Queued, missing-permission, failed or
+timed-out work remains recoverable as an error; no educational content or review
+decision is discarded. Immutable validation references are retained for audit.
+
+The server credential needs selected-repository Contents read/write **and Actions
+read/write in both repositories**. Root workflow dispatch is an additional
+permission requirement. Missing permission must produce a configuration error;
+it must never fall back to changing production without checks. The trusted
+runner's `GITHUB_TOKEN` is not sent to the browser or Supabase.
+
+Capability masking runs before checkout and before any environment-bearing
+publication step. It reads only the built-in event file; secret values are not
+interpolated into the shell script or exposed in the mask step's environment.
+HTTP failures retain allowlisted diagnostic codes, never raw provider bodies.
+
+These gates prove tested code/builds. They do not independently approve clinical
+claims or attest arbitrary source commits against reviewed draft text. Existing
+review, privacy and provenance boundaries still apply.
+
 ## Execution and recovery
 
 `claim_intmed_publication()` is a service-role-only, invoker RPC. A transaction advisory lock selects
@@ -20,6 +77,10 @@ Dispatch errors and cloud work abandoned for 35 minutes become visible `publish_
 retain the draft/review decision; a reviewer retries explicitly. Recovery never approves new data.
 
 ## Actual hosting bridge
+
+Historical implementation, before the exact-release contract above. Retained to
+explain the original bridge and observed permission problem; direct main writes
+are superseded by the tested-candidate path.
 
 After pushing the canonical/generated content, the trusted workflow calls the capability-scoped
 `deploy` action of `intmed-content-publisher`. The GitHub credential stays in Supabase; it is not

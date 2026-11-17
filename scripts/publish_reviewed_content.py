@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import hashlib
 import os
+import re
 import subprocess
 import sys
 import time
@@ -21,6 +22,11 @@ BRANCH = "claude/quirky-ride-mavb6b"
 PUBLIC_APP_BASE = "https://drgerami-md.ir/intmed/"
 PUBLIC_HEADERS = {"Cache-Control": "no-cache", "Accept": "application/json",
                   "User-Agent": "IntMed-Publisher/1.0"}
+CI_WAIT_SECONDS = 12 * 60
+SAFE_API_ERROR_CODES = frozenset({
+    "hosting_actions_permission_required", "source_actions_permission_required",
+    "hosting_permission_required", "source_permission_required",
+})
 
 
 def verify_live_topic(topic_id: str, *, timeout: int = 480) -> None:
@@ -61,7 +67,7 @@ def verify_live_topic(topic_id: str, *, timeout: int = 480) -> None:
         time.sleep(5)
 
 
-def api(payload: dict) -> dict:
+def api(payload: dict, *, timeout: float = 120) -> dict:
     request = urllib.request.Request(
         ENDPOINT,
         data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
@@ -69,11 +75,20 @@ def api(payload: dict) -> dict:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=120) as response:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
             result = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", "replace")[:800]
-        raise RunnerError(f"publisher API HTTP {exc.code}: {detail}") from None
+        safe_code = ""
+        try:
+            detail = json.loads(exc.read(4096))
+            code = detail.get("code") if isinstance(detail, dict) else None
+            if isinstance(code, str) and code in SAFE_API_ERROR_CODES:
+                safe_code = ":" + code
+        except (OSError, ValueError):
+            pass
+        raise RunnerError(f"publisher_api_http_{exc.code}{safe_code}") from None
+    except (OSError, ValueError):
+        raise RunnerError("publisher_api_network_or_invalid_json") from None
     if not isinstance(result, dict):
         raise RunnerError("publisher API returned invalid JSON")
     return result
@@ -85,6 +100,69 @@ def git(*args: str, check: bool = True) -> str:
     if check and result.returncode:
         raise RunnerError("git failed: " + result.stdout.strip()[-900:])
     return result.stdout.strip()
+
+
+def ensure_source_validation_tag(commit: str) -> None:
+    """Create an immutable lightweight ref; dispatch authority belongs to the server."""
+    if not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise RunnerError("publisher_invalid_source_commit")
+    ref = "refs/tags/intmed-release-check-" + commit
+
+    def remote_commit() -> str:
+        value = git("ls-remote", "--refs", "origin", ref)
+        if not value:
+            return ""
+        parts = value.split()
+        if len(parts) != 2 or parts[1] != ref:
+            raise RunnerError("publisher_invalid_release_tag")
+        return parts[0]
+
+    existing = remote_commit()
+    if existing and existing != commit:
+        raise RunnerError("publisher_release_tag_collision")
+    if not existing:
+        try:
+            git("push", "origin", commit + ":" + ref)
+        except RunnerError:
+            # A concurrent same-commit publication may have created the same ref.
+            if remote_commit() != commit:
+                raise
+        if remote_commit() != commit:
+            raise RunnerError("publisher_release_tag_not_verified")
+
+
+def ci_timeout(deadline: float) -> float:
+    # Still permit one immediate status check at the boundary: a completed run
+    # can pass even after the waiting budget is exhausted.
+    remaining = deadline - time.monotonic()
+    return min(120.0, remaining) if remaining > 0 else 1.0
+
+
+def wait_for_ci(response: dict, action: str, context: dict, deadline: float) -> None:
+    """Poll an existing exact-commit validation. Never dispatch while waiting."""
+    floor = response.get("afterRunId")
+    if not isinstance(floor, int) or isinstance(floor, bool) or floor < 0:
+        raise RunnerError(action + "_invalid_run_floor")
+    while True:
+        state = response.get("state")
+        if response.get("ok") is not True or state not in {"waiting", "passed", "failed"}:
+            raise RunnerError(action + "_invalid_response")
+        if state == "passed":
+            run = response.get("run")
+            if (not isinstance(run, dict) or not isinstance(run.get("id"), int)
+                    or isinstance(run["id"], bool) or run["id"] <= floor
+                    or run.get("status") != "completed" or run.get("conclusion") != "success"):
+                raise RunnerError(action + "_invalid_or_stale_success")
+            return
+        if state == "failed":
+            raise RunnerError(action + "_ci_failed")
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise RunnerError(action + "_ci_wait_timeout")
+        # Each status action verifies several repository proofs; avoid doubling
+        # GitHub API traffic for negligible latency during multi-minute CI runs.
+        time.sleep(min(10.0, remaining))
+        response = api({**context, "action": action, "afterRunId": floor}, timeout=ci_timeout(deadline))
 
 
 def main() -> int:
@@ -105,10 +183,32 @@ def main() -> int:
             git("commit", "-m", "Publish reviewed content: " + str(job.get("title") or DRAFT_ID)[:100])
         commit = git("rev-parse", "HEAD")
         git("push", "origin", "HEAD:" + BRANCH)
-        api({"action": "deploy", "draftId": DRAFT_ID, "capability": CAPABILITY, "commit": commit})
+        ensure_source_validation_tag(commit)
+        context = {"draftId": DRAFT_ID, "capability": CAPABILITY, "commit": commit}
+        ci_deadline = time.monotonic() + CI_WAIT_SECONDS
+        validation = api({**context, "action": "validate"}, timeout=ci_timeout(ci_deadline))
+        wait_for_ci(validation, "validation_status", context, ci_deadline)
+        prepared = api({**context, "action": "prepare_deploy"}, timeout=ci_timeout(ci_deadline))
+        root_base, hosting_commit = prepared.get("rootBase"), prepared.get("hostingCommit")
+        if (not isinstance(root_base, str) or not re.fullmatch(r"[0-9a-f]{40}", root_base)
+                or not isinstance(hosting_commit, str) or not re.fullmatch(r"[0-9a-f]{40}", hosting_commit)
+                or prepared.get("mode") not in {"candidate", "already_current"}):
+            raise RunnerError("publisher_invalid_hosting_candidate")
+        deployment_context = {**context, "rootBase": root_base, "hostingCommit": hosting_commit}
+        wait_for_ci(prepared, "deployment_status", deployment_context, ci_deadline)
+        deployed = api({**deployment_context, "action": "deploy"})
+        if deployed.get("ok") is not True:
+            raise RunnerError("publisher_deploy_not_accepted")
+        public_started = time.monotonic()
         verify_live_topic(str(job.get("target", {}).get("topicId") or ""))
-        api({"action": "result", "draftId": DRAFT_ID, "capability": CAPABILITY,
-             "ok": True, "commit": commit})
+        # Public CDN propagation has its own eight-minute budget.
+        ci_deadline += time.monotonic() - public_started
+        post_deploy = api({**deployment_context, "action": "deployment_status", "afterRunId": 0},
+                          timeout=ci_timeout(ci_deadline))
+        wait_for_ci(post_deploy, "deployment_status", deployment_context, ci_deadline)
+        completed = api({**deployment_context, "action": "result", "ok": True})
+        if completed.get("ok") is not True:
+            raise RunnerError("publisher_completion_not_accepted")
         print("Published", DRAFT_ID, commit)
         return 0
     except Exception as exc:

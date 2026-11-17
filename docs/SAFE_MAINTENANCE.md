@@ -89,5 +89,14 @@ the complete source CI to succeed before requesting a host-pin advance; the host
 still runs its own subset of tests. Strengthening that cross-repository gate and
 full root browser coverage are follow-up checkpoints, not claimed complete here.
 
+The preceding paragraph records the earlier audit finding. The 2026-11-17
+repair contract is in `BACKGROUND_PUBLICATION.md`: explicit exact-source
+validation and an immutable root candidate must pass the existing browser and
+combined-build workflow before a guarded, non-force main advance. The newest
+eligible run controls the gate; failure, missing proof or changed main blocks
+publication. No automatic clinical approval, credential expansion or model call
+is part of this repair. Missing root Actions permission remains an explicit
+configuration error, not a reason to bypass checks.
+
 No comprehensive clinical, real-user RLS/email/device, legal license, penetration
 test, or all-page accessibility/SEO certification is implied by these checks.

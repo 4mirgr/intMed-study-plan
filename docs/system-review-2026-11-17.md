@@ -38,6 +38,14 @@ The regressions were observed failing before their repairs. Focused auth/state,
 are included in verification. Hosted full CI and root browser/combined-build
 gates remain mandatory before advancing hosting.
 
+First checkpoint published: source
+`57506a522492b83fa39455bb8bbbc2854cfe0df0` passed full CI and live origin
+diagnostics. Root PR #21 passed browser/combined-build checks and advanced only
+the IntMed pin in root commit `4cca182d69a298d5cd70ac08c44c263e6b98a982`.
+Cloudflare reported that production commit successful; a fresh request to the
+owner's installed-PWA origin returned HTTP 200 and backend asset
+`6886592286496f5b`. All 174 canonical/source asset hashes remained identical.
+
 ## Background-publication gate
 
 Review also reproduced an unattended publisher accepting a host advance while
@@ -47,6 +55,41 @@ must explicitly validate an immutable exact-release reference, wait with a bound
 and enforce success again server-side before hosting or a successful result.
 This paragraph records the discovery; completion evidence is recorded below
 when that checkpoint is implemented and tested.
+
+The second checkpoint implements both gates. The trusted runner establishes an
+immutable source tag; the server explicitly dispatches the fixed full-validation
+workflow. A separate immutable root candidate changes only the IntMed pin and
+must pass the existing root browser/combined-build workflow. The server repeats
+proof, ref and fresh publication/capability checks before advancing main without
+force. A changed main, missing proof or failed/newer pending run blocks progress.
+The public manifest and topic hashes are still verified before completion.
+Polling reuses existing work and shares a bounded CI wait; an exact already-live
+pin is checked rather than automatically declared successful.
+
+Conditional result writes confirm that one active row actually changed before
+reporting success. Token consumption is scoped to the presented token, so an old
+request cannot consume a replacement. Capability masking now happens before
+checkout/environment logging. GitHub requests have bounded headers/body reads;
+permission errors retain safe diagnostic codes without provider response bodies.
+A final resume retry guard stops stale work before sending a newer account's
+profile request.
+
+Synthetic tests reproduced the original source/root CI bypasses before repair.
+They cover exact workflow/SHA/repository/reference eligibility, newest-run and
+rerun behavior, dispatch visibility, immutable references, altered AUS/other
+fields, concurrent main advances, expired/cancelled publication at the write
+boundary, zero-row result races, replacement tokens, no-op validation, bounded
+waiting, public hash failure and early log masking. No real draft was approved
+or published to test this path. Full hosted CI and normal coordinator deployment
+remain separate requirements. A later-created workflow run cannot be anticipated;
+the newest visible eligible proof is reread after public-byte verification.
+
+Operational limit: the unattended credential must have Contents and Actions
+read/write on both selected repositories. This review does not grant or expose
+that credential, nor prove its write scopes by touching a real draft. Missing
+permission fails closed with a configuration code. Long Actions queue delays may
+exhaust the existing publication lifetime and require an explicit retry; no
+lease, review decision, model/provider setting or database schema was changed.
 
 ## Existing content-review backlog
 

@@ -232,6 +232,7 @@
     if(!session() || !session().user)return Promise.reject(new Error("auth"));
     var context=sessionContext();
     function verify(attempt){
+      assertSessionContext(context);
       return profile().then(function(p){
         assertSessionContext(context);
         if(!p || !p.approved || p.rejected){
