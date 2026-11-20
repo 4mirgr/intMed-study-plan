@@ -87,6 +87,13 @@ Deno.serve(async req=>{
     const chat=String(message.chat.id||''),allowed=await configuredChat();
     if(!allowed||chat!==allowed)return reply(200,{ok:true,ignored:true});
     const bodyText=String(message.text||message.caption||'').trim(),command=(String(message.text||'').trim().split(/\s+/)[0]||'').split('@')[0].toLowerCase(),callbackData=String(callback?.data||'');
+    // Website approval has its own revision/capability gate; never feed it into IntMed intake.
+    if(callbackData.startsWith('webpost:')){
+      if(String(callback?.from?.id)!==chat)return reply(200,{ok:true,ignored:true});
+      const delivered=await fetch(url+'/functions/v1/gerami-editorial/callback',{method:'POST',headers:{Authorization:'Bearer '+service,'Content-Type':'application/json'},body:JSON.stringify({callback_query:callback}),signal:AbortSignal.timeout(20000)});
+      if(!delivered.ok)try{await telegram('answerCallbackQuery',{callback_query_id:callback.id,text:'این تأیید کامل نشد؛ نسخهٔ تازه را در مدیریت سایت بررسی کنید.',show_alert:true});}catch{}
+      return reply(200,{ok:delivered.ok,website:true});
+    }
     if(callback?.id)try{await telegram('answerCallbackQuery',{callback_query_id:callback.id});}catch{}
     if(command==='/topic'||callbackData==='topic:set'){
       const supplied=clean(command==='/topic'?String(message.text||'').replace(/^\/topic(?:@\w+)?\s*/i,''):null,300);

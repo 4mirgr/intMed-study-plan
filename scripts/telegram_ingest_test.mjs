@@ -2,9 +2,10 @@ import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:asser
 let handler,rows=[],messages=[],stored=0,getFiles=0,workerCalls=0,workerBodies=[],downloadBytes=new TextEncoder().encode('%PDF-1.7 synthetic');
 const sessions=new Map(),hints=[],alerts=[],drafts=[];
 const env={SUPABASE_URL:'https://test.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-only',SUPABASE_ANON_KEY:'public-only',TELEGRAM_BOT_TOKEN:'bot-secret',TELEGRAM_WEBHOOK_SECRET:'webhook-secret'};
-const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:k=>env[k]}},Response,Request,URL,TextEncoder,crypto:{subtle:webcrypto.subtle,randomUUID},Date,fetch:async(url,options={})=>{
+const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:k=>env[k]}},Response,Request,URL,TextEncoder,crypto:{subtle:webcrypto.subtle,randomUUID},Date,AbortSignal,fetch:async(url,options={})=>{
  if(url==='https://drgerami-md.ir/content/taxonomy.json')return new Response(null,{status:404});
  if(url==='https://drgerami-md.ir/intmed/content/taxonomy.json')return Response.json({categories:[{topics:[{id:'infectious-encephalitis',label:'انسفالیت'}]}]});
+ if(url.includes('/functions/v1/gerami-editorial/callback')){const data=JSON.parse(options.body);assert.equal(data.callback_query.data.startsWith('webpost:'),true);assert.equal(options.headers.Authorization,'Bearer service-only');return Response.json({ok:true});}
  if(url.endsWith('/auth/v1/user'))return options.headers.Authorization==='Bearer valid-user-jwt'?Response.json({id:'user-1',email:'private@example.com'}):new Response(null,{status:401});
  if(url.includes('/intmed_notification_settings'))return Response.json([{chat_id:'123'}]);
  if(url.includes('/profiles?id=eq.user-1'))return Response.json([{id:'user-1',username:'learner',full_name:'کاربر آزمایشی',approved:true,rejected:false}]);
@@ -98,3 +99,14 @@ r=await userEvent({event:'activity'});assert.equal((await r.json()).sent,true);a
 r=await userEvent({event:'message'});assert.equal((await r.json()).sent,true);const messageNotice=messages.at(-1);assert.match(messageNotice.text,/پیام تازه/);assert.equal(messageNotice.reply_markup.inline_keyboard[0][0].text,'مشاهده پیام‌ها');assert.equal(messageNotice.reply_markup.inline_keyboard[0][1].callback_data,'menu:status');
 assert.ok(!JSON.stringify(messages).includes(env.SUPABASE_SERVICE_ROLE_KEY));assert.ok(!JSON.stringify(messages).includes(env.TELEGRAM_BOT_TOKEN));
 console.log('Telegram passed: authorized ingest/forwarding, inline menu, Persian topic-hint state, privacy-safe activity/login/message alerts, quarantine, rate limit and idempotency.');
+
+await saveWebsiteNamespaceRegression();
+async function saveWebsiteNamespaceRegression(){
+ sessions.set('123',{mode:'awaiting_topic_hint',topic_hint:null});
+ const response=await post({update_id:9876,callback_query:{id:'website-test',from:{id:123},data:'webpost:a:0123456789abcdef0123456789abcdef',message:{message_id:988,chat:{id:'123',type:'private'},text:'متن پیشنهادی سایت'}}});
+ assert.equal((await response.json()).website,true);
+ assert.equal(sessions.get('123').mode,'awaiting_topic_hint','Website callback consumed IntMed topic-hint state');
+ const denied=await post({update_id:9877,callback_query:{id:'wrong-user',from:{id:999},data:'webpost:a:0123456789abcdef0123456789abcdef',message:{message_id:988,chat:{id:'123',type:'private'}}}});
+ assert.equal((await denied.json()).ignored,true);
+ console.log('Website callback namespace preserves existing IntMed intake state.');
+}
