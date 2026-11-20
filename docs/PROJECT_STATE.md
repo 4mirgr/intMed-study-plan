@@ -531,5 +531,11 @@ configuration, educational approvals and publication pipeline stay intact.
 Canonical website backend/UI/publisher source belongs to `4mirgr/gerami-website`
 `backend/editorial/`; this repo owns only its bot extension and regression test.
 Live v18 bot source was compared to canonical source (identical excluding trailing
-newline). Telegram intake regression and core/auth suites passed locally. Deployment
-and exact new function version must be recorded after review, not inferred here.
+newline). Telegram intake regression and core/auth suites passed locally. Live deployment confirmed2026-11-20: existing intmed-telegram-bot is version19;
+PR5 merged as5d91b7fc8754eb620b6e977838fb2236f0eadc95. A real website preview
+and a revised plain-language version were delivered through the configured private
+chat; do not commit unpublished copy or Telegram identifiers to this public repo.
+Website editorial functionv4 and private daily09:00 Tehran scheduling are active.
+Its signed main-workflow queue preflight passed; no doctor approval was simulated.
+The website owns article publication, private editor/media and live role checks.
+Its service-only boolean Auth helper preserves denial of direct Auth-table reads.
