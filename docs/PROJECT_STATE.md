@@ -519,3 +519,17 @@ written above. Local-only edits or a green Pages job with a failed validation jo
   and unknown server strings. Live Chromium/WebKit Pages.dev probes and exact
   origin regression tests are included in production/validation workflows.
 - Evidence and scope: `docs/pwa-login-origin-repair-2026-11-14.md`.
+
+## Website editorial callback integration — 2026-11-20 checkpoint
+
+Owner selected this existing Telegram bot for private website post review. The new
+`webpost:` namespace forwards only callbacks from the configured private chat and
+same sender to the separate `gerami-editorial/callback` function, using existing
+server-only service authorization. Dispatch occurs before topic-hint state, so it
+cannot consume an IntMed intake hint. Existing commands, webhook secret, Gemini
+configuration, educational approvals and publication pipeline stay intact.
+Canonical website backend/UI/publisher source belongs to `4mirgr/gerami-website`
+`backend/editorial/`; this repo owns only its bot extension and regression test.
+Live v18 bot source was compared to canonical source (identical excluding trailing
+newline). Telegram intake regression and core/auth suites passed locally. Deployment
+and exact new function version must be recorded after review, not inferred here.
