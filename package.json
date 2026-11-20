@@ -12,7 +12,7 @@
     "test:browser:all": "npm run test:browser:auth && npm run test:browser:content && npm run test:browser:workspace"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.10",
-    "playwright": "1.62.1"
+    "@electric-sql/pglite": "^0.5.16",
+    "playwright": "1.65.1"
   }
 }
