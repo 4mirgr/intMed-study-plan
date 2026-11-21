@@ -1,12 +1,13 @@
 import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';import {webcrypto,randomUUID} from 'node:crypto';
 let handler,rows=[],messages=[],stored=0,getFiles=0,workerCalls=0,workerBodies=[],downloadBytes=new TextEncoder().encode('%PDF-1.7 synthetic');
-const sessions=new Map(),hints=[],alerts=[],drafts=[];
+const sessions=new Map(),hints=[],alerts=[],drafts=[],editorialSessions=[],websiteCalls=[],events=[];
 const env={SUPABASE_URL:'https://test.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-only',SUPABASE_ANON_KEY:'public-only',TELEGRAM_BOT_TOKEN:'bot-secret',TELEGRAM_WEBHOOK_SECRET:'webhook-secret'};
 const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:k=>env[k]}},Response,Request,URL,TextEncoder,crypto:{subtle:webcrypto.subtle,randomUUID},Date,AbortSignal,fetch:async(url,options={})=>{
  if(url==='https://drgerami-md.ir/content/taxonomy.json')return new Response(null,{status:404});
  if(url==='https://drgerami-md.ir/intmed/content/taxonomy.json')return Response.json({categories:[{topics:[{id:'infectious-encephalitis',label:'انسفالیت'}]}]});
- if(url.includes('/functions/v1/gerami-editorial/callback')){const data=JSON.parse(options.body);assert.equal(data.callback_query.data.startsWith('webpost:'),true);assert.equal(options.headers.Authorization,'Bearer service-only');return Response.json({ok:true});}
+ if(url.includes('/functions/v1/gerami-editorial/callback')){const data=JSON.parse(options.body);if(data.callback_query){assert.equal(data.callback_query.data.startsWith('webpost:'),true);assert.equal(data.acknowledged,true);assert.equal(events.at(-1),'ack');}websiteCalls.push(data);events.push('forward');assert.equal(options.headers.Authorization,'Bearer service-only');return Response.json({ok:true});}
  if(url.endsWith('/auth/v1/user'))return options.headers.Authorization==='Bearer valid-user-jwt'?Response.json({id:'user-1',email:'private@example.com'}):new Response(null,{status:401});
+ if(url.includes('/gerami_editorial_telegram_sessions'))return Response.json(editorialSessions);
  if(url.includes('/intmed_notification_settings'))return Response.json([{chat_id:'123'}]);
  if(url.includes('/profiles?id=eq.user-1'))return Response.json([{id:'user-1',username:'learner',full_name:'کاربر آزمایشی',approved:true,rejected:false}]);
  if(url.includes('/study_state?user_id=eq.user-1'))return Response.json([{state:{itemState:{'activity:infectious-encephalitis:2026-10-25':{seconds:1200},'activity:heme-iron-anemia:2026-10-25':{seconds:600},unrelated:{seconds:99999}}}}]);
@@ -38,7 +39,7 @@ const context=vm.createContext({Deno:{serve:fn=>handler=fn,env:{get:k=>env[k]}},
  if(url.includes('/getFile')){getFiles++;return Response.json({ok:true,result:{file_path:'documents/source.pdf'}});}
  if(url.includes('/sendMessage')){messages.push(JSON.parse(options.body));return Response.json({ok:true,result:{message_id:9}});}
  if(url.includes('/setWebhook'))return Response.json({ok:true,result:true});
- if(url.includes('/answerCallbackQuery'))return Response.json({ok:true,result:true});
+ if(url.includes('/answerCallbackQuery')){events.push('ack');return Response.json({ok:true,result:true});}
  if(url.includes('/file/bot'))return new Response(downloadBytes,{headers:{'content-length':String(downloadBytes.length)}});
  if(url.includes('/storage/v1/object/')){stored++;assert.equal(options.headers['x-upsert'],'false');return Response.json({Key:'private'});}
  if(url.includes('/functions/v1/intmed-content-worker')){workerCalls++;workerBodies.push(JSON.parse(options.body||'{}'));return Response.json({processed:0});}
@@ -108,5 +109,8 @@ async function saveWebsiteNamespaceRegression(){
  assert.equal(sessions.get('123').mode,'awaiting_topic_hint','Website callback consumed IntMed topic-hint state');
  const denied=await post({update_id:9877,callback_query:{id:'wrong-user',from:{id:999},data:'webpost:a:0123456789abcdef0123456789abcdef',message:{message_id:988,chat:{id:'123',type:'private'}}}});
  assert.equal((await denied.json()).ignored,true);
+ const before=rows.length;
+ for(const reply of [{message_id:20,text:'✏️ ویرایش پست سایت\nنسخه قدیمی'},{message_id:21,caption:'📝 پیش‌نویس سایت · نسخهٔ ۱'}]){const r=await post(update(9880+reply.message_id,'123',{from:{id:123},text:'پاسخ به ویرایش قدیمی',reply_to_message:reply}));assert.equal((await r.json()).website,true);}
+ editorialSessions.push({draft_id:'example'});const edit=await post(update(9988,'123',{from:{id:123},text:'متن ویرایش فعال'}));assert.equal((await edit.json()).website,true);editorialSessions.length=0;assert.equal(rows.length,before,'Editorial replies entered IntMed intake');assert.equal(sessions.get('123').mode,'awaiting_topic_hint');
  console.log('Website callback namespace preserves existing IntMed intake state.');
 }

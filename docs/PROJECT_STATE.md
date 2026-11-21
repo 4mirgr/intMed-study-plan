@@ -539,3 +539,19 @@ Website editorial functionv4 and private daily09:00 Tehran scheduling are active
 Its signed main-workflow queue preflight passed; no doctor approval was simulated.
 The website owns article publication, private editor/media and live role checks.
 Its service-only boolean Auth helper preserves denial of direct Auth-table reads.
+
+## Website Telegram controls repair — 2026-11-21
+
+Bot acknowledges `webpost:` callbacks immediately before forwarding in an Edge
+background task; forwarding failure gets persistent guidance. Payload includes update
+ID and acknowledgment state for private website deduplication. Owner replies to
+website photo/body/prompt markers, or active/expired website edit sessions, go to
+website editorial before IntMed topic-hint intake. Keep historical prompt replies out
+of medical source ingestion. Editing itself requires exact ForceReply/session/revision
+binding in the website backend. Existing menu, alerts, intake and webhook remain.
+
+Core/auth and Telegram ingest regression pass, including early-ack order, wrong sender,
+late photo/prompt replies and preservation of pending IntMed topic hints. Canonical
+live botv19 matched repository base before deployment. Website owns deployment SQL,
+selected-cover upload, saved-preview approval, fixed GitHub wake and signed publisher.
+No content/public-asset changes or website IntMed content pin advance are needed.

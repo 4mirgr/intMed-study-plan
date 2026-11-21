@@ -87,12 +87,26 @@ Deno.serve(async req=>{
     const chat=String(message.chat.id||''),allowed=await configuredChat();
     if(!allowed||chat!==allowed)return reply(200,{ok:true,ignored:true});
     const bodyText=String(message.text||message.caption||'').trim(),command=(String(message.text||'').trim().split(/\s+/)[0]||'').split('@')[0].toLowerCase(),callbackData=String(callback?.data||'');
-    // Website approval has its own revision/capability gate; never feed it into IntMed intake.
+    // Acknowledge before forwarding: a slow publisher must never leave Telegram spinning.
+    async function website(acknowledged=false){
+      const task=(async()=>{try{
+        const delivered=await fetch(url+'/functions/v1/gerami-editorial/callback',{method:'POST',headers:{Authorization:'Bearer '+service,'Content-Type':'application/json'},body:JSON.stringify({update_id:updateId,...(callback?{callback_query:callback}:{message}),acknowledged}),signal:AbortSignal.timeout(60000)});
+        if(!delivered.ok)throw Error('website_delivery');
+      }catch{await say(chat,'عملیات پست سایت کامل نشد. متن ذخیره‌شده محفوظ است؛ از دکمهٔ زیر پیشنهاد فعلی را باز کنید.',{inline_keyboard:[[{text:'پیشنهادهای آماده',callback_data:'webpost:list'}]]});}})();
+      const runtime=globalThis.EdgeRuntime;if(runtime&&typeof runtime.waitUntil==='function')runtime.waitUntil(task);else await task;
+      return reply(200,{ok:true,website:true});
+    }
     if(callbackData.startsWith('webpost:')){
       if(String(callback?.from?.id)!==chat)return reply(200,{ok:true,ignored:true});
-      const delivered=await fetch(url+'/functions/v1/gerami-editorial/callback',{method:'POST',headers:{Authorization:'Bearer '+service,'Content-Type':'application/json'},body:JSON.stringify({callback_query:callback}),signal:AbortSignal.timeout(20000)});
-      if(!delivered.ok)try{await telegram('answerCallbackQuery',{callback_query_id:callback.id,text:'این تأیید کامل نشد؛ نسخهٔ تازه را در مدیریت سایت بررسی کنید.',show_alert:true});}catch{}
-      return reply(200,{ok:delivered.ok,website:true});
+      let acknowledged=false;try{await telegram('answerCallbackQuery',{callback_query_id:callback.id,text:'در حال بررسی…'});acknowledged=true;}catch{}
+      return website(acknowledged);
+    }
+    if(!callback&&String(message.from?.id)===chat){
+      const replied=message.reply_to_message,content=String(replied?.text||replied?.caption||'');
+      const editorialReply=content.startsWith('✏️ ویرایش پست سایت')||content.startsWith('📝 پیش‌نویس سایت')||content.startsWith('📝 متن کامل پست سایت')||(replied?.reply_markup?.inline_keyboard||[]).flat().some(b=>String(b.callback_data||'').startsWith('webpost:'));
+      // Keep expired sessions visible here, so late replies never become IntMed source material.
+      const editing=await db('gerami_editorial_telegram_sessions?chat_id=eq.'+encodeURIComponent(chat)+'&select=draft_id&limit=1');
+      if(editorialReply||editing.length&&(!command.startsWith('/')||command==='/cancel'))return website();
     }
     if(callback?.id)try{await telegram('answerCallbackQuery',{callback_query_id:callback.id});}catch{}
     if(command==='/topic'||callbackData==='topic:set'){
